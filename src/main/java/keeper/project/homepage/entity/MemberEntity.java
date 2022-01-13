@@ -26,7 +26,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Getter                     // user 필드값의 getter를 자동으로 생성합니다.
 @NoArgsConstructor          // 인자없는 생성자를 자동으로 생성합니다.
 @AllArgsConstructor         // 인자를 모두 갖춘 생성자를 자동으로 생성합니다.
-@Table(name = "member")  // 'test_user' 테이블과 매핑됨을 명시
+@Table(name = "member")     // 'member' 테이블과 매핑됨을 명시
 public class MemberEntity implements UserDetails {
 
   @Id // pk

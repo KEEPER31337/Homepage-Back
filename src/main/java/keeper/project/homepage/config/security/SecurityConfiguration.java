@@ -1,7 +1,5 @@
 package keeper.project.homepage.config.security;
 
-// import 생략
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-  private final keeper.project.homepage.config.security.JwtTokenProvider jwtTokenProvider;
+  private final JwtTokenProvider jwtTokenProvider;
 
   @Bean
   @Override
@@ -40,11 +38,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //        .permitAll() // hellowworld로 시작하는 GET요청 리소스는 누구나 접근가능
 //        .anyRequest().hasRole("USER") // 그외 나머지 요청은 모두 인증된 회원만 접근 가능
         .and()
-        .exceptionHandling().accessDeniedHandler(new keeper.project.homepage.config.security.CustomAccessDeniedHandler())
+        .exceptionHandling().accessDeniedHandler(new CustomAccessDeniedHandler())
         .and()
-        .exceptionHandling().authenticationEntryPoint(new keeper.project.homepage.config.security.CustomAuthenticationEntryPoint())
+        .exceptionHandling().authenticationEntryPoint(new CustomAuthenticationEntryPoint())
         .and()
-        .addFilterBefore(new keeper.project.homepage.config.security.JwtAuthenticationFilter(jwtTokenProvider),
+        .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
             UsernamePasswordAuthenticationFilter.class); // jwt token 필터를 id/password 인증 필터 전에 넣는다
 
   }

@@ -4,6 +4,8 @@ import keeper.project.homepage.dto.CommonResult;
 import keeper.project.homepage.service.ResponseService;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Log4j2
 @RequiredArgsConstructor
 @RestControllerAdvice
 public class ExceptionAdvice {
@@ -48,15 +51,16 @@ public class ExceptionAdvice {
   }
 
   // ExceptionAdvice
-  @ExceptionHandler(keeper.project.homepage.exception.CustomEmailSigninFailedException.class)
+  @ExceptionHandler(CustomLoginIdSigninFailedException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  protected CommonResult emailSigninFailed(HttpServletRequest request,
-      keeper.project.homepage.exception.CustomEmailSigninFailedException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("emailSigninFailed.code")),
-        getMessage("emailSigninFailed.msg"));
+  protected CommonResult signInFailed(HttpServletRequest request,
+      CustomLoginIdSigninFailedException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("SigninFailed.code")),
+        getMessage("SigninFailed.msg"));
   }
 
   @ExceptionHandler(keeper.project.homepage.exception.CustomAuthenticationEntryPointException.class)
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
   public CommonResult authenticationEntryPointException(HttpServletRequest request,
       keeper.project.homepage.exception.CustomAuthenticationEntryPointException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("entryPointException.code")),
@@ -64,7 +68,8 @@ public class ExceptionAdvice {
   }
 
   @ExceptionHandler(AccessDeniedException.class)
-  public CommonResult AccessDeniedException(HttpServletRequest request, AccessDeniedException e) {
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public CommonResult accessDeniedException(HttpServletRequest request, AccessDeniedException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("accessDenied.code")),
         getMessage("accessDenied.msg"));
   }

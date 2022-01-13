@@ -13,8 +13,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
   @Override
   public void handle(HttpServletRequest request, HttpServletResponse response,
-      AccessDeniedException exception) throws IOException,
-      ServletException {
+      AccessDeniedException exception) throws IOException {
     response.sendRedirect("/exception/accessdenied");
   }
 }
