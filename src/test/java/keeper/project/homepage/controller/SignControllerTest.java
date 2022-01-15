@@ -49,9 +49,13 @@ public class SignControllerTest {
   private WebApplicationContext ctx;
 
   final private String loginId = "hyeonmomo";
+  final private String emailAddress = "gusah@naver.com";
   final private String password = "keeper";
   final private String realName = "JeongHyeonMo";
-  final private String emailAddress = "gusah@naver.com";
+  final private String nickName = "HyeonMoJeong";
+  final private String birthday = "19980101";
+  final private String homepage = "www.naver.com";
+  final private String blog = "www.google.com";
   final private String studentId = "201724579";
   final private String phoneNumber = "0100100100";
 
@@ -105,16 +109,30 @@ public class SignControllerTest {
   }
 
   @Test
+  @DisplayName("아이디 중복검사")
+  public void checkLoginIdDuplication() throws Exception {
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("loginId", loginId);
+    mockMvc.perform(post("/v1/exist").params(params))
+        .andExpect(status().isOk())
+        .andDo(print());
+  }
+
+  @Test
   @DisplayName("회원가입")
   public void signUp() throws Exception {
     long epochTime = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("loginId", loginId + epochTime);
+    params.add("emailAddress", emailAddress + epochTime);
     params.add("password", password);
     params.add("realName", realName + epochTime);
-    params.add("emailAddress", emailAddress + epochTime);
-    params.add("studentId", studentId + epochTime);
+    params.add("nickName", nickName);
+    params.add("birthday", birthday);
+    params.add("homepage", homepage);
+    params.add("blog", blog);
     params.add("phoneNumber", phoneNumber + epochTime);
+    params.add("studentId", studentId + epochTime);
     mockMvc.perform(post("/v1/signup").params(params))
         .andDo(print())
         .andExpect(status().isOk())
