@@ -17,4 +17,8 @@ public class CustomMemberDetailService implements UserDetailsService {
     return memberRepository.findById(Long.valueOf(userPk))
         .orElseThrow(CustomMemberNotFoundException::new);
   }
+
+  public boolean checkLoginIdDuplicate(String loginId) {
+    return memberRepository.existsByLoginId(loginId);
+  }
 }

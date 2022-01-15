@@ -1,15 +1,19 @@
 package keeper.project.homepage.controller;
 
 import java.util.Collections;
+import java.util.Date;
 import keeper.project.homepage.config.security.JwtTokenProvider;
 import keeper.project.homepage.dto.CommonResult;
 import keeper.project.homepage.dto.SingleResult;
 import keeper.project.homepage.entity.MemberEntity;
 import keeper.project.homepage.exception.CustomLoginIdSigninFailedException;
 import keeper.project.homepage.repository.MemberRepository;
+import keeper.project.homepage.service.CustomMemberDetailService;
 import keeper.project.homepage.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.lang.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +29,7 @@ public class SignController {
 
   private final MemberRepository memberRepository;
   private final JwtTokenProvider jwtTokenProvider;
+  private final CustomMemberDetailService customMemberDetailService;
   private final ResponseService responseService;
   private final PasswordEncoder passwordEncoder;
 
@@ -43,23 +48,41 @@ public class SignController {
 
   }
 
+  @PostMapping(value = "/exist")
+  public SingleResult<Boolean> checkLoginIdDuplication(
+      @RequestParam String loginId
+  ) {
+
+    return responseService.getSingleResult(
+        customMemberDetailService.checkLoginIdDuplicate(loginId)
+    );
+  }
+
   @PostMapping(value = "/signup")
   public CommonResult signUp(
       @RequestParam String loginId,
+      @RequestParam String emailAddress,
       @RequestParam String password,
       @RequestParam String realName,
-      @RequestParam String emailAddress,
+      @RequestParam @Nullable String nickName,
+      @RequestParam @DateTimeFormat(pattern = "yyyyMMdd") @Nullable Date birthday,
+      @RequestParam @Nullable String homepage,
+      @RequestParam @Nullable String blog,
       @RequestParam String phoneNumber,
-      @RequestParam String studentId) {
+      @RequestParam String studentId
+  ) {
 
     memberRepository.save(MemberEntity.builder()
         .loginId(loginId)
+        .emailAddress(emailAddress)
         .password(passwordEncoder.encode(password))
         .realName(realName)
-        .emailAddress(emailAddress)
+        .nickName(nickName)
+        .birthday(birthday)
+        .homepage(homepage)
+        .blog(blog)
         .phoneNumber(phoneNumber)
         .studentId(studentId)
-        .point(0)
         .roles(Collections.singletonList("ROLE_USER"))
         .build());
     return responseService.getSuccessResult();
