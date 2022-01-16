@@ -8,13 +8,14 @@ import keeper.project.homepage.dto.SingleResult;
 import keeper.project.homepage.entity.MemberEntity;
 import keeper.project.homepage.exception.CustomLoginIdSigninFailedException;
 import keeper.project.homepage.repository.MemberRepository;
-import keeper.project.homepage.service.CustomMemberDetailService;
+import keeper.project.homepage.service.DuplicateCheckService;
 import keeper.project.homepage.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,7 +30,7 @@ public class SignController {
 
   private final MemberRepository memberRepository;
   private final JwtTokenProvider jwtTokenProvider;
-  private final CustomMemberDetailService customMemberDetailService;
+  private final DuplicateCheckService duplicateCheckService;
   private final ResponseService responseService;
   private final PasswordEncoder passwordEncoder;
 
@@ -48,16 +49,6 @@ public class SignController {
 
   }
 
-  @PostMapping(value = "/exist")
-  public SingleResult<Boolean> checkLoginIdDuplication(
-      @RequestParam String loginId
-  ) {
-
-    return responseService.getSingleResult(
-        customMemberDetailService.checkLoginIdDuplicate(loginId)
-    );
-  }
-
   @PostMapping(value = "/signup")
   public CommonResult signUp(
       @RequestParam String loginId,
@@ -66,9 +57,6 @@ public class SignController {
       @RequestParam String realName,
       @RequestParam @Nullable String nickName,
       @RequestParam @DateTimeFormat(pattern = "yyyyMMdd") @Nullable Date birthday,
-      @RequestParam @Nullable String homepage,
-      @RequestParam @Nullable String blog,
-      @RequestParam String phoneNumber,
       @RequestParam String studentId
   ) {
 
@@ -79,12 +67,39 @@ public class SignController {
         .realName(realName)
         .nickName(nickName)
         .birthday(birthday)
-        .homepage(homepage)
-        .blog(blog)
-        .phoneNumber(phoneNumber)
         .studentId(studentId)
         .roles(Collections.singletonList("ROLE_USER"))
         .build());
     return responseService.getSuccessResult();
+  }
+
+  @GetMapping(value = "/signup/checkloginidduplication")
+  public SingleResult<Boolean> checkLoginIdDuplication(
+      @RequestParam String loginId
+  ) {
+
+    return responseService.getSingleResult(
+        duplicateCheckService.checkLoginIdDuplicate(loginId)
+    );
+  }
+
+  @GetMapping(value = "/signup/checkemailaddressduplication")
+  public SingleResult<Boolean> checkEmailAddressDuplication(
+      @RequestParam String emailAddress
+  ) {
+
+    return responseService.getSingleResult(
+        duplicateCheckService.checkEmailAddressDuplicate(emailAddress)
+    );
+  }
+
+  @GetMapping(value = "/signup/checkstudentidduplication")
+  public SingleResult<Boolean> checkStudentIdDuplication(
+      @RequestParam String studentId
+  ) {
+
+    return responseService.getSingleResult(
+        duplicateCheckService.checkStudentIdDuplicate(studentId)
+    );
   }
 }
