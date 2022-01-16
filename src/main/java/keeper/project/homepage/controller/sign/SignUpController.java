@@ -1,12 +1,10 @@
-package keeper.project.homepage.controller;
+package keeper.project.homepage.controller.sign;
 
 import java.util.Collections;
 import java.util.Date;
-import keeper.project.homepage.config.security.JwtTokenProvider;
 import keeper.project.homepage.dto.CommonResult;
 import keeper.project.homepage.dto.SingleResult;
 import keeper.project.homepage.entity.MemberEntity;
-import keeper.project.homepage.exception.CustomLoginIdSigninFailedException;
 import keeper.project.homepage.repository.MemberRepository;
 import keeper.project.homepage.service.DuplicateCheckService;
 import keeper.project.homepage.service.ResponseService;
@@ -25,31 +23,15 @@ import org.springframework.web.bind.annotation.RestController;
 @Log4j2
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/v1")
-public class SignController {
+@RequestMapping(value = "/v1/signup")
+public class SignUpController {
 
   private final MemberRepository memberRepository;
-  private final JwtTokenProvider jwtTokenProvider;
   private final DuplicateCheckService duplicateCheckService;
   private final ResponseService responseService;
   private final PasswordEncoder passwordEncoder;
 
-  @PostMapping(value = "/signin")
-  public SingleResult<String> signIn(
-      @RequestParam String loginId,
-      @RequestParam String password) {
-    MemberEntity memberEntity = memberRepository.findByLoginId(loginId)
-        .orElseThrow(CustomLoginIdSigninFailedException::new);
-    if (!passwordEncoder.matches(password, memberEntity.getPassword())) {
-      throw new CustomLoginIdSigninFailedException();
-    }
-    return responseService.getSingleResult(
-        jwtTokenProvider.createToken(String.valueOf(memberEntity.getId()),
-            memberEntity.getRoles()));
-
-  }
-
-  @PostMapping(value = "/signup")
+  @PostMapping(value = "")
   public CommonResult signUp(
       @RequestParam String loginId,
       @RequestParam String emailAddress,
@@ -73,7 +55,7 @@ public class SignController {
     return responseService.getSuccessResult();
   }
 
-  @GetMapping(value = "/signup/checkloginidduplication")
+  @GetMapping(value = "/checkloginidduplication")
   public SingleResult<Boolean> checkLoginIdDuplication(
       @RequestParam String loginId
   ) {
@@ -83,7 +65,7 @@ public class SignController {
     );
   }
 
-  @GetMapping(value = "/signup/checkemailaddressduplication")
+  @GetMapping(value = "/checkemailaddressduplication")
   public SingleResult<Boolean> checkEmailAddressDuplication(
       @RequestParam String emailAddress
   ) {
@@ -93,7 +75,7 @@ public class SignController {
     );
   }
 
-  @GetMapping(value = "/signup/checkstudentidduplication")
+  @GetMapping(value = "/checkstudentidduplication")
   public SingleResult<Boolean> checkStudentIdDuplication(
       @RequestParam String studentId
   ) {

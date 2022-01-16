@@ -1,10 +1,9 @@
-package keeper.project.homepage.controller;
+package keeper.project.homepage.controller.sign;
 
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.text.SimpleDateFormat;
@@ -22,10 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
@@ -37,7 +34,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
-public class SignControllerTest {
+public class SignUpControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
@@ -81,35 +78,6 @@ public class SignControllerTest {
             .studentId(studentId)
             .roles(Collections.singletonList("ROLE_USER"))
             .build());
-  }
-
-  @Test
-  @DisplayName("로그인 성공")
-  public void signIn() throws Exception {
-    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("loginId", loginId);
-    params.add("password", password);
-    mockMvc.perform(post("/v1/signin").params(params))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.code").value(0))
-        .andExpect(jsonPath("$.msg").exists())
-        .andExpect(jsonPath("$.data").exists());
-  }
-
-  @Test
-  @DisplayName("로그인 실패")
-  public void signInFail() throws Exception {
-    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("loginId", loginId);
-    params.add("password", password + "1");
-    mockMvc.perform(post("/v1/signin").params(params))
-        .andDo(print())
-        .andExpect(status().is5xxServerError())
-        .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(-1001))
-        .andExpect(jsonPath("$.msg").exists());
   }
 
   @Test
