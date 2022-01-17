@@ -53,26 +53,25 @@ dependencies {
 
 /******* Start Spring Rest Docs *******/
 ext {
-    snippetsDir = file('build/generated-snippets')
+    snippetsDir = file("$buildDir/generated-snippets")
 }
-
 test {
-    outputs.dir snippetsDir
     useJUnitPlatform()
+    outputs.dir snippetsDir
 }
 
 asciidoctor {
-    dependsOn test
     inputs.dir snippetsDir
+    dependsOn test
 }
 
 asciidoctor.doFirst {
-    delete file('src/main/resources/static/docs')
+    delete file("src/main/resources/static/docs")
 }
 
 task copyDocument(type: Copy) {
-    dependsOn bootJar
-    from file("build/docs/asciidoc")
+    dependsOn asciidoctor
+    from file("$buildDir/docs/asciidoc")
     into file("src/main/resources/static/docs")
 }
 
