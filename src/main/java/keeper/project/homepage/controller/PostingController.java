@@ -1,6 +1,8 @@
 package keeper.project.homepage.controller;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.dto.PostingDto;
@@ -12,6 +14,7 @@ import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.PostingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.tomcat.jni.Local;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
@@ -76,6 +79,8 @@ public class PostingController {
 
     Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
         Long.valueOf(dto.getCategoryId()));
+    dto.setRegisterTime(new Date());
+    dto.setUpdateTime(new Date());
     PostingEntity postingEntity = postingService.save(dto.toEntity(categoryEntity.get()));
     fileService.saveFiles(files, dto, postingEntity);
 
@@ -103,7 +108,13 @@ public class PostingController {
 
     Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
         Long.valueOf(dto.getCategoryId()));
-    PostingEntity postingEntity = postingService.updateById(dto.toEntity(categoryEntity.get()),
+    PostingEntity postingEntity = postingService.getPostingById(postingId);
+    dto.setUpdateTime(new Date());
+    dto.setCommentCount(postingEntity.getCommentCount());
+    dto.setLikeCount(postingEntity.getLikeCount());
+    dto.setDislikeCount(postingEntity.getDislikeCount());
+    dto.setVisitCount(postingEntity.getVisitCount());
+    postingService.updateById(dto.toEntity(categoryEntity.get()),
         postingId);
     List<FileEntity> fileEntities = fileService.getFilesByPostingId(
         postingService.getPostingById(postingId));

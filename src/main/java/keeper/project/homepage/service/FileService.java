@@ -45,7 +45,7 @@ public class FileService {
       fileDto.setFileName(fileName);
       fileDto.setFilePath(filePath);
       fileDto.setFileSize(file.getSize());
-      fileDto.setUploadTime(dto.getRegisterTime());
+      fileDto.setUploadTime(dto.getUpdateTime());
       fileDto.setIpAddress(dto.getIpAddress());
       fileRepository.save(fileDto.toEntity(postingEntity)).getId();
     }

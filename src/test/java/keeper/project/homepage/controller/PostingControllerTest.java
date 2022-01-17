@@ -1,38 +1,27 @@
 package keeper.project.homepage.controller;
 
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDateTime;
-import keeper.project.homepage.dto.PostingDto;
 import keeper.project.homepage.repository.PostingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mybatis.spring.boot.test.autoconfigure.AutoConfigureMybatis;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
-import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -47,6 +36,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @AutoConfigureMockMvc
+@AutoConfigureRestDocs
 @Transactional
 public class PostingControllerTest {
 
@@ -133,7 +123,27 @@ public class PostingControllerTest {
             }));
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
-        .andDo(print());
+        .andDo(print())
+        .andDo(document("post/createPosting",
+            requestHeaders(
+                headerWithName(HttpHeaders.CONTENT_TYPE).description(
+                    MediaType.APPLICATION_JSON_VALUE),
+                headerWithName(HttpHeaders.ACCEPT).description(MediaType.MULTIPART_FORM_DATA)
+                ),
+            requestParameters(
+                parameterWithName("title").description("제목"),
+                parameterWithName("content").description("내용"),
+                parameterWithName("categoryId").description("게시판 종류 ID"),
+                parameterWithName("ipAddress").description("IP 주소"),
+                parameterWithName("allowComment").description("댓글 허용?"),
+                parameterWithName("isNotice").description("공지글?"),
+                parameterWithName("isSecret").description("비밀글?"),
+                parameterWithName("password").description("비밀번호")
+            ),
+            requestParts(
+                partWithName("files").description("첨부 이미지")
+            )
+        ));
   }
 
   //test code 추후 작성
