@@ -49,4 +49,14 @@ public class BookController {
     return responseService.getSuccessResult();
   }
 
+  @PostMapping(value = "/deleteBook")
+  @ResponseBody
+  public CommonResult delete(@RequestParam String title, @RequestParam Long quantity){
+    String message = bookManageService.deleteBook(title, quantity);
+    if(message == "삭제되었습니다") {
+      return responseService.getSuccessResult();
+    }else{
+      return responseService.getFailResult();
+    }
+  }
 }

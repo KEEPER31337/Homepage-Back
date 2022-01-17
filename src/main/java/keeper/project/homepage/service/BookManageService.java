@@ -1,5 +1,6 @@
 package keeper.project.homepage.service;
 
+import java.awt.print.Book;
 import java.util.Date;
 import keeper.project.homepage.entity.BookEntity;
 import keeper.project.homepage.repository.BookRepository;
@@ -18,6 +19,11 @@ public class BookManageService {
 
   /**
    * 도서 등록
+   * @param title
+   * @param author
+   * @param picture
+   * @param information
+   * @param quantity
    */
   public void addBook(String title, String author, String picture, String information,
       Long quantity) {
@@ -33,8 +39,28 @@ public class BookManageService {
         .enable(quantity)
         .registerDate(registerDate)
         .build());
-
   }
 
+  /**
+   * 도서 삭제
+   * @return
+   */
+  public String deleteBook(String title, Long quantity){
+    BookEntity bookEntity = new BookEntity();
+
+    if(bookEntity.getTitle() == null){
+      throw new RuntimeException("존재하지 않는 책입니다");
+    }
+    Long total = bookEntity.getTotal();
+
+    if(total-quantity > 0){
+      bookRepository.save(BookEntity.builder()
+          .title(title)
+          .total(quantity).build());
+    }else{
+      bookRepository.delete(BookEntity.builder().build());
+    }
+    return "삭제되었습니다";
+  }
 
 }
