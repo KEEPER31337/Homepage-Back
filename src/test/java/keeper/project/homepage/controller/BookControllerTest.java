@@ -45,9 +45,9 @@ public class BookControllerTest {
   final private String bookAuthor = "박응용";
   final private String bookPicture = "JumpToPython.png";
   final private String bookInformation = "파이썬의 기본이 잘 정리된 책이다.";
-  final private Long bookQuantity = 2L;
+  final private Long bookQuantity = 4L;
   final private Long bookBorrow = 0L;
-  final private Long bookEnable = 2L;
+  final private Long bookEnable = bookQuantity;
   final private String bookRegisterDate = "2021-01-16";
 
   @BeforeEach
@@ -80,15 +80,13 @@ public class BookControllerTest {
     params.add("picture", bookPicture);
     params.add("information", bookInformation);
     params.add("quantity", String.valueOf(bookQuantity));
-    params.add("borrow", String.valueOf(bookBorrow));
-    params.add("enable", String.valueOf(bookEnable));
+
     mockMvc.perform(post("/v1/addbook").params(params))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.code").value(0))
-        .andExpect(jsonPath("$.msg").exists())
-        .andExpect(jsonPath("$.data").exists());
+        .andExpect(jsonPath("$.msg").exists());
   }
 
 }
