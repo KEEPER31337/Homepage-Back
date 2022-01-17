@@ -45,8 +45,12 @@ public class BookController {
       @RequestParam String picture,
       @RequestParam String information,
       @RequestParam Long quantity) {
-    bookManageService.addBook(title, author, picture, information, quantity);
-    return responseService.getSuccessResult();
+    String passMessage = bookManageService.addBook(title, author, picture, information, quantity);
+    if (passMessage == "추가되었습니다") {
+      return responseService.getSuccessResult();
+    } else {
+      return responseService.getFailResult();
+    }
   }
 
 }
