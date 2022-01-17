@@ -1,9 +1,10 @@
 package keeper.project.homepage.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -12,6 +13,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,21 +33,36 @@ public class MemberEntity implements UserDetails {
 
   @Id // pk
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
-  @Column(nullable = false, unique = true, length = 30)
+  private Long id;
+  @Column(name = "login_id", length = 80, nullable = false, unique = true)
   private String loginId;
-  @Column(nullable = false, length = 100)
+  @Column(name = "email_address", length = 250, nullable = false, unique = true)
   private String emailAddress;
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Json 결과로 출력 안 할 데이터
-  @Column(nullable = false, length = 100)
+  @Column(name = "password", length = 512, nullable = false)
   private String password;
-  @Column(nullable = false, length = 100)
+  @Column(name = "real_name", length = 40, nullable = false)
   private String realName;
-  @Column(nullable = false, length = 40)
-  private String phoneNumber;
-  @Column(nullable = false, length = 40)
+  @Column(name = "nick_name", length = 40)
+  private String nickName;
+  @Column(name = "birthday")
+  private Date birthday;
+  @Column(name = "student_id", length = 45, nullable = false, unique = true)
   private String studentId;
+  @Column(name = "member_type_id")
+  private int memberTypeId;
+  @Column(name = "member_rank_id")
+  private int memberRankId;
+  @Column(name = "point", nullable = false)
   private int point;
+  @Column(name = "level", nullable = false)
+  private int level;
+
+  @PrePersist // persist 되기 전에 호출되는 함수, 생성할 때 0으로 고정이므로 대입, 입력되는 값이라면 확인이 필요
+  public void prePersist() {
+    this.memberTypeId = 1;
+    this.memberRankId = 1;
+  }
 
   @ElementCollection(fetch = FetchType.EAGER)
   @Builder.Default
