@@ -17,4 +17,5 @@ public class CustomMemberDetailService implements UserDetailsService {
     return memberRepository.findById(Long.valueOf(userPk))
         .orElseThrow(CustomMemberNotFoundException::new);
   }
+
 }
