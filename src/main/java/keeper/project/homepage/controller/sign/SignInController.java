@@ -5,6 +5,7 @@ import keeper.project.homepage.dto.SingleResult;
 import keeper.project.homepage.entity.MemberEntity;
 import keeper.project.homepage.exception.CustomLoginIdSigninFailedException;
 import keeper.project.homepage.repository.MemberRepository;
+import keeper.project.homepage.service.CustomPasswordService;
 import keeper.project.homepage.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -25,6 +26,7 @@ public class SignInController {
   private final JwtTokenProvider jwtTokenProvider;
   private final ResponseService responseService;
   private final PasswordEncoder passwordEncoder;
+  private final CustomPasswordService customPasswordService;
 
   @PostMapping(value = "")
   public SingleResult<String> signIn(
@@ -32,7 +34,10 @@ public class SignInController {
       @RequestParam String password) {
     MemberEntity memberEntity = memberRepository.findByLoginId(loginId)
         .orElseThrow(CustomLoginIdSigninFailedException::new);
-    if (!passwordEncoder.matches(password, memberEntity.getPassword())) {
+    String hashedPassword = memberEntity.getPassword();
+    if (!passwordEncoder.matches(password, hashedPassword) ||
+        customPasswordService.checkPasswordWithPBKDF2SHA256(password, hashedPassword) ||
+        customPasswordService.checkPasswordWithMD5(password, hashedPassword)) {
       throw new CustomLoginIdSigninFailedException();
     }
     return responseService.getSingleResult(
