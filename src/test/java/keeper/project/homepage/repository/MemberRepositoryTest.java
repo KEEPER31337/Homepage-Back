@@ -39,6 +39,8 @@ public class MemberRepositoryTest {
     String realName = "JeongHyeonMo";
     String emailAddress = "gusah@naver.com";
     String studentId = "201724579";
+    String phoneNumber = "0100100100";
+    int point = 0;
     // given
     memberRepository.save(MemberEntity.builder()
         .loginId(loginId)
@@ -46,6 +48,8 @@ public class MemberRepositoryTest {
         .realName(realName)
         .emailAddress(emailAddress)
         .studentId(studentId)
+        .point(point)
+        .phoneNumber(phoneNumber)
         .roles(Collections.singletonList("ROLE_USER"))
         .build());
     // when

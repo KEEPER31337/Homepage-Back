@@ -62,6 +62,7 @@ public class MemberControllerTest {
   final private String realName = "JeongHyeonMo";
   final private String emailAddress = "gusah@naver.com";
   final private String studentId = "201724579";
+  final private String phoneNumber = "0100100100";
 
   final private String adminLoginId = "hyeonmoAdmin";
   final private String adminPassword = "keeper2";
@@ -86,6 +87,7 @@ public class MemberControllerTest {
             .realName(realName)
             .emailAddress(emailAddress)
             .studentId(studentId)
+            .phoneNumber(phoneNumber)
             .roles(Collections.singletonList("ROLE_USER"))
             .build());
 
@@ -112,6 +114,7 @@ public class MemberControllerTest {
             .realName(adminRealName)
             .emailAddress(adminEmailAddress)
             .studentId(adminStudentId)
+            .phoneNumber(adminPhoneNumber)
             .roles(Collections.singletonList("ROLE_ADMIN"))
             .build());
 

@@ -46,6 +46,7 @@ src/main/resources/application.properties
 
 ### frontend code ###
 /frontend
+/src/main/resources/static
 
 ### Mac ###
 .DS_Store
