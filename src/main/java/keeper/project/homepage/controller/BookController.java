@@ -58,7 +58,7 @@ public class BookController {
     }
   }
 
-  @PostMapping(value = "/deleteBook")
+  @PostMapping(value = "/deletebook")
   @ResponseBody
   public CommonResult delete(@RequestParam String title, @RequestParam Long quantity) {
 
