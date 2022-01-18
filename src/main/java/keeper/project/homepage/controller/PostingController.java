@@ -88,15 +88,17 @@ public class PostingController {
         : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
-  // 글 조회시 글 정보 json 이후 첨부파일이 있으면 첨부파일들 전부 담은 json 리스트 반환
   @GetMapping(value = "/{pid}")
-  public ResponseEntity<List<Object>> getPosting(@PathVariable("pid") Long postingId) {
+  public ResponseEntity<PostingEntity> getPosting(@PathVariable("pid") Long postingId) {
 
-    List<Object> entityList = new ArrayList<>();
-    entityList.add(postingService.getPostingById(postingId));
-    entityList.addAll(fileService.getFilesByPostingId((PostingEntity) entityList.get(0)));
+    return ResponseEntity.status(HttpStatus.OK).body(postingService.getPostingById(postingId));
+  }
 
-    return ResponseEntity.status(HttpStatus.OK).body(entityList);
+  @GetMapping(value = "/attach/{pid}")
+  public ResponseEntity<List<FileEntity>> getAttachList(@PathVariable("pid") Long postindId) {
+
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(fileService.getFilesByPostingId(postingService.getPostingById(postindId)));
   }
 
   @RequestMapping(method = {RequestMethod.PUT,
