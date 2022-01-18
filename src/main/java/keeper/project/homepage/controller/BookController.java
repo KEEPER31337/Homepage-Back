@@ -37,7 +37,10 @@ public class BookController {
       @RequestParam Long quantity) {
 
     if(bookManageService.isNotMax(title, quantity)) {
-      Long total = bookRepository.findByTitle(title).get().getTotal();
+      Long total = 0L;
+      if(bookRepository.findByTitle(title).isPresent()){
+        total = bookRepository.findByTitle(title).get().getTotal();
+      }
       bookRepository.save(
           BookEntity.builder()
           .title(title)
