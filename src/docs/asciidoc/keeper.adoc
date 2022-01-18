@@ -22,3 +22,7 @@ http://localhost:8080/docs/signup.html[API 문서 보기]
 == *로그인*
 
 http://localhost:8080/docs/signin.html[API 문서 보기]
+
+== 게시판
+
+http://localhost:8080/docs/posting.html[API 문서 보기]
