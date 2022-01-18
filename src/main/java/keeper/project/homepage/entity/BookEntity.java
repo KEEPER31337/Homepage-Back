@@ -7,6 +7,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,16 +25,22 @@ public class BookEntity {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
-  @Column(nullable = false, unique = true, length = 250)
+  @Column(name = "title", nullable = false, unique = true, length = 250)
   private String title;
-  @Column(nullable = false, unique = true, length = 40)
+  @Column(name = "author", nullable = false, length = 40)
   private String author;
-  @Column(unique = true, length = 512)
+  @Column(name = "picture", unique = true, length = 512)
   private String picture;
+  @Column(name = "information")
   private String information;
+  @Column(name = "total", nullable = false)
   private Long total;
+  @Column(name = "borrow", nullable = false)
   private Long borrow;
+  @Column(name = "enable", nullable = false)
   private Long enable;
+  @Column(name = "register_date", nullable = false)
+  @Temporal(TemporalType.TIMESTAMP)
   private Date registerDate;
 
 }
