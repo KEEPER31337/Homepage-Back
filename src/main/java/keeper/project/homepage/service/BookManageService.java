@@ -23,7 +23,7 @@ public class BookManageService {
   public boolean isNotMax(String title, Long quantity) {
 
     Long nowTotal = 0L;
-    if(bookRepository.findByTitle(title).isPresent()){
+    if (bookRepository.findByTitle(title).isPresent()) {
       nowTotal = bookRepository.findByTitle(title).get().getTotal();
     }
 
@@ -37,11 +37,9 @@ public class BookManageService {
   /**
    * 도서 삭제가 가능한지 체크
    */
-  public boolean isCanDelete(String title, Long quantity){
+  public boolean isCanDelete(String title, Long quantity) {
 
-    if(!bookRepository.findByTitle(title).isPresent()){
-      return false;
-    }else if(bookRepository.findByTitle(title).get().getTotal() < quantity){
+    if (!bookRepository.findByTitle(title).isPresent()) {
       return false;
     }
     return true;

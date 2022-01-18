@@ -36,24 +36,24 @@ public class BookController {
       @RequestParam @Nullable String information,
       @RequestParam Long quantity) {
 
-    if(bookManageService.isNotMax(title, quantity)) {
+    if (bookManageService.isNotMax(title, quantity)) {
       Long total = 0L;
-      if(bookRepository.findByTitle(title).isPresent()){
+      if (bookRepository.findByTitle(title).isPresent()) {
         total = bookRepository.findByTitle(title).get().getTotal();
       }
       bookRepository.save(
           BookEntity.builder()
-          .title(title)
-          .author(author)
-          .picture(picture)
-          .information(information)
-          .total(total+quantity)
-          .borrow(0L)
-          .enable(total+quantity)
-          .registerDate(new Date())
-          .build());
+              .title(title)
+              .author(author)
+              .picture(picture)
+              .information(information)
+              .total(total + quantity)
+              .borrow(0L)
+              .enable(total + quantity)
+              .registerDate(new Date())
+              .build());
       return responseService.getSuccessResult();
-    }else{
+    } else {
       return responseService.getFailResult(-1, "수량 초과입니다.");
     }
   }
@@ -62,11 +62,13 @@ public class BookController {
   @ResponseBody
   public CommonResult delete(@RequestParam String title, @RequestParam Long quantity) {
 
-    if(bookManageService.isCanDelete(title, quantity)){
-      if(bookRepository.findByTitle(title).get().getTotal()-quantity == 0){
+    if (bookManageService.isCanDelete(title, quantity)) {
+      if (bookRepository.findByTitle(title).get().getTotal() - quantity == 0) {
         BookEntity bookEntity = bookRepository.findByTitle(title).get();
         bookRepository.delete(bookEntity);
-      }else{
+      } else if (bookRepository.findByTitle(title).get().getTotal() - quantity < 0) {
+        return responseService.getFailResult(-1, "삭제 가능한 수량보다 많습니다.");
+      } else {
         String author = bookRepository.findByTitle(title).get().getAuthor();
         String picture = bookRepository.findByTitle(title).get().getPicture();
         String information = bookRepository.findByTitle(title).get().getInformation();
@@ -74,19 +76,19 @@ public class BookController {
 
         bookRepository.save(
             BookEntity.builder()
-            .title(title)
-            .author(author)
-            .picture(picture)
-            .information(information)
-            .total(quantity)
-            .borrow(borrow)
-            .enable(quantity)
-            .registerDate(new Date())
-            .build());
+                .title(title)
+                .author(author)
+                .picture(picture)
+                .information(information)
+                .total(quantity)
+                .borrow(borrow)
+                .enable(quantity)
+                .registerDate(new Date())
+                .build());
       }
       return responseService.getSuccessResult();
-    }else{
-      return responseService.getFailResult();
+    } else {
+      return responseService.getFailResult(-2, "책이 존재하지 않습니다.");
     }
   }
 }
