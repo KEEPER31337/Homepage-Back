@@ -30,12 +30,7 @@ public class BookController {
   private final BookRepository bookRepository;
   private final ResponseService responseService;
   private final BookManageService bookManageService;
-
-  @InitBinder
-  public void initBinder(WebDataBinder binder) {
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-    binder.registerCustomEditor(java.util.Date.class, new CustomDateEditor(dateFormat, false));
-  }
+  private final BookEntity bookEntity;
 
   @PostMapping(value = "/addbook")
   @ResponseBody
@@ -45,19 +40,48 @@ public class BookController {
       @RequestParam String picture,
       @RequestParam String information,
       @RequestParam Long quantity) {
-    String passMessage = bookManageService.addBook(title, author, picture, information, quantity);
-    if (passMessage == "추가되었습니다") {
+
+    if(bookManageService.isNotMax(title, quantity)) {
+      bookRepository.save(BookEntity.builder()
+          .title(title)
+          .author(author)
+          .picture(picture)
+          .information(information)
+          .total(quantity)
+          .borrow(0L)
+          .enable(quantity)
+          .registerDate(new Date())
+          .build());
       return responseService.getSuccessResult();
-    } else {
+    }else{
       return responseService.getFailResult();
     }
   }
 
   @PostMapping(value = "/deleteBook")
   @ResponseBody
-  public CommonResult delete(@RequestParam String title, @RequestParam Long quantity){
-    String message = bookManageService.deleteBook(title, quantity);
-    if(message == "삭제되었습니다") {
+  public CommonResult delete(@RequestParam String title, @RequestParam Long quantity) {
+
+    String author = bookRepository.findByTitle(title).get().getAuthor();
+    String picture = bookRepository.findByTitle(title).get().getPicture();
+    String information = bookRepository.findByTitle(title).get().getInformation();
+    Long borrow = bookRepository.findByTitle(title).get().getBorrow();
+
+    if(bookManageService.isCanDelete(title, quantity)){
+      if(bookRepository.findByTitle(title).get().getTotal()-quantity == 0){
+        bookRepository.delete(bookEntity);
+      }else{
+        bookRepository.save(BookEntity.builder()
+            .title(title)
+            .author(author)
+            .picture(picture)
+            .information(information)
+            .total(quantity)
+            .borrow(borrow)
+            .enable(quantity)
+            .registerDate(new Date())
+            .build());
+      }
       return responseService.getSuccessResult();
     }else{
       return responseService.getFailResult();
