@@ -1,12 +1,24 @@
 package keeper.project.homepage.controller;
 
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
+import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
-import java.sql.Date;
+import java.util.Date;
 import javax.transaction.Transactional;
 import keeper.project.homepage.entity.BookEntity;
 import keeper.project.homepage.entity.MemberEntity;
@@ -18,6 +30,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.restdocs.RestDocumentationContextProvider;
+import org.springframework.restdocs.RestDocumentationExtension;
+import org.springframework.restdocs.snippet.Snippet;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -27,7 +42,7 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 @SpringBootTest
-@ExtendWith(SpringExtension.class)
+@ExtendWith({SpringExtension.class, RestDocumentationExtension.class})
 @AutoConfigureMockMvc
 @Transactional
 public class BookControllerTest {
@@ -45,18 +60,27 @@ public class BookControllerTest {
   final private String bookAuthor = "박응용";
   final private String bookPicture = "JumpToPython.png";
   final private String bookInformation = "파이썬의 기본이 잘 정리된 책이다.";
-  final private Long bookQuantity = 4L;
+  final private Long bookQuantity = 2L;
   final private Long bookBorrow = 0L;
   final private Long bookEnable = bookQuantity;
-  final private String bookRegisterDate = "2021-01-16";
+  final private String bookRegisterDate = "20220116";
+
+  final private long epochTime = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
 
   @BeforeEach
-  public void setUp() throws Exception {
+  public void setUp(RestDocumentationContextProvider restDocumentation) throws Exception {
     // mockMvc의 한글 사용을 위한 코드
     this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
         .addFilters(new CharacterEncodingFilter("UTF-8", true))  // 필터 추가
-        .alwaysDo(print())
+        .apply(documentationConfiguration(restDocumentation)
+            .operationPreprocessors()
+            .withRequestDefaults(modifyUris().host("test.com").removePort(), prettyPrint())
+            .withResponseDefaults(prettyPrint())
+        )
         .build();
+
+    SimpleDateFormat stringToDate = new SimpleDateFormat("yyyymmdd");
+    Date registerDate = stringToDate.parse(bookRegisterDate);
 
     bookRepository.save(
         BookEntity.builder()
@@ -67,19 +91,68 @@ public class BookControllerTest {
             .total(bookQuantity)
             .borrow(bookBorrow)
             .enable(bookEnable)
-            .registerDate(Date.valueOf(bookRegisterDate))
+            .registerDate(registerDate)
             .build());
   }
 
   @Test
-  @DisplayName("책 등록 성공")
+  @DisplayName("책 등록 성공(기존 책)")
   public void addBook() throws Exception {
+    Long bookQuantity1 = 2L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle);
     params.add("author", bookAuthor);
     params.add("picture", bookPicture);
     params.add("information", bookInformation);
-    params.add("quantity", String.valueOf(bookQuantity));
+    params.add("quantity", String.valueOf(bookQuantity1));
+
+    mockMvc.perform(post("/v1/addbook").params(params))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").exists())
+        .andDo(document("add-book",
+            requestParameters(
+                parameterWithName("title").description("책 제목"),
+                parameterWithName("author").description("저자"),
+                parameterWithName("picture").description("책 표지 사진(없어도 됨)"),
+                parameterWithName("information").description("한줄평(없어도 됨)"),
+                parameterWithName("quantity").description("추가 할 수량")
+            ),
+            responseFields(
+                fieldWithPath("success").description("책 추가 완료 시 true, 실패 시 false 값을 보냅니다."),
+                fieldWithPath("code").description("책 추가 완료 시 0, 수량 초과로 실패 시 -1 코드를 보냅니다."),
+                fieldWithPath("msg").description("책 추가 실패가 수량 초과 일 때만 발생하므로 수량 초과 메시지를 발생시킵니다.")
+            )));
+  }
+
+  @Test
+  @DisplayName("수량 초과 책 등록 실패(기존 책)")
+  public void addBookFailedOverMax() throws Exception {
+    Long bookQuantity1 = 3L;
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("title", bookTitle);
+    params.add("author", bookAuthor);
+    params.add("quantity", String.valueOf(bookQuantity1));
+
+    mockMvc.perform(post("/v1/addbook").params(params))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(-1))
+        .andExpect(jsonPath("$.msg").exists());
+  }
+
+  @Test
+  @DisplayName("새 책 등록 성공")
+  public void addNewBook() throws Exception {
+    Long bookQuantity2 = 4L;
+    String newTitle = "일반물리학";
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("title", newTitle);
+    params.add("author", bookAuthor);
+    params.add("quantity", String.valueOf(bookQuantity2));
 
     mockMvc.perform(post("/v1/addbook").params(params))
         .andDo(print())
@@ -89,4 +162,22 @@ public class BookControllerTest {
         .andExpect(jsonPath("$.msg").exists());
   }
 
+  @Test
+  @DisplayName("수량 초과 새 책 등록 실패")
+  public void addNewBookFailedOverMax() throws Exception {
+    Long bookQuantity3 = 5L;
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("title", bookTitle+epochTime);
+    params.add("author", bookAuthor);
+    params.add("quantity", String.valueOf(bookQuantity3));
+
+    mockMvc.perform(post("/v1/addbook").params(params))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(-1))
+        .andExpect(jsonPath("$.msg").exists());
+  }
+
+  
 }
