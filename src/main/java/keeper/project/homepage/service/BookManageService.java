@@ -1,6 +1,5 @@
 package keeper.project.homepage.service;
 
-import java.awt.print.Book;
 import java.util.Date;
 import keeper.project.homepage.entity.BookEntity;
 import keeper.project.homepage.repository.BookRepository;
@@ -19,48 +18,38 @@ public class BookManageService {
 
   /**
    * 도서 등록
-   * @param title
-   * @param author
-   * @param picture
-   * @param information
-   * @param quantity
    */
-  public void addBook(String title, String author, String picture, String information,
+  public String addBook(String title,
+      String author,
+      String picture,
+      String information,
       Long quantity) {
 
-    Date registerDate = new Date();
-    bookRepository.save(BookEntity.builder()
-        .title(title)
-        .author(author)
-        .picture(picture)
-        .information(information)
-        .total(quantity)
-        .borrow(0L)
-        .enable(quantity)
-        .registerDate(registerDate)
-        .build());
-  }
-
-  /**
-   * 도서 삭제
-   * @return
-   */
-  public String deleteBook(String title, Long quantity){
     BookEntity bookEntity = new BookEntity();
+    Long nowTotal = 0L;
 
-    if(bookEntity.getTitle() == null){
-      throw new RuntimeException("존재하지 않는 책입니다");
+    if (bookEntity.getTitle() != null) {
+      nowTotal = bookEntity.getTotal();
+      System.out.println(nowTotal);
     }
-    Long total = bookEntity.getTotal();
 
-    if(total-quantity > 0){
-      bookRepository.save(BookEntity.builder()
-          .title(title)
-          .total(quantity).build());
-    }else{
-      bookRepository.delete(BookEntity.builder().build());
+    if (quantity + nowTotal > 4) { //동일한 책은 최대 4권까지 가능
+      return "최대 수량을 초과 했습니다.";
     }
-    return "삭제되었습니다";
+
+    Date registerDate = new Date();
+    bookRepository.save(
+        BookEntity.builder()
+            .title(title)
+            .author(author)
+            .picture(picture)
+            .information(information)
+            .total(quantity)
+            .borrow(0L)
+            .enable(quantity + nowTotal)
+            .registerDate(registerDate)
+            .build());
+    return "추가되었습니다";
   }
 
 }
