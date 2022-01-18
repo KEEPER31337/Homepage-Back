@@ -35,6 +35,8 @@ dependencies {
 
     compileOnly 'org.projectlombok:lombok'
 
+    testCompileOnly 'org.projectlombok:lombok'
+
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     runtimeOnly 'mysql:mysql-connector-java'
