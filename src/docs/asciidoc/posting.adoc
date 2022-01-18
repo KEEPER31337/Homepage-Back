@@ -1,0 +1,155 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+// 자동으로 생성된 snippet 설정하는 부분
+
+= KEEPER API 문서
+:icons: font
+// NOTE, TIP, WARNING, CAUTION, IMPORTANT 같은 경고구들 아이콘화 해줌
+:source-highlighter: highlight.js
+// source code 블럭에서 사용되는 highlighter 설정, 4개 정도 있던데 차이를 아직 잘 모르겠음.
+:toc: left
+// table of contents(toc) 왼쪽정렬하여 생성
+:toclevels: 3
+// default : 2 (==,  ===) 까지 toc에 보여줌.
+:sectlinks:
+// section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
+
+== API 목록
+
+http://localhost:8080/docs/keeper.html[API 목록으로 돌아가기]
+
+== 게시글 생성
+
+=== 요청
+
+==== Request
+include::{snippets}/post-create/http-request.adoc[]
+==== Request Parameters
+include::{snippets}/post-create/request-parameters.adoc[]
+==== Request Parts
+NOTE: Parts 부분 또한 Parameter로 넘겨주면 됩니다.
+include::{snippets}/post-create/request-parts.adoc[]
+
+=== 응답
+
+==== Response
+include::{snippets}/post-create/http-response.adoc[]
+==== Response Body
+include::{snippets}/post-create/response-body.adoc[]
+
+== 게시글 확인
+
+=== 요청
+
+==== Request
+include::{snippets}/post-getOne/http-request.adoc[]
+==== Request Path Parameters
+include::{snippets}/post-getOne/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+include::{snippets}/post-getOne/http-response.adoc[]
+==== Response Fields
+include::{snippets}/post-getOne/response-fields.adoc[]
+
+== 첨부파일 확인
+
+=== 요청
+
+==== Request
+include::{snippets}/post-getAttachList/http-request.adoc[]
+==== Request Path Parameters
+include::{snippets}/post-getAttachList/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+include::{snippets}/post-getAttachList/http-response.adoc[]
+==== Response Fields
+include::{snippets}/post-getAttachList/response-fields.adoc[]
+
+== 게시글 목록
+
+=== 요청
+
+==== Request
+include::{snippets}/post-getList/http-request.adoc[]
+==== Request Parameters
+include::{snippets}/post-getList/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+include::{snippets}/post-getList/http-response.adoc[]
+==== Response Fields
+include::{snippets}/post-getList/response-fields.adoc[]
+
+== 게시글 목록(최신 글)
+
+=== 요청
+
+==== Request
+include::{snippets}/post-getLatest/http-request.adoc[]
+==== Request Parameters
+include::{snippets}/post-getLatest/request-parameters.adoc[]
+=== 응답
+
+==== Response
+include::{snippets}/post-getLatest/http-response.adoc[]
+==== Response Fields
+include::{snippets}/post-getLatest/response-fields.adoc[]
+
+== 게시글 수정
+
+=== 요청
+
+==== Request
+include::{snippets}/post-modify/http-request.adoc[]
+==== Request Path Parameters
+include::{snippets}/post-modify/path-parameters.adoc[]
+==== Request Parameters
+include::{snippets}/post-modify/request-parameters.adoc[]
+==== Request Parts
+NOTE: Parts 부분 또한 Parameter로 넘겨주면 됩니다.
+include::{snippets}/post-modify/request-parts.adoc[]
+
+=== 응답
+
+==== Response
+include::{snippets}/post-modify/http-response.adoc[]
+==== Response Body
+include::{snippets}/post-modify/response-body.adoc[]
+
+== 게시글 삭제
+
+=== 요청
+
+==== Request
+include::{snippets}/post-delete/http-request.adoc[]
+==== Request Path Parameters
+include::{snippets}/post-delete/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+include::{snippets}/post-delete/http-response.adoc[]
+==== Response Body
+include::{snippets}/post-delete/response-body.adoc[]
+
+== 게시글 검색
+
+=== 요청
+
+==== Request
+include::{snippets}/post-search/http-request.adoc[]
+==== Request Parameters
+include::{snippets}/post-search/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+include::{snippets}/post-search/http-response.adoc[]
+==== Response Fields
+include::{snippets}/post-search/response-fields.adoc[]
