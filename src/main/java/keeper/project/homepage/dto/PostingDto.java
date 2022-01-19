@@ -2,6 +2,7 @@ package keeper.project.homepage.dto;
 
 import java.util.Date;
 import keeper.project.homepage.entity.CategoryEntity;
+import keeper.project.homepage.entity.MemberEntity;
 import keeper.project.homepage.entity.PostingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,13 +33,12 @@ public class PostingDto {
   private Integer isSecret;
   private String password;
 
-  //Member Entity는 추후 추가
-  public PostingEntity toEntity(CategoryEntity categoryEntity) {
+  public PostingEntity toEntity(CategoryEntity categoryEntity, MemberEntity memberEntity) {
 
     return PostingEntity.builder().title(title).content(content).visitCount(visitCount)
         .likeCount(likeCount).dislikeCount(dislikeCount).commentCount(commentCount)
         .registerTime(registerTime).updateTime(updateTime).ipAddress(ipAddress)
         .allowComment(allowComment).isNotice(isNotice).isSecret(isSecret).password(password)
-        .categoryId(categoryEntity).build();
+        .categoryId(categoryEntity).memberId(memberEntity).build();
   }
 }

@@ -1,6 +1,7 @@
 package keeper.project.homepage.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
@@ -9,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,7 +37,11 @@ public class PostingEntity {
   @ManyToOne(targetEntity = MemberEntity.class, fetch = FetchType.LAZY)
   // 한명의 유저는 여러개의 게시글 작성, 게시글 작성은 한명이므로 1 : N 관계
   @JoinColumn(name = "member_id") // foreign key 매핑
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private MemberEntity memberId;
+  // DB 테이블과 별도의 변수 - Transient Annotation
+  @Transient
+  private String writer;
   @Column
   private Integer visitCount;
   @Column
@@ -61,6 +68,10 @@ public class PostingEntity {
   @JoinColumn(name = "category_id")
   @JsonIgnore
   private CategoryEntity categoryId;
+//  @OneToOne(targetEntity = ThumbnailEntity.class, fetch = FetchType.LAZY)
+//  @JoinColumn(name = "thumbnail_id")
+//  @JsonIgnore
+//  private ThumbnailEntity thumbnailId;
 
   public void updateInfo(String title, String content, Date updateTime, String ipAddress,
       Integer allowComment, Integer isNotice, Integer isSecret) {
@@ -74,6 +85,10 @@ public class PostingEntity {
   }
 
   public void makeAnonymous() {
-    this.memberId = null;
+    this.writer = null;
+  }
+
+  public void setWriter(String writer) {
+    this.writer = writer;
   }
 }
