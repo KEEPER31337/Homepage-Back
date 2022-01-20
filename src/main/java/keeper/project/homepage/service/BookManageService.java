@@ -10,6 +10,7 @@ public class BookManageService {
 
   private final BookRepository bookRepository;
   private final BookEntity bookEntity;
+  private static final Integer MAXIMUM_ALLOWD_BOOK_NUMBER = 4;
 
   @Autowired
   public BookManageService(BookRepository bookRepository) {
@@ -27,7 +28,7 @@ public class BookManageService {
       nowTotal = bookRepository.findByTitle(title).get().getTotal();
     }
 
-    if (quantity + nowTotal > 4) { //동일한 책은 최대 4권까지 가능
+    if (quantity + nowTotal > MAXIMUM_ALLOWD_BOOK_NUMBER) {
       return false;
     }
 
