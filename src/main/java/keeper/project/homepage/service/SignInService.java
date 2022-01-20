@@ -4,17 +4,18 @@ import keeper.project.homepage.config.security.JwtTokenProvider;
 import keeper.project.homepage.entity.MemberEntity;
 import keeper.project.homepage.exception.CustomLoginIdSigninFailedException;
 import keeper.project.homepage.repository.MemberRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@RequiredArgsConstructor
 @Service
 public class SignInService {
 
-  MemberRepository memberRepository;
-  PasswordEncoder passwordEncoder;
-  CustomPasswordService customPasswordService;
-  JwtTokenProvider jwtTokenProvider;
-
+  private final MemberRepository memberRepository;
+  private final PasswordEncoder passwordEncoder;
+  private final CustomPasswordService customPasswordService;
+  private final JwtTokenProvider jwtTokenProvider;
 
   public MemberEntity login(String loginId, String password) {
     MemberEntity memberEntity = memberRepository.findByLoginId(loginId)
