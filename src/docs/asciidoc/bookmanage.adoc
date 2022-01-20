@@ -15,14 +15,30 @@ endif::[]
 :sectlinks:
 // section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
 
-== *회원가입*
+== API 목록
 
-http://localhost:8080/docs/signup.html[API 문서 보기]
+http://localhost:8080/docs/keeper.html[API 목록으로 돌아가기]
 
-== *로그인*
+== *도서추가*
 
-http://localhost:8080/docs/signin.html[API 문서 보기]
+=== 요청
 
-== *도서관리*
+include::{snippets}/add-book/http-request.adoc[]
+include::{snippets}/add-book/request-parameters.adoc[]
 
-http://localhost:8080/docs/bookmanage.html[API 문서 보기]
+=== 응답
+
+include::{snippets}/add-book/http-response.adoc[]
+include::{snippets}/add-book/response-fields.adoc[]
+
+== *도서삭제*
+
+=== 요청
+
+include::{snippets}/delete-book/http-request.adoc[]
+include::{snippets}/delete-book/request-parameters.adoc[]
+
+=== 응답
+
+include::{snippets}/delete-book/http-response.adoc[]
+include::{snippets}/delete-book/response-fields.adoc[]
