@@ -36,7 +36,7 @@ public class BookController {
       @RequestParam @Nullable String information,
       @RequestParam Long quantity) {
 
-    Long total = bookManageService.isCanAdd(title, quantity);
+    Long total = bookManageService.isCanAdd(title, author, quantity);
 
     if (total != -1L) {
       bookRepository.save(
@@ -68,22 +68,7 @@ public class BookController {
       } else if (numOfBooks - quantity < 0) {
         return responseService.getFailResult(-1, "삭제 가능한 수량보다 많습니다.");
       } else {
-        String author = bookRepository.findByTitle(title).get().getAuthor();
-        String picture = bookRepository.findByTitle(title).get().getPicture();
-        String information = bookRepository.findByTitle(title).get().getInformation();
-        Long borrow = bookRepository.findByTitle(title).get().getBorrow();
-
-        bookRepository.save(
-            BookEntity.builder()
-                .title(title)
-                .author(author)
-                .picture(picture)
-                .information(information)
-                .total(quantity)
-                .borrow(borrow)
-                .enable(quantity)
-                .registerDate(new Date())
-                .build());
+        bookManageService.updateDeleteInformation(title, quantity);
       }
       return responseService.getSuccessResult();
     }

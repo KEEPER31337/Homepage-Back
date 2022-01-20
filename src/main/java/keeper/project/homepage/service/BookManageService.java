@@ -1,5 +1,6 @@
 package keeper.project.homepage.service;
 
+import java.util.Date;
 import keeper.project.homepage.entity.BookEntity;
 import keeper.project.homepage.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +22,7 @@ public class BookManageService {
   /**
    * 도서 최대 권수 체크
    */
-  public Long isCanAdd(String title, Long quantity) {
+  public Long isCanAdd(String title, String author, Long quantity) {
 
     Long nowTotal = 0L;
     if (bookRepository.findByTitle(title).isPresent()) {
@@ -44,6 +45,25 @@ public class BookManageService {
       return false;
     }
     return true;
+  }
+
+  public void updateDeleteInformation(String title, Long quantity){
+    String author = bookRepository.findByTitle(title).get().getAuthor();
+    String picture = bookRepository.findByTitle(title).get().getPicture();
+    String information = bookRepository.findByTitle(title).get().getInformation();
+    Long borrow = bookRepository.findByTitle(title).get().getBorrow();
+
+    bookRepository.save(
+        BookEntity.builder()
+            .title(title)
+            .author(author)
+            .picture(picture)
+            .information(information)
+            .total(quantity)
+            .borrow(borrow)
+            .enable(quantity)
+            .registerDate(new Date())
+            .build());
   }
 
 }
