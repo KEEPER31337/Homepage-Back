@@ -1,15 +1,20 @@
 package keeper.project.homepage.service;
 
+import javax.transaction.Transactional;
 import keeper.project.homepage.config.security.JwtTokenProvider;
 import keeper.project.homepage.entity.MemberEntity;
 import keeper.project.homepage.exception.CustomLoginIdSigninFailedException;
 import keeper.project.homepage.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
+@Log4j2
 public class SignInService {
 
   private final MemberRepository memberRepository;
@@ -36,5 +41,38 @@ public class SignInService {
   public String createJwtToken(MemberEntity memberEntity) {
     return jwtTokenProvider.createToken(String.valueOf(memberEntity.getId()),
         memberEntity.getRoles());
+  }
+
+  @Transactional
+  public void changePassword(String newPassword) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    Integer id = getIdFromAuth(authentication);
+    MemberEntity memberEntity = memberRepository.findById(id)
+        .orElseThrow(CustomLoginIdSigninFailedException::new);
+    memberEntity.updateInfo(
+        memberEntity.getLoginId(),
+        memberEntity.getEmailAddress(),
+        passwordEncoder.encode(newPassword), // password Change
+        memberEntity.getRealName(),
+        memberEntity.getNickName(),
+        memberEntity.getBirthday(),
+        memberEntity.getStudentId(),
+        memberEntity.getMemberType(),
+        memberEntity.getMemberRank(),
+        memberEntity.getPoint(),
+        memberEntity.getLevel(),
+        memberEntity.getRoles()
+    );
+    memberRepository.save(memberEntity);
+  }
+
+  private Integer getIdFromAuth(Authentication authentication) {
+    int id;
+    try {
+      id = Integer.parseInt(authentication.getName());
+    } catch (NumberFormatException e) {
+      throw new CustomLoginIdSigninFailedException("잘못된 JWT 토큰입니다.");
+    }
+    return id;
   }
 }
