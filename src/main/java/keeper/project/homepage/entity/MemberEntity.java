@@ -75,8 +75,14 @@ public class MemberEntity implements UserDetails {
 
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   @Override
+  public String getPassword() {
+    return password;
+  }
+
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+  @Override
   public String getUsername() {
-    return this.loginId;
+    return String.valueOf(this.id);
   }
 
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
