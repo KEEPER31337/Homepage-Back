@@ -167,7 +167,7 @@ public class BookControllerTest {
   public void addNewBookFailedOverMax() throws Exception {
     Long bookQuantity3 = 5L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("title", bookTitle+epochTime);
+    params.add("title", bookTitle + epochTime);
     params.add("author", bookAuthor);
     params.add("quantity", String.valueOf(bookQuantity3));
 
@@ -200,8 +200,10 @@ public class BookControllerTest {
             ),
             responseFields(
                 fieldWithPath("success").description("책 삭제 완료 시 true, 실패 시 false 값을 보냅니다."),
-                fieldWithPath("code").description("책 삭제 완료 시 0, 최대 수량 초과로 실패 시 -1, 없는 책으로 실패 시 -2 코드를 보냅니다."),
-                fieldWithPath("msg").description("책 삭제 실패가 수량 초과 일 때 수량 초과 메시지를, 없는 책일 때 책이 없다는 메시지를 발생시킵니다.")
+                fieldWithPath("code").description(
+                    "책 삭제 완료 시 0, 최대 수량 초과로 실패 시 -1, 없는 책으로 실패 시 -2 코드를 보냅니다."),
+                fieldWithPath("msg").description(
+                    "책 삭제 실패가 수량 초과 일 때 수량 초과 메시지를, 없는 책일 때 책이 없다는 메시지를 발생시킵니다.")
             )));
   }
 
@@ -226,7 +228,7 @@ public class BookControllerTest {
   public void deleteBookFailedNoExist() throws Exception {
     Long bookQuantity3 = 1L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("title", bookTitle+epochTime);
+    params.add("title", bookTitle + epochTime);
     params.add("author", bookAuthor);
     params.add("quantity", String.valueOf(bookQuantity3));
 

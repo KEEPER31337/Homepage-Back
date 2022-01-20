@@ -33,7 +33,7 @@ public class BookManageService {
       return -1L;
     }
 
-    return nowTotal+quantity;
+    return nowTotal + quantity;
   }
 
   /**
@@ -47,11 +47,13 @@ public class BookManageService {
     return true;
   }
 
-  public void updateDeleteInformation(String title, Long quantity){
+  public void updateDeleteInformation(String title, Long quantity) {
     String author = bookRepository.findByTitle(title).get().getAuthor();
     String picture = bookRepository.findByTitle(title).get().getPicture();
     String information = bookRepository.findByTitle(title).get().getInformation();
     Long borrow = bookRepository.findByTitle(title).get().getBorrow();
+    Long total = bookRepository.findByTitle(title).get().getTotal();
+    Long enable = bookRepository.findByTitle(title).get().getEnable();
 
     bookRepository.save(
         BookEntity.builder()
@@ -59,9 +61,9 @@ public class BookManageService {
             .author(author)
             .picture(picture)
             .information(information)
-            .total(quantity)
+            .total(total - quantity)
             .borrow(borrow)
-            .enable(quantity)
+            .enable(enable - quantity)
             .registerDate(new Date())
             .build());
   }
