@@ -21,7 +21,7 @@ public class BookManageService {
   /**
    * 도서 최대 권수 체크
    */
-  public boolean isNotMax(String title, Long quantity) {
+  public Long isCanAdd(String title, Long quantity) {
 
     Long nowTotal = 0L;
     if (bookRepository.findByTitle(title).isPresent()) {
@@ -29,10 +29,10 @@ public class BookManageService {
     }
 
     if (quantity + nowTotal > MAXIMUM_ALLOWD_BOOK_NUMBER) {
-      return false;
+      return -1L;
     }
 
-    return true;
+    return nowTotal+quantity;
   }
 
   /**

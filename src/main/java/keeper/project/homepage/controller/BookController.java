@@ -36,20 +36,18 @@ public class BookController {
       @RequestParam @Nullable String information,
       @RequestParam Long quantity) {
 
-    if (bookManageService.isNotMax(title, quantity)) {
-      Long total = 0L;
-      if (bookRepository.findByTitle(title).isPresent()) {
-        total = bookRepository.findByTitle(title).get().getTotal();
-      }
+    Long total = bookManageService.isCanAdd(title, quantity);
+
+    if (total != -1L) {
       bookRepository.save(
           BookEntity.builder()
               .title(title)
               .author(author)
               .picture(picture)
               .information(information)
-              .total(total + quantity)
+              .total(total)
               .borrow(0L)
-              .enable(total + quantity)
+              .enable(total)
               .registerDate(new Date())
               .build());
       return responseService.getSuccessResult();
