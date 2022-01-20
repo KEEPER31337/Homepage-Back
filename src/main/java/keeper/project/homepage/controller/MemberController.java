@@ -39,9 +39,9 @@ public class MemberController {
   public SingleResult<MemberEntity> findMember() {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    String id = authentication.getName();
+    Integer id = Integer.valueOf(authentication.getName());
     // 결과데이터가 단일건인경우 getSingleResult를 이용해서 결과를 출력한다.
     return responseService.getSingleResult(
-        memberRepository.findByLoginId(id).orElseThrow(CustomMemberNotFoundException::new));
+        memberRepository.findById(id).orElseThrow(CustomMemberNotFoundException::new));
   }
 }
