@@ -53,20 +53,21 @@ public class BookController {
               .registerDate(new Date())
               .build());
       return responseService.getSuccessResult();
-    } else {
-      return responseService.getFailResult(-1, "수량 초과입니다.");
     }
+    return responseService.getFailResult(-1, "수량 초과입니다.");
   }
 
   @PostMapping(value = "/deletebook")
   @ResponseBody
   public CommonResult delete(@RequestParam String title, @RequestParam Long quantity) {
 
+    Long numOfBooks = bookRepository.findByTitle(title).get().getTotal();
+
     if (bookManageService.isCanDelete(title, quantity)) {
-      if (bookRepository.findByTitle(title).get().getTotal() - quantity == 0) {
+      if (numOfBooks - quantity == 0) {
         BookEntity bookEntity = bookRepository.findByTitle(title).get();
         bookRepository.delete(bookEntity);
-      } else if (bookRepository.findByTitle(title).get().getTotal() - quantity < 0) {
+      } else if (numOfBooks - quantity < 0) {
         return responseService.getFailResult(-1, "삭제 가능한 수량보다 많습니다.");
       } else {
         String author = bookRepository.findByTitle(title).get().getAuthor();
@@ -87,8 +88,9 @@ public class BookController {
                 .build());
       }
       return responseService.getSuccessResult();
-    } else {
-      return responseService.getFailResult(-2, "책이 존재하지 않습니다.");
     }
+
+    return responseService.getFailResult(-2, "책이 존재하지 않습니다.");
+
   }
 }
