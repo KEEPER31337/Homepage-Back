@@ -1,4 +1,4 @@
-package keeper.project.homepage.entity;
+package keeper.project.homepage.entity.member;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
@@ -19,11 +19,14 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import keeper.project.homepage.entity.ThumbnailEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -68,11 +71,13 @@ public class MemberEntity implements UserDetails, Serializable {
 
   @ManyToOne
   @JoinColumn(name = "member_type_id")
+  @NotFound(action = NotFoundAction.IGNORE)
   // DEFAULT 1
   private MemberTypeEntity memberType;
 
   @ManyToOne
   @JoinColumn(name = "member_rank_id")
+  @NotFound(action = NotFoundAction.IGNORE)
   // DEFAULT 1
   private MemberRankEntity memberRank;
 

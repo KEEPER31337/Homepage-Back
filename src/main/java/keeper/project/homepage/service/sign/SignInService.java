@@ -1,10 +1,10 @@
-package keeper.project.homepage.service;
+package keeper.project.homepage.service.sign;
 
 import javax.transaction.Transactional;
 import keeper.project.homepage.config.security.JwtTokenProvider;
-import keeper.project.homepage.entity.MemberEntity;
+import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.CustomLoginIdSigninFailedException;
-import keeper.project.homepage.repository.MemberRepository;
+import keeper.project.homepage.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;

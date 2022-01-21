@@ -1,9 +1,8 @@
-package keeper.project.homepage.repository;
+package keeper.project.homepage.repository.member;
 
 import java.util.Optional;
-import keeper.project.homepage.entity.MemberEntity;
+import keeper.project.homepage.entity.member.MemberEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
 
 public interface MemberRepository extends JpaRepository<MemberEntity, Integer> {
 

@@ -1,16 +1,18 @@
 package keeper.project.homepage.controller.sign;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.dto.CommonResult;
 import keeper.project.homepage.dto.SingleResult;
-import keeper.project.homepage.entity.MemberEntity;
-import keeper.project.homepage.repository.MemberRepository;
-import keeper.project.homepage.service.DuplicateCheckService;
+import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.ThumbnailEntity;
+import keeper.project.homepage.repository.member.MemberRankRepository;
+import keeper.project.homepage.repository.member.MemberRepository;
+import keeper.project.homepage.repository.member.MemberTypeRepository;
+import keeper.project.homepage.service.sign.DuplicateCheckService;
 import keeper.project.homepage.service.ResponseService;
+import keeper.project.homepage.service.sign.SignUpService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -29,10 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/v1/signup")
 public class SignUpController {
 
-  private final MemberRepository memberRepository;
   private final DuplicateCheckService duplicateCheckService;
   private final ResponseService responseService;
-  private final PasswordEncoder passwordEncoder;
+  private final SignUpService signUpService;
 
   @PostMapping(value = "")
   public CommonResult signUp(
@@ -45,16 +46,7 @@ public class SignUpController {
       @RequestParam String studentId
   ) {
 
-    memberRepository.save(MemberEntity.builder()
-        .loginId(loginId)
-        .emailAddress(emailAddress)
-        .password(passwordEncoder.encode(password))
-        .realName(realName)
-        .nickName(nickName)
-        .birthday(birthday)
-        .studentId(studentId)
-        .roles(new ArrayList<String>(List.of("ROLE_USER")))
-        .build());
+    signUpService.signUp(loginId, emailAddress, password, realName, nickName, birthday, studentId);
     return responseService.getSuccessResult();
   }
 
