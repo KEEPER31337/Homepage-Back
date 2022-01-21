@@ -3,13 +3,13 @@ version: '3.5'
 services:
   app:
     container_name: app
-    image: openjdk:17
+    image: keeper:0.1
     platform: linux/amd64
     volumes:
       - ../:/home/keeper
     ports:
       - 8080:8080
-    tty: true
+    entrypoint: "/entrypoint.sh"
 
   db:
     container_name: db
