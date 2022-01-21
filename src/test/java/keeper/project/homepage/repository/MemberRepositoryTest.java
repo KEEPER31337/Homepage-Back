@@ -37,6 +37,7 @@ public class MemberRepositoryTest {
   public void whenFindByUid_thenReturnUser() {
     String loginId = "hyeonmomo";
     String realName = "JeongHyeonMo";
+    String nickName = "JeongHyeonMo";
     String emailAddress = "gusah@naver.com";
     String studentId = "201724579";
     // given
@@ -44,6 +45,7 @@ public class MemberRepositoryTest {
         .loginId(loginId)
         .password(passwordEncoder.encode("1234"))
         .realName(realName)
+        .nickName(nickName)
         .emailAddress(emailAddress)
         .studentId(studentId)
         .roles(Collections.singletonList("ROLE_USER"))

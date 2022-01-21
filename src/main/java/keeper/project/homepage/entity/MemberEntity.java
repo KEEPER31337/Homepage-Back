@@ -43,7 +43,7 @@ public class MemberEntity implements UserDetails {
   private String password;
   @Column(name = "real_name", length = 40, nullable = false)
   private String realName;
-  @Column(name = "nick_name", length = 40)
+  @Column(name = "nick_name", length = 40, nullable = false)
   private String nickName;
   @Column(name = "birthday")
   private Date birthday;

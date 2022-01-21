@@ -37,7 +37,7 @@ public class SignUpController {
       @RequestParam String emailAddress,
       @RequestParam String password,
       @RequestParam String realName,
-      @RequestParam @Nullable String nickName,
+      @RequestParam String nickName,
       @RequestParam @DateTimeFormat(pattern = "yyyyMMdd") @Nullable Date birthday,
       @RequestParam String studentId
   ) {
