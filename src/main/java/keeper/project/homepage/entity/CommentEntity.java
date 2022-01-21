@@ -50,14 +50,14 @@ public class CommentEntity {
   @NotNull
   @Column
   private Long parentId;
-  //  @ManyToOne(targetEntity = MemberEntity.class, fetch = FetchType.LAZY)
-//  @JoinColumn(name = "member_id")
-//  @NotNull
-  @Column
-  private Integer memberId;
+  @ManyToOne(targetEntity = MemberEntity.class, fetch = FetchType.LAZY)
+  @JoinColumn(name = "member_id")
+  @NotNull
+//  @Column
+  private MemberEntity memberId;
+  @ManyToOne(targetEntity = PostingEntity.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "posting_id")
   @NotNull
-  @ManyToOne(targetEntity = PostingEntity.class, fetch = FetchType.LAZY)
   private PostingEntity postingId;
 
   public void increaseLikeCount() {

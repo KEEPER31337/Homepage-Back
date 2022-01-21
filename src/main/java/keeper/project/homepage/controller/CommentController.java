@@ -9,7 +9,9 @@ import keeper.project.homepage.dto.CommonResult;
 import keeper.project.homepage.dto.ListResult;
 import keeper.project.homepage.dto.SingleResult;
 import keeper.project.homepage.entity.CommentEntity;
+import keeper.project.homepage.entity.MemberEntity;
 import keeper.project.homepage.entity.PostingEntity;
+import keeper.project.homepage.repository.MemberRepository;
 import keeper.project.homepage.repository.PostingRepository;
 import keeper.project.homepage.service.CommentService;
 import keeper.project.homepage.service.ResponseService;
@@ -50,6 +52,9 @@ public class CommentController {
   @Autowired
   private PostingRepository postingRepository;
 
+  @Autowired
+  private MemberRepository memberRepository;
+
   private final ResponseService responseService;
 
   @PostMapping(value = "/{postId}", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -61,9 +66,13 @@ public class CommentController {
     if (!postingEntity.isPresent()) {
       return responseService.getSingleResult("postingId not found");
     }
+    Optional<MemberEntity> memberEntity = memberRepository.findById(postId);
+    if (!memberEntity.isPresent()) {
+      return responseService.getSingleResult("memberId not found");
+    }
     commentDto.setRegisterTime(LocalDate.now());
     commentDto.setUpdateTime(LocalDate.now());
-    commentService.save(commentDto.toEntity(postingEntity.get()));
+    commentService.save(commentDto.toEntity(postingEntity.get(), memberEntity.get()));
 
     return responseService.getSingleResult("success");
   }
@@ -82,7 +91,7 @@ public class CommentController {
     page.getContent().forEach(content -> commentDtos.add(
         new CommentDto(content.getContent(), content.getRegisterTime(), content.getUpdateTime(),
             content.getIpAddress(), content.getLikeCount(), content.getDislikeCount(),
-            content.getParentId(), content.getMemberId(), postId.intValue())));
+            content.getParentId(), content.getMemberId().getId(), postId)));
     return responseService.getListResult(commentDtos);
   }
 
@@ -117,7 +126,7 @@ public class CommentController {
     commentDto.setIpAddress(original.getIpAddress());
 
     CommentEntity result = commentService.updateById(commentId,
-        commentDto.toEntity(original.getPostingId()));
+        commentDto.toEntity(original.getPostingId(), original.getMemberId()));
 
     return result.getId().equals(commentId) ? responseService.getSingleResult("success")
         : responseService.getSingleResult("fail to update");
