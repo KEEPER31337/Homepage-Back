@@ -91,22 +91,8 @@ public class MemberEntity implements UserDetails, Serializable {
   @Builder.Default
   private List<String> roles = new ArrayList<>();
 
-  public void updateInfo(String loginId, String emailAddress, String password,
-      String realName, String nickName, Date birthday, String studentId,
-      MemberTypeEntity memberTypeId, MemberRankEntity memberRankId, int point, int level,
-      List<String> roles) {
-    this.loginId = loginId;
-    this.emailAddress = emailAddress;
-    this.password = password;
-    this.realName = realName;
-    this.nickName = nickName;
-    this.birthday = birthday;
-    this.studentId = studentId;
-    this.memberType = memberTypeId;
-    this.memberRank = memberRankId;
-    this.point = point;
-    this.level = level;
-    this.roles = roles;
+  public void changePassword(String newPassword) {
+    this.password = newPassword;
   }
 
   @OneToMany(mappedBy = "memberEntity")

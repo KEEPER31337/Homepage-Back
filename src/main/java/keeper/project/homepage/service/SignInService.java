@@ -33,9 +33,9 @@ public class SignInService {
   }
 
   private boolean passwordMatches(String password, String hashedPassword) {
-    return passwordEncoder.matches(password, hashedPassword) ||
-        customPasswordService.checkPasswordWithPBKDF2SHA256(password, hashedPassword) ||
-        customPasswordService.checkPasswordWithMD5(password, hashedPassword);
+    return passwordEncoder.matches(password, hashedPassword)
+        || customPasswordService.checkPasswordWithPBKDF2SHA256(password, hashedPassword)
+        || customPasswordService.checkPasswordWithMD5(password, hashedPassword);
   }
 
   public String createJwtToken(MemberEntity memberEntity) {
@@ -49,20 +49,7 @@ public class SignInService {
     Integer id = getIdFromAuth(authentication);
     MemberEntity memberEntity = memberRepository.findById(id)
         .orElseThrow(CustomLoginIdSigninFailedException::new);
-    memberEntity.updateInfo(
-        memberEntity.getLoginId(),
-        memberEntity.getEmailAddress(),
-        passwordEncoder.encode(newPassword), // password Change
-        memberEntity.getRealName(),
-        memberEntity.getNickName(),
-        memberEntity.getBirthday(),
-        memberEntity.getStudentId(),
-        memberEntity.getMemberType(),
-        memberEntity.getMemberRank(),
-        memberEntity.getPoint(),
-        memberEntity.getLevel(),
-        memberEntity.getRoles()
-    );
+    memberEntity.changePassword(passwordEncoder.encode(newPassword));
     memberRepository.save(memberEntity);
   }
 

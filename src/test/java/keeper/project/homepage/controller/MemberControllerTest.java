@@ -8,7 +8,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import keeper.project.homepage.config.security.JwtTokenProvider;
 import keeper.project.homepage.entity.MemberEntity;
 import keeper.project.homepage.repository.MemberRepository;
@@ -85,7 +87,7 @@ public class MemberControllerTest {
             .realName(realName)
             .emailAddress(emailAddress)
             .studentId(studentId)
-            .roles(Collections.singletonList("ROLE_USER"))
+            .roles(new ArrayList<String>(List.of("ROLE_USER")))
             .build());
 
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -111,7 +113,7 @@ public class MemberControllerTest {
             .realName(adminRealName)
             .emailAddress(adminEmailAddress)
             .studentId(adminStudentId)
-            .roles(Collections.singletonList("ROLE_ADMIN"))
+            .roles(new ArrayList<String>(List.of("ROLE_ADMIN")))
             .build());
 
     MultiValueMap<String, String> adminParams = new LinkedMultiValueMap<>();

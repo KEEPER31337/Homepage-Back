@@ -1,7 +1,10 @@
 package keeper.project.homepage.controller.sign;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import keeper.project.homepage.dto.CommonResult;
 import keeper.project.homepage.dto.SingleResult;
 import keeper.project.homepage.entity.MemberEntity;
@@ -50,7 +53,7 @@ public class SignUpController {
         .nickName(nickName)
         .birthday(birthday)
         .studentId(studentId)
-        .roles(Collections.singletonList("ROLE_USER"))
+        .roles(new ArrayList<String>(List.of("ROLE_USER")))
         .build());
     return responseService.getSuccessResult();
   }
