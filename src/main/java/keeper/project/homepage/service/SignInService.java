@@ -39,7 +39,7 @@ public class SignInService {
   }
 
   public String createJwtToken(MemberEntity memberEntity) {
-    return jwtTokenProvider.createToken(String.valueOf(memberEntity.getId()),
+    return "Bearer " + jwtTokenProvider.createToken(String.valueOf(memberEntity.getId()),
         memberEntity.getRoles());
   }
 

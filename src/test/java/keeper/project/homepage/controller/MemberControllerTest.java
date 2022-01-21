@@ -55,7 +55,6 @@ public class MemberControllerTest {
 
   private String userToken;
   private String adminToken;
-  private final String AuthorizationType = "Bearer";
 
   final private String loginId = "hyeonmomo";
   final private String password = "keeper";
@@ -103,7 +102,7 @@ public class MemberControllerTest {
 
     String resultString = result.getResponse().getContentAsString();
     JacksonJsonParser jsonParser = new JacksonJsonParser();
-    userToken = AuthorizationType + " " + jsonParser.parseMap(resultString).get("data").toString();
+    userToken = jsonParser.parseMap(resultString).get("data").toString();
 
     memberRepository.save(
         MemberEntity.builder()
@@ -130,7 +129,7 @@ public class MemberControllerTest {
     String adminResultString = adminResult.getResponse().getContentAsString();
     JacksonJsonParser jsonParser2 = new JacksonJsonParser();
     adminToken =
-        AuthorizationType + " " + jsonParser2.parseMap(adminResultString).get("data").toString();
+        jsonParser2.parseMap(adminResultString).get("data").toString();
   }
 
   @Test
