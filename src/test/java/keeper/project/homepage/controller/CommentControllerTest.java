@@ -15,12 +15,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Date;
 import keeper.project.homepage.entity.CategoryEntity;
 import keeper.project.homepage.entity.CommentEntity;
+import keeper.project.homepage.entity.MemberEntity;
 import keeper.project.homepage.entity.PostingEntity;
 import keeper.project.homepage.repository.CategoryRepository;
 import keeper.project.homepage.repository.CommentRepository;
+import keeper.project.homepage.repository.MemberRepository;
 import keeper.project.homepage.repository.PostingRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -59,24 +62,34 @@ public class CommentControllerTest {
   @Autowired
   private WebApplicationContext ctx;
 
-  private CommentEntity commentEntity;
-
   @Autowired
   private CategoryRepository categoryRepository;
 
   @Autowired
   private PostingRepository postingRepository;
 
-  private String content = "댓글 내용";
+  @Autowired
+  private MemberRepository memberRepository;
+
   private LocalDate registerTime = LocalDate.now();
   private LocalDate updateTime = LocalDate.now();
   private String ipAddress = "127.0.0.1";
   private Integer likeCount = 1000;
   private Integer dislikeCount = 100;
-  private Integer memberId = 10;
+
+  private CommentEntity commentEntity;
+  private MemberEntity memberEntity;
 
   @BeforeEach
   public void setUp(RestDocumentationContextProvider restDocumentation) throws Exception {
+    memberEntity = memberRepository.save(
+        MemberEntity.builder()
+            .loginId("로그인")
+            .password("비밀번호")
+            .realName("이름")
+            .emailAddress("이메일")
+            .studentId("학번")
+            .roles(Collections.singletonList("ROLE_USER")).build());
 
     // mockMvc의 한글 사용을 위한 코드
     this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
@@ -89,7 +102,9 @@ public class CommentControllerTest {
         .alwaysDo(print())
         .build();
 
-    CategoryEntity categoryEntity = categoryRepository.findById(7L).get();
+    CategoryEntity categoryEntity = categoryRepository.save(
+        CategoryEntity.builder().name("test category").build());
+
     PostingEntity posting = postingRepository.save(PostingEntity.builder()
         .title("posting 제목")
         .content("posting 내용")
@@ -105,35 +120,46 @@ public class CommentControllerTest {
         .registerTime(new Date())
         .updateTime(new Date())
         .password("asdsdf")
+        .memberId(memberEntity)
         .build());
-    Long commentParentId = commentRepository.findAll().get(0).getParentId();
 
-    commentEntity = CommentEntity.builder()
-        .content(content)
+    CommentEntity parentComment = commentRepository.save(CommentEntity.builder()
+        .content("부모 댓글 내용")
         .registerTime(registerTime)
         .updateTime(updateTime)
         .ipAddress(ipAddress)
         .likeCount(likeCount)
         .dislikeCount(dislikeCount)
-        .parentId(commentParentId)
-//        .memberId(memberId)
+        .parentId(0L)
+        .memberId(memberEntity)
         .postingId(posting)
-        .build();
+        .build());
 
-    commentRepository.save(commentEntity);
+    commentEntity = commentRepository.save(CommentEntity.builder()
+        .content("댓글 내용")
+        .registerTime(registerTime)
+        .updateTime(updateTime)
+        .ipAddress(ipAddress)
+        .likeCount(likeCount)
+        .dislikeCount(dislikeCount)
+        .parentId(parentComment.getId())
+        .memberId(memberEntity)
+        .postingId(posting)
+        .build());
   }
 
   @Test
   @DisplayName("댓글 생성")
   public void commentCreateTest() throws Exception {
     Long commentParentId = commentRepository.findAll().get(0).getParentId();
+    Long memberId = memberEntity.getId();
     String content = "{\n"
         + "    \"content\": \"SDFASFASG\",\n"
         + "    \"ipAddress\": \"672.523.937.636\",\n"
         + "    \"likeCount\": 9,\n"
         + "    \"dislikeCount\": 0,\n"
         + "    \"parentId\": " + commentParentId + ",\n"
-        + "    \"memberId\": 1\n"
+        + "    \"memberId\": " + memberId + "\n"
         + "}";
     Long postId = postingRepository.findAll().get(0).getId();
 
@@ -197,8 +223,6 @@ public class CommentControllerTest {
                 fieldWithPath("list[].memberId").description("댓글 작성자의 member id"),
                 fieldWithPath("list[].postingId").description("댓글이 작성된 게시글의 id"))
         ));
-
-//    LOGGER.info(mvcResult);
   }
 
   @Test

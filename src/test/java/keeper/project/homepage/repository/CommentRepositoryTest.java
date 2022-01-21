@@ -1,11 +1,13 @@
 package keeper.project.homepage.repository;
 
+import java.lang.reflect.Member;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 import keeper.project.homepage.entity.CategoryEntity;
 import keeper.project.homepage.entity.CommentEntity;
+import keeper.project.homepage.entity.MemberEntity;
 import keeper.project.homepage.entity.PostingEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -33,7 +35,9 @@ public class CommentRepositoryTest {
   @Autowired
   private PostingRepository postingRepository;
 
-  private String content = "댓글 내용";
+  @Autowired
+  private MemberRepository memberRepository;
+
   private LocalDate registerTime = LocalDate.now();
   private LocalDate updateTime = LocalDate.now();
   private String ipAddress = "127.0.0.1";
@@ -42,10 +46,21 @@ public class CommentRepositoryTest {
 //  private Integer memberId = 10;
 
   private CommentEntity commentEntity;
+  private MemberEntity memberEntity;
 
   @BeforeEach
   public void setup() {
-    CategoryEntity categoryEntity = categoryRepository.findById(7L).get();
+    memberEntity = memberRepository.save(MemberEntity.builder()
+        .loginId("로그인")
+        .password("비밀번호")
+        .realName("이름")
+        .emailAddress("이메일")
+        .studentId("학번")
+        .roles(Collections.singletonList("ROLE_USER")).build());
+
+    CategoryEntity categoryEntity = categoryRepository.save(
+        CategoryEntity.builder().name("test category").build());
+
     PostingEntity posting = postingRepository.save(PostingEntity.builder()
         .title("posting 제목")
         .content("posting 내용")
@@ -60,34 +75,56 @@ public class CommentRepositoryTest {
         .visitCount(0)
         .registerTime(new Date())
         .updateTime(new Date())
+        .memberId(memberEntity)
         .password("asdsdf")
         .build());
 
-    Long commentParentId = commentRepository.findAll().get(0).getParentId();
-    commentEntity = CommentEntity.builder()
-        .content(content)
+    CommentEntity parentComment = commentRepository.save(CommentEntity.builder()
+        .content("부모 댓글 내용")
         .registerTime(registerTime)
         .updateTime(updateTime)
         .ipAddress(ipAddress)
         .likeCount(likeCount)
         .dislikeCount(dislikeCount)
-        .parentId(commentParentId)
-//        .memberId(memberId)
+        .parentId(0L)
+        .memberId(memberEntity)
         .postingId(posting)
-        .build();
+        .build());
+
+    commentEntity = commentRepository.save(CommentEntity.builder()
+        .content("댓글 내용")
+        .registerTime(registerTime)
+        .updateTime(updateTime)
+        .ipAddress(ipAddress)
+        .likeCount(likeCount)
+        .dislikeCount(dislikeCount)
+        .parentId(parentComment.getId())
+        .memberId(memberEntity)
+        .postingId(posting)
+        .build());
 
   }
 
   @Test
   public void createTest() {
-    commentRepository.save(commentEntity);
+    commentRepository.save(CommentEntity.builder()
+        .content("댓글 저장")
+        .registerTime(registerTime)
+        .updateTime(updateTime)
+        .ipAddress(ipAddress)
+        .likeCount(likeCount)
+        .dislikeCount(dislikeCount)
+        .parentId(commentEntity.getId())
+        .memberId(memberEntity)
+        .postingId(commentEntity.getPostingId())
+        .build());
     LOGGER.info("insert할 comment의 id : " + commentEntity.getId().toString());
     commentRepository.findAll().forEach(comment -> LOGGER.info(comment.getId()));
   }
 
   @Test
   public void findTest() {
-    Optional<CommentEntity> commentSelect = commentRepository.findById(550L);
+    Optional<CommentEntity> commentSelect = commentRepository.findById(commentEntity.getId());
     Assertions.assertTrue(commentSelect.isPresent());
   }
 
@@ -98,7 +135,7 @@ public class CommentRepositoryTest {
 
   @Test
   public void updateTest() {
-    Long updateId = 550L;
+    Long updateId = commentEntity.getId();
     Optional<CommentEntity> commentSelect = commentRepository.findById(updateId);
     Assertions.assertTrue(commentSelect.isPresent(), "Entity not found");
 
@@ -119,8 +156,9 @@ public class CommentRepositoryTest {
 
   @Test
   public void deleteTest() {
-    commentRepository.deleteById(550L);
-    Assertions.assertTrue(!commentRepository.findById(550L).isPresent());
+    Long testId = commentEntity.getId();
+    commentRepository.deleteById(testId);
+    Assertions.assertTrue(!commentRepository.findById(testId).isPresent());
   }
 
 }

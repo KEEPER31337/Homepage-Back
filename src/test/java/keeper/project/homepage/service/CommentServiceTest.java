@@ -2,15 +2,19 @@ package keeper.project.homepage.service;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+import java.lang.reflect.Member;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.entity.CategoryEntity;
 import keeper.project.homepage.entity.CommentEntity;
+import keeper.project.homepage.entity.MemberEntity;
 import keeper.project.homepage.entity.PostingEntity;
 import keeper.project.homepage.exception.CustomCommentNotFoundException;
 import keeper.project.homepage.repository.CategoryRepository;
 import keeper.project.homepage.repository.CommentRepository;
+import keeper.project.homepage.repository.MemberRepository;
 import keeper.project.homepage.repository.PostingRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,6 +43,8 @@ public class CommentServiceTest {
 
   private CommentEntity commentEntity;
 
+  private MemberEntity memberEntity;
+
   @Autowired
   private CommentService commentService;
 
@@ -51,20 +57,31 @@ public class CommentServiceTest {
   @Autowired
   private CategoryRepository categoryRepository;
 
+  @Autowired
+  private MemberRepository memberRepository;
+
   private String content = "댓글 내용";
   private LocalDate registerTime = LocalDate.now();
   private LocalDate updateTime = LocalDate.now();
   private String ipAddress = "127.0.0.1";
   private Integer likeCount = 0;
   private Integer dislikeCount = 0;
-  private Integer memberId = 10;
-  private Long parentId = 1233L;
-  private PostingEntity posting;
+//  private Integer memberId = 10;
 
   @BeforeEach
   public void setup() throws Exception {
-    CategoryEntity categoryEntity = categoryRepository.findById(7L).get();
-    posting = postingRepository.save(PostingEntity.builder()
+    memberEntity = memberRepository.save(MemberEntity.builder()
+        .loginId("로그인")
+        .password("비밀번호")
+        .realName("이름")
+        .emailAddress("이메일")
+        .studentId("학번")
+        .roles(Collections.singletonList("ROLE_USER")).build());
+
+    CategoryEntity categoryEntity = categoryRepository.save(
+        CategoryEntity.builder().name("test category").build());
+
+    PostingEntity postingEntity = postingRepository.save(PostingEntity.builder()
         .title("posting 제목")
         .content("posting 내용")
         .categoryId(categoryEntity)
@@ -78,20 +95,33 @@ public class CommentServiceTest {
         .visitCount(0)
         .registerTime(new Date())
         .updateTime(new Date())
+        .memberId(memberEntity)
         .password("asdsdf")
         .build());
 
-    commentEntity = CommentEntity.builder()
-        .content(content)
+    CommentEntity parentComment = commentRepository.save(CommentEntity.builder()
+        .content("부모 댓글 내용")
         .registerTime(registerTime)
         .updateTime(updateTime)
         .ipAddress(ipAddress)
         .likeCount(likeCount)
         .dislikeCount(dislikeCount)
-        .parentId(parentId)
-//        .memberId(memberId)
-        .postingId(posting)
-        .build();
+        .parentId(0L)
+        .memberId(memberEntity)
+        .postingId(postingEntity)
+        .build());
+
+    commentEntity = commentRepository.save(CommentEntity.builder()
+        .content("댓글 내용")
+        .registerTime(registerTime)
+        .updateTime(updateTime)
+        .ipAddress(ipAddress)
+        .likeCount(likeCount)
+        .dislikeCount(dislikeCount)
+        .parentId(parentComment.getId())
+        .memberId(memberEntity)
+        .postingId(postingEntity)
+        .build());
 
   }
 
@@ -99,27 +129,35 @@ public class CommentServiceTest {
   @Test
   @DisplayName("댓글 생성")
   public void createTest() {
-    Long beforeCnt = commentRepository.count();
-    commentService.save(commentEntity);
-    Long afterCnt = commentRepository.count();
-    Assertions.assertEquals(beforeCnt + 1, afterCnt);
+    Long befCnt = commentRepository.count();
+    commentRepository.findAll().forEach(comment -> LOGGER.info("bef id list: " + comment.getId()));
+    commentService.save(CommentEntity.builder().content("댓글 내용")
+        .registerTime(registerTime)
+        .updateTime(updateTime)
+        .ipAddress(ipAddress)
+        .likeCount(likeCount)
+        .dislikeCount(dislikeCount)
+        .parentId(commentEntity.getId())
+        .memberId(memberEntity)
+        .postingId(commentEntity.getPostingId())
+        .build());
+    Long aftCnt = commentRepository.count();
+    commentRepository.findAll().forEach(comment -> LOGGER.info("aft id list: " + comment.getId()));
+    Assertions.assertEquals(befCnt + 1, aftCnt);
   }
 
   @Test
   @DisplayName("댓글 리스트")
-  public void viewAllTest() {
-    commentRepository.save(commentEntity); // db에 comment가 없는 경우 대비
-
+  public void findAllTest() {
     List<CommentEntity> commentEntityList = commentService.commentViewAll();
     commentEntityList.forEach(comment -> LOGGER.info(comment.getId()));
   }
 
   @Test
   @DisplayName("댓글 페이징")
-  public void viewPageTest() {
-    commentRepository.save(commentEntity); // db에 comment가 없는 경우 대비
-
-    Pageable pageable = PageRequest.of(0, 20, Sort.by("id").ascending());
+  public void findAllWithPagingTest() {
+    PostingEntity posting = commentEntity.getPostingId();
+    Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
     Page<CommentEntity> commentEntityPage = commentService.findAllByPost(posting, pageable);
     commentEntityPage.forEach(comment -> LOGGER.info(comment.getId()));
   }
@@ -127,8 +165,6 @@ public class CommentServiceTest {
   @Test
   @DisplayName("댓글 수정")
   public void updateTest() throws RuntimeException {
-    commentRepository.save(commentEntity); // db에 comment가 없는 경우 대비
-
     Long updateId = commentRepository.findAll().get(0).getId();
     String updateString = "MMMMMoDDDDDiFFFFFy;";
 
@@ -147,22 +183,20 @@ public class CommentServiceTest {
 
   @Test
   @DisplayName("댓글 조회")
-  public void viewByIdTest() throws RuntimeException {
-    commentRepository.save(commentEntity); // db에 comment가 없는 경우 대비
-
-    CommentEntity commentEntity = commentService.findById(550L);
-    Assertions.assertNotNull(commentEntity);
-    Assertions.assertEquals(commentEntity.getId(), 550L);
+  public void findByIdTest() throws RuntimeException {
+    Long findId = commentEntity.getId();
+    CommentEntity findComment = commentService.findById(findId);
+    Assertions.assertNotNull(findComment);
+    Assertions.assertEquals(findComment.getId(), findId);
   }
 
   @Test
   @DisplayName("댓글 삭제")
-  public void removeTest() throws RuntimeException {
-    commentRepository.save(commentEntity); // db에 comment가 없는 경우 대비
-
-    commentService.deleteById(550L);
+  public void deleteTest() throws RuntimeException {
+    Long deleteId = commentEntity.getId();
+    commentService.deleteById(deleteId);
     Assertions.assertThrows(CustomCommentNotFoundException.class,
-        () -> commentService.findById(550L));
+        () -> commentService.findById(deleteId));
   }
 
 //  @Test
