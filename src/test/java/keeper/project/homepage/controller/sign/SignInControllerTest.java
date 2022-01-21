@@ -116,12 +116,16 @@ public class SignInControllerTest {
   @Test
   @DisplayName("로그인 실패")
   public void signInFail() throws Exception {
+    String signInFailedCode = messageSource.getMessage("SigninFailed.code", null,
+        LocaleContextHolder.getLocale());
+
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("loginId", loginId);
     params.add("password", password + "1");
     mockMvc.perform(post("/v1/signin").params(params)).andDo(print())
         .andExpect(status().is5xxServerError()).andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(-1001)).andExpect(jsonPath("$.msg").exists());
+        .andExpect(jsonPath("$.code").value(signInFailedCode))
+        .andExpect(jsonPath("$.msg").exists());
   }
 
   @Test
@@ -153,7 +157,15 @@ public class SignInControllerTest {
             .params(changePasswordParams)).andDo(print()).andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.code").value(0))
-        .andExpect(jsonPath("$.msg").exists());
+        .andExpect(jsonPath("$.msg").exists())
+        .andDo(document("change-password",
+            requestParameters(
+                parameterWithName("newPassword").description("새로운 비밀번호")),
+            responseFields(
+                fieldWithPath("success").description("비밀번호 변경 실패 시 false 값을 보냅니다."),
+                fieldWithPath("code").description("비밀번호 변경 실패 시 -1001 코드를 보냅니다."),
+                fieldWithPath("msg").description("상태 메시지를 보냅니다.")
+            )));
 
     MemberEntity memberEntity = memberRepository.findByLoginId(loginId)
         .orElseThrow(CustomMemberNotFoundException::new);
