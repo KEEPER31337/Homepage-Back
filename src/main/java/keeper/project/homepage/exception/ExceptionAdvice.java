@@ -56,7 +56,7 @@ public class ExceptionAdvice {
   protected CommonResult signInFailed(HttpServletRequest request,
       CustomLoginIdSigninFailedException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("SigninFailed.code")),
-        getMessage("SigninFailed.msg"));
+        e.getMessage() == null ? getMessage("SigninFailed.msg") : e.getMessage());
   }
 
   @ExceptionHandler(keeper.project.homepage.exception.CustomAuthenticationEntryPointException.class)

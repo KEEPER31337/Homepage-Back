@@ -17,10 +17,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Date;
-import keeper.project.homepage.entity.MemberEntity;
-import keeper.project.homepage.repository.MemberRepository;
+import java.util.List;
+import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.repository.member.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -92,7 +93,7 @@ public class SignUpControllerTest {
             .nickName(nickName)
             .birthday(birthdayDate)
             .studentId(studentId)
-            .roles(Collections.singletonList("ROLE_USER"))
+            .roles(new ArrayList<String>(List.of("ROLE_USER")))
             .build());
   }
 
