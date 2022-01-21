@@ -1,5 +1,6 @@
 package keeper.project.homepage.entity.member;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -24,10 +25,12 @@ public class MemberHasMemberJobEntity implements Serializable {
   @Id
   @ManyToOne
   @JoinColumn(name = "member_id")
+  @JsonManagedReference
   private MemberEntity memberEntity;
 
   @Id
   @ManyToOne
   @JoinColumn(name = "member_job_id")
+  @JsonManagedReference
   private MemberJobEntity memberJobEntity;
 }

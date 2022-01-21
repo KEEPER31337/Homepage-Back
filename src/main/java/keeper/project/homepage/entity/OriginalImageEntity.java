@@ -1,5 +1,6 @@
 package keeper.project.homepage.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -29,6 +30,7 @@ public class OriginalImageEntity implements Serializable {
   private String path;
 
   @OneToOne(mappedBy = "originalImage")
+  @JsonBackReference
   private ThumbnailEntity thumbnailEntity;
 
 }

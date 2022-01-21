@@ -1,5 +1,6 @@
 package keeper.project.homepage.entity.member;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,5 +32,7 @@ public class MemberJobEntity implements Serializable {
   private String name;
 
   @OneToMany(mappedBy = "memberJobEntity")
+  @JsonBackReference
+  @Builder.Default
   private List<MemberHasMemberJobEntity> members = new ArrayList<>();
 }

@@ -1,5 +1,7 @@
 package keeper.project.homepage.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,8 +34,10 @@ public class ThumbnailEntity implements Serializable {
 
   @OneToOne
   @JoinColumn(name = "original_image_id")
+  @JsonManagedReference
   private OriginalImageEntity originalImage;
 
   @OneToOne(mappedBy = "thumbnail")
+  @JsonBackReference
   private MemberEntity memberEntity;
 }
