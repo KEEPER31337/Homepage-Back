@@ -80,17 +80,17 @@ public class CommentEntity {
     this.dislikeCount -= 1;
   }
 
-  public void changeProperties(CommentEntity changeRequest) {
-    Assert.hasText(changeRequest.content, "content must not be empty");
-    Assert.notNull(changeRequest.updateTime, "update_time must not be empty");
-    Assert.hasText(changeRequest.ipAddress, "ip_address must not be empty");
-    Assert.notNull(changeRequest.likeCount, "like_count must not be empty");
-    Assert.notNull(changeRequest.dislikeCount, "dislike_count must not be empty");
+  public void changeProperties(CommentEntity commentEntity) {
+    Assert.hasText(commentEntity.content, "content must not be empty");
+    Assert.notNull(commentEntity.updateTime, "update_time must not be empty");
+    Assert.hasText(commentEntity.ipAddress, "ip_address must not be empty");
+    Assert.notNull(commentEntity.likeCount, "like_count must not be empty");
+    Assert.notNull(commentEntity.dislikeCount, "dislike_count must not be empty");
 
-    this.content = changeRequest.content;
-    this.updateTime = changeRequest.updateTime;
-    this.ipAddress = changeRequest.ipAddress;
-    this.likeCount = changeRequest.likeCount;
-    this.dislikeCount = changeRequest.dislikeCount;
+    this.content = commentEntity.content;
+    this.updateTime = commentEntity.updateTime;
+    this.ipAddress = commentEntity.ipAddress;
+    this.likeCount = commentEntity.likeCount;
+    this.dislikeCount = commentEntity.dislikeCount;
   }
 }

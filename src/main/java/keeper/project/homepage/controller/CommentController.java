@@ -1,15 +1,22 @@
 package keeper.project.homepage.controller;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.dto.CommentDto;
+import keeper.project.homepage.dto.CommonResult;
+import keeper.project.homepage.dto.ListResult;
+import keeper.project.homepage.dto.SingleResult;
 import keeper.project.homepage.entity.CommentEntity;
 import keeper.project.homepage.entity.PostingEntity;
 import keeper.project.homepage.repository.PostingRepository;
 import keeper.project.homepage.service.CommentService;
+import keeper.project.homepage.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,20 +27,22 @@ import org.springframework.data.web.SortDefault.SortDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Log4j2
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/v1/comments")
+@RequestMapping(value = "/v1/comment")
 public class CommentController {
+
+  private static final Logger LOGGER = LogManager.getLogger(CommentController.class);
 
   @Autowired
   private CommentService commentService;
@@ -41,42 +50,40 @@ public class CommentController {
   @Autowired
   private PostingRepository postingRepository;
 
-  @PostMapping(value = "/{postId}", consumes = "multipart/form-data", produces = {
-      MediaType.TEXT_PLAIN_VALUE})
-  public ResponseEntity<String> createComment(
+  private final ResponseService responseService;
+
+  @PostMapping(value = "/{postId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public SingleResult<String> createComment(
       @PathVariable("postId") Long postId,
-      CommentDto commentDto) {
+      @RequestBody CommentDto commentDto) {
 
     Optional<PostingEntity> postingEntity = postingRepository.findById(postId);
     if (!postingEntity.isPresent()) {
-      return new ResponseEntity<>("postingId not found", HttpStatus.INTERNAL_SERVER_ERROR);
+      return responseService.getSingleResult("postingId not found");
     }
     commentDto.setRegisterTime(LocalDate.now());
     commentDto.setUpdateTime(LocalDate.now());
     commentService.save(commentDto.toEntity(postingEntity.get()));
 
-    return new ResponseEntity<>("success", HttpStatus.OK);
+    return responseService.getSingleResult("success");
   }
 
-  @GetMapping("/{postId}")
-  public ResponseEntity<List<CommentEntity>> findCommentByPostId(Model model,
+  @GetMapping(value = "/{postId}")
+  public ListResult<CommentDto> findCommentByPostId(
       @PathVariable("postId") Long postId,
       @SortDefaults({@SortDefault(sort = "id", direction = Direction.ASC),
           @SortDefault(sort = "registerTime", direction = Direction.ASC)})
-      @PageableDefault(page = 0, size = 20) Pageable pageable) {
+      @PageableDefault(page = 0, size = 10) Pageable pageable) {
 
     PostingEntity postingEntity = postingRepository.findById(postId).get();
     Page<CommentEntity> page = commentService.findAllByPost(postingEntity, pageable);
 
-//    int nowPage = page.getPageable().getPageNumber() + 1;
-//    int startPage = max(nowPage - 4, 1);
-//    int endPage = min(nowPage + 5, page.getTotalPages());
-//    model.addAttribute("commentList", commentService.commentViewAll());
-//    model.addAttribute("nowPage", nowPage);
-//    model.addAttribute("startPage", startPage);
-//    model.addAttribute("endPage", endPage);
-
-    return ResponseEntity.status(HttpStatus.OK).body(page.getContent());
+    List<CommentDto> commentDtos = new ArrayList<>();
+    page.getContent().forEach(content -> commentDtos.add(
+        new CommentDto(content.getContent(), content.getRegisterTime(), content.getUpdateTime(),
+            content.getIpAddress(), content.getLikeCount(), content.getDislikeCount(),
+            content.getParentId(), content.getMemberId(), postId.intValue())));
+    return responseService.getListResult(commentDtos);
   }
 
   @GetMapping("/{postId}/{parentId}")
@@ -93,29 +100,27 @@ public class CommentController {
   }
 
   @DeleteMapping("/{commentId}")
-  public ResponseEntity<String> deleteComment(@PathVariable("commentId") Long commentId) {
+  public CommonResult deleteComment(@PathVariable("commentId") Long commentId) {
     commentService.deleteById(commentId);
-    return ResponseEntity.status(HttpStatus.OK).body("success");
+    return responseService.getSuccessResult();
   }
 
-  @PatchMapping("/{postId}/{commentId}")
-  public ResponseEntity<String> modifyComment(@PathVariable("postId") Long postId,
+  @PatchMapping(value = "/{commentId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public SingleResult<String> modifyComment(
       @PathVariable("commentId") Long commentId,
-      CommentDto commentDto) {
+      @RequestBody CommentDto commentDto) {
 
-    CommentEntity commentEntity = commentService.findById(commentId);
-    commentDto.setLikeCount(commentEntity.getLikeCount());
-    commentDto.setDislikeCount(commentEntity.getDislikeCount());
+    CommentEntity original = commentService.findById(commentId);
+    commentDto.setLikeCount(original.getLikeCount());
+    commentDto.setDislikeCount(original.getDislikeCount());
     commentDto.setUpdateTime(LocalDate.now());
-    commentDto.setIpAddress(commentEntity.getIpAddress());
+    commentDto.setIpAddress(original.getIpAddress());
 
     CommentEntity result = commentService.updateById(commentId,
-        commentDto.toEntity(postingRepository.findById(postId).get()));
+        commentDto.toEntity(original.getPostingId()));
 
-    return result.getId() == commentId ? ResponseEntity.status(HttpStatus.OK).body("success")
-        : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-            "original id is " + result.getId().toString() + ", but modified id is "
-                + commentId.toString());
+    return result.getId().equals(commentId) ? responseService.getSingleResult("success")
+        : responseService.getSingleResult("fail to update");
   }
 
 }
