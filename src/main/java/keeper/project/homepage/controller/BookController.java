@@ -47,18 +47,19 @@ public class BookController {
 
   @PostMapping(value = "/deletebook")
   @ResponseBody
-  public CommonResult delete(@RequestParam String title, @RequestParam Long quantity) {
+  public CommonResult delete(@RequestParam String title, @RequestParam String author,
+      @RequestParam Long quantity) {
 
-    if (bookManageService.isExist(title, quantity)) {
-      Long numOfBooks = bookRepository.findByTitle(title).get().getEnable();
-      Long numOfBorrow = bookRepository.findByTitle(title).get().getBorrow();
+    if (bookManageService.isExist(title, author)) {
+      Long numOfBooks = bookRepository.findByTitleAndAuthor(title, author).get().getEnable();
+      Long numOfBorrow = bookRepository.findByTitleAndAuthor(title, author).get().getBorrow();
       if (numOfBooks - quantity == 0 && numOfBorrow == 0) {
-        BookEntity bookEntity = bookRepository.findByTitle(title).get();
+        BookEntity bookEntity = bookRepository.findByTitleAndAuthor(title, author).get();
         bookRepository.delete(bookEntity);
       } else if (numOfBooks - quantity < 0) {
         return responseService.getFailResult(-1, "삭제 가능한 수량보다 많습니다.");
       } else {
-        bookManageService.updateDeleteInformation(title, quantity);
+        bookManageService.updateDeleteInformation(title, author, quantity);
       }
       return responseService.getSuccessResult();
     }

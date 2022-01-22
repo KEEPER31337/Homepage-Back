@@ -25,8 +25,8 @@ public class BookManageService {
   public Long isCanAdd(String title, String author, Long quantity) {
 
     Long nowTotal = 0L;
-    if (bookRepository.findByTitle(title).isPresent()) {
-      nowTotal = bookRepository.findByTitle(title).get().getTotal();
+    if (bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
+      nowTotal = bookRepository.findByTitleAndAuthor(title, author).get().getTotal();
     }
 
     if (quantity + nowTotal > MAXIMUM_ALLOWD_BOOK_NUMBER) {
@@ -41,8 +41,8 @@ public class BookManageService {
    */
   public void addBook(String title, String author, String picture, String information, Long total) {
     Long borrowState = 0L;
-    if (bookRepository.findByTitle(title).isPresent()) {
-      borrowState = bookRepository.findByTitle(title).get().getBorrow();
+    if (bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
+      borrowState = bookRepository.findByTitleAndAuthor(title, author).get().getBorrow();
     }
     bookRepository.save(
         BookEntity.builder()
@@ -60,21 +60,23 @@ public class BookManageService {
   /**
    * 도서 삭제가 가능한지 체크
    */
-  public boolean isExist(String title, Long quantity) {
+  public boolean isExist(String title, String author) {
 
-    if (!bookRepository.findByTitle(title).isPresent()) {
+    if (!bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
       return false;
     }
     return true;
   }
 
-  public void updateDeleteInformation(String title, Long quantity) {
-    String author = bookRepository.findByTitle(title).get().getAuthor();
-    String picture = bookRepository.findByTitle(title).get().getPicture();
-    String information = bookRepository.findByTitle(title).get().getInformation();
-    Long borrow = bookRepository.findByTitle(title).get().getBorrow();
-    Long total = bookRepository.findByTitle(title).get().getTotal();
-    Long enable = bookRepository.findByTitle(title).get().getEnable();
+  /**
+   * 도서 삭제 업데이트
+   */
+  public void updateDeleteInformation(String title, String author, Long quantity) {
+    String picture = bookRepository.findByTitleAndAuthor(title, author).get().getPicture();
+    String information = bookRepository.findByTitleAndAuthor(title, author).get().getInformation();
+    Long borrow = bookRepository.findByTitleAndAuthor(title, author).get().getBorrow();
+    Long total = bookRepository.findByTitleAndAuthor(title, author).get().getTotal();
+    Long enable = bookRepository.findByTitleAndAuthor(title, author).get().getEnable();
 
     bookRepository.save(
         BookEntity.builder()
