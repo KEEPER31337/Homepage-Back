@@ -76,6 +76,15 @@ public class BookControllerTest {
   final private Long bookEnable2 = bookQuantity2 - bookBorrow2;
   final private String bookRegisterDate2 = "20220116";
 
+  final private String bookTitle3 = "일반물리학";
+  final private String bookAuthor3 = "우웩1";
+  final private String bookPicture3 = "우우웩1.png";
+  final private String bookInformation3 = "우웩우웩1";
+  final private Long bookQuantity3 = 2L;
+  final private Long bookBorrow3 = 0L;
+  final private Long bookEnable3 = bookQuantity3 - bookBorrow3;
+  final private String bookRegisterDate3 = "20220116";
+
   final private long epochTime = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
 
   @BeforeEach
@@ -93,6 +102,7 @@ public class BookControllerTest {
     SimpleDateFormat stringToDate = new SimpleDateFormat("yyyymmdd");
     Date registerDate1 = stringToDate.parse(bookRegisterDate1);
     Date registerDate2 = stringToDate.parse(bookRegisterDate2);
+    Date registerDate3 = stringToDate.parse(bookRegisterDate3);
 
     bookRepository.save(
         BookEntity.builder()
@@ -116,6 +126,18 @@ public class BookControllerTest {
             .borrow(bookBorrow2)
             .enable(bookEnable2)
             .registerDate(registerDate2)
+            .build());
+
+    bookRepository.save(
+        BookEntity.builder()
+            .title(bookTitle3)
+            .author(bookAuthor3)
+            .picture(bookPicture3)
+            .information(bookInformation3)
+            .total(bookQuantity3)
+            .borrow(bookBorrow3)
+            .enable(bookEnable3)
+            .registerDate(registerDate3)
             .build());
   }
 
@@ -187,6 +209,25 @@ public class BookControllerTest {
   }
 
   @Test
+  @DisplayName("제목 같고 작가 다른 책 등록 성공")
+  public void addNewBookSameTitle() throws Exception {
+    Long bookQuantity2 = 4L;
+    String newTitle = "Do it! 점프 투 파이썬";
+    String newAuthor = "박재열";
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("title", newTitle);
+    params.add("author", newAuthor);
+    params.add("quantity", String.valueOf(bookQuantity2));
+
+    mockMvc.perform(post("/v1/addbook").params(params))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").exists());
+  }
+
+  @Test
   @DisplayName("수량 초과 새 책 등록 실패")
   public void addNewBookFailedOverMax() throws Exception {
     Long bookQuantity3 = 5L;
@@ -209,6 +250,7 @@ public class BookControllerTest {
     Long bookQuantity1 = 1L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1);
+    params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(bookQuantity1));
 
     mockMvc.perform(post("/v1/deletebook").params(params))
@@ -220,6 +262,7 @@ public class BookControllerTest {
         .andDo(document("delete-book",
             requestParameters(
                 parameterWithName("title").description("책 제목"),
+                parameterWithName("author").description("책 저자"),
                 parameterWithName("quantity").description("삭제 할 수량")
             ),
             responseFields(
@@ -237,6 +280,7 @@ public class BookControllerTest {
     Long bookQuantity3 = 2L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1);
+    params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(bookQuantity3));
 
     mockMvc.perform(post("/v1/deletebook").params(params))
@@ -253,6 +297,7 @@ public class BookControllerTest {
     Long bookQuantity3 = 1L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1 + epochTime);
+    params.add("author", bookAuthor1 + epochTime);
     params.add("quantity", String.valueOf(bookQuantity3));
 
     mockMvc.perform(post("/v1/deletebook").params(params))
@@ -269,6 +314,7 @@ public class BookControllerTest {
     Long bookQuantity3 = 5L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1);
+    params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(bookQuantity3));
 
     mockMvc.perform(post("/v1/deletebook").params(params))
@@ -285,6 +331,7 @@ public class BookControllerTest {
     Long bookQuantity3 = 2L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle2);
+    params.add("author", bookAuthor2);
     params.add("quantity", String.valueOf(bookQuantity3));
 
     mockMvc.perform(post("/v1/deletebook").params(params))
