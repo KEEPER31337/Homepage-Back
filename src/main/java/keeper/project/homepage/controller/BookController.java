@@ -50,8 +50,9 @@ public class BookController {
   public CommonResult delete(@RequestParam String title, @RequestParam Long quantity) {
 
     if (bookManageService.isCanDelete(title, quantity)) {
-      Long numOfBooks = bookRepository.findByTitle(title).get().getTotal();
-      if (numOfBooks - quantity == 0) {
+      Long numOfBooks = bookRepository.findByTitle(title).get().getEnable();
+      Long numOfBorrow = bookRepository.findByTitle(title).get().getBorrow();
+      if (numOfBooks - quantity == 0 && numOfBorrow == 0) {
         BookEntity bookEntity = bookRepository.findByTitle(title).get();
         bookRepository.delete(bookEntity);
       } else if (numOfBooks - quantity < 0) {
