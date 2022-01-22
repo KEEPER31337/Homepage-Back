@@ -97,40 +97,39 @@ public class SignUpControllerTest {
             .build());
   }
 
-  @Test
-  @DisplayName("회원가입 성공 시")
-  public void signUp() throws Exception {
-    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("loginId", loginId + epochTime);
-    params.add("emailAddress", emailAddress + epochTime);
-    params.add("password", password);
-    params.add("realName", realName);
-    params.add("nickName", nickName);
-    params.add("birthday", birthday);
-    params.add("studentId", studentId + epochTime);
-    mockMvc.perform(post("/v1/signup").params(params))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.code").value(0))
-        .andExpect(jsonPath("$.msg").exists())
-        .andDo(document("sign-up",
-            requestParameters(
-                parameterWithName("loginId").description("로그인 아이디"),
-                parameterWithName("emailAddress").description("이메일 주소"),
-                parameterWithName("password").description("로그인 비밀번호"),
-                parameterWithName("realName").description("실명"),
-                parameterWithName("nickName").description("닉네임"),
-                parameterWithName("birthday").description("생일").optional(),
-                parameterWithName("studentId").description("학번")
-            ),
-            responseFields(
-                fieldWithPath("success").description("회원가입 성공 시 true, 실패 시 false 값을 보냅니다."),
-                fieldWithPath("code").description("회원가입 성공 시 0, 실패 시 -9999 코드를 보냅니다."),
-                fieldWithPath("msg").description("회원가입이 실패하는 경우는 잘못된 접근 뿐임으로 알 수 없는 오류를 발생시킵니다.")
-            )));
-    ;
-  }
+//  @Test
+//  @DisplayName("회원가입 성공 시")
+//  public void signUp() throws Exception {
+//    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+//    params.add("loginId", loginId + epochTime);
+//    params.add("emailAddress", emailAddress + epochTime);
+//    params.add("password", password);
+//    params.add("realName", realName);
+//    params.add("nickName", nickName);
+//    params.add("birthday", birthday);
+//    params.add("studentId", studentId + epochTime);
+//    mockMvc.perform(post("/v1/signup").params(params))
+//        .andDo(print())
+//        .andExpect(status().isOk())
+//        .andExpect(jsonPath("$.success").value(true))
+//        .andExpect(jsonPath("$.code").value(0))
+//        .andExpect(jsonPath("$.msg").exists())
+//        .andDo(document("sign-up",
+//            requestParameters(
+//                parameterWithName("loginId").description("로그인 아이디"),
+//                parameterWithName("emailAddress").description("이메일 주소"),
+//                parameterWithName("password").description("로그인 비밀번호"),
+//                parameterWithName("realName").description("실명"),
+//                parameterWithName("nickName").description("닉네임"),
+//                parameterWithName("birthday").description("생일").optional(),
+//                parameterWithName("studentId").description("학번")
+//            ),
+//            responseFields(
+//                fieldWithPath("success").description("회원가입 성공 시 true, 실패 시 false 값을 보냅니다."),
+//                fieldWithPath("code").description("회원가입 성공 시 0, 실패 시 -9999 코드를 보냅니다."),
+//                fieldWithPath("msg").description("회원가입이 실패하는 경우는 잘못된 접근 뿐임으로 알 수 없는 오류를 발생시킵니다.")
+//            )));
+//  }
 
   @Test
   @DisplayName("회원가입 실패 시")

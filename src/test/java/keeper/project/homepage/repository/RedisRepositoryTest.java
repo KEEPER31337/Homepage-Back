@@ -38,13 +38,12 @@ public class RedisRepositoryTest {
         emailAuthRedisRepository.save(emailAuthRedisEntity);
 
         // `keyspace:id` 값을 가져옴
-        EmailAuthRedisEntity getEmailAuthRedisEntity = emailAuthRedisRepository.findById(emailAuthRedisEntity.getId()).get();
+        EmailAuthRedisEntity getEmailAuthRedisEntity = emailAuthRedisRepository.findById(emailAuthRedisEntity.getEmail()).get();
         assertEquals(getEmailAuthRedisEntity.getEmail(), email);
         assertEquals(getEmailAuthRedisEntity.getAuthCode(), authCode);
 
         // Email Auth Entity 의 @RedisHash 에 정의되어 있는 keyspace 에 속한 키의 갯수를 구함
         Long emailAuthCountBeforeDelete = emailAuthRedisRepository.count();
-        // email 전체를 가지는 Id
         assertEquals(1, emailAuthCountBeforeDelete);
 
         // 삭제
