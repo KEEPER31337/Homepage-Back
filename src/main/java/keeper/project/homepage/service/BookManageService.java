@@ -60,7 +60,7 @@ public class BookManageService {
   /**
    * 도서 삭제가 가능한지 체크
    */
-  public boolean isCanDelete(String title, Long quantity) {
+  public boolean isExist(String title, Long quantity) {
 
     if (!bookRepository.findByTitle(title).isPresent()) {
       return false;
