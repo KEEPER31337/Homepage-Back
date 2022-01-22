@@ -23,6 +23,7 @@ import javax.transaction.Transactional;
 import keeper.project.homepage.entity.BookEntity;
 import keeper.project.homepage.entity.MemberEntity;
 import keeper.project.homepage.repository.BookRepository;
+import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.snippet.Snippet;
+import org.springframework.test.context.event.annotation.BeforeTestMethod;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -56,14 +58,23 @@ public class BookControllerTest {
   @Autowired
   private WebApplicationContext ctx;
 
-  final private String bookTitle = "Do it! 점프 투 파이썬";
-  final private String bookAuthor = "박응용";
-  final private String bookPicture = "JumpToPython.png";
-  final private String bookInformation = "파이썬의 기본이 잘 정리된 책이다.";
-  final private Long bookQuantity = 2L;
-  final private Long bookBorrow = 0L;
-  final private Long bookEnable = bookQuantity;
-  final private String bookRegisterDate = "20220116";
+  final private String bookTitle1 = "Do it! 점프 투 파이썬";
+  final private String bookAuthor1 = "박응용";
+  final private String bookPicture1 = "JumpToPython.png";
+  final private String bookInformation1 = "파이썬의 기본이 잘 정리된 책이다.";
+  final private Long bookQuantity1 = 2L;
+  final private Long bookBorrow1 = 0L;
+  final private Long bookEnable1 = bookQuantity1;
+  final private String bookRegisterDate1 = "20220116";
+
+  final private String bookTitle2 = "일반물리학";
+  final private String bookAuthor2 = "우웩";
+  final private String bookPicture2 = "우우웩.png";
+  final private String bookInformation2 = "우웩우웩";
+  final private Long bookQuantity2 = 2L;
+  final private Long bookBorrow2 = 1L;
+  final private Long bookEnable2 = bookQuantity2 - bookBorrow2;
+  final private String bookRegisterDate2 = "20220116";
 
   final private long epochTime = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
 
@@ -80,18 +91,31 @@ public class BookControllerTest {
         .build();
 
     SimpleDateFormat stringToDate = new SimpleDateFormat("yyyymmdd");
-    Date registerDate = stringToDate.parse(bookRegisterDate);
+    Date registerDate1 = stringToDate.parse(bookRegisterDate1);
+    Date registerDate2 = stringToDate.parse(bookRegisterDate2);
 
     bookRepository.save(
         BookEntity.builder()
-            .title(bookTitle)
-            .author(bookAuthor)
-            .picture(bookPicture)
-            .information(bookInformation)
-            .total(bookQuantity)
-            .borrow(bookBorrow)
-            .enable(bookEnable)
-            .registerDate(registerDate)
+            .title(bookTitle1)
+            .author(bookAuthor1)
+            .picture(bookPicture1)
+            .information(bookInformation1)
+            .total(bookQuantity1)
+            .borrow(bookBorrow1)
+            .enable(bookEnable1)
+            .registerDate(registerDate1)
+            .build());
+
+    bookRepository.save(
+        BookEntity.builder()
+            .title(bookTitle2)
+            .author(bookAuthor2)
+            .picture(bookPicture2)
+            .information(bookInformation2)
+            .total(bookQuantity2)
+            .borrow(bookBorrow2)
+            .enable(bookEnable2)
+            .registerDate(registerDate2)
             .build());
   }
 
@@ -100,10 +124,10 @@ public class BookControllerTest {
   public void addBook() throws Exception {
     Long bookQuantity1 = 2L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("title", bookTitle);
-    params.add("author", bookAuthor);
-    params.add("picture", bookPicture);
-    params.add("information", bookInformation);
+    params.add("title", bookTitle1);
+    params.add("author", bookAuthor1);
+    params.add("picture", bookPicture1);
+    params.add("information", bookInformation1);
     params.add("quantity", String.valueOf(bookQuantity1));
 
     mockMvc.perform(post("/v1/addbook").params(params))
@@ -132,8 +156,8 @@ public class BookControllerTest {
   public void addBookFailedOverMax() throws Exception {
     Long bookQuantity1 = 3L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("title", bookTitle);
-    params.add("author", bookAuthor);
+    params.add("title", bookTitle1);
+    params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(bookQuantity1));
 
     mockMvc.perform(post("/v1/addbook").params(params))
@@ -148,10 +172,10 @@ public class BookControllerTest {
   @DisplayName("새 책 등록 성공")
   public void addNewBook() throws Exception {
     Long bookQuantity2 = 4L;
-    String newTitle = "일반물리학";
+    String newTitle = "일반물리학2";
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", newTitle);
-    params.add("author", bookAuthor);
+    params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(bookQuantity2));
 
     mockMvc.perform(post("/v1/addbook").params(params))
@@ -167,8 +191,8 @@ public class BookControllerTest {
   public void addNewBookFailedOverMax() throws Exception {
     Long bookQuantity3 = 5L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("title", bookTitle + epochTime);
-    params.add("author", bookAuthor);
+    params.add("title", bookTitle1 + epochTime);
+    params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(bookQuantity3));
 
     mockMvc.perform(post("/v1/addbook").params(params))
@@ -184,7 +208,7 @@ public class BookControllerTest {
   public void deleteBook() throws Exception {
     Long bookQuantity1 = 1L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("title", bookTitle);
+    params.add("title", bookTitle1);
     params.add("quantity", String.valueOf(bookQuantity1));
 
     mockMvc.perform(post("/v1/deletebook").params(params))
@@ -212,7 +236,7 @@ public class BookControllerTest {
   public void deleteBookMax() throws Exception {
     Long bookQuantity3 = 2L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("title", bookTitle);
+    params.add("title", bookTitle1);
     params.add("quantity", String.valueOf(bookQuantity3));
 
     mockMvc.perform(post("/v1/deletebook").params(params))
@@ -228,8 +252,7 @@ public class BookControllerTest {
   public void deleteBookFailedNoExist() throws Exception {
     Long bookQuantity3 = 1L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("title", bookTitle + epochTime);
-    params.add("author", bookAuthor);
+    params.add("title", bookTitle1 + epochTime);
     params.add("quantity", String.valueOf(bookQuantity3));
 
     mockMvc.perform(post("/v1/deletebook").params(params))
@@ -241,11 +264,27 @@ public class BookControllerTest {
   }
 
   @Test
-  @DisplayName("책 삭제 실패(기존보다 많은 수량)")
-  public void deleteBookFailedOverMax() throws Exception {
+  @DisplayName("책 삭제 실패(기존보다 많은 수량-total기준)")
+  public void deleteBookFailedOverMax1() throws Exception {
     Long bookQuantity3 = 5L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("title", bookTitle);
+    params.add("title", bookTitle1);
+    params.add("quantity", String.valueOf(bookQuantity3));
+
+    mockMvc.perform(post("/v1/deletebook").params(params))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(-1))
+        .andExpect(jsonPath("$.msg").exists());
+  }
+
+  @Test
+  @DisplayName("책 삭제 실패(기존보다 많은 수량-enable기준)")
+  public void deleteBookFailedOverMax2() throws Exception {
+    Long bookQuantity3 = 2L;
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("title", bookTitle2);
     params.add("quantity", String.valueOf(bookQuantity3));
 
     mockMvc.perform(post("/v1/deletebook").params(params))
