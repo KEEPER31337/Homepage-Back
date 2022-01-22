@@ -49,9 +49,8 @@ public class BookController {
   @ResponseBody
   public CommonResult delete(@RequestParam String title, @RequestParam Long quantity) {
 
-    Long numOfBooks = bookRepository.findByTitle(title).get().getTotal();
-
     if (bookManageService.isCanDelete(title, quantity)) {
+      Long numOfBooks = bookRepository.findByTitle(title).get().getTotal();
       if (numOfBooks - quantity == 0) {
         BookEntity bookEntity = bookRepository.findByTitle(title).get();
         bookRepository.delete(bookEntity);
