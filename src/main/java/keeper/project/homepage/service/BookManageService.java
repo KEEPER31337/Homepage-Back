@@ -40,7 +40,10 @@ public class BookManageService {
    * 도서 추가
    */
   public void addBook(String title, String author, String picture, String information, Long total) {
-    Long borrowState = bookRepository.findByTitle(title).get().getBorrow();
+    Long borrowState = 0L;
+    if (bookRepository.findByTitle(title).isPresent()) {
+      borrowState = bookRepository.findByTitle(title).get().getBorrow();
+    }
     bookRepository.save(
         BookEntity.builder()
             .title(title)
