@@ -120,7 +120,7 @@ public class SignUpControllerTest {
                 parameterWithName("emailAddress").description("이메일 주소"),
                 parameterWithName("password").description("로그인 비밀번호"),
                 parameterWithName("realName").description("실명"),
-                parameterWithName("nickName").description("닉네임").optional(),
+                parameterWithName("nickName").description("닉네임"),
                 parameterWithName("birthday").description("생일").optional(),
                 parameterWithName("studentId").description("학번")
             ),
