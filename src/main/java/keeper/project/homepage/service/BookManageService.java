@@ -37,6 +37,24 @@ public class BookManageService {
   }
 
   /**
+   * 도서 추가
+   */
+  public void addBook(String title, String author, String picture, String information, Long total) {
+    Long borrowState = bookRepository.findByTitle(title).get().getBorrow();
+    bookRepository.save(
+        BookEntity.builder()
+            .title(title)
+            .author(author)
+            .picture(picture)
+            .information(information)
+            .total(total)
+            .borrow(borrowState)
+            .enable(total)
+            .registerDate(new Date())
+            .build());
+  }
+
+  /**
    * 도서 삭제가 가능한지 체크
    */
   public boolean isCanDelete(String title, Long quantity) {

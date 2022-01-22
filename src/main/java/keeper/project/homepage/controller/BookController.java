@@ -39,17 +39,7 @@ public class BookController {
     Long total = bookManageService.isCanAdd(title, author, quantity);
 
     if (total != -1L) {
-      bookRepository.save(
-          BookEntity.builder()
-              .title(title)
-              .author(author)
-              .picture(picture)
-              .information(information)
-              .total(total)
-              .borrow(0L)
-              .enable(total)
-              .registerDate(new Date())
-              .build());
+      bookManageService.addBook(title, author, picture, information, total);
       return responseService.getSuccessResult();
     }
     return responseService.getFailResult(-1, "수량 초과입니다.");
