@@ -5,15 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.dto.CommentDto;
+import keeper.project.homepage.dto.CommentLikeAndDisLikeDto;
 import keeper.project.homepage.dto.CommonResult;
 import keeper.project.homepage.dto.ListResult;
 import keeper.project.homepage.dto.SingleResult;
 import keeper.project.homepage.entity.CommentEntity;
 import keeper.project.homepage.entity.MemberEntity;
 import keeper.project.homepage.entity.PostingEntity;
-import keeper.project.homepage.repository.MemberRepository;
-import keeper.project.homepage.repository.PostingRepository;
 import keeper.project.homepage.service.CommentService;
+import keeper.project.homepage.service.MemberService;
+import keeper.project.homepage.service.PostingService;
 import keeper.project.homepage.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,14 +48,11 @@ public class CommentController {
 
   private static final Logger LOGGER = LogManager.getLogger(CommentController.class);
 
-  @Autowired
-  private CommentService commentService;
+  private final CommentService commentService;
 
-  @Autowired
-  private PostingRepository postingRepository;
+  private final PostingService postingService;
 
-  @Autowired
-  private MemberRepository memberRepository;
+  private final MemberService memberService;
 
   private final ResponseService responseService;
 
@@ -62,17 +61,11 @@ public class CommentController {
       @PathVariable("postId") Long postId,
       @RequestBody CommentDto commentDto) {
 
-    Optional<PostingEntity> postingEntity = postingRepository.findById(postId);
-    if (!postingEntity.isPresent()) {
-      return responseService.getSingleResult("postingId not found");
-    }
-    Optional<MemberEntity> memberEntity = memberRepository.findById(postId);
-    if (!memberEntity.isPresent()) {
-      return responseService.getSingleResult("memberId not found");
-    }
+    PostingEntity postingEntity = postingService.getPostingById(postId);
+    MemberEntity memberEntity = memberService.findById(commentDto.getMemberId());
     commentDto.setRegisterTime(LocalDate.now());
     commentDto.setUpdateTime(LocalDate.now());
-    commentService.save(commentDto.toEntity(postingEntity.get(), memberEntity.get()));
+    commentService.save(commentDto.toEntity(postingEntity, memberEntity));
 
     return responseService.getSingleResult("success");
   }
@@ -84,7 +77,7 @@ public class CommentController {
           @SortDefault(sort = "registerTime", direction = Direction.ASC)})
       @PageableDefault(page = 0, size = 10) Pageable pageable) {
 
-    PostingEntity postingEntity = postingRepository.findById(postId).get();
+    PostingEntity postingEntity = postingService.getPostingById(postId);
     Page<CommentEntity> page = commentService.findAllByPost(postingEntity, pageable);
 
     List<CommentDto> commentDtos = new ArrayList<>();
@@ -101,7 +94,7 @@ public class CommentController {
       @SortDefaults({@SortDefault(sort = "id", direction = Direction.ASC),
           @SortDefault(sort = "registerTime", direction = Direction.ASC)})
       @PageableDefault(page = 0, size = 20) Pageable pageable) {
-    PostingEntity postingEntity = postingRepository.findById(postId).get();
+    PostingEntity postingEntity = postingService.getPostingById(postId);
     Page<CommentEntity> page = commentService.findAllByParentIdAndPost(parentId, postingEntity,
         pageable);
 
@@ -114,7 +107,7 @@ public class CommentController {
     return responseService.getSuccessResult();
   }
 
-  @PatchMapping(value = "/{commentId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PutMapping(value = "/{commentId}", consumes = MediaType.APPLICATION_JSON_VALUE)
   public SingleResult<String> modifyComment(
       @PathVariable("commentId") Long commentId,
       @RequestBody CommentDto commentDto) {
@@ -131,5 +124,4 @@ public class CommentController {
     return result.getId().equals(commentId) ? responseService.getSingleResult("success")
         : responseService.getSingleResult("fail to update");
   }
-
 }

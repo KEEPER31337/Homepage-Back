@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.util.Assert;
 
 @Entity
@@ -22,6 +23,7 @@ import org.springframework.util.Assert;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 @Table(name = "comment")
 public class CommentEntity {
 
