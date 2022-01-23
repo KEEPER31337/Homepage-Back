@@ -21,10 +21,10 @@ public class PostingDto {
   private Integer categoryId;
   private String title;
   private String content;
-  private Integer visitCount = 0;
-  private Integer likeCount = 0;
-  private Integer dislikeCount = 0;
-  private Integer commentCount = 0;
+  private Integer visitCount;
+  private Integer likeCount;
+  private Integer dislikeCount;
+  private Integer commentCount;
   private Date registerTime;
   private Date updateTime;
   private String ipAddress;
@@ -34,6 +34,10 @@ public class PostingDto {
   private String password;
 
   public PostingEntity toEntity(CategoryEntity categoryEntity, MemberEntity memberEntity) {
+    this.visitCount = 0;
+    this.likeCount = 0;
+    this.dislikeCount = 0;
+    this.commentCount = 0;
 
     return PostingEntity.builder().title(title).content(content).visitCount(visitCount)
         .likeCount(likeCount).dislikeCount(dislikeCount).commentCount(commentCount)

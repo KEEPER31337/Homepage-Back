@@ -2,7 +2,10 @@ package keeper.project.homepage.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -10,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 import lombok.AllArgsConstructor;
@@ -18,6 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import org.springframework.util.Assert;
 
 @Builder
 @Entity
@@ -66,12 +71,19 @@ public class PostingEntity {
   private String password;
   @ManyToOne(targetEntity = CategoryEntity.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "category_id")
-  @JsonIgnore
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private CategoryEntity categoryId;
-//  @OneToOne(targetEntity = ThumbnailEntity.class, fetch = FetchType.LAZY)
+  //  @OneToOne(targetEntity = ThumbnailEntity.class, fetch = FetchType.LAZY)
 //  @JoinColumn(name = "thumbnail_id")
 //  @JsonIgnore
 //  private ThumbnailEntity thumbnailId;
+  @OneToMany(cascade = CascadeType.ALL, targetEntity = MemberHasPostingLikeEntity.class, mappedBy = "postingId", orphanRemoval = true, fetch = FetchType.LAZY)
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+  private List<MemberHasPostingLikeEntity> memberHasPostingLikeEntities = new ArrayList<>();
+
+  @OneToMany(cascade = CascadeType.ALL, targetEntity = MemberHasPostingDislikeEntity.class, mappedBy = "postingId", orphanRemoval = true, fetch = FetchType.LAZY)
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+  private List<MemberHasPostingDislikeEntity> memberHasPostingDislikeEntities = new ArrayList<>();
 
   public void updateInfo(String title, String content, Date updateTime, String ipAddress,
       Integer allowComment, Integer isNotice, Integer isSecret) {
@@ -82,6 +94,33 @@ public class PostingEntity {
     this.allowComment = allowComment;
     this.isNotice = isNotice;
     this.isSecret = isSecret;
+  }
+
+  public void increaseVisitCount() {
+    Assert.isTrue(this.likeCount < Integer.MAX_VALUE, "like_count value will be overflow.");
+    this.visitCount += 1;
+  }
+
+  public void increaseLikeCount(MemberHasPostingLikeEntity memberHasPostingLikeEntity) {
+    Assert.isTrue(this.likeCount < Integer.MAX_VALUE, "like_count value will be overflow.");
+    this.likeCount += 1;
+    this.memberHasPostingLikeEntities.add(memberHasPostingLikeEntity);
+  }
+
+  public void decreaseLikeCount() {
+    Assert.isTrue(this.likeCount > 0, "like_count mush be bigger than zero");
+    this.likeCount -= 1;
+  }
+
+  public void increaseDislikeCount(MemberHasPostingDislikeEntity memberHasPostingDislikeEntity) {
+    Assert.isTrue(this.dislikeCount < Integer.MAX_VALUE, "dislike_count value will be overflow.");
+    this.dislikeCount += 1;
+    this.memberHasPostingDislikeEntities.add(memberHasPostingDislikeEntity);
+  }
+
+  public void decreaseDislikeCount() {
+    Assert.isTrue(this.dislikeCount > 0, "dislike_count mush be bigger than zero");
+    this.dislikeCount -= 1;
   }
 
   public void makeAnonymous() {

@@ -4,7 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.entity.CategoryEntity;
+import keeper.project.homepage.entity.MemberEntity;
+import keeper.project.homepage.entity.MemberHasPostingDislikeEntity;
+import keeper.project.homepage.entity.MemberHasPostingLikeEntity;
 import keeper.project.homepage.entity.PostingEntity;
+import keeper.project.homepage.repository.MemberHasPostingDislikeRepository;
+import keeper.project.homepage.repository.MemberHasPostingLikeRepository;
 import keeper.project.homepage.repository.PostingRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -16,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostingService {
 
   private final PostingRepository postingRepository;
+  private final MemberHasPostingLikeRepository memberHasPostingLikeRepository;
+  private final MemberHasPostingDislikeRepository memberHasPostingDislikeRepository;
 
   public List<PostingEntity> findAll(Pageable pageable) {
     return postingRepository.findAll(pageable).getContent();
@@ -87,5 +94,60 @@ public class PostingService {
       }
     }
     return postingEntities;
+  }
+
+  @Transactional
+  public boolean isPostingLike(MemberEntity memberEntity, PostingEntity postingEntity,
+      String type) {
+    MemberHasPostingLikeEntity memberHasPostingLikeEntity = MemberHasPostingLikeEntity.builder()
+        .memberId(memberEntity).postingId(postingEntity).build();
+    if (type.equals("INC")) {
+      if (postingRepository.existsByMemberHasPostingLikeEntitiesContaining(
+          memberHasPostingLikeEntity)) {
+        return false;
+      } else {
+        postingEntity.increaseLikeCount(memberHasPostingLikeEntity);
+        postingRepository.save(postingEntity);
+        return true;
+      }
+    } else {
+      if (postingRepository.existsByMemberHasPostingLikeEntitiesContaining(
+          memberHasPostingLikeEntity)) {
+        memberHasPostingLikeRepository.deleteByMemberIdAndPostingId(memberEntity, postingEntity);
+        postingEntity.decreaseLikeCount();
+        postingRepository.saveAndFlush(postingEntity);
+        return true;
+      } else {
+        return false;
+      }
+    }
+  }
+
+  @Transactional
+  public boolean isPostingDislike(MemberEntity memberEntity, PostingEntity postingEntity,
+      String type) {
+    MemberHasPostingDislikeEntity memberHasPostingDislikeEntity = MemberHasPostingDislikeEntity.builder()
+        .memberId(memberEntity).postingId(postingEntity).build();
+
+    if (type.equals("INC")) {
+      if (postingRepository.existsByMemberHasPostingDislikeEntitiesContaining(
+          memberHasPostingDislikeEntity)) {
+        return false;
+      } else {
+        postingEntity.increaseDislikeCount(memberHasPostingDislikeEntity);
+        postingRepository.save(postingEntity);
+        return true;
+      }
+    } else {
+      if (postingRepository.existsByMemberHasPostingDislikeEntitiesContaining(
+          memberHasPostingDislikeEntity)) {
+        memberHasPostingDislikeRepository.deleteByMemberIdAndPostingId(memberEntity, postingEntity);
+        postingEntity.decreaseDislikeCount();
+        postingRepository.saveAndFlush(postingEntity);
+        return true;
+      } else {
+        return false;
+      }
+    }
   }
 }

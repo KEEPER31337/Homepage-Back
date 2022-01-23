@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import keeper.project.homepage.dto.PostingDto;
 import keeper.project.homepage.entity.CategoryEntity;
@@ -104,6 +105,8 @@ public class PostingController {
   public ResponseEntity<PostingEntity> getPosting(@PathVariable("pid") Long postingId) {
     PostingEntity postingEntity = postingService.getPostingById(postingId);
     postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+    postingEntity.increaseVisitCount();
+    postingService.updateById(postingEntity, postingId);
 
     return ResponseEntity.status(HttpStatus.OK).body(postingEntity);
   }
@@ -169,5 +172,31 @@ public class PostingController {
     }
 
     return ResponseEntity.status(HttpStatus.OK).body(postingEntities);
+  }
+
+  @GetMapping(value = "/like")
+  public ResponseEntity<String> likePosting(@RequestParam("memberId") Long memberId,
+      @RequestParam("postingId") Long postingId, @RequestParam("type") String type) {
+    MemberEntity memberEntity = memberRepository.getById(memberId);
+    PostingEntity postingEntity = postingService.getPostingById(postingId);
+
+    boolean result = postingService.isPostingLike(memberEntity, postingEntity, type.toUpperCase(
+        Locale.ROOT));
+
+    return result ? new ResponseEntity<>("success",
+        HttpStatus.OK) : new ResponseEntity<>("fail", HttpStatus.OK);
+  }
+
+  @GetMapping(value = "/dislike")
+  public ResponseEntity<String> dislikePosting(@RequestParam("memberId") Long memberId,
+      @RequestParam("postingId") Long postingId, @RequestParam("type") String type) {
+    MemberEntity memberEntity = memberRepository.getById(memberId);
+    PostingEntity postingEntity = postingService.getPostingById(postingId);
+
+    boolean result = postingService.isPostingDislike(memberEntity, postingEntity, type.toUpperCase(
+        Locale.ROOT));
+
+    return result ? new ResponseEntity<>("success",
+        HttpStatus.OK) : new ResponseEntity<>("fail", HttpStatus.OK);
   }
 }
