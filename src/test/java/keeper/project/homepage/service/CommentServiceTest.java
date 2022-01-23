@@ -35,7 +35,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
-@AutoConfigureMockMvc
 @Transactional
 public class CommentServiceTest {
 
@@ -66,7 +65,6 @@ public class CommentServiceTest {
   private String ipAddress = "127.0.0.1";
   private Integer likeCount = 0;
   private Integer dislikeCount = 0;
-//  private Integer memberId = 10;
 
   @BeforeEach
   public void setup() throws Exception {
@@ -74,6 +72,7 @@ public class CommentServiceTest {
         .loginId("로그인")
         .password("비밀번호")
         .realName("이름")
+        .nickName("닉네임")
         .emailAddress("이메일")
         .studentId("학번")
         .roles(Collections.singletonList("ROLE_USER")).build());

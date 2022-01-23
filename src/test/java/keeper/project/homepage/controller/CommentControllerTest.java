@@ -25,8 +25,11 @@ import keeper.project.homepage.repository.CategoryRepository;
 import keeper.project.homepage.repository.CommentRepository;
 import keeper.project.homepage.repository.MemberRepository;
 import keeper.project.homepage.repository.PostingRepository;
+import keeper.project.homepage.service.MemberHasCommentDislikeService;
+import keeper.project.homepage.service.MemberHasCommentLikeService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,6 +59,7 @@ public class CommentControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
+  // service로 수정
   @Autowired
   private CommentRepository commentRepository;
 
@@ -70,6 +74,12 @@ public class CommentControllerTest {
 
   @Autowired
   private MemberRepository memberRepository;
+
+  @Autowired
+  private MemberHasCommentLikeService memberHasCommentLikeService;
+
+  @Autowired
+  private MemberHasCommentDislikeService memberHasCommentDislikeService;
 
   private LocalDate registerTime = LocalDate.now();
   private LocalDate updateTime = LocalDate.now();
@@ -87,6 +97,7 @@ public class CommentControllerTest {
             .loginId("로그인")
             .password("비밀번호")
             .realName("이름")
+            .nickName("닉네임")
             .emailAddress("이메일")
             .studentId("학번")
             .roles(Collections.singletonList("ROLE_USER")).build());
@@ -251,7 +262,8 @@ public class CommentControllerTest {
     String updateContent = "{\n"
         + "    \"content\": \"수정한 내용!\"\n"
         + "}";
-    mockMvc.perform(RestDocumentationRequestBuilders.patch("/v1/comment/{commentId}", updateId)
+    LOGGER.info("수정 전 내용 : " + commentRepository.findById(updateId).get().toString());
+    mockMvc.perform(RestDocumentationRequestBuilders.put("/v1/comment/{commentId}", updateId)
             .content(updateContent)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andDo(print())
@@ -266,5 +278,76 @@ public class CommentControllerTest {
                 fieldWithPath("msg").description(""),
                 fieldWithPath("data").description("")
             )));
+    LOGGER.info("수정 후 내용 : " + commentRepository.findById(updateId).get().toString());
+  }
+
+  @Test
+  @DisplayName("댓글 좋아요 추가 및 취소")
+  public void updateLikeTest() throws Exception {
+    Long commentId = commentEntity.getId();
+    Integer befLikeCount = commentEntity.getLikeCount();
+    mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/comment/like")
+            .param("commentId", commentEntity.getId().toString())
+            .param("memberId", memberEntity.getId().toString()))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andDo(document("comment-like",
+            requestParameters(
+                parameterWithName("commentId").description("좋아요 추가 또는 취소할 댓글의 id"),
+                parameterWithName("memberId").description("좋아요 추가 또는 취소를 수행하는 멤버의 id")
+            ),
+            responseFields(
+                fieldWithPath("success").description(""),
+                fieldWithPath("code").description(""),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("data").description("")
+            )));
+    Integer addLikeCount = commentRepository.findById(commentId).get().getLikeCount();
+    Assertions.assertNotNull(memberHasCommentLikeService.findById(memberEntity, commentEntity));
+    Assertions.assertEquals(befLikeCount + 1, addLikeCount);
+
+    mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/comment/like")
+            .param("commentId", commentEntity.getId().toString())
+            .param("memberId", memberEntity.getId().toString()))
+        .andDo(print())
+        .andExpect(status().isOk());
+    Integer delLikeCount = commentRepository.findById(commentId).get().getLikeCount();
+    Assertions.assertNull(memberHasCommentLikeService.findById(memberEntity, commentEntity));
+    Assertions.assertEquals(addLikeCount - 1, delLikeCount);
+  }
+
+  @Test
+  @DisplayName("댓글 싫어요 추가 및 취소")
+  public void updateDislikeTest() throws Exception {
+    Long commentId = commentEntity.getId();
+    Integer befDislikeCount = commentEntity.getDislikeCount();
+    mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/comment/dislike")
+            .param("commentId", commentEntity.getId().toString())
+            .param("memberId", memberEntity.getId().toString()))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andDo(document("comment-dislike",
+            requestParameters(
+                parameterWithName("commentId").description("싫어요 추가 또는 취소할 댓글의 id"),
+                parameterWithName("memberId").description("싫어요 추가 또는 취소를 수행하는 멤버의 id")
+            ),
+            responseFields(
+                fieldWithPath("success").description(""),
+                fieldWithPath("code").description(""),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("data").description("")
+            )));
+    Integer addDislikeCount = commentRepository.findById(commentId).get().getDislikeCount();
+    Assertions.assertNotNull(memberHasCommentDislikeService.findById(memberEntity, commentEntity));
+    Assertions.assertEquals(befDislikeCount + 1, addDislikeCount);
+
+    mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/comment/dislike")
+            .param("commentId", commentEntity.getId().toString())
+            .param("memberId", memberEntity.getId().toString()))
+        .andDo(print())
+        .andExpect(status().isOk());
+    Integer delDislikeCount = commentRepository.findById(commentId).get().getDislikeCount();
+    Assertions.assertNull(memberHasCommentDislikeService.findById(memberEntity, commentEntity));
+    Assertions.assertEquals(addDislikeCount - 1, delDislikeCount);
   }
 }
