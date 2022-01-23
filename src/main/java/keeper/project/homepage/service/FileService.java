@@ -31,7 +31,7 @@ public class FileService {
     String filePath;
     for (MultipartFile file : files) {
       fileName = file.getOriginalFilename();
-      filePath = System.getProperty("user.dir") + "\\files"; //working directory + \\files
+      filePath = System.getProperty("user.dir") + "\\keeper_files"; //working directory + \\files
       if (!new File(filePath).exists()) {
         new File(filePath).mkdir();
       }
@@ -43,7 +43,8 @@ public class FileService {
       }
       FileDto fileDto = new FileDto();
       fileDto.setFileName(fileName);
-      fileDto.setFilePath(filePath);
+      // DB엔 상대경로로 저장
+      fileDto.setFilePath("keeper_files");
       fileDto.setFileSize(file.getSize());
       fileDto.setUploadTime(dto.getUpdateTime());
       fileDto.setIpAddress(dto.getIpAddress());

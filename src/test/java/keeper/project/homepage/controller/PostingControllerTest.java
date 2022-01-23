@@ -1,9 +1,6 @@
 package keeper.project.homepage.controller;
 
-import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
-import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseBody;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
@@ -18,6 +15,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
+import java.util.Collections;
+import java.util.Date;
+import keeper.project.homepage.entity.CategoryEntity;
+import keeper.project.homepage.entity.FileEntity;
+import keeper.project.homepage.entity.MemberEntity;
+import keeper.project.homepage.entity.PostingEntity;
+import keeper.project.homepage.repository.CategoryRepository;
+import keeper.project.homepage.repository.FileRepository;
+import keeper.project.homepage.repository.MemberRepository;
 import keeper.project.homepage.repository.PostingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +36,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -51,6 +58,28 @@ public class PostingControllerTest {
   private PostingRepository postingRepository;
 
   @Autowired
+  private CategoryRepository categoryRepository;
+
+  @Autowired
+  private MemberRepository memberRepository;
+
+  @Autowired
+  private FileRepository fileRepository;
+
+  @Autowired
+  private PasswordEncoder passwordEncoder;
+
+  final private String loginId = "hyeonmomo";
+  final private String password = "keeper";
+  final private String realName = "JeongHyeonMo";
+  final private String emailAddress = "gusah@naver.com";
+  final private String studentId = "201724579";
+
+  private MemberEntity memberEntity;
+  private CategoryEntity categoryEntity;
+  private PostingEntity postingEntity;
+
+  @Autowired
   private MockMvc mockMvc;
 
   @Autowired
@@ -67,6 +96,67 @@ public class PostingControllerTest {
             .withResponseDefaults(prettyPrint())
         )
         .build();
+
+    memberEntity = MemberEntity.builder()
+        .loginId(loginId)
+        .password(passwordEncoder.encode(password))
+        .realName(realName)
+        .nickName("test작성자")
+        .emailAddress(emailAddress)
+        .studentId(studentId)
+        .roles(Collections.singletonList("ROLE_USER"))
+        .build();
+    memberRepository.save(memberEntity);
+
+    categoryEntity = CategoryEntity.builder()
+        .name("테스트 게시판").build();
+    categoryRepository.save(categoryEntity);
+
+    postingEntity = PostingEntity.builder()
+        .title("test 게시판 제목")
+        .content("test 게시판 제목 내용")
+        .memberId(memberEntity)
+        .categoryId(categoryEntity)
+        .ipAddress("192.11.222.333")
+        .allowComment(0)
+        .isNotice(0)
+        .isSecret(1)
+        .likeCount(0)
+        .dislikeCount(1)
+        .commentCount(0)
+        .visitCount(0)
+        .registerTime(new Date())
+        .updateTime(new Date())
+        .password("asd")
+        .build();
+
+    postingRepository.save(postingEntity);
+    postingRepository.save(PostingEntity.builder()
+        .title("test 게시판 제목2")
+        .content("test 게시판 제목 내용2")
+        .memberId(memberEntity)
+        .categoryId(categoryEntity)
+        .ipAddress("192.11.223")
+        .allowComment(0)
+        .isNotice(0)
+        .isSecret(1)
+        .likeCount(0)
+        .dislikeCount(1)
+        .commentCount(0)
+        .visitCount(0)
+        .registerTime(new Date())
+        .updateTime(new Date())
+        .password("asd2")
+        .build());
+
+    fileRepository.save(FileEntity.builder()
+        .postingId(postingEntity)
+        .fileName("test file")
+        .filePath("test/file.txt")
+        .fileSize(12345L)
+        .uploadTime(new Date())
+        .ipAddress(postingEntity.getIpAddress())
+        .build());
   }
 
   @Test
@@ -89,7 +179,7 @@ public class PostingControllerTest {
                 fieldWithPath("[].id").description("게시물 ID"),
                 fieldWithPath("[].title").description("게시물 제목"),
                 fieldWithPath("[].content").description("게시물 내용"),
-                fieldWithPath("[].memberId").description("멤버 ID"),
+                fieldWithPath("[].writer").description("작성자"),
                 fieldWithPath("[].visitCount").description("조회 수"),
                 fieldWithPath("[].likeCount").description("좋아요 수"),
                 fieldWithPath("[].dislikeCount").description("싫어요 수"),
@@ -111,7 +201,7 @@ public class PostingControllerTest {
     ResultActions result = mockMvc.perform(get("/v1/post/lists")
         .param("page", "0")
         .param("size", "5")
-        .param("category", "6")
+        .param("category", categoryEntity.getId().toString())
         .contentType(MediaType.APPLICATION_JSON));
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
@@ -126,7 +216,7 @@ public class PostingControllerTest {
                 fieldWithPath("[].id").description("게시물 ID"),
                 fieldWithPath("[].title").description("게시물 제목"),
                 fieldWithPath("[].content").description("게시물 내용"),
-                fieldWithPath("[].memberId").description("멤버 ID"),
+                fieldWithPath("[].writer").description("작성자"),
                 fieldWithPath("[].visitCount").description("조회 수"),
                 fieldWithPath("[].likeCount").description("좋아요 수"),
                 fieldWithPath("[].dislikeCount").description("싫어요 수"),
@@ -144,9 +234,8 @@ public class PostingControllerTest {
 
   @Test
   public void getPosting() throws Exception {
-    Integer postingId = 44;
     ResultActions result = mockMvc.perform(
-        RestDocumentationRequestBuilders.get("/v1/post/{pid}", postingId));
+        RestDocumentationRequestBuilders.get("/v1/post/{pid}", postingEntity.getId()));
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
@@ -158,7 +247,7 @@ public class PostingControllerTest {
                 fieldWithPath("id").description("게시물 ID"),
                 fieldWithPath("title").description("게시물 제목"),
                 fieldWithPath("content").description("게시물 내용"),
-                fieldWithPath("memberId").description("멤버 ID"),
+                fieldWithPath("writer").description("작성자"),
                 fieldWithPath("visitCount").description("조회 수"),
                 fieldWithPath("likeCount").description("좋아요 수"),
                 fieldWithPath("dislikeCount").description("싫어요 수"),
@@ -176,9 +265,8 @@ public class PostingControllerTest {
 
   @Test
   public void getAttachList() throws Exception {
-    Integer postingId = 47;
     ResultActions result = mockMvc.perform(
-        RestDocumentationRequestBuilders.get("/v1/post/attach/{pid}", postingId));
+        RestDocumentationRequestBuilders.get("/v1/post/attach/{pid}", postingEntity.getId().toString()));
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
@@ -204,8 +292,8 @@ public class PostingControllerTest {
         "<<png data>>".getBytes());
     params.add("title", "mvc제목");
     params.add("content", "mvc내용");
-    params.add("memberId", "3");
-    params.add("categoryId", "7");
+    params.add("memberId", memberEntity.getId().toString());
+    params.add("categoryId", categoryEntity.getId().toString());
     params.add("ipAddress", "192.111.222");
     params.add("allowComment", "0");
     params.add("isNotice", "0");
@@ -244,14 +332,13 @@ public class PostingControllerTest {
 
   @Test
   public void modifyPosting() throws Exception {
-    Integer postingId = 45;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     MockMultipartFile file = new MockMultipartFile("file", "modifyImage.png", "image/png",
         "<<png data>>".getBytes());
     params.add("title", "수정 mvc제목");
     params.add("content", "수정 mvc내용");
-    params.add("memberId", "3");
-    params.add("categoryId", "7");
+    params.add("memberId", memberEntity.getId().toString());
+    params.add("categoryId", categoryEntity.getId().toString());
     params.add("ipAddress", "192.111.222");
     params.add("allowComment", "0");
     params.add("isNotice", "0");
@@ -259,7 +346,7 @@ public class PostingControllerTest {
     params.add("password", "asd");
 
     ResultActions result = mockMvc.perform(
-        multipart("/v1/post/{pid}", postingId)
+        multipart("/v1/post/{pid}", postingEntity.getId().toString())
             .file(file)
             .contentType(MediaType.MULTIPART_FORM_DATA)
             .params(params)
@@ -271,7 +358,7 @@ public class PostingControllerTest {
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
         .andDo(document("post-modify",
-//            multipart() 요청에서는 pathParameter가 요청이 안됨. -> 따로 작성
+//            multipart() 요청에서는 pathParameter가 요청이 안됨. -> adoc에서 따로 작성
 //            pathParameters(
 //                parameterWithName("pid").description("게시물 ID")
 //            ),
@@ -294,9 +381,8 @@ public class PostingControllerTest {
 
   @Test
   public void removePosting() throws Exception {
-    Integer postingId = 35;
     ResultActions result = mockMvc.perform(
-        RestDocumentationRequestBuilders.delete("/v1/post/{pid}", postingId));
+        RestDocumentationRequestBuilders.delete("/v1/post/{pid}", postingEntity.getId().toString()));
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
@@ -311,10 +397,10 @@ public class PostingControllerTest {
   public void searchPosting() throws Exception {
     ResultActions result = mockMvc.perform(get("/v1/post/search")
         .param("type", "T")
-        .param("keyword", "수정")
+        .param("keyword", "2")
         .param("page", "0")
         .param("size", "5")
-        .param("category", "6")
+        .param("category", categoryEntity.getId().toString())
         .contentType(MediaType.APPLICATION_JSON));
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
@@ -332,7 +418,7 @@ public class PostingControllerTest {
                 fieldWithPath("[].id").description("게시물 ID"),
                 fieldWithPath("[].title").description("게시물 제목"),
                 fieldWithPath("[].content").description("게시물 내용"),
-                fieldWithPath("[].memberId").description("멤버 ID"),
+                fieldWithPath("[].writer").description("작성자"),
                 fieldWithPath("[].visitCount").description("조회 수"),
                 fieldWithPath("[].likeCount").description("좋아요 수"),
                 fieldWithPath("[].dislikeCount").description("싫어요 수"),

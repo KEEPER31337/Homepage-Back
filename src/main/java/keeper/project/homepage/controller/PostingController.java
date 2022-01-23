@@ -4,12 +4,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import keeper.project.homepage.dto.PostingDto;
 import keeper.project.homepage.entity.CategoryEntity;
 import keeper.project.homepage.entity.FileEntity;
+import keeper.project.homepage.entity.MemberEntity;
 import keeper.project.homepage.entity.PostingEntity;
 import keeper.project.homepage.repository.CategoryRepository;
+import keeper.project.homepage.repository.MemberRepository;
 import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.PostingService;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class PostingController {
 
   private final PostingService postingService;
+  private final MemberRepository memberRepository;
   private final CategoryRepository categoryRepository;
   private final FileService fileService;
 
@@ -50,6 +54,9 @@ public class PostingController {
           Pageable pageable) {
 
     List<PostingEntity> postingEntities = postingService.findAll(pageable);
+    for (PostingEntity postingEntity : postingEntities) {
+      postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+    }
 
     return ResponseEntity.status(HttpStatus.OK).body(postingEntities);
   }
@@ -63,6 +70,9 @@ public class PostingController {
     Optional<CategoryEntity> categoryEntity = categoryRepository.findById(Long.valueOf(categoryId));
     List<PostingEntity> postingEntities = postingService.findAllByCategoryId(categoryEntity.get(),
         pageable);
+    for (PostingEntity postingEntity : postingEntities) {
+      postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+    }
     /* 이후 처리할 code
      * if (익명게시판 카테고리 id == categoryId) {
      *  postingEntities.forEach(postingEntity -> postingEntity.makeAnonymous());
@@ -79,9 +89,12 @@ public class PostingController {
 
     Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
         Long.valueOf(dto.getCategoryId()));
+    Optional<MemberEntity> memberEntity = memberRepository.findById(
+        Long.valueOf(dto.getMemberId()));
     dto.setRegisterTime(new Date());
     dto.setUpdateTime(new Date());
-    PostingEntity postingEntity = postingService.save(dto.toEntity(categoryEntity.get()));
+    PostingEntity postingEntity = postingService.save(
+        dto.toEntity(categoryEntity.get(), memberEntity.get()));
     fileService.saveFiles(files, dto, postingEntity);
 
     return postingEntity.getId() != null ? new ResponseEntity<>("success", HttpStatus.OK)
@@ -90,8 +103,12 @@ public class PostingController {
 
   @GetMapping(value = "/{pid}")
   public ResponseEntity<PostingEntity> getPosting(@PathVariable("pid") Long postingId) {
+    PostingEntity postingEntity = postingService.getPostingById(postingId);
+    postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+    postingEntity.increaseVisitCount();
+    postingService.updateById(postingEntity, postingId);
 
-    return ResponseEntity.status(HttpStatus.OK).body(postingService.getPostingById(postingId));
+    return ResponseEntity.status(HttpStatus.OK).body(postingEntity);
   }
 
   @GetMapping(value = "/attach/{pid}")
@@ -110,13 +127,15 @@ public class PostingController {
 
     Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
         Long.valueOf(dto.getCategoryId()));
+    Optional<MemberEntity> memberEntity = memberRepository.findById(
+        Long.valueOf(dto.getMemberId()));
     PostingEntity postingEntity = postingService.getPostingById(postingId);
     dto.setUpdateTime(new Date());
     dto.setCommentCount(postingEntity.getCommentCount());
     dto.setLikeCount(postingEntity.getLikeCount());
     dto.setDislikeCount(postingEntity.getDislikeCount());
     dto.setVisitCount(postingEntity.getVisitCount());
-    postingService.updateById(dto.toEntity(categoryEntity.get()),
+    postingService.updateById(dto.toEntity(categoryEntity.get(), memberEntity.get()),
         postingId);
     List<FileEntity> fileEntities = fileService.getFilesByPostingId(
         postingService.getPostingById(postingId));
@@ -148,6 +167,36 @@ public class PostingController {
     Optional<CategoryEntity> categoryEntity = categoryRepository.findById(Long.valueOf(categoryId));
     List<PostingEntity> postingEntities = postingService.searchPosting(type, keyword,
         categoryEntity.get(), pageable);
+    for (PostingEntity postingEntity : postingEntities) {
+      postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+    }
+
     return ResponseEntity.status(HttpStatus.OK).body(postingEntities);
+  }
+
+  @GetMapping(value = "/like")
+  public ResponseEntity<String> likePosting(@RequestParam("memberId") Long memberId,
+      @RequestParam("postingId") Long postingId, @RequestParam("type") String type) {
+    MemberEntity memberEntity = memberRepository.getById(memberId);
+    PostingEntity postingEntity = postingService.getPostingById(postingId);
+
+    boolean result = postingService.isPostingLike(memberEntity, postingEntity, type.toUpperCase(
+        Locale.ROOT));
+
+    return result ? new ResponseEntity<>("success",
+        HttpStatus.OK) : new ResponseEntity<>("fail", HttpStatus.OK);
+  }
+
+  @GetMapping(value = "/dislike")
+  public ResponseEntity<String> dislikePosting(@RequestParam("memberId") Long memberId,
+      @RequestParam("postingId") Long postingId, @RequestParam("type") String type) {
+    MemberEntity memberEntity = memberRepository.getById(memberId);
+    PostingEntity postingEntity = postingService.getPostingById(postingId);
+
+    boolean result = postingService.isPostingDislike(memberEntity, postingEntity, type.toUpperCase(
+        Locale.ROOT));
+
+    return result ? new ResponseEntity<>("success",
+        HttpStatus.OK) : new ResponseEntity<>("fail", HttpStatus.OK);
   }
 }
