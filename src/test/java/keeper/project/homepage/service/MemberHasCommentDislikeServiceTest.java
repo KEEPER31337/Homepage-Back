@@ -7,10 +7,8 @@ import keeper.project.homepage.entity.CategoryEntity;
 import keeper.project.homepage.entity.CommentEntity;
 import keeper.project.homepage.entity.MemberEntity;
 import keeper.project.homepage.entity.MemberHasCommentDislikeEntity;
-import keeper.project.homepage.entity.MemberHasCommentLikeEntity;
+import keeper.project.homepage.entity.MemberHasCommentEntityPK;
 import keeper.project.homepage.entity.PostingEntity;
-import keeper.project.homepage.entity.identifier.MemberHasCommentDislikeId;
-import keeper.project.homepage.entity.identifier.MemberHasCommentLikeId;
 import keeper.project.homepage.repository.CategoryRepository;
 import keeper.project.homepage.repository.CommentRepository;
 import keeper.project.homepage.repository.MemberHasCommentDislikeRepository;
@@ -31,8 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 public class MemberHasCommentDislikeServiceTest {
-
-  private Logger LOGGER = LogManager.getLogger();
 
   @Autowired
   private MemberHasCommentDislikeRepository memberHasCommentDislikeRepository;
@@ -119,8 +115,8 @@ public class MemberHasCommentDislikeServiceTest {
         .build());
 
     memberHasCommentDislikeEntity = memberHasCommentDislikeRepository.save(
-        MemberHasCommentDislikeEntity.builder().memberHasCommentDislikeId(
-            new MemberHasCommentDislikeId(memberEntity, commentEntity)).build());
+        MemberHasCommentDislikeEntity.builder().memberHasCommentEntityPK(
+            new MemberHasCommentEntityPK(memberEntity, commentEntity)).build());
   }
 
   @Test

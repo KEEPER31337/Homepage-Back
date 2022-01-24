@@ -6,9 +6,9 @@ import java.util.Date;
 import keeper.project.homepage.entity.CategoryEntity;
 import keeper.project.homepage.entity.CommentEntity;
 import keeper.project.homepage.entity.MemberEntity;
+import keeper.project.homepage.entity.MemberHasCommentEntityPK;
 import keeper.project.homepage.entity.MemberHasCommentLikeEntity;
 import keeper.project.homepage.entity.PostingEntity;
-import keeper.project.homepage.entity.identifier.MemberHasCommentLikeId;
 import keeper.project.homepage.repository.CategoryRepository;
 import keeper.project.homepage.repository.CommentRepository;
 import keeper.project.homepage.repository.MemberHasCommentLikeRepository;
@@ -18,12 +18,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,8 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 @Transactional
 public class MemberHasCommentLikeServiceTest {
-
-  private Logger LOGGER = LogManager.getLogger();
 
   @Autowired
   private MemberHasCommentLikeRepository memberHasCommentLikeRepository;
@@ -119,8 +115,8 @@ public class MemberHasCommentLikeServiceTest {
         .build());
 
     memberHasCommentLikeEntity = memberHasCommentLikeRepository.save(
-        MemberHasCommentLikeEntity.builder().memberHasCommentLikeId(
-            new MemberHasCommentLikeId(memberEntity, commentEntity)).build());
+        MemberHasCommentLikeEntity.builder().memberHasCommentEntityPK(
+            new MemberHasCommentEntityPK(memberEntity, commentEntity)).build());
   }
 
   @Test

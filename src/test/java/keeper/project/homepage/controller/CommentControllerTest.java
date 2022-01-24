@@ -27,6 +27,7 @@ import keeper.project.homepage.repository.MemberRepository;
 import keeper.project.homepage.repository.PostingRepository;
 import keeper.project.homepage.service.MemberHasCommentDislikeService;
 import keeper.project.homepage.service.MemberHasCommentLikeService;
+import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
@@ -52,9 +53,8 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@Log4j2
 public class CommentControllerTest {
-
-  private static final Logger LOGGER = LogManager.getLogger(CommentControllerTest.class);
 
   @Autowired
   private MockMvc mockMvc;
@@ -262,7 +262,7 @@ public class CommentControllerTest {
     String updateContent = "{\n"
         + "    \"content\": \"수정한 내용!\"\n"
         + "}";
-    LOGGER.info("수정 전 내용 : " + commentRepository.findById(updateId).get().toString());
+    log.info("수정 전 내용 : " + commentRepository.findById(updateId).get().toString());
     mockMvc.perform(RestDocumentationRequestBuilders.put("/v1/comment/{commentId}", updateId)
             .content(updateContent)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -278,7 +278,7 @@ public class CommentControllerTest {
                 fieldWithPath("msg").description(""),
                 fieldWithPath("data").description("")
             )));
-    LOGGER.info("수정 후 내용 : " + commentRepository.findById(updateId).get().toString());
+    log.info("수정 후 내용 : " + commentRepository.findById(updateId).get().toString());
   }
 
   @Test

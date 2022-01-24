@@ -8,9 +8,9 @@ import java.util.Optional;
 import keeper.project.homepage.entity.CategoryEntity;
 import keeper.project.homepage.entity.CommentEntity;
 import keeper.project.homepage.entity.MemberEntity;
+import keeper.project.homepage.entity.MemberHasCommentEntityPK;
 import keeper.project.homepage.entity.MemberHasCommentLikeEntity;
 import keeper.project.homepage.entity.PostingEntity;
-import keeper.project.homepage.entity.identifier.MemberHasCommentLikeId;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
@@ -112,12 +112,8 @@ public class MemberHasCommentLikeRepositoryTest {
         .build());
 
     memberHasCommentLikeEntity = memberHasCommentLikeRepository.save(
-//        MemberHasCommentLikeEntity.builder().commentEntity(commentEntity).memberEntity(memberEntity)
-//            .build());
-//    LOGGER.info(String.format("create한 member_xx_like: (comment : %ll, member : %ll)",
-//        newMHCL.getCommentEntity().getId(), newMHCL.getMemberEntity().getId()));
-        MemberHasCommentLikeEntity.builder().memberHasCommentLikeId(
-            new MemberHasCommentLikeId(memberEntity, commentEntity)).build());
+        MemberHasCommentLikeEntity.builder().memberHasCommentEntityPK(
+            new MemberHasCommentEntityPK(memberEntity, commentEntity)).build());
   }
 
   @Test
@@ -126,35 +122,34 @@ public class MemberHasCommentLikeRepositoryTest {
     LOGGER.info("comment id : " + commentEntity.getId());
     LOGGER.info("member id : " + memberEntity.getId());
     MemberHasCommentLikeEntity newMHCL = memberHasCommentLikeRepository.save(
-        MemberHasCommentLikeEntity.builder().memberHasCommentLikeId(
-            new MemberHasCommentLikeId(memberEntity, parentComment)).build());
+        MemberHasCommentLikeEntity.builder().memberHasCommentEntityPK(
+            new MemberHasCommentEntityPK(memberEntity, parentComment)).build());
     LOGGER.info(String.format("create한 member_xx_like: (comment : %d, member : %d)",
-        newMHCL.getMemberHasCommentLikeId().getCommentEntity().getId(),
-        newMHCL.getMemberHasCommentLikeId().getMemberEntity().getId()));
-
+        newMHCL.getMemberHasCommentEntityPK().getCommentEntity().getId(),
+        newMHCL.getMemberHasCommentEntityPK().getMemberEntity().getId()));
   }
 
   @Test
   @DisplayName("댓글 id로 \"멤버-댓글 좋아요\" 조회")
   public void findByCommentIdTest() {
-    List<MemberHasCommentLikeEntity> findMHCLs = memberHasCommentLikeRepository.findByMemberHasCommentLikeId_CommentEntity(
+    List<MemberHasCommentLikeEntity> findMHCLs = memberHasCommentLikeRepository.findByMemberHasCommentEntityPK_CommentEntity(
         commentEntity);
     findMHCLs.forEach(
         mhcl -> LOGGER.info(String.format("found member_xx_like: (comment : %d, member : %d)",
-            mhcl.getMemberHasCommentLikeId().getCommentEntity().getId(),
-            mhcl.getMemberHasCommentLikeId().getMemberEntity().getId())));
+            mhcl.getMemberHasCommentEntityPK().getCommentEntity().getId(),
+            mhcl.getMemberHasCommentEntityPK().getMemberEntity().getId())));
     Assertions.assertTrue(!findMHCLs.isEmpty());
   }
 
   @Test
   @DisplayName("멤버 id로 \"멤버-댓글 좋아요\" 조회")
   public void findByMemberIdTest() {
-    List<MemberHasCommentLikeEntity> findMHCLs = memberHasCommentLikeRepository.findByMemberHasCommentLikeId_MemberEntity(
+    List<MemberHasCommentLikeEntity> findMHCLs = memberHasCommentLikeRepository.findByMemberHasCommentEntityPK_MemberEntity(
         memberEntity);
     findMHCLs.forEach(
         mhcl -> LOGGER.info(String.format("found member_xx_like: (comment : %d, member : %d)",
-            mhcl.getMemberHasCommentLikeId().getCommentEntity().getId(),
-            mhcl.getMemberHasCommentLikeId().getMemberEntity().getId())));
+            mhcl.getMemberHasCommentEntityPK().getCommentEntity().getId(),
+            mhcl.getMemberHasCommentEntityPK().getMemberEntity().getId())));
     Assertions.assertTrue(!findMHCLs.isEmpty());
   }
 
@@ -164,8 +159,8 @@ public class MemberHasCommentLikeRepositoryTest {
     List<MemberHasCommentLikeEntity> findMHCLs = memberHasCommentLikeRepository.findAll();
     findMHCLs.forEach(
         mhcl -> LOGGER.info(String.format("found member_xx_like: (comment : %d, member : %d)",
-            mhcl.getMemberHasCommentLikeId().getCommentEntity().getId(),
-            mhcl.getMemberHasCommentLikeId().getMemberEntity().getId())));
+            mhcl.getMemberHasCommentEntityPK().getCommentEntity().getId(),
+            mhcl.getMemberHasCommentEntityPK().getMemberEntity().getId())));
     Assertions.assertTrue(!findMHCLs.isEmpty());
   }
 
@@ -173,81 +168,42 @@ public class MemberHasCommentLikeRepositoryTest {
   @DisplayName("멤버 id와 댓글 id로 \"멤버-댓글 좋아요\" 조회")
   public void findByMemberHasCommentLikeIdTest() {
     Optional<MemberHasCommentLikeEntity> mhcl = memberHasCommentLikeRepository.findById(
-        new MemberHasCommentLikeId(memberEntity, commentEntity));
+        new MemberHasCommentEntityPK(memberEntity, commentEntity));
+
     Assertions.assertTrue(mhcl.isPresent());
     LOGGER.info(String.format("found member_xx_like: (comment : %d, member : %d)",
-        mhcl.get().getMemberHasCommentLikeId().getCommentEntity().getId(),
-        mhcl.get().getMemberHasCommentLikeId().getMemberEntity().getId()));
+        mhcl.get().getMemberHasCommentEntityPK().getCommentEntity().getId(),
+        mhcl.get().getMemberHasCommentEntityPK().getMemberEntity().getId()));
   }
 
   @Test
   @DisplayName("멤버 id와 댓글 id로 \"멤버-댓글 좋아요\" 삭제 - 해당 멤버가 댓글의 좋아요를 취소한 경우")
-  public void deleteByMemberHasCommentLikeIdTest() {
-    List<MemberHasCommentLikeEntity> findMHCLs = memberHasCommentLikeRepository.findAll();
-    findMHCLs.forEach(
-        mhcl -> LOGGER.info(String.format("found member_xx_like: (comment : %d, member : %d)",
-            mhcl.getMemberHasCommentLikeId().getCommentEntity().getId(),
-            mhcl.getMemberHasCommentLikeId().getMemberEntity().getId())));
-
-    LOGGER.info(String.format("delete id : (member_id = %d, comment_id = %d)", memberEntity.getId(),
-        commentEntity.getId()));
+  public void deleteByIdTest() {
     memberHasCommentLikeRepository.deleteById(
-        new MemberHasCommentLikeId(memberEntity, commentEntity));
+        new MemberHasCommentEntityPK(memberEntity, commentEntity));
 
-    findMHCLs = memberHasCommentLikeRepository.findAll();
-    if (findMHCLs.isEmpty()) {
-      LOGGER.info("MemberHasCommentLike table is empty");
-    } else {
-      findMHCLs.forEach(
-          mhcl -> LOGGER.info(String.format("found member_xx_like: (comment : %d, member : %d)",
-              mhcl.getMemberHasCommentLikeId().getCommentEntity().getId(),
-              mhcl.getMemberHasCommentLikeId().getMemberEntity().getId())));
-    }
+    Optional<MemberHasCommentLikeEntity> findMHCLs = memberHasCommentLikeRepository.findById(
+        new MemberHasCommentEntityPK(memberEntity, commentEntity));
+    Assertions.assertTrue(findMHCLs.isEmpty());
   }
 
   @Test
   @DisplayName("댓글 id로 \"멤버-댓글 좋아요\" 삭제 - 해당 댓글이 삭제된 경우")
   public void deleteByCommentIdTest() {
-    List<MemberHasCommentLikeEntity> findMHCLs = memberHasCommentLikeRepository.findAll();
-    findMHCLs.forEach(
-        mhcl -> LOGGER.info(String.format("found member_xx_like: (comment : %d, member : %d)",
-            mhcl.getMemberHasCommentLikeId().getCommentEntity().getId(),
-            mhcl.getMemberHasCommentLikeId().getMemberEntity().getId())));
+    memberHasCommentLikeRepository.deleteByMemberHasCommentEntityPK_CommentEntity(commentEntity);
 
-    LOGGER.info(String.format("delete comment_id = %d", commentEntity.getId()));
-    memberHasCommentLikeRepository.deleteByMemberHasCommentLikeId_CommentEntity(commentEntity);
-
-    findMHCLs = memberHasCommentLikeRepository.findAll();
-    if (findMHCLs.isEmpty()) {
-      LOGGER.info("MemberHasCommentLike table is empty");
-    } else {
-      findMHCLs.forEach(
-          mhcl -> LOGGER.info(String.format("found member_xx_like: (comment : %d, member : %d)",
-              mhcl.getMemberHasCommentLikeId().getCommentEntity().getId(),
-              mhcl.getMemberHasCommentLikeId().getMemberEntity().getId())));
-    }
+    List<MemberHasCommentLikeEntity> findMHCLs = memberHasCommentLikeRepository.findByMemberHasCommentEntityPK_CommentEntity(
+        commentEntity);
+    Assertions.assertTrue(findMHCLs.isEmpty());
   }
 
   @Test
   @DisplayName("멤버 id로 \"멤버-댓글 좋아요\" 삭제 - 해당 멤버 정보가 삭제된 경우")
   public void deleteByMemberIdTest() {
-    List<MemberHasCommentLikeEntity> findMHCLs = memberHasCommentLikeRepository.findAll();
-    findMHCLs.forEach(
-        mhcl -> LOGGER.info(String.format("found member_xx_like: (comment : %d, member : %d)",
-            mhcl.getMemberHasCommentLikeId().getCommentEntity().getId(),
-            mhcl.getMemberHasCommentLikeId().getMemberEntity().getId())));
+    memberHasCommentLikeRepository.deleteByMemberHasCommentEntityPK_MemberEntity(memberEntity);
 
-    LOGGER.info(String.format("delete member_id = %d", memberEntity.getId()));
-    memberHasCommentLikeRepository.deleteByMemberHasCommentLikeId_MemberEntity(memberEntity);
-
-    findMHCLs = memberHasCommentLikeRepository.findAll();
-    if (findMHCLs.isEmpty()) {
-      LOGGER.info("MemberHasCommentLike table is empty");
-    } else {
-      findMHCLs.forEach(
-          mhcl -> LOGGER.info(String.format("found member_xx_like: (comment : %d, member : %d)",
-              mhcl.getMemberHasCommentLikeId().getCommentEntity().getId(),
-              mhcl.getMemberHasCommentLikeId().getMemberEntity().getId())));
-    }
+    List<MemberHasCommentLikeEntity> findMHCLs = memberHasCommentLikeRepository.findByMemberHasCommentEntityPK_MemberEntity(
+        memberEntity);
+    Assertions.assertTrue(findMHCLs.isEmpty());
   }
 }
