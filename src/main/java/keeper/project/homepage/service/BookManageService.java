@@ -39,7 +39,7 @@ public class BookManageService {
   /**
    * 도서 추가
    */
-  public void addBook(String title, String author, String picture, String information, Long total) {
+  public void addBook(String title, String author, String information, Long total) {
     Long borrowState = 0L;
     if (bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
       borrowState = bookRepository.findByTitleAndAuthor(title, author).get().getBorrow();
@@ -48,7 +48,6 @@ public class BookManageService {
         BookEntity.builder()
             .title(title)
             .author(author)
-            .picture(picture)
             .information(information)
             .total(total)
             .borrow(borrowState)
@@ -72,7 +71,6 @@ public class BookManageService {
    * 도서 삭제 업데이트
    */
   public void updateDeleteInformation(String title, String author, Long quantity) {
-    String picture = bookRepository.findByTitleAndAuthor(title, author).get().getPicture();
     String information = bookRepository.findByTitleAndAuthor(title, author).get().getInformation();
     Long borrow = bookRepository.findByTitleAndAuthor(title, author).get().getBorrow();
     Long total = bookRepository.findByTitleAndAuthor(title, author).get().getTotal();
@@ -82,7 +80,6 @@ public class BookManageService {
         BookEntity.builder()
             .title(title)
             .author(author)
-            .picture(picture)
             .information(information)
             .total(total - quantity)
             .borrow(borrow)

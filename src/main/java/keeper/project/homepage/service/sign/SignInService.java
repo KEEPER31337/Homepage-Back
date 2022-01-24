@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 public class SignInService {
 
   private static final int NEW_TEMPORARY_PASSWORD_LENGTH = 12;
-  
+
   private final MemberRepository memberRepository;
   private final PasswordEncoder passwordEncoder;
   private final CustomPasswordService customPasswordService;
@@ -81,7 +81,7 @@ public class SignInService {
   @Transactional
   public void changePassword(String newPassword) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    Integer id = getIdFromAuth(authentication);
+    Long id = getIdFromAuth(authentication);
     MemberEntity memberEntity = memberRepository.findById(id)
         .orElseThrow(CustomLoginIdSigninFailedException::new);
     memberEntity.changePassword(passwordEncoder.encode(newPassword));
@@ -94,10 +94,10 @@ public class SignInService {
         || customPasswordService.checkPasswordWithMD5(password, hashedPassword);
   }
 
-  private Integer getIdFromAuth(Authentication authentication) {
-    int id;
+  private Long getIdFromAuth(Authentication authentication) {
+    long id;
     try {
-      id = Integer.parseInt(authentication.getName());
+      id = Long.parseLong(authentication.getName());
     } catch (NumberFormatException e) {
       throw new CustomLoginIdSigninFailedException("잘못된 JWT 토큰입니다.");
     }

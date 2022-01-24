@@ -14,7 +14,7 @@ public class CustomMemberDetailService implements UserDetailsService {
   private final MemberRepository memberRepository;
 
   public UserDetails loadUserByUsername(String userPk) {
-    return memberRepository.findById(Integer.valueOf(userPk))
+    return memberRepository.findById(Long.valueOf(userPk))
         .orElseThrow(CustomMemberNotFoundException::new);
   }
 

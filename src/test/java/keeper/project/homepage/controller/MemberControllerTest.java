@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -87,10 +88,13 @@ public class MemberControllerTest {
             .roles(new ArrayList<String>(List.of("ROLE_USER")))
             .build());
 
-    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("loginId", loginId);
-    params.add("password", password);
-    MvcResult result = mockMvc.perform(post("/v1/signin").params(params))
+    String content = "{\n"
+        + "    \"loginId\": \"" + loginId + "\",\n"
+        + "    \"password\": \"" + password + "\"\n"
+        + "}";
+    MvcResult result = mockMvc.perform(post("/v1/signin")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(content))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -114,10 +118,13 @@ public class MemberControllerTest {
             .roles(new ArrayList<String>(List.of("ROLE_ADMIN")))
             .build());
 
-    MultiValueMap<String, String> adminParams = new LinkedMultiValueMap<>();
-    adminParams.add("loginId", adminLoginId);
-    adminParams.add("password", adminPassword);
-    MvcResult adminResult = mockMvc.perform(post("/v1/signin").params(adminParams))
+    String adminContent = "{\n"
+        + "    \"loginId\": \"" + adminLoginId + "\",\n"
+        + "    \"password\": \"" + adminPassword + "\"\n"
+        + "}";
+    MvcResult adminResult = mockMvc.perform(post("/v1/signin")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(adminContent))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))

@@ -19,7 +19,7 @@ public class OriginalImageEntity implements Serializable {
 
   @Id // pk
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+  private Long id;
 
   @Column(name = "path", length = 512)
   private String path;

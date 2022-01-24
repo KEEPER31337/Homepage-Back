@@ -41,7 +41,7 @@ public class MemberEntity implements UserDetails, Serializable {
 
   @Id // pk
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+  private Long id;
 
   @Column(name = "login_id", length = 80, nullable = false, unique = true)
   private String loginId;

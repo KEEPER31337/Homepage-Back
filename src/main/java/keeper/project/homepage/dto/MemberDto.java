@@ -21,7 +21,7 @@ import lombok.Setter;
 @Builder
 public class MemberDto {
 
-  private Integer id;
+  private Long id;
   private String loginId;
   private String emailAddress;
   private String password;
