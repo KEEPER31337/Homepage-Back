@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.util.Assert;
 
 @Entity
@@ -22,6 +23,7 @@ import org.springframework.util.Assert;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 @Table(name = "comment")
 public class CommentEntity {
 
@@ -50,14 +52,14 @@ public class CommentEntity {
   @NotNull
   @Column
   private Long parentId;
-  //  @ManyToOne(targetEntity = MemberEntity.class, fetch = FetchType.LAZY)
-//  @JoinColumn(name = "member_id")
-//  @NotNull
-  @Column
-  private Integer memberId;
+  @ManyToOne(targetEntity = MemberEntity.class, fetch = FetchType.LAZY)
+  @JoinColumn(name = "member_id")
+  @NotNull
+//  @Column
+  private MemberEntity memberId;
+  @ManyToOne(targetEntity = PostingEntity.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "posting_id")
   @NotNull
-  @ManyToOne(targetEntity = PostingEntity.class, fetch = FetchType.LAZY)
   private PostingEntity postingId;
 
   public void increaseLikeCount() {

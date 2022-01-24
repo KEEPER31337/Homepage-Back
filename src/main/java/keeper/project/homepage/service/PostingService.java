@@ -10,12 +10,14 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.MemberHasPostingDislikeEntity;
 import keeper.project.homepage.entity.MemberHasPostingLikeEntity;
 import keeper.project.homepage.entity.PostingEntity;
+import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.repository.CategoryRepository;
 import keeper.project.homepage.repository.MemberHasPostingDislikeRepository;
 import keeper.project.homepage.repository.MemberHasPostingLikeRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.PostingRepository;
+import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +31,7 @@ public class PostingService {
   private final PostingRepository postingRepository;
   private final CategoryRepository categoryRepository;
   private final MemberRepository memberRepository;
+  private final ThumbnailRepository thumbnailRepository;
   private final MemberHasPostingLikeRepository memberHasPostingLikeRepository;
   private final MemberHasPostingDislikeRepository memberHasPostingDislikeRepository;
 
@@ -64,10 +67,12 @@ public class PostingService {
     Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
         Long.valueOf(dto.getCategoryId()));
     Optional<MemberEntity> memberEntity = memberRepository.findById(
-        dto.getMemberId());
+        Long.valueOf(dto.getMemberId()));
+    Optional<ThumbnailEntity> thumbnailEntity = thumbnailRepository.findById(dto.getThumbnailId());
     dto.setRegisterTime(new Date());
     dto.setUpdateTime(new Date());
-    PostingEntity postingEntity = dto.toEntity(categoryEntity.get(), memberEntity.get());
+    PostingEntity postingEntity = dto.toEntity(categoryEntity.get(), memberEntity.get(),
+        thumbnailEntity.get());
 
     return postingRepository.save(postingEntity);
   }

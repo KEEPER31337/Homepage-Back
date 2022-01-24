@@ -18,8 +18,8 @@ public class CommentService {
   @Autowired
   private CommentRepository commentRepository;
 
-  public void save(CommentEntity commentEntity) {
-    commentRepository.save(commentEntity);
+  public CommentEntity save(CommentEntity commentEntity) {
+    return commentRepository.save(commentEntity);
   }
 
   public List<CommentEntity> commentViewAll() {

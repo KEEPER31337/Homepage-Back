@@ -3,21 +3,21 @@ package keeper.project.homepage.controller;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import keeper.project.homepage.dto.CommentDto;
 import keeper.project.homepage.dto.CommonResult;
 import keeper.project.homepage.dto.ListResult;
 import keeper.project.homepage.dto.SingleResult;
 import keeper.project.homepage.entity.CommentEntity;
+import keeper.project.homepage.entity.MemberEntity;
 import keeper.project.homepage.entity.PostingEntity;
-import keeper.project.homepage.repository.PostingRepository;
 import keeper.project.homepage.service.CommentService;
+import keeper.project.homepage.service.MemberHasCommentDislikeService;
+import keeper.project.homepage.service.MemberHasCommentLikeService;
+import keeper.project.homepage.service.MemberService;
+import keeper.project.homepage.service.PostingService;
 import keeper.project.homepage.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
@@ -29,11 +29,12 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Log4j2
@@ -42,28 +43,31 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/v1/comment")
 public class CommentController {
 
-  private static final Logger LOGGER = LogManager.getLogger(CommentController.class);
+  private final CommentService commentService;
 
-  @Autowired
-  private CommentService commentService;
+  private final PostingService postingService;
 
-  @Autowired
-  private PostingRepository postingRepository;
+  private final MemberService memberService;
 
   private final ResponseService responseService;
+
+  private final MemberHasCommentLikeService memberHasCommentLikeService;
+
+  private final MemberHasCommentDislikeService memberHasCommentDislikeService;
 
   @PostMapping(value = "/{postId}", consumes = MediaType.APPLICATION_JSON_VALUE)
   public SingleResult<String> createComment(
       @PathVariable("postId") Long postId,
       @RequestBody CommentDto commentDto) {
 
-    Optional<PostingEntity> postingEntity = postingRepository.findById(postId);
-    if (!postingEntity.isPresent()) {
-      return responseService.getSingleResult("postingId not found");
-    }
+    PostingEntity postingEntity = postingService.getPostingById(postId);
+    MemberEntity memberEntity = memberService.findById(commentDto.getMemberId());
     commentDto.setRegisterTime(LocalDate.now());
     commentDto.setUpdateTime(LocalDate.now());
-    commentService.save(commentDto.toEntity(postingEntity.get()));
+    if (commentDto.getParentId() == null) {
+      commentDto.setParentId(0L);
+    }
+    commentService.save(commentDto.toEntity(postingEntity, memberEntity));
 
     return responseService.getSingleResult("success");
   }
@@ -75,15 +79,15 @@ public class CommentController {
           @SortDefault(sort = "registerTime", direction = Direction.ASC)})
       @PageableDefault(page = 0, size = 10) Pageable pageable) {
 
-    PostingEntity postingEntity = postingRepository.findById(postId).get();
-    Page<CommentEntity> page = commentService.findAllByPost(postingEntity, pageable);
+    PostingEntity postingEntity = postingService.getPostingById(postId);
+    Page<CommentEntity> entityPage = commentService.findAllByPost(postingEntity, pageable);
 
-    List<CommentDto> commentDtos = new ArrayList<>();
-    page.getContent().forEach(content -> commentDtos.add(
+    List<CommentDto> dtoPage = new ArrayList<>();
+    entityPage.getContent().forEach(content -> dtoPage.add(
         new CommentDto(content.getContent(), content.getRegisterTime(), content.getUpdateTime(),
             content.getIpAddress(), content.getLikeCount(), content.getDislikeCount(),
-            content.getParentId(), content.getMemberId(), postId.intValue())));
-    return responseService.getListResult(commentDtos);
+            content.getParentId(), content.getMemberId().getId(), postId)));
+    return responseService.getListResult(dtoPage);
   }
 
   @GetMapping("/{postId}/{parentId}")
@@ -91,12 +95,13 @@ public class CommentController {
       @PathVariable("postId") Long postId, @PathVariable("parentId") Long parentId,
       @SortDefaults({@SortDefault(sort = "id", direction = Direction.ASC),
           @SortDefault(sort = "registerTime", direction = Direction.ASC)})
-      @PageableDefault(page = 0, size = 20) Pageable pageable) {
-    PostingEntity postingEntity = postingRepository.findById(postId).get();
-    Page<CommentEntity> page = commentService.findAllByParentIdAndPost(parentId, postingEntity,
+      @PageableDefault(page = 0, size = 10) Pageable pageable) {
+    PostingEntity postingEntity = postingService.getPostingById(postId);
+    Page<CommentEntity> entityPage = commentService.findAllByParentIdAndPost(parentId,
+        postingEntity,
         pageable);
 
-    return ResponseEntity.status(HttpStatus.OK).body(page.getContent());
+    return ResponseEntity.status(HttpStatus.OK).body(entityPage.getContent());
   }
 
   @DeleteMapping("/{commentId}")
@@ -105,7 +110,7 @@ public class CommentController {
     return responseService.getSuccessResult();
   }
 
-  @PatchMapping(value = "/{commentId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+  @PutMapping(value = "/{commentId}", consumes = MediaType.APPLICATION_JSON_VALUE)
   public SingleResult<String> modifyComment(
       @PathVariable("commentId") Long commentId,
       @RequestBody CommentDto commentDto) {
@@ -117,10 +122,39 @@ public class CommentController {
     commentDto.setIpAddress(original.getIpAddress());
 
     CommentEntity result = commentService.updateById(commentId,
-        commentDto.toEntity(original.getPostingId()));
+        commentDto.toEntity(original.getPostingId(), original.getMemberId()));
 
-    return result.getId().equals(commentId) ? responseService.getSingleResult("success")
+    return result.getId() != null ? responseService.getSingleResult("success")
         : responseService.getSingleResult("fail to update");
   }
 
+  @GetMapping(value = "/like")
+  public SingleResult<String> updateLike(@RequestParam("commentId") Long commentId,
+      @RequestParam("memberId") Long memberId) {
+    MemberEntity memberEntity = memberService.findById(memberId);
+    CommentEntity commentEntity = commentService.findById(commentId);
+    if (memberHasCommentLikeService.findById(memberEntity, commentEntity) == null) {
+      memberHasCommentLikeService.saveWithMemberAndCommentEntity(memberEntity, commentEntity);
+      commentService.increaseLikeCount(commentId);
+    } else {
+      memberHasCommentLikeService.deleteByMemberAndCommentEntity(memberEntity, commentEntity);
+      commentService.decreaseLikeCount(commentId);
+    }
+    return responseService.getSingleResult("success");
+  }
+
+  @GetMapping(value = "/dislike")
+  public SingleResult<String> updateDislike(@RequestParam("commentId") Long commentId,
+      @RequestParam("memberId") Long memberId) {
+    MemberEntity memberEntity = memberService.findById(memberId);
+    CommentEntity commentEntity = commentService.findById(commentId);
+    if (memberHasCommentDislikeService.findById(memberEntity, commentEntity) == null) {
+      memberHasCommentDislikeService.saveWithMemberAndCommentEntity(memberEntity, commentEntity);
+      commentService.increaseDislikeCount(commentId);
+    } else {
+      memberHasCommentDislikeService.deleteByMemberAndCommentEntity(memberEntity, commentEntity);
+      commentService.decreaseDislikeCount(commentId);
+    }
+    return responseService.getSingleResult("success");
+  }
 }

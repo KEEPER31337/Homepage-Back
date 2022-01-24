@@ -40,4 +40,12 @@ public class ThumbnailEntity implements Serializable {
   @OneToOne(mappedBy = "thumbnail")
   @JsonBackReference(value = "thumbnail")
   private MemberEntity memberEntity;
+  
+  public void updatePath(String path) {
+    this.path = path;
+  }
+
+  public void updateOriginalImage(OriginalImageEntity originalImageEntity) {
+    this.originalImage = originalImageEntity;
+  }
 }

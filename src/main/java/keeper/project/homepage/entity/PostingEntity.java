@@ -1,5 +1,6 @@
 package keeper.project.homepage.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.AllArgsConstructor;
@@ -72,10 +74,10 @@ public class PostingEntity {
   @JoinColumn(name = "category_id")
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private CategoryEntity categoryId;
-  //  @OneToOne(targetEntity = ThumbnailEntity.class, fetch = FetchType.LAZY)
-//  @JoinColumn(name = "thumbnail_id")
-//  @JsonIgnore
-//  private ThumbnailEntity thumbnailId;
+  @OneToOne(targetEntity = ThumbnailEntity.class, fetch = FetchType.LAZY)
+  @JoinColumn(name = "thumbnail_id")
+  @JsonIgnore
+  private ThumbnailEntity thumbnailId;
   @OneToMany(cascade = CascadeType.ALL, targetEntity = MemberHasPostingLikeEntity.class, mappedBy = "postingId", orphanRemoval = true, fetch = FetchType.LAZY)
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private List<MemberHasPostingLikeEntity> memberHasPostingLikeEntities = new ArrayList<>();

@@ -1,14 +1,14 @@
 package keeper.project.homepage.controller;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
 import keeper.project.homepage.dto.PostingDto;
 import keeper.project.homepage.entity.CategoryEntity;
 import keeper.project.homepage.entity.FileEntity;
+import keeper.project.homepage.entity.OriginalImageEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.PostingEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -16,10 +16,11 @@ import keeper.project.homepage.repository.CategoryRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.service.FileService;
+import keeper.project.homepage.service.OriginalImageService;
 import keeper.project.homepage.service.PostingService;
+import keeper.project.homepage.service.ThumbnailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.apache.tomcat.jni.Local;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
@@ -46,6 +47,8 @@ public class PostingController {
   private final MemberRepository memberRepository;
   private final CategoryRepository categoryRepository;
   private final FileService fileService;
+  private final OriginalImageService originalImageService;
+  private final ThumbnailService thumbnailService;
 
   /* ex) http://localhost:8080/v1/posts?category=6&page=1
    * page default 0, size default 10
@@ -72,8 +75,14 @@ public class PostingController {
       MediaType.TEXT_PLAIN_VALUE})
   public ResponseEntity<String> createPosting(
       @RequestParam(value = "file", required = false) List<MultipartFile> files,
+      @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
       PostingDto dto) {
+    UUID uuid = UUID.randomUUID();
+    OriginalImageEntity originalImageEntity = originalImageService.save(thumbnail, uuid);
+    ThumbnailEntity thumbnailEntity = thumbnailService.save(thumbnail, originalImageEntity, uuid,
+        100, 100);
 
+    dto.setThumbnailId(thumbnailEntity.getId());
     PostingEntity postingEntity = postingService.save(dto);
     fileService.saveFiles(files, dto, postingEntity);
 
@@ -102,7 +111,16 @@ public class PostingController {
       MediaType.TEXT_PLAIN_VALUE})
   public ResponseEntity<String> modifyPosting(
       @RequestParam(value = "file", required = false) List<MultipartFile> files,
+      @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
       PostingDto dto, @PathVariable("pid") Long postingId) {
+
+    ThumbnailEntity savedThumbnail = thumbnailService.findById(dto.getThumbnailId());
+    originalImageService.deleteById(savedThumbnail.getOriginalImage().getId());
+    thumbnailService.deleteById(savedThumbnail.getId());
+    UUID uuid = UUID.randomUUID();
+    OriginalImageEntity originalImageEntity = originalImageService.save(thumbnail, uuid);
+    ThumbnailEntity thumbnailEntity = thumbnailService.save(thumbnail, originalImageEntity, uuid,
+        100, 100);
 
     Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
         Long.valueOf(dto.getCategoryId()));
@@ -114,7 +132,8 @@ public class PostingController {
     dto.setLikeCount(postingEntity.getLikeCount());
     dto.setDislikeCount(postingEntity.getDislikeCount());
     dto.setVisitCount(postingEntity.getVisitCount());
-    postingService.updateById(dto.toEntity(categoryEntity.get(), memberEntity.get()),
+    postingService.updateById(
+        dto.toEntity(categoryEntity.get(), memberEntity.get(), thumbnailEntity),
         postingId);
     List<FileEntity> fileEntities = fileService.getFilesByPostingId(
         postingService.getPostingById(postingId));
@@ -127,6 +146,11 @@ public class PostingController {
 
   @DeleteMapping(value = "/{pid}", produces = {MediaType.TEXT_PLAIN_VALUE})
   public ResponseEntity<String> removePosting(@PathVariable("pid") Long postingId) {
+
+    ThumbnailEntity deleteThumbnail = thumbnailService.findById(
+        postingService.getPostingById(postingId).getThumbnailId().getId());
+    originalImageService.deleteById(deleteThumbnail.getOriginalImage().getId());
+    thumbnailService.deleteById(deleteThumbnail.getId());
 
     List<FileEntity> fileEntities = fileService.getFilesByPostingId(
         postingService.getPostingById(postingId));

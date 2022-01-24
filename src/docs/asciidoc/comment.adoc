@@ -110,3 +110,47 @@ include::{snippets}/comment-update/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/comment-update/response-fields.adoc[]
+
+== *댓글 좋아요*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/comment-like/http-request.adoc[]
+
+=== Request Parameters
+
+include::{snippets}/comment-like/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/comment-like/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/comment-like/response-fields.adoc[]
+
+== *댓글 싫어요*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/comment-dislike/http-request.adoc[]
+
+=== Request Parameters
+
+include::{snippets}/comment-dislike/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/comment-dislike/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/comment-dislike/response-fields.adoc[]
