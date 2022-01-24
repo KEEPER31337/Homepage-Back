@@ -32,12 +32,6 @@ public class SignInService {
     return memberEntity;
   }
 
-  private boolean passwordMatches(String password, String hashedPassword) {
-    return passwordEncoder.matches(password, hashedPassword)
-        || customPasswordService.checkPasswordWithPBKDF2SHA256(password, hashedPassword)
-        || customPasswordService.checkPasswordWithMD5(password, hashedPassword);
-  }
-
   public String createJwtToken(MemberEntity memberEntity) {
     return "Bearer " + jwtTokenProvider.createToken(String.valueOf(memberEntity.getId()),
         memberEntity.getRoles());
@@ -51,6 +45,12 @@ public class SignInService {
         .orElseThrow(CustomLoginIdSigninFailedException::new);
     memberEntity.changePassword(passwordEncoder.encode(newPassword));
     memberRepository.save(memberEntity);
+  }
+
+  private boolean passwordMatches(String password, String hashedPassword) {
+    return passwordEncoder.matches(password, hashedPassword)
+        || customPasswordService.checkPasswordWithPBKDF2SHA256(password, hashedPassword)
+        || customPasswordService.checkPasswordWithMD5(password, hashedPassword);
   }
 
   private Integer getIdFromAuth(Authentication authentication) {

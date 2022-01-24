@@ -22,15 +22,10 @@ public class MailService {
 //    toUserList.add("ghimmk@naver.com");
 
     int toUserSize = toUserList.size();
-
     SimpleMailMessage simpleMessage = new SimpleMailMessage();
-
     simpleMessage.setTo((String[]) toUserList.toArray(new String[toUserSize]));
-
     simpleMessage.setSubject(subject);
-
     simpleMessage.setText(text);
-
     javaMailSender.send(simpleMessage);
   }
 }

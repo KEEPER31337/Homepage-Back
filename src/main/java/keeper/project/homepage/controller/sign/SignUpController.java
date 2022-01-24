@@ -24,56 +24,55 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/v1/signup")
 public class SignUpController {
 
-    private final DuplicateCheckService duplicateCheckService;
-    private final ResponseService responseService;
-    private final SignUpService signUpService;
+  private final DuplicateCheckService duplicateCheckService;
+  private final ResponseService responseService;
+  private final SignUpService signUpService;
 
-    @PostMapping(value = "")
-    public CommonResult signUp(
-            @RequestBody MemberDto memberDto
-    ) {
+  @PostMapping(value = "")
+  public CommonResult signUp(
+      @RequestBody MemberDto memberDto
+  ) {
+    signUpService.signUpWithEmailAuthCode(memberDto);
+    return responseService.getSuccessResult();
+  }
 
-        signUpService.signUpWithEmailAuthCode(memberDto);
-        return responseService.getSuccessResult();
-    }
+  @PostMapping(value = "/emailauth")
+  public CommonResult emailAuth(
+      @RequestBody EmailAuthDto emailAuthDto
+  ) {
 
-    @PostMapping(value = "/emailauth")
-    public CommonResult emailAuth(
-            @RequestBody EmailAuthDto emailAuthDto
-    ) {
+    EmailAuthDto emailAuthDtoForSend = signUpService.generateEmailAuth(emailAuthDto);
+    signUpService.sendEmailAuthCode(emailAuthDtoForSend);
+    return responseService.getSuccessResult();
+  }
 
-        EmailAuthDto emailAuthDtoForSend = signUpService.generateEmailAuth(emailAuthDto);
-        signUpService.sendEmailAuthCode(emailAuthDtoForSend);
-        return responseService.getSuccessResult();
-    }
+  @GetMapping(value = "/checkloginidduplication")
+  public SingleResult<Boolean> checkLoginIdDuplication(
+      @RequestParam String loginId
+  ) {
 
-    @GetMapping(value = "/checkloginidduplication")
-    public SingleResult<Boolean> checkLoginIdDuplication(
-            @RequestParam String loginId
-    ) {
+    return responseService.getSingleResult(
+        duplicateCheckService.checkLoginIdDuplicate(loginId)
+    );
+  }
 
-        return responseService.getSingleResult(
-                duplicateCheckService.checkLoginIdDuplicate(loginId)
-        );
-    }
+  @GetMapping(value = "/checkemailaddressduplication")
+  public SingleResult<Boolean> checkEmailAddressDuplication(
+      @RequestParam String emailAddress
+  ) {
 
-    @GetMapping(value = "/checkemailaddressduplication")
-    public SingleResult<Boolean> checkEmailAddressDuplication(
-            @RequestParam String emailAddress
-    ) {
+    return responseService.getSingleResult(
+        duplicateCheckService.checkEmailAddressDuplicate(emailAddress)
+    );
+  }
 
-        return responseService.getSingleResult(
-                duplicateCheckService.checkEmailAddressDuplicate(emailAddress)
-        );
-    }
+  @GetMapping(value = "/checkstudentidduplication")
+  public SingleResult<Boolean> checkStudentIdDuplication(
+      @RequestParam String studentId
+  ) {
 
-    @GetMapping(value = "/checkstudentidduplication")
-    public SingleResult<Boolean> checkStudentIdDuplication(
-            @RequestParam String studentId
-    ) {
-
-        return responseService.getSingleResult(
-                duplicateCheckService.checkStudentIdDuplicate(studentId)
-        );
-    }
+    return responseService.getSingleResult(
+        duplicateCheckService.checkStudentIdDuplicate(studentId)
+    );
+  }
 }

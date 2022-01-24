@@ -11,6 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class EmailAuthDto {
-    private String emailAddress;
-    private String authCode;
+
+  private String emailAddress;
+  private String authCode;
 }
