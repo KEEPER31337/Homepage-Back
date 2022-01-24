@@ -1,18 +1,13 @@
 package keeper.project.homepage.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Builder                    // builder를 사용할수 있게 합니다.
 @Entity                     // jpa entity임을 알립니다.
@@ -30,7 +25,6 @@ public class OriginalImageEntity implements Serializable {
   private String path;
 
   @OneToOne(mappedBy = "originalImage")
-  @JsonBackReference
+  @JsonManagedReference
   private ThumbnailEntity thumbnailEntity;
-
 }

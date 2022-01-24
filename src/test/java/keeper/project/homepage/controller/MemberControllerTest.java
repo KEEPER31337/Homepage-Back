@@ -51,17 +51,18 @@ public class MemberControllerTest {
 
   private String userToken;
   private String adminToken;
-  private final String AuthorizationType = "Bearer";
 
   final private String loginId = "hyeonmomo";
   final private String password = "keeper";
   final private String realName = "JeongHyeonMo";
+  final private String nickName = "JeongHyeonMo";
   final private String emailAddress = "gusah@naver.com";
   final private String studentId = "201724579";
 
   final private String adminLoginId = "hyeonmoAdmin";
   final private String adminPassword = "keeper2";
   final private String adminRealName = "JeongHyeonMo2";
+  final private String adminNickName = "JeongHyeonMo2";
   final private String adminEmailAddress = "gusah2@naver.com";
   final private String adminStudentId = "201724580";
   final private String adminPhoneNumber = "0100100101";
@@ -80,6 +81,7 @@ public class MemberControllerTest {
             .loginId(loginId)
             .password(passwordEncoder.encode(password))
             .realName(realName)
+            .nickName(nickName)
             .emailAddress(emailAddress)
             .studentId(studentId)
             .roles(new ArrayList<String>(List.of("ROLE_USER")))
@@ -99,13 +101,14 @@ public class MemberControllerTest {
 
     String resultString = result.getResponse().getContentAsString();
     JacksonJsonParser jsonParser = new JacksonJsonParser();
-    userToken = AuthorizationType + " " + jsonParser.parseMap(resultString).get("data").toString();
+    userToken = jsonParser.parseMap(resultString).get("data").toString();
 
     memberRepository.save(
         MemberEntity.builder()
             .loginId(adminLoginId)
             .password(passwordEncoder.encode(adminPassword))
             .realName(adminRealName)
+            .nickName(adminNickName)
             .emailAddress(adminEmailAddress)
             .studentId(adminStudentId)
             .roles(new ArrayList<String>(List.of("ROLE_ADMIN")))

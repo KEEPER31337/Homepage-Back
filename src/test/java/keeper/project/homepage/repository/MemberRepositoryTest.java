@@ -39,6 +39,7 @@ public class MemberRepositoryTest {
   public void whenFindByUid_thenReturnUser() {
     String loginId = "hyeonmomo";
     String realName = "JeongHyeonMo";
+    String nickName = "JeongHyeonMo";
     String emailAddress = "gusah@naver.com";
     String studentId = "201724579";
     // given
@@ -46,6 +47,7 @@ public class MemberRepositoryTest {
         .loginId(loginId)
         .password(passwordEncoder.encode("1234"))
         .realName(realName)
+        .nickName(nickName)
         .emailAddress(emailAddress)
         .studentId(studentId)
         .roles(new ArrayList<String>(List.of("ROLE_USER")))
@@ -66,6 +68,7 @@ public class MemberRepositoryTest {
   public void memberPasswordChange() {
     String loginId = "hyeonmomo";
     String realName = "JeongHyeonMo";
+    String nickName = "JeongHyeonMo";
     String emailAddress = "gusah@naver.com";
     String studentId = "201724579";
     String password = "1234";
@@ -75,6 +78,7 @@ public class MemberRepositoryTest {
         .loginId(loginId)
         .password(passwordEncoder.encode(password))
         .realName(realName)
+        .nickName(nickName)
         .emailAddress(emailAddress)
         .studentId(studentId)
         .roles(new ArrayList<String>(List.of("ROLE_USER")))

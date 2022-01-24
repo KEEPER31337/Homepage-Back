@@ -1,8 +1,6 @@
 package keeper.project.homepage.entity.member;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -57,8 +55,8 @@ public class MemberEntity implements UserDetails, Serializable {
 
   @Column(name = "real_name", length = 40, nullable = false)
   private String realName;
-
-  @Column(name = "nick_name", length = 40)
+  
+  @Column(name = "nick_name", length = 40, nullable = false)
   private String nickName;
 
   @Column(name = "birthday")
@@ -74,14 +72,14 @@ public class MemberEntity implements UserDetails, Serializable {
   @ManyToOne
   @JoinColumn(name = "member_type_id")
   @NotFound(action = NotFoundAction.IGNORE)
-  @JsonManagedReference
+  
   // DEFAULT 1
   private MemberTypeEntity memberType;
 
   @ManyToOne
   @JoinColumn(name = "member_rank_id")
   @NotFound(action = NotFoundAction.IGNORE)
-  @JsonManagedReference
+  
   // DEFAULT 1
   private MemberRankEntity memberRank;
 
@@ -93,7 +91,7 @@ public class MemberEntity implements UserDetails, Serializable {
 
   @OneToOne
   @JoinColumn(name = "thumbnail_id")
-  @JsonManagedReference
+  
   // DEFAULT 1
   private ThumbnailEntity thumbnail;
 
@@ -106,7 +104,7 @@ public class MemberEntity implements UserDetails, Serializable {
   }
 
   @OneToMany(mappedBy = "memberEntity")
-  @JsonBackReference
+  
   @Builder.Default
   private List<MemberHasMemberJobEntity> memberJobs = new ArrayList<>();
 

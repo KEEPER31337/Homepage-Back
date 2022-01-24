@@ -34,10 +34,10 @@ public class ThumbnailEntity implements Serializable {
 
   @OneToOne
   @JoinColumn(name = "original_image_id")
-  @JsonManagedReference
+  @JsonBackReference
   private OriginalImageEntity originalImage;
 
   @OneToOne(mappedBy = "thumbnail")
-  @JsonBackReference
+  @JsonBackReference(value = "thumbnail")
   private MemberEntity memberEntity;
 }

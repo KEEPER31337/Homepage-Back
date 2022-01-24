@@ -73,4 +73,12 @@ public class ExceptionAdvice {
     return responseService.getFailResult(Integer.parseInt(getMessage("accessDenied.code")),
         getMessage("accessDenied.msg"));
   }
+
+  @ExceptionHandler(CustomSignUpFailedException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  public CommonResult signUpFailedException(HttpServletRequest request,
+      CustomSignUpFailedException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("signUpFailed.code")),
+        e.getMessage() == null ? getMessage("signUpFailed.msg") : e.getMessage());
+  }
 }

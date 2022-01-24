@@ -1,25 +1,18 @@
 package keeper.project.homepage.controller.sign;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import keeper.project.homepage.dto.CommonResult;
+import keeper.project.homepage.dto.EmailAuthDto;
+import keeper.project.homepage.dto.MemberDto;
 import keeper.project.homepage.dto.SingleResult;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.ThumbnailEntity;
-import keeper.project.homepage.repository.member.MemberRankRepository;
-import keeper.project.homepage.repository.member.MemberRepository;
-import keeper.project.homepage.repository.member.MemberTypeRepository;
+import keeper.project.homepage.service.mail.MailService;
 import keeper.project.homepage.service.sign.DuplicateCheckService;
 import keeper.project.homepage.service.ResponseService;
 import keeper.project.homepage.service.sign.SignUpService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.lang.Nullable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,16 +30,19 @@ public class SignUpController {
 
   @PostMapping(value = "")
   public CommonResult signUp(
-      @RequestParam String loginId,
-      @RequestParam String emailAddress,
-      @RequestParam String password,
-      @RequestParam String realName,
-      @RequestParam @Nullable String nickName,
-      @RequestParam @DateTimeFormat(pattern = "yyyyMMdd") @Nullable Date birthday,
-      @RequestParam String studentId
+      @RequestBody MemberDto memberDto
+  ) {
+    signUpService.signUpWithEmailAuthCode(memberDto);
+    return responseService.getSuccessResult();
+  }
+
+  @PostMapping(value = "/emailauth")
+  public CommonResult emailAuth(
+      @RequestBody EmailAuthDto emailAuthDto
   ) {
 
-    signUpService.signUp(loginId, emailAddress, password, realName, nickName, birthday, studentId);
+    EmailAuthDto emailAuthDtoForSend = signUpService.generateEmailAuth(emailAuthDto);
+    signUpService.sendEmailAuthCode(emailAuthDtoForSend);
     return responseService.getSuccessResult();
   }
 

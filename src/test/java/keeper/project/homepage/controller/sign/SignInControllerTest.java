@@ -7,6 +7,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
@@ -33,6 +34,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -98,16 +100,25 @@ public class SignInControllerTest {
   @Test
   @DisplayName("로그인 성공")
   public void signIn() throws Exception {
-    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("loginId", loginId);
-    params.add("password", password);
-    mockMvc.perform(post("/v1/signin").params(params)).andDo(print()).andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true)).andExpect(jsonPath("$.code").value(0))
-        .andExpect(jsonPath("$.msg").exists()).andExpect(jsonPath("$.data").exists())
-        .andExpect(status().isOk()).andDo(document("sign-in",
-            requestParameters(parameterWithName("loginId").description("로그인 아이디"),
-                parameterWithName("password").description("로그인 비밀번호")),
-            responseFields(fieldWithPath("success").description("로그인 실패 시 false 값을 보냅니다."),
+    String content = "{\n"
+        + "    \"loginId\": \"" + loginId + "\",\n"
+        + "    \"password\": \"" + password + "\"\n"
+        + "}";
+    mockMvc.perform(post("/v1/signin")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(content))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").exists())
+        .andExpect(jsonPath("$.data").exists())
+        .andDo(document("sign-in",
+            requestFields(
+                fieldWithPath("loginId").description("로그인 아이디"),
+                fieldWithPath("password").description("로그인 비밀번호")),
+            responseFields(
+                fieldWithPath("success").description("로그인 실패 시 false 값을 보냅니다."),
                 fieldWithPath("code").description("로그인 실패 시 -1001 코드를 보냅니다."),
                 fieldWithPath("msg").description("상태 메시지를 보냅니다."),
                 fieldWithPath("data").description("로그인 성공 시 JWT 토큰을 담아서 보냅니다.").optional())));
@@ -118,12 +129,16 @@ public class SignInControllerTest {
   public void signInFail() throws Exception {
     String signInFailedCode = messageSource.getMessage("SigninFailed.code", null,
         LocaleContextHolder.getLocale());
-
-    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("loginId", loginId);
-    params.add("password", password + "1");
-    mockMvc.perform(post("/v1/signin").params(params)).andDo(print())
-        .andExpect(status().is5xxServerError()).andExpect(jsonPath("$.success").value(false))
+    String content = "{\n"
+        + "    \"loginId\": \"" + loginId + "\",\n"
+        + "    \"password\": \"" + password + "1" + "\"\n"
+        + "}";
+    mockMvc.perform(post("/v1/signin")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(content))
+        .andDo(print())
+        .andExpect(status().is5xxServerError())
+        .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(signInFailedCode))
         .andExpect(jsonPath("$.msg").exists());
   }
@@ -133,13 +148,20 @@ public class SignInControllerTest {
   @Transactional
   public void passwordChangeSuccess() throws Exception {
     /* ==== 로그인 후 토큰 생성 Start ==== */
-    MultiValueMap<String, String> signInParams = new LinkedMultiValueMap<>();
-    signInParams.add("loginId", loginId);
-    signInParams.add("password", password);
-    MvcResult result = mockMvc.perform(post("/v1/signin").params(signInParams)).andDo(print())
-        .andExpect(status().isOk()).andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.code").value(0)).andExpect(jsonPath("$.msg").exists())
-        .andExpect(jsonPath("$.data").exists()).andReturn();
+    String loginContent = "{\n"
+        + "    \"loginId\": \"" + loginId + "\",\n"
+        + "    \"password\": \"" + password + "\"\n"
+        + "}";
+    MvcResult result = mockMvc.perform(post("/v1/signin")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(loginContent))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").exists())
+        .andExpect(jsonPath("$.data").exists())
+        .andReturn();
 
     String resultString = result.getResponse().getContentAsString();
     JacksonJsonParser jsonParser = new JacksonJsonParser();
@@ -151,16 +173,21 @@ public class SignInControllerTest {
     String prevHashedPassword = PrevMemberEntity.getPassword();
 
     String newPassword = password + "1";
-    MultiValueMap<String, String> changePasswordParams = new LinkedMultiValueMap<>();
-    changePasswordParams.add("newPassword", newPassword);
-    mockMvc.perform(post("/v1/signin/change-password").header("Authorization", userToken)
-            .params(changePasswordParams)).andDo(print()).andExpect(status().isOk())
+    String passwordChangeContent = "{\n"
+        + "    \"password\": \"" + newPassword + "\"\n"
+        + "}";
+    mockMvc.perform(post("/v1/signin/change-password")
+            .header("Authorization", userToken)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(passwordChangeContent))
+        .andDo(print())
+        .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.code").value(0))
         .andExpect(jsonPath("$.msg").exists())
         .andDo(document("change-password",
-            requestParameters(
-                parameterWithName("newPassword").description("새로운 비밀번호")),
+            requestFields(
+                fieldWithPath("password").description("새로운 비밀번호")),
             responseFields(
                 fieldWithPath("success").description("비밀번호 변경 실패 시 false 값을 보냅니다."),
                 fieldWithPath("code").description("비밀번호 변경 실패 시 -1001 코드를 보냅니다."),
@@ -178,13 +205,20 @@ public class SignInControllerTest {
   @DisplayName("잘못된 토큰 비밀번호 변경 실패")
   public void passwordChangeFailed() throws Exception {
     /* ==== 로그인 후 토큰 생성 Start ==== */
-    MultiValueMap<String, String> signInParams = new LinkedMultiValueMap<>();
-    signInParams.add("loginId", loginId);
-    signInParams.add("password", password);
-    MvcResult result = mockMvc.perform(post("/v1/signin").params(signInParams)).andDo(print())
-        .andExpect(status().isOk()).andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.code").value(0)).andExpect(jsonPath("$.msg").exists())
-        .andExpect(jsonPath("$.data").exists()).andReturn();
+    String loginContent = "{\n"
+        + "    \"loginId\": \"" + loginId + "\",\n"
+        + "    \"password\": \"" + password + "\"\n"
+        + "}";
+    MvcResult result = mockMvc.perform(post("/v1/signin")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(loginContent))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").exists())
+        .andExpect(jsonPath("$.data").exists())
+        .andReturn();
 
     String resultString = result.getResponse().getContentAsString();
     JacksonJsonParser jsonParser = new JacksonJsonParser();
@@ -194,10 +228,16 @@ public class SignInControllerTest {
     String signInFailedCode = messageSource.getMessage("SigninFailed.code", null,
         LocaleContextHolder.getLocale());
 
-    MultiValueMap<String, String> changePasswordParams = new LinkedMultiValueMap<>();
-    changePasswordParams.add("newPassword", password + "1");
-    mockMvc.perform(post("/v1/signin/change-password").header("Authorization", userToken + "1")
-            .params(changePasswordParams)).andDo(print()).andExpect(status().is5xxServerError())
+    String newPassword = password + "1";
+    String passwordChangeContent = "{\n"
+        + "    \"password\": \"" + newPassword + "\"\n"
+        + "}";
+    mockMvc.perform(post("/v1/signin/change-password")
+            .header("Authorization", userToken + "1")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(passwordChangeContent))
+        .andDo(print())
+        .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(signInFailedCode))
         .andExpect(jsonPath("$.msg").exists());

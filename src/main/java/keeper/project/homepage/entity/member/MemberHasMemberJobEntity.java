@@ -1,9 +1,16 @@
 package keeper.project.homepage.entity.member;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import java.io.Serializable;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.io.Serializable;
 import javax.persistence.*;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,12 +30,12 @@ public class MemberHasMemberJobEntity implements Serializable {
   @Id
   @ManyToOne
   @JoinColumn(name = "member_id")
-  @JsonManagedReference
+  @JsonBackReference
   private MemberEntity memberEntity;
 
   @Id
   @ManyToOne
   @JoinColumn(name = "member_job_id")
-  @JsonManagedReference
+  @JsonBackReference(value = "member-job-id")
   private MemberJobEntity memberJobEntity;
 }
