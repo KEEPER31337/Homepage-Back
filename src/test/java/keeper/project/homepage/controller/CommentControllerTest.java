@@ -169,7 +169,7 @@ public class CommentControllerTest {
         + "    \"ipAddress\": \"672.523.937.636\",\n"
         + "    \"likeCount\": 9,\n"
         + "    \"dislikeCount\": 0,\n"
-        + "    \"parentId\": " + commentParentId + ",\n"
+        + "    \"parentId\": \n" + commentParentId + ",\n"
         + "    \"memberId\": " + memberId + "\n"
         + "}";
     Long postId = postingRepository.findAll().get(0).getId();
@@ -189,7 +189,8 @@ public class CommentControllerTest {
                 fieldWithPath("ipAddress").description("댓글 작성자의 ip address"),
                 fieldWithPath("likeCount").description("좋아요 개수"),
                 fieldWithPath("dislikeCount").description("싫어요 개수"),
-                fieldWithPath("parentId").description("대댓글인 경우, 부모 댓글의 id"),
+                fieldWithPath("parentId").optional()
+                    .description("모댓글: 입력 없음(db에는 0으로 설정), 대댓글: 부모 댓글의 id"),
                 fieldWithPath("memberId").description("댓글 작성자의 member id")
             ),
             responseFields(

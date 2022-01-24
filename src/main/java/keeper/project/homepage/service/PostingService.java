@@ -1,16 +1,22 @@
 package keeper.project.homepage.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import keeper.project.homepage.dto.PostingDto;
 import keeper.project.homepage.entity.CategoryEntity;
 import keeper.project.homepage.entity.MemberEntity;
 import keeper.project.homepage.entity.MemberHasPostingDislikeEntity;
 import keeper.project.homepage.entity.MemberHasPostingLikeEntity;
 import keeper.project.homepage.entity.PostingEntity;
+import keeper.project.homepage.entity.ThumbnailEntity;
+import keeper.project.homepage.repository.CategoryRepository;
 import keeper.project.homepage.repository.MemberHasPostingDislikeRepository;
 import keeper.project.homepage.repository.MemberHasPostingLikeRepository;
+import keeper.project.homepage.repository.MemberRepository;
 import keeper.project.homepage.repository.PostingRepository;
+import keeper.project.homepage.repository.ThumbnailRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,24 +27,61 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostingService {
 
   private final PostingRepository postingRepository;
+  private final CategoryRepository categoryRepository;
+  private final MemberRepository memberRepository;
+  private final ThumbnailRepository thumbnailRepository;
   private final MemberHasPostingLikeRepository memberHasPostingLikeRepository;
   private final MemberHasPostingDislikeRepository memberHasPostingDislikeRepository;
 
   public List<PostingEntity> findAll(Pageable pageable) {
-    return postingRepository.findAll(pageable).getContent();
+    List<PostingEntity> postingEntities = postingRepository.findAll(pageable).getContent();
+
+    for (PostingEntity postingEntity : postingEntities) {
+      postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+    }
+    return postingEntities;
   }
 
-  public List<PostingEntity> findAllByCategoryId(CategoryEntity categoryEntity, Pageable pageable) {
-    return postingRepository.findAllByCategoryId(categoryEntity, pageable);
+  public List<PostingEntity> findAllByCategoryId(Long categoryId, Pageable pageable) {
+
+    Optional<CategoryEntity> categoryEntity = categoryRepository.findById(Long.valueOf(categoryId));
+    List<PostingEntity> postingEntities = postingRepository.findAllByCategoryId(
+        categoryEntity.get(), pageable);
+
+    for (PostingEntity postingEntity : postingEntities) {
+      postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+    }
+    /* 이후 처리할 code
+     * if (익명게시판 카테고리 id == categoryId) {
+     *  postingEntities.forEach(postingEntity -> postingEntity.makeAnonymous());
+     * }
+     */
+
+    return postingEntities;
   }
 
-  public PostingEntity save(PostingEntity postingEntity) {
+  public PostingEntity save(PostingDto dto) {
+
+    Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
+        Long.valueOf(dto.getCategoryId()));
+    Optional<MemberEntity> memberEntity = memberRepository.findById(
+        Long.valueOf(dto.getMemberId()));
+    Optional<ThumbnailEntity> thumbnailEntity = thumbnailRepository.findById(dto.getThumbnailId());
+    dto.setRegisterTime(new Date());
+    dto.setUpdateTime(new Date());
+    PostingEntity postingEntity = dto.toEntity(categoryEntity.get(), memberEntity.get(),
+        thumbnailEntity.get());
+
     return postingRepository.save(postingEntity);
   }
 
   @Transactional
   public PostingEntity getPostingById(Long pid) {
-    return postingRepository.findById(pid).get();
+
+    PostingEntity postingEntity = postingRepository.findById(pid).get();
+    postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+
+    return postingEntity;
   }
 
   @Transactional
@@ -66,7 +109,9 @@ public class PostingService {
 
   @Transactional
   public List<PostingEntity> searchPosting(String type, String keyword,
-      CategoryEntity categoryEntity, Pageable pageable) {
+      Long categoryId, Pageable pageable) {
+
+    CategoryEntity categoryEntity = categoryRepository.findById(categoryId).get();
     List<PostingEntity> postingEntities = new ArrayList<>();
     switch (type) {
       case "T": {
@@ -97,10 +142,14 @@ public class PostingService {
   }
 
   @Transactional
-  public boolean isPostingLike(MemberEntity memberEntity, PostingEntity postingEntity,
+  public boolean isPostingLike(Long memberId, Long postingId,
       String type) {
+
+    MemberEntity memberEntity = memberRepository.findById(memberId).get();
+    PostingEntity postingEntity = postingRepository.findById(postingId).get();
     MemberHasPostingLikeEntity memberHasPostingLikeEntity = MemberHasPostingLikeEntity.builder()
         .memberId(memberEntity).postingId(postingEntity).build();
+
     if (type.equals("INC")) {
       if (postingRepository.existsByMemberHasPostingLikeEntitiesContaining(
           memberHasPostingLikeEntity)) {
@@ -124,8 +173,11 @@ public class PostingService {
   }
 
   @Transactional
-  public boolean isPostingDislike(MemberEntity memberEntity, PostingEntity postingEntity,
+  public boolean isPostingDislike(Long memberId, Long postingId,
       String type) {
+
+    MemberEntity memberEntity = memberRepository.findById(memberId).get();
+    PostingEntity postingEntity = postingRepository.findById(postingId).get();
     MemberHasPostingDislikeEntity memberHasPostingDislikeEntity = MemberHasPostingDislikeEntity.builder()
         .memberId(memberEntity).postingId(postingEntity).build();
 

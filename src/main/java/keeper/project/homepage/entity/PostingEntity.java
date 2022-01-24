@@ -39,7 +39,7 @@ public class PostingEntity {
   private String title;
   @Column
   private String content;
-  @ManyToOne(targetEntity = MemberEntity.class, fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = MemberEntity.class, fetch = FetchType.EAGER)
   // 한명의 유저는 여러개의 게시글 작성, 게시글 작성은 한명이므로 1 : N 관계
   @JoinColumn(name = "member_id") // foreign key 매핑
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -104,6 +104,9 @@ public class PostingEntity {
   public void increaseLikeCount(MemberHasPostingLikeEntity memberHasPostingLikeEntity) {
     Assert.isTrue(this.likeCount < Integer.MAX_VALUE, "like_count value will be overflow.");
     this.likeCount += 1;
+    if (this.memberHasPostingLikeEntities == null) {
+      this.memberHasPostingLikeEntities = new ArrayList<>();
+    }
     this.memberHasPostingLikeEntities.add(memberHasPostingLikeEntity);
   }
 
@@ -115,6 +118,9 @@ public class PostingEntity {
   public void increaseDislikeCount(MemberHasPostingDislikeEntity memberHasPostingDislikeEntity) {
     Assert.isTrue(this.dislikeCount < Integer.MAX_VALUE, "dislike_count value will be overflow.");
     this.dislikeCount += 1;
+    if (this.memberHasPostingDislikeEntities == null) {
+      this.memberHasPostingDislikeEntities = new ArrayList<>();
+    }
     this.memberHasPostingDislikeEntities.add(memberHasPostingDislikeEntity);
   }
 

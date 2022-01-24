@@ -32,7 +32,7 @@ public class ThumbnailServiceTest {
   private UUID uuid = UUID.randomUUID();
   // test 시 "{작업경로}/files/"에 jpg 이미지 파일을 넣어야 함.
   private String originalFilePath =
-      System.getProperty("user.dir") + "\\" + "files/width_long.jpg";
+      System.getProperty("user.dir") + "\\" + "files/long_w.jpg";
   private String resultDirPath = System.getProperty("user.dir") + "\\" + "keeper_files/thumbnail";
 
   private MultipartFile multipartFile;

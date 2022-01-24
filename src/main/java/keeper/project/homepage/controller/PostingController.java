@@ -57,12 +57,7 @@ public class PostingController {
       @PageableDefault(size = 10, sort = "registerTime", direction = Direction.DESC)
           Pageable pageable) {
 
-    List<PostingEntity> postingEntities = postingService.findAll(pageable);
-    for (PostingEntity postingEntity : postingEntities) {
-      postingEntity.setWriter(postingEntity.getMemberId().getNickName());
-    }
-
-    return ResponseEntity.status(HttpStatus.OK).body(postingEntities);
+    return ResponseEntity.status(HttpStatus.OK).body(postingService.findAll(pageable));
   }
 
   @GetMapping(value = "/lists")
@@ -71,18 +66,8 @@ public class PostingController {
       @PageableDefault(size = 10, sort = "registerTime", direction = Direction.DESC)
           Pageable pageable) {
 
-    Optional<CategoryEntity> categoryEntity = categoryRepository.findById(Long.valueOf(categoryId));
-    List<PostingEntity> postingEntities = postingService.findAllByCategoryId(categoryEntity.get(),
-        pageable);
-    for (PostingEntity postingEntity : postingEntities) {
-      postingEntity.setWriter(postingEntity.getMemberId().getNickName());
-    }
-    /* 이후 처리할 code
-     * if (익명게시판 카테고리 id == categoryId) {
-     *  postingEntities.forEach(postingEntity -> postingEntity.makeAnonymous());
-     * }
-     */
-    return ResponseEntity.status(HttpStatus.OK).body(postingEntities);
+    return ResponseEntity.status(HttpStatus.OK).body(postingService.findAllByCategoryId(categoryId,
+        pageable));
   }
 
   @PostMapping(value = "/new", consumes = "multipart/form-data", produces = {
@@ -91,22 +76,13 @@ public class PostingController {
       @RequestParam(value = "file", required = false) List<MultipartFile> files,
       @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
       PostingDto dto) {
-    // 추가 : OriginamImageEntity = ..save(thumbnail)
-    // 추가 : ThumbnailEntity = ThumbnailService.save(thumbnail, OriginalImageEntity)
-    // 추가 : PostingEntity <- thumbnail.getId()
     UUID uuid = UUID.randomUUID();
     OriginalImageEntity originalImageEntity = originalImageService.save(thumbnail, uuid);
     ThumbnailEntity thumbnailEntity = thumbnailService.save(thumbnail, originalImageEntity, uuid,
         100, 100);
 
-    Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
-        Long.valueOf(dto.getCategoryId()));
-    Optional<MemberEntity> memberEntity = memberRepository.findById(
-        Long.valueOf(dto.getMemberId()));
-    dto.setRegisterTime(new Date());
-    dto.setUpdateTime(new Date());
-    PostingEntity postingEntity = postingService.save(
-        dto.toEntity(categoryEntity.get(), memberEntity.get(), thumbnailEntity));
+    dto.setThumbnailId(thumbnailEntity.getId());
+    PostingEntity postingEntity = postingService.save(dto);
     fileService.saveFiles(files, dto, postingEntity);
 
     return postingEntity.getId() != null ? new ResponseEntity<>("success", HttpStatus.OK)
@@ -116,7 +92,6 @@ public class PostingController {
   @GetMapping(value = "/{pid}")
   public ResponseEntity<PostingEntity> getPosting(@PathVariable("pid") Long postingId) {
     PostingEntity postingEntity = postingService.getPostingById(postingId);
-    postingEntity.setWriter(postingEntity.getMemberId().getNickName());
     postingEntity.increaseVisitCount();
     postingService.updateById(postingEntity, postingId);
 
@@ -191,9 +166,8 @@ public class PostingController {
       @PageableDefault(size = 10, sort = "registerTime", direction = Direction.DESC)
           Pageable pageable) {
 
-    Optional<CategoryEntity> categoryEntity = categoryRepository.findById(Long.valueOf(categoryId));
     List<PostingEntity> postingEntities = postingService.searchPosting(type, keyword,
-        categoryEntity.get(), pageable);
+        categoryId, pageable);
     for (PostingEntity postingEntity : postingEntities) {
       postingEntity.setWriter(postingEntity.getMemberId().getNickName());
     }
@@ -204,10 +178,8 @@ public class PostingController {
   @GetMapping(value = "/like")
   public ResponseEntity<String> likePosting(@RequestParam("memberId") Long memberId,
       @RequestParam("postingId") Long postingId, @RequestParam("type") String type) {
-    MemberEntity memberEntity = memberRepository.getById(memberId);
-    PostingEntity postingEntity = postingService.getPostingById(postingId);
 
-    boolean result = postingService.isPostingLike(memberEntity, postingEntity, type.toUpperCase(
+    boolean result = postingService.isPostingLike(memberId, postingId, type.toUpperCase(
         Locale.ROOT));
 
     return result ? new ResponseEntity<>("success",
@@ -217,10 +189,8 @@ public class PostingController {
   @GetMapping(value = "/dislike")
   public ResponseEntity<String> dislikePosting(@RequestParam("memberId") Long memberId,
       @RequestParam("postingId") Long postingId, @RequestParam("type") String type) {
-    MemberEntity memberEntity = memberRepository.getById(memberId);
-    PostingEntity postingEntity = postingService.getPostingById(postingId);
 
-    boolean result = postingService.isPostingDislike(memberEntity, postingEntity, type.toUpperCase(
+    boolean result = postingService.isPostingDislike(memberId, postingId, type.toUpperCase(
         Locale.ROOT));
 
     return result ? new ResponseEntity<>("success",

@@ -153,3 +153,31 @@ include::{snippets}/post-search/request-parameters.adoc[]
 include::{snippets}/post-search/http-response.adoc[]
 ==== Response Fields
 include::{snippets}/post-search/response-fields.adoc[]
+
+== 게시글 좋아요
+
+=== 요청
+
+==== Request
+include::{snippets}/post-like/http-request.adoc[]
+==== Request Parameters
+include::{snippets}/post-like/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+include::{snippets}/post-like/http-response.adoc[]
+
+== 게시글 싫어요
+
+=== 요청
+
+==== Request
+include::{snippets}/post-dislike/http-request.adoc[]
+==== Request Parameters
+include::{snippets}/post-dislike/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+include::{snippets}/post-dislike/http-response.adoc[]

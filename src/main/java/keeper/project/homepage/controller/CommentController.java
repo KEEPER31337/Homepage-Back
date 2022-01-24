@@ -64,6 +64,9 @@ public class CommentController {
     MemberEntity memberEntity = memberService.findById(commentDto.getMemberId());
     commentDto.setRegisterTime(LocalDate.now());
     commentDto.setUpdateTime(LocalDate.now());
+    if (commentDto.getParentId() == null) {
+      commentDto.setParentId(0L);
+    }
     commentService.save(commentDto.toEntity(postingEntity, memberEntity));
 
     return responseService.getSingleResult("success");

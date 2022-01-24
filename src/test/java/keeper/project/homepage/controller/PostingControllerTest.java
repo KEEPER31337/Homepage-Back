@@ -6,6 +6,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -17,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 import java.util.Collections;
 import java.util.Date;
+import javax.xml.transform.Result;
 import keeper.project.homepage.entity.CategoryEntity;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.MemberEntity;
@@ -25,6 +27,8 @@ import keeper.project.homepage.entity.PostingEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.repository.CategoryRepository;
 import keeper.project.homepage.repository.FileRepository;
+import keeper.project.homepage.repository.MemberHasPostingDislikeRepository;
+import keeper.project.homepage.repository.MemberHasPostingLikeRepository;
 import keeper.project.homepage.repository.MemberRepository;
 import keeper.project.homepage.repository.OriginalImageRepository;
 import keeper.project.homepage.repository.PostingRepository;
@@ -152,7 +156,7 @@ public class PostingControllerTest {
         .isNotice(0)
         .isSecret(1)
         .likeCount(0)
-        .dislikeCount(1)
+        .dislikeCount(0)
         .commentCount(0)
         .visitCount(0)
         .registerTime(new Date())
@@ -210,7 +214,7 @@ public class PostingControllerTest {
                 fieldWithPath("[].id").description("게시물 ID"),
                 fieldWithPath("[].title").description("게시물 제목"),
                 fieldWithPath("[].content").description("게시물 내용"),
-                fieldWithPath("[].writer").description("작성자"),
+                fieldWithPath("[].writer").optional().description("작성자"),
                 fieldWithPath("[].visitCount").description("조회 수"),
                 fieldWithPath("[].likeCount").description("좋아요 수"),
                 fieldWithPath("[].dislikeCount").description("싫어요 수"),
@@ -477,6 +481,48 @@ public class PostingControllerTest {
                 fieldWithPath("[].isNotice").description("공지글?"),
                 fieldWithPath("[].isSecret").description("비밀글?"),
                 fieldWithPath("[].password").description("비밀번호")
+            )
+        ));
+  }
+
+  @Test
+  @Transactional
+  public void likePosting() throws Exception {
+
+    ResultActions result = mockMvc.perform(get("/v1/post/like")
+        .param("memberId", memberEntity.getId().toString())
+        .param("postingId", postingEntity.getId().toString())
+        .param("type", "INC")
+        .contentType(MediaType.APPLICATION_JSON));
+
+//    result.andDo(print());
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(print())
+        .andDo(document("post-like",
+            requestParameters(
+                parameterWithName("type").description("타입 (INC : 좋아요 +, DEC : 좋아요 -)"),
+                parameterWithName("memberId").description("멤버 ID"),
+                parameterWithName("postingId").description("게시판 ID")
+            )
+        ));
+  }
+
+  @Test
+  public void dislikePosting() throws Exception {
+    ResultActions result = mockMvc.perform(get("/v1/post/dislike")
+        .param("memberId", memberEntity.getId().toString())
+        .param("postingId", postingEntity.getId().toString())
+        .param("type", "INC")
+        .contentType(MediaType.APPLICATION_JSON));
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(print())
+        .andDo(document("post-dislike",
+            requestParameters(
+                parameterWithName("type").description("타입 (INC : 싫어요 +, DEC : 싫어요 -"),
+                parameterWithName("memberId").description("멤버 ID"),
+                parameterWithName("postingId").description("게시판 ID")
             )
         ));
   }
