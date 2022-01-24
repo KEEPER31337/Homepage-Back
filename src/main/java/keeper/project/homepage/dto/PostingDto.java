@@ -4,6 +4,7 @@ import java.util.Date;
 import keeper.project.homepage.entity.CategoryEntity;
 import keeper.project.homepage.entity.MemberEntity;
 import keeper.project.homepage.entity.PostingEntity;
+import keeper.project.homepage.entity.ThumbnailEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,8 +33,10 @@ public class PostingDto {
   private Integer isNotice;
   private Integer isSecret;
   private String password;
+  private Integer thumbnailId;
 
-  public PostingEntity toEntity(CategoryEntity categoryEntity, MemberEntity memberEntity) {
+  public PostingEntity toEntity(CategoryEntity categoryEntity, MemberEntity memberEntity,
+      ThumbnailEntity thumbnailEntity) {
     this.visitCount = 0;
     this.likeCount = 0;
     this.dislikeCount = 0;
@@ -43,6 +46,6 @@ public class PostingDto {
         .likeCount(likeCount).dislikeCount(dislikeCount).commentCount(commentCount)
         .registerTime(registerTime).updateTime(updateTime).ipAddress(ipAddress)
         .allowComment(allowComment).isNotice(isNotice).isSecret(isSecret).password(password)
-        .categoryId(categoryEntity).memberId(memberEntity).build();
+        .categoryId(categoryEntity).memberId(memberEntity).thumbnailId(thumbnailEntity).build();
   }
 }
