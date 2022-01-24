@@ -9,6 +9,7 @@ import keeper.project.homepage.dto.PostingDto;
 import keeper.project.homepage.entity.CategoryEntity;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.OriginalImageEntity;
+import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.PostingEntity;
 import keeper.project.homepage.entity.member.MemberEntity;

@@ -3,7 +3,7 @@ package keeper.project.homepage.dto;
 import java.lang.reflect.Member;
 import java.time.LocalDate;
 import keeper.project.homepage.entity.CommentEntity;
-import keeper.project.homepage.entity.MemberEntity;
+import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.PostingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

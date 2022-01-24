@@ -8,7 +8,7 @@ import keeper.project.homepage.dto.CommonResult;
 import keeper.project.homepage.dto.ListResult;
 import keeper.project.homepage.dto.SingleResult;
 import keeper.project.homepage.entity.CommentEntity;
-import keeper.project.homepage.entity.MemberEntity;
+import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.PostingEntity;
 import keeper.project.homepage.service.CommentService;
 import keeper.project.homepage.service.MemberHasCommentDislikeService;

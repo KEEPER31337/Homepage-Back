@@ -2,8 +2,8 @@ package keeper.project.homepage.service;
 
 import java.util.Collections;
 import java.util.Optional;
-import keeper.project.homepage.entity.MemberEntity;
-import keeper.project.homepage.repository.MemberRepository;
+import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.repository.member.MemberRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

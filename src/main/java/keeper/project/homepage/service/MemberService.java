@@ -1,8 +1,8 @@
 package keeper.project.homepage.service;
 
 import java.util.Optional;
-import keeper.project.homepage.entity.MemberEntity;
-import keeper.project.homepage.repository.MemberRepository;
+import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

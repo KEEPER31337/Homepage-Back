@@ -2,7 +2,7 @@ package keeper.project.homepage.repository;
 
 import java.util.List;
 import keeper.project.homepage.entity.CommentEntity;
-import keeper.project.homepage.entity.MemberEntity;
+import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.MemberHasCommentEntityPK;
 import keeper.project.homepage.entity.MemberHasCommentLikeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

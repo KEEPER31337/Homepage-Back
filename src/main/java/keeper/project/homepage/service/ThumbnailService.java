@@ -83,11 +83,11 @@ public class ThumbnailService {
         ThumbnailEntity.builder().path(relFilePath).originalImage(originalImageEntity).build());
   }
 
-  public ThumbnailEntity findById(Integer findId) {
+  public ThumbnailEntity findById(Long findId) {
     return thumbnailRepository.findById(findId).orElse(null);
   }
 
-  public boolean deleteById(Integer deleteId) {
+  public boolean deleteById(Long deleteId) {
     if (thumbnailRepository.findById(deleteId).isPresent()) {
       return false;
     }

@@ -38,7 +38,7 @@ public class OriginalImageService {
 
   }
 
-  public boolean deleteById(Integer deleteId) {
+  public boolean deleteById(Long deleteId) {
     if (originalImageRepository.findById(deleteId).isPresent()) {
       return false;
     }

@@ -33,7 +33,7 @@ public class PostingDto {
   private Integer isNotice;
   private Integer isSecret;
   private String password;
-  private Integer thumbnailId;
+  private Long thumbnailId;
 
   public PostingEntity toEntity(CategoryEntity categoryEntity, MemberEntity memberEntity,
       ThumbnailEntity thumbnailEntity) {
