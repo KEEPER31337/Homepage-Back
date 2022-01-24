@@ -39,7 +39,7 @@ public class PostingEntity {
   private String title;
   @Column
   private String content;
-  @ManyToOne(targetEntity = MemberEntity.class, fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = MemberEntity.class, fetch = FetchType.EAGER)
   // 한명의 유저는 여러개의 게시글 작성, 게시글 작성은 한명이므로 1 : N 관계
   @JoinColumn(name = "member_id") // foreign key 매핑
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
