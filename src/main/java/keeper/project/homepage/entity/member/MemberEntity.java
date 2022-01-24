@@ -1,7 +1,6 @@
 package keeper.project.homepage.entity.member;
 
 import com.fasterxml.jackson.annotation.*;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,7 +19,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-
 import keeper.project.homepage.entity.ThumbnailEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -57,6 +55,7 @@ public class MemberEntity implements UserDetails, Serializable {
 
   @Column(name = "real_name", length = 40, nullable = false)
   private String realName;
+  
   @Column(name = "nick_name", length = 40, nullable = false)
   private String nickName;
 
@@ -73,12 +72,14 @@ public class MemberEntity implements UserDetails, Serializable {
   @ManyToOne
   @JoinColumn(name = "member_type_id")
   @NotFound(action = NotFoundAction.IGNORE)
+  
   // DEFAULT 1
   private MemberTypeEntity memberType;
 
   @ManyToOne
   @JoinColumn(name = "member_rank_id")
   @NotFound(action = NotFoundAction.IGNORE)
+  
   // DEFAULT 1
   private MemberRankEntity memberRank;
 
@@ -90,6 +91,7 @@ public class MemberEntity implements UserDetails, Serializable {
 
   @OneToOne
   @JoinColumn(name = "thumbnail_id")
+  
   // DEFAULT 1
   private ThumbnailEntity thumbnail;
 
@@ -102,6 +104,7 @@ public class MemberEntity implements UserDetails, Serializable {
   }
 
   @OneToMany(mappedBy = "memberEntity")
+  
   @Builder.Default
   private List<MemberHasMemberJobEntity> memberJobs = new ArrayList<>();
 

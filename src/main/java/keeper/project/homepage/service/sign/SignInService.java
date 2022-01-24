@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 public class SignInService {
 
   private static final int NEW_TEMPORARY_PASSWORD_LENGTH = 12;
-
+  
   private final MemberRepository memberRepository;
   private final PasswordEncoder passwordEncoder;
   private final CustomPasswordService customPasswordService;
@@ -116,5 +116,4 @@ public class SignInService {
         .toString();
     // 출처: https://www.baeldung.com/java-random-string
   }
-
 }

@@ -121,8 +121,7 @@ public class SignInControllerTest {
                 fieldWithPath("success").description("로그인 실패 시 false 값을 보냅니다."),
                 fieldWithPath("code").description("로그인 실패 시 -1001 코드를 보냅니다."),
                 fieldWithPath("msg").description("상태 메시지를 보냅니다."),
-                fieldWithPath("data").description("로그인 성공 시 JWT 토큰을 담아서 보냅니다.").optional()
-            )));
+                fieldWithPath("data").description("로그인 성공 시 JWT 토큰을 담아서 보냅니다.").optional())));
   }
 
   @Test

@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 public class SignUpService {
 
   private static final int AUTH_CODE_LENGTH = 10;
-
+  
   private final MemberRepository memberRepository;
   private final MemberTypeRepository memberTypeRepository;
   private final MemberRankRepository memberRankRepository;
@@ -85,5 +85,4 @@ public class SignUpService {
         .toString();
     // 출처: https://www.baeldung.com/java-random-string
   }
-
 }
