@@ -5,13 +5,12 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Collections;
-import keeper.project.homepage.config.security.JwtTokenProvider;
-import keeper.project.homepage.entity.MemberEntity;
-import keeper.project.homepage.repository.MemberRepository;
+import java.util.ArrayList;
+import java.util.List;
+import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.repository.member.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,10 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -86,7 +82,7 @@ public class MemberControllerTest {
             .realName(realName)
             .emailAddress(emailAddress)
             .studentId(studentId)
-            .roles(Collections.singletonList("ROLE_USER"))
+            .roles(new ArrayList<String>(List.of("ROLE_USER")))
             .build());
 
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -112,7 +108,7 @@ public class MemberControllerTest {
             .realName(adminRealName)
             .emailAddress(adminEmailAddress)
             .studentId(adminStudentId)
-            .roles(Collections.singletonList("ROLE_ADMIN"))
+            .roles(new ArrayList<String>(List.of("ROLE_ADMIN")))
             .build());
 
     MultiValueMap<String, String> adminParams = new LinkedMultiValueMap<>();
@@ -130,7 +126,7 @@ public class MemberControllerTest {
     String adminResultString = adminResult.getResponse().getContentAsString();
     JacksonJsonParser jsonParser2 = new JacksonJsonParser();
     adminToken =
-        AuthorizationType + " " + jsonParser2.parseMap(adminResultString).get("data").toString();
+        jsonParser2.parseMap(adminResultString).get("data").toString();
   }
 
   @Test

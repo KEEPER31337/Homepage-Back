@@ -1,7 +1,7 @@
 package keeper.project.homepage.service;
 
 import keeper.project.homepage.exception.CustomMemberNotFoundException;
-import keeper.project.homepage.repository.MemberRepository;
+import keeper.project.homepage.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,7 +14,7 @@ public class CustomMemberDetailService implements UserDetailsService {
   private final MemberRepository memberRepository;
 
   public UserDetails loadUserByUsername(String userPk) {
-    return memberRepository.findById(Long.valueOf(userPk))
+    return memberRepository.findById(Integer.valueOf(userPk))
         .orElseThrow(CustomMemberNotFoundException::new);
   }
 

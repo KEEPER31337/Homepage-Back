@@ -1,6 +1,6 @@
-package keeper.project.homepage.service;
+package keeper.project.homepage.service.sign;
 
-import keeper.project.homepage.repository.MemberRepository;
+import keeper.project.homepage.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
