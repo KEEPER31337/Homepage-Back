@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class SignUpService {
 
-  private final int AUTH_CODE_LENGTH = 10;
+  private static final int AUTH_CODE_LENGTH = 10;
 
   private final MemberRepository memberRepository;
   private final MemberTypeRepository memberTypeRepository;
@@ -30,19 +30,6 @@ public class SignUpService {
   private final PasswordEncoder passwordEncoder;
   private final EmailAuthRedisRepository emailAuthRedisRepository;
   private final MailService mailService;
-
-  private String generateRandomAuthCode(int targetStringLength) {
-    int leftLimit = 48; // numeral '0'
-    int rightLimit = 122; // letter 'z'
-    Random random = new Random();
-
-    return random.ints(leftLimit, rightLimit + 1)
-        .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
-        .limit(targetStringLength)
-        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-        .toString();
-    // 출처: https://www.baeldung.com/java-random-string
-  }
 
   public EmailAuthDto generateEmailAuth(EmailAuthDto emailAuthDto) {
     String generatedAuthCode = generateRandomAuthCode(AUTH_CODE_LENGTH);
@@ -85,4 +72,18 @@ public class SignUpService {
         .build());
 
   }
+
+  private String generateRandomAuthCode(int targetStringLength) {
+    int leftLimit = 48; // numeral '0'
+    int rightLimit = 122; // letter 'z'
+    Random random = new Random();
+
+    return random.ints(leftLimit, rightLimit + 1)
+        .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+        .limit(targetStringLength)
+        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+        .toString();
+    // 출처: https://www.baeldung.com/java-random-string
+  }
+
 }
