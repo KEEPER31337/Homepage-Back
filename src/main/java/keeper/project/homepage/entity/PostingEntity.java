@@ -1,6 +1,5 @@
 package keeper.project.homepage.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,7 +13,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -104,6 +102,9 @@ public class PostingEntity {
   public void increaseLikeCount(MemberHasPostingLikeEntity memberHasPostingLikeEntity) {
     Assert.isTrue(this.likeCount < Integer.MAX_VALUE, "like_count value will be overflow.");
     this.likeCount += 1;
+    if (this.memberHasPostingLikeEntities == null) {
+      this.memberHasPostingLikeEntities = new ArrayList<>();
+    }
     this.memberHasPostingLikeEntities.add(memberHasPostingLikeEntity);
   }
 
@@ -115,6 +116,9 @@ public class PostingEntity {
   public void increaseDislikeCount(MemberHasPostingDislikeEntity memberHasPostingDislikeEntity) {
     Assert.isTrue(this.dislikeCount < Integer.MAX_VALUE, "dislike_count value will be overflow.");
     this.dislikeCount += 1;
+    if (this.memberHasPostingDislikeEntities == null) {
+      this.memberHasPostingDislikeEntities = new ArrayList<>();
+    }
     this.memberHasPostingDislikeEntities.add(memberHasPostingDislikeEntity);
   }
 
