@@ -20,11 +20,16 @@ import java.util.Date;
 import keeper.project.homepage.entity.CategoryEntity;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.MemberEntity;
+import keeper.project.homepage.entity.OriginalImageEntity;
 import keeper.project.homepage.entity.PostingEntity;
+import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.repository.CategoryRepository;
 import keeper.project.homepage.repository.FileRepository;
 import keeper.project.homepage.repository.MemberRepository;
+import keeper.project.homepage.repository.OriginalImageRepository;
 import keeper.project.homepage.repository.PostingRepository;
+import keeper.project.homepage.repository.ThumbnailRepository;
+import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -52,6 +57,7 @@ import org.springframework.web.filter.CharacterEncodingFilter;
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@Log4j2
 public class PostingControllerTest {
 
   @Autowired
@@ -69,6 +75,12 @@ public class PostingControllerTest {
   @Autowired
   private PasswordEncoder passwordEncoder;
 
+  @Autowired
+  private ThumbnailRepository thumbnailRepository;
+
+  @Autowired
+  private OriginalImageRepository originalImageRepository;
+
   final private String loginId = "hyeonmomo";
   final private String password = "keeper";
   final private String realName = "JeongHyeonMo";
@@ -78,7 +90,10 @@ public class PostingControllerTest {
   private MemberEntity memberEntity;
   private CategoryEntity categoryEntity;
   private PostingEntity postingEntity;
-
+  private ThumbnailEntity thumbnailEntity1;
+  private OriginalImageEntity originalImageEntity1;
+  private ThumbnailEntity thumbnailEntity2;
+  private OriginalImageEntity originalImageEntity2;
   @Autowired
   private MockMvc mockMvc;
 
@@ -112,11 +127,26 @@ public class PostingControllerTest {
         .name("테스트 게시판").build();
     categoryRepository.save(categoryEntity);
 
+    originalImageEntity1 = OriginalImageEntity.builder().path("files/image_1.jpg").build();
+    originalImageRepository.save(originalImageEntity1);
+
+    thumbnailEntity1 = ThumbnailEntity.builder().path("files/t_image_1.jpg")
+        .originalImage(originalImageEntity1).build();
+    thumbnailRepository.save(thumbnailEntity1);
+
+    originalImageEntity2 = OriginalImageEntity.builder().path("files/image_2.jpg").build();
+    originalImageRepository.save(originalImageEntity2);
+
+    thumbnailEntity2 = ThumbnailEntity.builder().path("files/t_image_2.jpg")
+        .originalImage(originalImageEntity2).build();
+    thumbnailRepository.save(thumbnailEntity2);
+
     postingEntity = PostingEntity.builder()
         .title("test 게시판 제목")
         .content("test 게시판 제목 내용")
         .memberId(memberEntity)
         .categoryId(categoryEntity)
+        .thumbnailId(thumbnailEntity1)
         .ipAddress("192.11.222.333")
         .allowComment(0)
         .isNotice(0)
@@ -136,6 +166,7 @@ public class PostingControllerTest {
         .content("test 게시판 제목 내용2")
         .memberId(memberEntity)
         .categoryId(categoryEntity)
+        .thumbnailId(thumbnailEntity2)
         .ipAddress("192.11.223")
         .allowComment(0)
         .isNotice(0)
@@ -266,7 +297,8 @@ public class PostingControllerTest {
   @Test
   public void getAttachList() throws Exception {
     ResultActions result = mockMvc.perform(
-        RestDocumentationRequestBuilders.get("/v1/post/attach/{pid}", postingEntity.getId().toString()));
+        RestDocumentationRequestBuilders.get("/v1/post/attach/{pid}",
+            postingEntity.getId().toString()));
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
@@ -290,6 +322,8 @@ public class PostingControllerTest {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     MockMultipartFile file = new MockMultipartFile("file", "image.png", "image/png",
         "<<png data>>".getBytes());
+    MockMultipartFile thumbnail = new MockMultipartFile("thumbnail", "image_1.jpg", "image/jpg",
+        "<<jpg data>>".getBytes());
     params.add("title", "mvc제목");
     params.add("content", "mvc내용");
     params.add("memberId", memberEntity.getId().toString());
@@ -303,6 +337,7 @@ public class PostingControllerTest {
     ResultActions result = mockMvc.perform(
         multipart("/v1/post/new")
             .file(file)
+            .file(thumbnail)
             .contentType(MediaType.MULTIPART_FORM_DATA)
             .params(params)
             .with(request -> {
@@ -325,7 +360,9 @@ public class PostingControllerTest {
                 parameterWithName("password").optional().description("비밀번호")
             ),
             requestParts(
-                partWithName("file").description("첨부 파일들 (form-data 에서 file= parameter 부분)")
+                partWithName("file").description("첨부 파일들 (form-data 에서 file= parameter 부분)"),
+                partWithName("thumbnail").description(
+                    "썸네일 용 이미지 (form-data 에서 thumbnail= parameter 부분)")
             )
         ));
   }
@@ -335,19 +372,24 @@ public class PostingControllerTest {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     MockMultipartFile file = new MockMultipartFile("file", "modifyImage.png", "image/png",
         "<<png data>>".getBytes());
+    MockMultipartFile thumbnail = new MockMultipartFile("thumbnail", "image_2.jpg", "image/jpg",
+        "<<jpg data>>".getBytes());
     params.add("title", "수정 mvc제목");
     params.add("content", "수정 mvc내용");
     params.add("memberId", memberEntity.getId().toString());
     params.add("categoryId", categoryEntity.getId().toString());
+    params.add("thumbnailId", thumbnailEntity1.getId().toString());
     params.add("ipAddress", "192.111.222");
     params.add("allowComment", "0");
     params.add("isNotice", "0");
     params.add("isSecret", "1");
     params.add("password", "asd");
 
+    log.info("mockMVc 시작");
     ResultActions result = mockMvc.perform(
         multipart("/v1/post/{pid}", postingEntity.getId().toString())
             .file(file)
+            .file(thumbnail)
             .contentType(MediaType.MULTIPART_FORM_DATA)
             .params(params)
             .with(request -> {
@@ -355,6 +397,7 @@ public class PostingControllerTest {
               return request;
             }));
 
+    log.info("mockMVc 결과");
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
         .andDo(document("post-modify",
@@ -367,6 +410,7 @@ public class PostingControllerTest {
                 parameterWithName("content").description("내용"),
                 parameterWithName("memberId").description("멤버 ID"),
                 parameterWithName("categoryId").description("게시판 종류 ID"),
+                parameterWithName("thumbnailId").description("썸네일 ID"),
                 parameterWithName("ipAddress").description("IP 주소"),
                 parameterWithName("allowComment").description("댓글 허용?"),
                 parameterWithName("isNotice").description("공지글?"),
@@ -374,7 +418,9 @@ public class PostingControllerTest {
                 parameterWithName("password").optional().description("비밀번호")
             ),
             requestParts(
-                partWithName("file").description("첨부 파일들 (form-data 에서 file= parameter 부분)")
+                partWithName("file").description("첨부 파일들 (form-data 에서 file= parameter 부분)"),
+                partWithName("thumbnail").description(
+                    "썸네일 용 이미지 (form-data 에서 thumbnail= parameter 부분)")
             )
         ));
   }
@@ -382,7 +428,8 @@ public class PostingControllerTest {
   @Test
   public void removePosting() throws Exception {
     ResultActions result = mockMvc.perform(
-        RestDocumentationRequestBuilders.delete("/v1/post/{pid}", postingEntity.getId().toString()));
+        RestDocumentationRequestBuilders.delete("/v1/post/{pid}",
+            postingEntity.getId().toString()));
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
