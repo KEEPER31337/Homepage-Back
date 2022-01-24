@@ -9,7 +9,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.Collections;
-import keeper.project.homepage.config.security.JwtAuthenticationFilter;
 import keeper.project.homepage.config.security.JwtTokenProvider;
 import keeper.project.homepage.entity.MemberEntity;
 import keeper.project.homepage.repository.MemberRepository;
@@ -56,6 +55,7 @@ public class MemberControllerTest {
 
   private String userToken;
   private String adminToken;
+  private final String AuthorizationType = "Bearer";
 
   final private String loginId = "hyeonmomo";
   final private String password = "keeper";
@@ -103,7 +103,7 @@ public class MemberControllerTest {
 
     String resultString = result.getResponse().getContentAsString();
     JacksonJsonParser jsonParser = new JacksonJsonParser();
-    userToken = jsonParser.parseMap(resultString).get("data").toString();
+    userToken = AuthorizationType + " " + jsonParser.parseMap(resultString).get("data").toString();
 
     memberRepository.save(
         MemberEntity.builder()
@@ -129,14 +129,15 @@ public class MemberControllerTest {
 
     String adminResultString = adminResult.getResponse().getContentAsString();
     JacksonJsonParser jsonParser2 = new JacksonJsonParser();
-    adminToken = jsonParser2.parseMap(adminResultString).get("data").toString();
+    adminToken =
+        AuthorizationType + " " + jsonParser2.parseMap(adminResultString).get("data").toString();
   }
 
   @Test
   @DisplayName("잘못된 토큰으로 접근하기")
   public void invalidToken() throws Exception {
     mockMvc.perform(get("/v1/member")
-            .header("X-AUTH-TOKEN", "XXXXXXXXXX"))
+            .header("Authorization", "XXXXXXXXXX"))
         .andDo(print())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-1003));
@@ -155,7 +156,7 @@ public class MemberControllerTest {
   @DisplayName("옳은 토큰으로 접근하기")
   public void validToken() throws Exception {
     mockMvc.perform(get("/v1/member")
-            .header("X-AUTH-TOKEN", userToken))
+            .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk());
   }
@@ -165,7 +166,7 @@ public class MemberControllerTest {
   public void accessDenied() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders
             .get("/v1/members")
-            .header("X-AUTH-TOKEN", userToken))
+            .header("Authorization", userToken))
         .andDo(print())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-1003));
@@ -176,7 +177,7 @@ public class MemberControllerTest {
   public void accessAccept() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders
             .get("/v1/members")
-            .header("X-AUTH-TOKEN", adminToken))
+            .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -188,7 +189,7 @@ public class MemberControllerTest {
   public void findAllMember() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders
             .get("/v1/members")
-            .header("X-AUTH-TOKEN", adminToken))
+            .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -200,7 +201,7 @@ public class MemberControllerTest {
   public void findMember() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders
             .get("/v1/member")
-            .header("X-AUTH-TOKEN", userToken))
+            .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
