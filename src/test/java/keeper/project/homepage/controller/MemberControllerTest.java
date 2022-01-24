@@ -5,14 +5,12 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.Collections;
-import keeper.project.homepage.config.security.JwtAuthenticationFilter;
-import keeper.project.homepage.config.security.JwtTokenProvider;
-import keeper.project.homepage.entity.MemberEntity;
-import keeper.project.homepage.repository.MemberRepository;
+import java.util.ArrayList;
+import java.util.List;
+import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.repository.member.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,10 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -60,12 +55,14 @@ public class MemberControllerTest {
   final private String loginId = "hyeonmomo";
   final private String password = "keeper";
   final private String realName = "JeongHyeonMo";
+  final private String nickName = "JeongHyeonMo";
   final private String emailAddress = "gusah@naver.com";
   final private String studentId = "201724579";
 
   final private String adminLoginId = "hyeonmoAdmin";
   final private String adminPassword = "keeper2";
   final private String adminRealName = "JeongHyeonMo2";
+  final private String adminNickName = "JeongHyeonMo2";
   final private String adminEmailAddress = "gusah2@naver.com";
   final private String adminStudentId = "201724580";
   final private String adminPhoneNumber = "0100100101";
@@ -84,9 +81,10 @@ public class MemberControllerTest {
             .loginId(loginId)
             .password(passwordEncoder.encode(password))
             .realName(realName)
+            .nickName(nickName)
             .emailAddress(emailAddress)
             .studentId(studentId)
-            .roles(Collections.singletonList("ROLE_USER"))
+            .roles(new ArrayList<String>(List.of("ROLE_USER")))
             .build());
 
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
@@ -110,9 +108,10 @@ public class MemberControllerTest {
             .loginId(adminLoginId)
             .password(passwordEncoder.encode(adminPassword))
             .realName(adminRealName)
+            .nickName(adminNickName)
             .emailAddress(adminEmailAddress)
             .studentId(adminStudentId)
-            .roles(Collections.singletonList("ROLE_ADMIN"))
+            .roles(new ArrayList<String>(List.of("ROLE_ADMIN")))
             .build());
 
     MultiValueMap<String, String> adminParams = new LinkedMultiValueMap<>();
@@ -129,14 +128,15 @@ public class MemberControllerTest {
 
     String adminResultString = adminResult.getResponse().getContentAsString();
     JacksonJsonParser jsonParser2 = new JacksonJsonParser();
-    adminToken = jsonParser2.parseMap(adminResultString).get("data").toString();
+    adminToken =
+        jsonParser2.parseMap(adminResultString).get("data").toString();
   }
 
   @Test
   @DisplayName("잘못된 토큰으로 접근하기")
   public void invalidToken() throws Exception {
     mockMvc.perform(get("/v1/member")
-            .header("X-AUTH-TOKEN", "XXXXXXXXXX"))
+            .header("Authorization", "XXXXXXXXXX"))
         .andDo(print())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-1003));
@@ -155,7 +155,7 @@ public class MemberControllerTest {
   @DisplayName("옳은 토큰으로 접근하기")
   public void validToken() throws Exception {
     mockMvc.perform(get("/v1/member")
-            .header("X-AUTH-TOKEN", userToken))
+            .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk());
   }
@@ -165,7 +165,7 @@ public class MemberControllerTest {
   public void accessDenied() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders
             .get("/v1/members")
-            .header("X-AUTH-TOKEN", userToken))
+            .header("Authorization", userToken))
         .andDo(print())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-1003));
@@ -176,7 +176,7 @@ public class MemberControllerTest {
   public void accessAccept() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders
             .get("/v1/members")
-            .header("X-AUTH-TOKEN", adminToken))
+            .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -188,7 +188,7 @@ public class MemberControllerTest {
   public void findAllMember() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders
             .get("/v1/members")
-            .header("X-AUTH-TOKEN", adminToken))
+            .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -200,7 +200,7 @@ public class MemberControllerTest {
   public void findMember() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders
             .get("/v1/member")
-            .header("X-AUTH-TOKEN", userToken))
+            .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))

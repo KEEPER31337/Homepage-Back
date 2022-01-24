@@ -19,28 +19,26 @@ endif::[]
 
 http://localhost:8080/docs/keeper.html[API 목록으로 돌아가기]
 
-== *로그인*
+== *도서추가*
 
 === 요청
 
-include::{snippets}/sign-in/http-request.adoc[]
-include::{snippets}/sign-in/request-fields.adoc[]
+include::{snippets}/add-book/http-request.adoc[]
+include::{snippets}/add-book/request-parameters.adoc[]
 
 === 응답
 
-include::{snippets}/sign-in/http-response.adoc[]
-include::{snippets}/sign-in/response-fields.adoc[]
+include::{snippets}/add-book/http-response.adoc[]
+include::{snippets}/add-book/response-fields.adoc[]
 
-== *비밀번호 변경하기*
+== *도서삭제*
 
 === 요청
 
-include::{snippets}/change-password/http-request.adoc[]
-
-NOTE: Bearer JWT 토큰이 필요합니다.
-include::{snippets}/change-password/request-fields.adoc[]
+include::{snippets}/delete-book/http-request.adoc[]
+include::{snippets}/delete-book/request-parameters.adoc[]
 
 === 응답
 
-include::{snippets}/change-password/http-response.adoc[]
-include::{snippets}/change-password/response-fields.adoc[]
+include::{snippets}/delete-book/http-response.adoc[]
+include::{snippets}/delete-book/response-fields.adoc[]

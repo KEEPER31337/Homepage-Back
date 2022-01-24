@@ -9,6 +9,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -59,9 +60,19 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
     return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
   }
 
-  // Request의 Header에서 token 파싱 : "X-AUTH-TOKEN: jwt토큰"
+  // Request의 Header에서 token 파싱 : "Authorization: jwt토큰"
   public String resolveToken(HttpServletRequest req) {
-    return req.getHeader("X-AUTH-TOKEN");
+    String requestHeader = req.getHeader("Authorization");
+    if (requestHeader == null || requestHeader.isEmpty()) {
+      return null;
+    }
+    String[] parts = requestHeader.split(" ");
+    String type = parts[0];
+    if (parts.length != 2 || !type.equals("Bearer")) {
+      return null;
+    }
+    String token = parts[1];
+    return token;
   }
 
   // Jwt 토큰의 유효성 + 만료일자 확인

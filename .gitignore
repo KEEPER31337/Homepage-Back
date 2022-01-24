@@ -43,6 +43,7 @@ out/
 **/.appication.properties
 **/._.appication.properties
 src/main/resources/application.properties
+src/main/resources/static/docs/*.html
 
 ### frontend code ###
 /frontend
