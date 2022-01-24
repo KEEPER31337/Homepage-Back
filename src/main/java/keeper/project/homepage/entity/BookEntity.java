@@ -29,8 +29,6 @@ public class BookEntity {
   private String title;
   @Column(name = "author", nullable = false, length = 40)
   private String author;
-  @Column(name = "picture", length = 512)
-  private String picture;
   @Column(name = "information")
   private String information;
   @Column(name = "total", nullable = false)

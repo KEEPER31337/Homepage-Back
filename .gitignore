@@ -43,7 +43,6 @@ out/
 **/.appication.properties
 **/._.appication.properties
 src/main/resources/application.properties
-src/main/resources/static/docs/*.html
 
 ### frontend code ###
 /frontend
@@ -54,3 +53,9 @@ src/main/resources/static/docs/*.html
 ._.DS_Store
 **/.DS_Store
 **/._.DS_Store
+
+### API 문서 ###
+src/main/resources/static/docs/*.html
+
+### 파일들 ###
+keeper_files

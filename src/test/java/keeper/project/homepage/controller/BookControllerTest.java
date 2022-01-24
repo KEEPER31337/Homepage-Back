@@ -2,7 +2,6 @@ package keeper.project.homepage.controller;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
@@ -17,13 +16,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Collections;
 import java.util.Date;
 import javax.transaction.Transactional;
 import keeper.project.homepage.entity.BookEntity;
-import keeper.project.homepage.entity.MemberEntity;
 import keeper.project.homepage.repository.BookRepository;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,8 +29,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.restdocs.snippet.Snippet;
-import org.springframework.test.context.event.annotation.BeforeTestMethod;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -108,7 +102,6 @@ public class BookControllerTest {
         BookEntity.builder()
             .title(bookTitle1)
             .author(bookAuthor1)
-            .picture(bookPicture1)
             .information(bookInformation1)
             .total(bookQuantity1)
             .borrow(bookBorrow1)
@@ -120,7 +113,6 @@ public class BookControllerTest {
         BookEntity.builder()
             .title(bookTitle2)
             .author(bookAuthor2)
-            .picture(bookPicture2)
             .information(bookInformation2)
             .total(bookQuantity2)
             .borrow(bookBorrow2)
@@ -132,7 +124,6 @@ public class BookControllerTest {
         BookEntity.builder()
             .title(bookTitle3)
             .author(bookAuthor3)
-            .picture(bookPicture3)
             .information(bookInformation3)
             .total(bookQuantity3)
             .borrow(bookBorrow3)
@@ -148,7 +139,6 @@ public class BookControllerTest {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1);
     params.add("author", bookAuthor1);
-    params.add("picture", bookPicture1);
     params.add("information", bookInformation1);
     params.add("quantity", String.valueOf(bookQuantity1));
 
@@ -162,7 +152,6 @@ public class BookControllerTest {
             requestParameters(
                 parameterWithName("title").description("책 제목"),
                 parameterWithName("author").description("저자"),
-                parameterWithName("picture").description("책 표지 사진(없어도 됨)"),
                 parameterWithName("information").description("한줄평(없어도 됨)"),
                 parameterWithName("quantity").description("추가 할 수량")
             ),

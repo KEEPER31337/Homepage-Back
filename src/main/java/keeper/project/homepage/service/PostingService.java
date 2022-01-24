@@ -6,15 +6,17 @@ import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.dto.PostingDto;
 import keeper.project.homepage.entity.CategoryEntity;
-import keeper.project.homepage.entity.MemberEntity;
+import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.MemberHasPostingDislikeEntity;
 import keeper.project.homepage.entity.MemberHasPostingLikeEntity;
 import keeper.project.homepage.entity.PostingEntity;
+import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.repository.CategoryRepository;
 import keeper.project.homepage.repository.MemberHasPostingDislikeRepository;
 import keeper.project.homepage.repository.MemberHasPostingLikeRepository;
-import keeper.project.homepage.repository.MemberRepository;
+import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.PostingRepository;
+import keeper.project.homepage.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -62,7 +64,7 @@ public class PostingService {
     Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
         Long.valueOf(dto.getCategoryId()));
     Optional<MemberEntity> memberEntity = memberRepository.findById(
-        Long.valueOf(dto.getMemberId()));
+        dto.getMemberId());
     dto.setRegisterTime(new Date());
     dto.setUpdateTime(new Date());
     PostingEntity postingEntity = dto.toEntity(categoryEntity.get(), memberEntity.get());

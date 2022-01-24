@@ -32,14 +32,13 @@ public class BookController {
   public CommonResult add(
       @RequestParam String title,
       @RequestParam String author,
-      @RequestParam @Nullable String picture,
       @RequestParam @Nullable String information,
       @RequestParam Long quantity) {
 
     Long total = bookManageService.isCanAdd(title, author, quantity);
 
     if (total != -1L) {
-      bookManageService.addBook(title, author, picture, information, total);
+      bookManageService.addBook(title, author, information, total);
       return responseService.getSuccessResult();
     }
     return responseService.getFailResult(-1, "수량 초과입니다.");

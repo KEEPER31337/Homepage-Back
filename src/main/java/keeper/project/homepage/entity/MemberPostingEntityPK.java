@@ -3,6 +3,7 @@
 package keeper.project.homepage.entity;
 
 import java.io.Serializable;
+import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.Data;
 
 @Data

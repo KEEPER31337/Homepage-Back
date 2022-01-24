@@ -24,7 +24,7 @@ public class MemberRankEntity implements Serializable {
 
   @Id // pk
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer id;
+  private Long id;
 
   @Column(name = "name", length = 45)
   private String name;

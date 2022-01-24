@@ -21,13 +21,13 @@ import java.util.Date;
 import javax.xml.transform.Result;
 import keeper.project.homepage.entity.CategoryEntity;
 import keeper.project.homepage.entity.FileEntity;
-import keeper.project.homepage.entity.MemberEntity;
+import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.PostingEntity;
 import keeper.project.homepage.repository.CategoryRepository;
 import keeper.project.homepage.repository.FileRepository;
 import keeper.project.homepage.repository.MemberHasPostingDislikeRepository;
 import keeper.project.homepage.repository.MemberHasPostingLikeRepository;
-import keeper.project.homepage.repository.MemberRepository;
+import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.PostingRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -270,7 +270,8 @@ public class PostingControllerTest {
   @Test
   public void getAttachList() throws Exception {
     ResultActions result = mockMvc.perform(
-        RestDocumentationRequestBuilders.get("/v1/post/attach/{pid}", postingEntity.getId().toString()));
+        RestDocumentationRequestBuilders.get("/v1/post/attach/{pid}",
+            postingEntity.getId().toString()));
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
@@ -386,7 +387,8 @@ public class PostingControllerTest {
   @Test
   public void removePosting() throws Exception {
     ResultActions result = mockMvc.perform(
-        RestDocumentationRequestBuilders.delete("/v1/post/{pid}", postingEntity.getId().toString()));
+        RestDocumentationRequestBuilders.delete("/v1/post/{pid}",
+            postingEntity.getId().toString()));
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())

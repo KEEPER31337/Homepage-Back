@@ -4,7 +4,7 @@ import java.util.Optional;
 import keeper.project.homepage.entity.member.MemberEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MemberRepository extends JpaRepository<MemberEntity, Integer> {
+public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
 
   Optional<MemberEntity> findByLoginId(String loginId);
 

@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 public class SignUpService {
 
   private static final int AUTH_CODE_LENGTH = 10;
-  
+
   private final MemberRepository memberRepository;
   private final MemberTypeRepository memberTypeRepository;
   private final MemberRankRepository memberRankRepository;
@@ -66,8 +66,8 @@ public class SignUpService {
         .nickName(memberDto.getNickName())
         .birthday(memberDto.getBirthday())
         .studentId(memberDto.getStudentId())
-        .memberType(memberTypeRepository.getById(1))
-        .memberRank(memberRankRepository.getById(1))
+        .memberType(memberTypeRepository.getById(1L))
+        .memberRank(memberRankRepository.getById(1L))
         .roles(new ArrayList<>(List.of("ROLE_USER")))
         .build());
 

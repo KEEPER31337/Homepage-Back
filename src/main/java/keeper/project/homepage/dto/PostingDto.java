@@ -2,7 +2,7 @@ package keeper.project.homepage.dto;
 
 import java.util.Date;
 import keeper.project.homepage.entity.CategoryEntity;
-import keeper.project.homepage.entity.MemberEntity;
+import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.PostingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,8 +17,8 @@ import lombok.Setter;
 @Builder
 public class PostingDto {
 
-  private Integer memberId;
-  private Integer categoryId;
+  private Long memberId;
+  private Long categoryId;
   private String title;
   private String content;
   private Integer visitCount;
