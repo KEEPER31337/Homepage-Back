@@ -20,96 +20,95 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 public class RedisRepositoryTest {
 
-    @Autowired
-    private EmailAuthRedisRepository emailAuthRedisRepository;
+  @Autowired
+  private EmailAuthRedisRepository emailAuthRedisRepository;
 
-    @Autowired
-    private RedisTemplate<String, String> redisTemplate;
+  @Autowired
+  private RedisTemplate<String, String> redisTemplate;
 
-    private final String email = "gusah009@naver.com";
-    private final String authCode = "123456";
+  private final String email = "gusah009@naver.com";
+  private final String authCode = "123456";
 
-    @Test
-    @DisplayName("이메일 인증을 위한 Redis 테스트")
-    void emailAuthTest() {
-        EmailAuthRedisEntity emailAuthRedisEntity = new EmailAuthRedisEntity(email, authCode);
+  @Test
+  @DisplayName("이메일 인증을 위한 Redis 테스트")
+  void emailAuthTest() {
+    EmailAuthRedisEntity emailAuthRedisEntity = new EmailAuthRedisEntity(email, authCode);
 
-        // 저장
-        emailAuthRedisRepository.save(emailAuthRedisEntity);
+    // 저장
+    emailAuthRedisRepository.save(emailAuthRedisEntity);
 
-        // `keyspace:id` 값을 가져옴
-        EmailAuthRedisEntity getEmailAuthRedisEntity = emailAuthRedisRepository.findById(emailAuthRedisEntity.getEmail()).get();
-        assertEquals(getEmailAuthRedisEntity.getEmail(), email);
-        assertEquals(getEmailAuthRedisEntity.getAuthCode(), authCode);
+    // `keyspace:id` 값을 가져옴
+    EmailAuthRedisEntity getEmailAuthRedisEntity = emailAuthRedisRepository.findById(
+        emailAuthRedisEntity.getEmail()).get();
+    assertEquals(getEmailAuthRedisEntity.getEmail(), email);
+    assertEquals(getEmailAuthRedisEntity.getAuthCode(), authCode);
 
-        // Email Auth Entity 의 @RedisHash 에 정의되어 있는 keyspace 에 속한 키의 갯수를 구함
-        Long emailAuthCountBeforeDelete = emailAuthRedisRepository.count();
-        assertEquals(1, emailAuthCountBeforeDelete);
+    // Email Auth Entity 의 @RedisHash 에 정의되어 있는 keyspace 에 속한 키의 갯수를 구함
+//        Long emailAuthCountBeforeDelete = emailAuthRedisRepository.count();
+//        assertEquals(1, emailAuthCountBeforeDelete);
 
-        // 삭제
-        emailAuthRedisRepository.delete(emailAuthRedisEntity);
-//        Long emailAuthCountAfterDelete = emailAuthRedisRepository.count();
-//        assertEquals(0, emailAuthCountAfterDelete);
-    }
+    // 삭제
+    emailAuthRedisRepository.delete(emailAuthRedisEntity);
+  }
 
-    @Test
-    void testStrings() {
-        // given
-        ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
-        String key = "stringKey";
+  @Test
+  void testStrings() {
+    // given
+    ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+    String key = "stringKey";
 
-        // when
-        valueOperations.set(key, "hello");
+    // when
+    valueOperations.set(key, "hello");
 
-        // then
-        String value = valueOperations.get(key);
-        assertThat(value).isEqualTo("hello");
+    // then
+    String value = valueOperations.get(key);
+    assertThat(value).isEqualTo("hello");
 
-        redisTemplate.delete(key);
-    }
+    redisTemplate.delete(key);
+  }
 
 
-    @Test
-    void testSet() {
-        // given
-        SetOperations<String, String> setOperations = redisTemplate.opsForSet();
-        String key = "setKey";
+  @Test
+  void testSet() {
+    // given
+    SetOperations<String, String> setOperations = redisTemplate.opsForSet();
+    String key = "setKey";
 
-        // when
-        setOperations.add(key, "h", "e", "l", "l", "o");
+    // when
+    setOperations.add(key, "h", "e", "l", "l", "o");
 
-        // then
-        Set<String> members = setOperations.members(key);
-        Long size = setOperations.size(key);
+    // then
+    Set<String> members = setOperations.members(key);
+    Long size = setOperations.size(key);
 
-        assertThat(members).containsOnly("h", "e", "l", "o");
-        assertThat(size).isEqualTo(4);
+    assertThat(members).containsOnly("h", "e", "l", "o");
+    assertThat(size).isEqualTo(4);
 
-        redisTemplate.delete(key);
-    }
+    redisTemplate.delete(key);
+  }
 
-    @Test
-    void testHash() {
-        // given
-        HashOperations<String, Object, Object> hashOperations = redisTemplate.opsForHash();
-        String initKey = "hashKey";
-        String initHashKey = "hello";
-        String initValue = "world";
+  @Test
+  void testHash() {
+    // given
+    HashOperations<String, Object, Object> hashOperations = redisTemplate.opsForHash();
+    String initKey = "hashKey";
+    String initHashKey = "hello";
+    String initValue = "world";
 
-        // when
-        hashOperations.put(initKey, initHashKey, initValue);
+    // when
+    hashOperations.put(initKey, initHashKey, initValue);
 
-        // then
-        Object value = hashOperations.get(initKey, "hello");
-        assertThat(value).isEqualTo("world");
+    // then
+    Object value = hashOperations.get(initKey, "hello");
+    assertThat(value).isEqualTo("world");
 
-        Map<Object, Object> entries = hashOperations.entries(initKey);
-        assertThat(entries.keySet()).containsExactly("hello");
-        assertThat(entries.values()).containsExactly("world");
+    Map<Object, Object> entries = hashOperations.entries(initKey);
+    assertThat(entries.keySet()).containsExactly("hello");
+    assertThat(entries.values()).containsExactly("world");
 
-        Long size = hashOperations.size(initKey);
-        assertThat(size).isEqualTo(entries.size());
+    Long size = hashOperations.size(initKey);
+    assertThat(size).isEqualTo(entries.size());
 
-        hashOperations.delete(initKey, initHashKey);
-    }
+    hashOperations.delete(initKey, initHashKey);
+  }
 }

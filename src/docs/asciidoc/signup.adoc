@@ -24,12 +24,26 @@ http://localhost:8080/docs/keeper.html[API 목록으로 돌아가기]
 === 요청
 
 include::{snippets}/sign-up/http-request.adoc[]
-include::{snippets}/sign-up/request-parameters.adoc[]
+include::{snippets}/sign-up/request-fields.adoc[]
 
 === 응답
 
 include::{snippets}/sign-up/http-response.adoc[]
 include::{snippets}/sign-up/response-fields.adoc[]
+
+== *이메일 인증*
+
+=== 요청
+
+include::{snippets}/email-auth/http-request.adoc[]
+
+NOTE: 요청한 이메일 주소로 인증코드가 전송됩니다.
+include::{snippets}/email-auth/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/email-auth/http-response.adoc[]
+include::{snippets}/email-auth/response-fields.adoc[]
 
 == *이메일 중복 체크*
 
