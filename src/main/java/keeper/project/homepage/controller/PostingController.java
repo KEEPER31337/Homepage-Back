@@ -8,16 +8,12 @@ import java.util.UUID;
 import keeper.project.homepage.dto.PostingDto;
 import keeper.project.homepage.entity.CategoryEntity;
 import keeper.project.homepage.entity.FileEntity;
-import keeper.project.homepage.entity.OriginalImageEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.PostingEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.repository.CategoryRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
-import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.service.FileService;
-import keeper.project.homepage.service.OriginalImageService;
 import keeper.project.homepage.service.PostingService;
 import keeper.project.homepage.service.ThumbnailService;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +44,6 @@ public class PostingController {
   private final MemberRepository memberRepository;
   private final CategoryRepository categoryRepository;
   private final FileService fileService;
-  private final OriginalImageService originalImageService;
   private final ThumbnailService thumbnailService;
 
   /* ex) http://localhost:8080/v1/posts?category=6&page=1
@@ -79,8 +74,8 @@ public class PostingController {
       @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
       PostingDto dto) {
     UUID uuid = UUID.randomUUID();
-    OriginalImageEntity originalImageEntity = originalImageService.save(thumbnail, uuid);
-    ThumbnailEntity thumbnailEntity = thumbnailService.save(thumbnail, originalImageEntity, uuid,
+    FileEntity fileEntity = fileService.saveThumbnail(thumbnail, uuid, dto.getIpAddress());
+    ThumbnailEntity thumbnailEntity = thumbnailService.save(thumbnail, fileEntity, uuid,
         100, 100);
 
     dto.setThumbnailId(thumbnailEntity.getId());
@@ -116,11 +111,11 @@ public class PostingController {
       PostingDto dto, @PathVariable("pid") Long postingId) {
 
     ThumbnailEntity savedThumbnail = thumbnailService.findById(dto.getThumbnailId());
-    originalImageService.deleteById(savedThumbnail.getOriginalImage().getId());
+    fileService.deleteById(savedThumbnail.getFile().getId());
     thumbnailService.deleteById(savedThumbnail.getId());
     UUID uuid = UUID.randomUUID();
-    OriginalImageEntity originalImageEntity = originalImageService.save(thumbnail, uuid);
-    ThumbnailEntity thumbnailEntity = thumbnailService.save(thumbnail, originalImageEntity, uuid,
+    FileEntity fileEntity = fileService.saveThumbnail(thumbnail, uuid, dto.getIpAddress());
+    ThumbnailEntity thumbnailEntity = thumbnailService.save(thumbnail, fileEntity, uuid,
         100, 100);
 
     Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
@@ -150,7 +145,7 @@ public class PostingController {
 
     ThumbnailEntity deleteThumbnail = thumbnailService.findById(
         postingService.getPostingById(postingId).getThumbnailId().getId());
-    originalImageService.deleteById(deleteThumbnail.getOriginalImage().getId());
+    fileService.deleteById(deleteThumbnail.getFile().getId());
     thumbnailService.deleteById(deleteThumbnail.getId());
 
     List<FileEntity> fileEntities = fileService.getFilesByPostingId(

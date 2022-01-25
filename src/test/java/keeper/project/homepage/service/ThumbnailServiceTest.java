@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.UUID;
-import keeper.project.homepage.entity.OriginalImageEntity;
+import keeper.project.homepage.entity.FileEntity;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ThumbnailServiceTest {
 
   @Autowired
-  private OriginalImageService originalImageService;
+  private FileService fileService;
 
   @Autowired
   private ThumbnailService thumbnailService;
@@ -33,7 +33,9 @@ public class ThumbnailServiceTest {
   // test 시 "{작업경로}/files/"에 jpg 이미지 파일을 넣어야 함.
   private String originalFilePath =
       System.getProperty("user.dir") + "\\" + "files/test_file.jpg";
-  private String resultDirPath = System.getProperty("user.dir") + "\\" + "keeper_files/thumbnail";
+  private String resultDirPath = System.getProperty("user.dir") + "\\" + "keeper_files";
+
+  private String ipAddress = "127.0.0.1";
 
   private MultipartFile multipartFile;
 
@@ -46,14 +48,14 @@ public class ThumbnailServiceTest {
   @Test
   public void createTest() {
     Assertions.assertTrue(new File(originalFilePath).exists(), "test할 이미지 파일이 없습니다.");
-    OriginalImageEntity originalImageEntity = originalImageService.save(multipartFile, uuid);
-    thumbnailService.save(multipartFile, originalImageEntity, uuid, 100, 100);
+    FileEntity fileEntity = fileService.saveThumbnail(multipartFile, uuid, ipAddress);
+    thumbnailService.save(multipartFile, fileEntity, uuid, 100, 100);
 
     String originalFileName = uuid.toString() + "_" + multipartFile.getOriginalFilename();
     String thumbFileName = "thumb_" + uuid.toString() + "_" + multipartFile.getOriginalFilename();
     Assertions.assertTrue(new File(resultDirPath + "\\" + originalFileName).exists(),
         "original file이 저장되지 않았습니다.");
-    Assertions.assertTrue(new File(resultDirPath + "\\" + thumbFileName).exists(),
+    Assertions.assertTrue(new File(resultDirPath + "\\thumbnail\\" + thumbFileName).exists(),
         "thumbnail file이 저장되지 않았습니다.");
 
   }

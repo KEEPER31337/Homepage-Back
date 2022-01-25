@@ -14,10 +14,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.UUID;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.entity.CategoryEntity;
 import keeper.project.homepage.entity.FileEntity;
-import keeper.project.homepage.entity.OriginalImageEntity;
 import keeper.project.homepage.entity.PostingEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -26,7 +26,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -43,14 +42,17 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   final private String realName = "JeongHyeonMo";
   final private String emailAddress = "gusah@naver.com";
   final private String studentId = "201724579";
+  final private String ipAddress1 = "127.0.0.1";
+  final private String ipAddress2 = "127.0.0.2";
+  final private UUID uuid = UUID.randomUUID();
 
   private MemberEntity memberEntity;
   private CategoryEntity categoryEntity;
   private PostingEntity postingEntity;
   private ThumbnailEntity thumbnailEntity1;
-  private OriginalImageEntity originalImageEntity1;
+  private FileEntity fileEntity1;
   private ThumbnailEntity thumbnailEntity2;
-  private OriginalImageEntity originalImageEntity2;
+  private FileEntity fileEntity2;
 
   @BeforeEach
   public void setUp() throws Exception {
@@ -69,18 +71,28 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .name("테스트 게시판").build();
     categoryRepository.save(categoryEntity);
 
-    originalImageEntity1 = OriginalImageEntity.builder().path("files/image_1.jpg").build();
-    originalImageRepository.save(originalImageEntity1);
+    fileEntity1 = FileEntity.builder()
+        .fileName(uuid + "_" + "image_1.jpg")
+        .filePath("keeper_files/image_1.jpg")
+        .fileSize(0L)
+        .ipAddress(ipAddress1)
+        .build();
+    fileRepository.save(fileEntity1);
 
-    thumbnailEntity1 = ThumbnailEntity.builder().path("files/t_image_1.jpg")
-        .originalImage(originalImageEntity1).build();
+    thumbnailEntity1 = ThumbnailEntity.builder().path("keeper_files/t_image_1.jpg")
+        .file(fileEntity1).build();
     thumbnailRepository.save(thumbnailEntity1);
 
-    originalImageEntity2 = OriginalImageEntity.builder().path("files/image_2.jpg").build();
-    originalImageRepository.save(originalImageEntity2);
+    fileEntity2 = FileEntity.builder()
+        .fileName(uuid + "_" + "image_2.jpg")
+        .filePath("keeper_files/image_2.jpg")
+        .fileSize(0L)
+        .ipAddress(ipAddress2)
+        .build();
+    fileRepository.save(fileEntity2);
 
-    thumbnailEntity2 = ThumbnailEntity.builder().path("files/t_image_2.jpg")
-        .originalImage(originalImageEntity2).build();
+    thumbnailEntity2 = ThumbnailEntity.builder().path("keeper_files/t_image_2.jpg")
+        .file(fileEntity2).build();
     thumbnailRepository.save(thumbnailEntity2);
 
     postingEntity = PostingEntity.builder()
@@ -254,7 +266,8 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("[].filePath").description("첨부파일 경로(상대경로)"),
                 fieldWithPath("[].fileSize").description("첨부파일 크기"),
                 fieldWithPath("[].uploadTime").description("업로드 시간"),
-                fieldWithPath("[].ipAddress").description("IP 주소")
+                fieldWithPath("[].ipAddress").description("IP 주소"),
+                fieldWithPath("[].thumbnail").description("썸네일 정보")
             )
         ));
   }

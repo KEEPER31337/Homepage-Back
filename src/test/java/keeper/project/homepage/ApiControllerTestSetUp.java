@@ -9,7 +9,6 @@ import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.CategoryRepository;
 import keeper.project.homepage.repository.CommentRepository;
 import keeper.project.homepage.repository.FileRepository;
-import keeper.project.homepage.repository.OriginalImageRepository;
 import keeper.project.homepage.repository.PostingRepository;
 import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
@@ -57,8 +56,6 @@ public abstract class ApiControllerTestSetUp {
   @Autowired
   protected ThumbnailRepository thumbnailRepository;
 
-  @Autowired
-  protected OriginalImageRepository originalImageRepository;
   /********* Service Start ********/
   @Autowired
   protected SignUpService signUpService;

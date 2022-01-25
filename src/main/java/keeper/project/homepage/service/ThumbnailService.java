@@ -6,7 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 import javax.imageio.ImageIO;
-import keeper.project.homepage.entity.OriginalImageEntity;
+import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.repository.ThumbnailRepository;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +56,7 @@ public class ThumbnailService {
   }
 
   public ThumbnailEntity save(MultipartFile multipartFile,
-      OriginalImageEntity originalImageEntity, UUID uuid, Integer setWidth, Integer setHeight) {
+      FileEntity fileEntity, UUID uuid, Integer setWidth, Integer setHeight) {
     if (multipartFile == null) {
       // 나중에 default 이미지로 설정
       return null;
@@ -80,7 +80,7 @@ public class ThumbnailService {
       e.printStackTrace();
     }
     return thumbnailRepository.save(
-        ThumbnailEntity.builder().path(relFilePath).originalImage(originalImageEntity).build());
+        ThumbnailEntity.builder().path(relFilePath).file(fileEntity).build());
   }
 
   public ThumbnailEntity findById(Long findId) {

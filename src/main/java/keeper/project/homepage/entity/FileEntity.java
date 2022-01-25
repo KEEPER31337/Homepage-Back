@@ -10,11 +10,13 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Builder
 @Entity
@@ -33,6 +35,7 @@ public class FileEntity {
   private String filePath;
   @Column
   private Long fileSize;
+  @CreationTimestamp
   @Column
   private Date uploadTime;
   @Column
@@ -41,4 +44,7 @@ public class FileEntity {
   @JoinColumn(name = "posting_id")
   @JsonIgnore
   private PostingEntity postingId;
+
+  @OneToOne(mappedBy = "file")
+  private ThumbnailEntity thumbnail;
 }

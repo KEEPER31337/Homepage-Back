@@ -5,6 +5,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.UUID;
 import keeper.project.homepage.dto.FileDto;
 import keeper.project.homepage.dto.PostingDto;
 import keeper.project.homepage.entity.FileEntity;
@@ -98,5 +99,40 @@ public class FileService {
       sha = null;
     }
     return sha;
+  }
+
+  public FileEntity saveThumbnail(MultipartFile originalImageFile, UUID uuid, String ipAddress) {
+    if (originalImageFile == null) {
+      // 나중에 default 이미지로 설정
+      return null;
+    }
+    String fileName = uuid.toString() + "_" + originalImageFile.getOriginalFilename();
+    String relFilePath = "keeper_files";
+    String absFilePath = System.getProperty("user.dir") + "\\" + relFilePath;
+    if (!new File(absFilePath).exists()) {
+      new File(absFilePath).mkdir();
+    }
+    try {
+      absFilePath = absFilePath + "\\" + fileName;
+      File thumbnailFile = new File(absFilePath);
+      originalImageFile.transferTo(thumbnailFile);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return fileRepository.save(
+        FileEntity.builder()
+            .fileName(fileName)
+            .filePath(absFilePath)
+            .fileSize(originalImageFile.getSize())
+            .ipAddress(ipAddress)
+            .build());
+  }
+
+  public boolean deleteById(Long deleteId) {
+    if (fileRepository.findById(deleteId).isPresent()) {
+      return false;
+    }
+    fileRepository.deleteById(deleteId);
+    return true;
   }
 }
