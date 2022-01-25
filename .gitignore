@@ -59,3 +59,6 @@ src/main/resources/static/docs/*.html
 
 ### 파일들 ###
 keeper_files
+
+### Log ###
+logs
