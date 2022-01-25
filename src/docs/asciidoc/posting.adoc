@@ -17,25 +17,34 @@ endif::[]
 
 == API 목록
 
-http://localhost:8080/docs/keeper.html[API 목록으로 돌아가기]
+link:keeper.html[API 목록으로 돌아가기]
 
 == 게시글 생성
 
 === 요청
 
 ==== Request
+
 include::{snippets}/post-create/http-request.adoc[]
+
 ==== Request Parameters
+
 include::{snippets}/post-create/request-parameters.adoc[]
+
 ==== Request Parts
+
 NOTE: Parts 부분 또한 Parameter로 넘겨주면 됩니다.
+
 include::{snippets}/post-create/request-parts.adoc[]
 
 === 응답
 
 ==== Response
+
 include::{snippets}/post-create/http-response.adoc[]
+
 ==== Response Body
+
 include::{snippets}/post-create/response-body.adoc[]
 
 == 게시글 확인
@@ -43,15 +52,21 @@ include::{snippets}/post-create/response-body.adoc[]
 === 요청
 
 ==== Request
+
 include::{snippets}/post-getOne/http-request.adoc[]
+
 ==== Request Path Parameters
+
 include::{snippets}/post-getOne/path-parameters.adoc[]
 
 === 응답
 
 ==== Response
+
 include::{snippets}/post-getOne/http-response.adoc[]
+
 ==== Response Fields
+
 include::{snippets}/post-getOne/response-fields.adoc[]
 
 == 첨부파일 확인
@@ -59,15 +74,21 @@ include::{snippets}/post-getOne/response-fields.adoc[]
 === 요청
 
 ==== Request
+
 include::{snippets}/post-getAttachList/http-request.adoc[]
+
 ==== Request Path Parameters
+
 include::{snippets}/post-getAttachList/path-parameters.adoc[]
 
 === 응답
 
 ==== Response
+
 include::{snippets}/post-getAttachList/http-response.adoc[]
+
 ==== Response Fields
+
 include::{snippets}/post-getAttachList/response-fields.adoc[]
 
 == 게시글 목록
@@ -75,15 +96,21 @@ include::{snippets}/post-getAttachList/response-fields.adoc[]
 === 요청
 
 ==== Request
+
 include::{snippets}/post-getList/http-request.adoc[]
+
 ==== Request Parameters
+
 include::{snippets}/post-getList/request-parameters.adoc[]
 
 === 응답
 
 ==== Response
+
 include::{snippets}/post-getList/http-response.adoc[]
+
 ==== Response Fields
+
 include::{snippets}/post-getList/response-fields.adoc[]
 
 == 게시글 목록(최신 글)
@@ -91,14 +118,21 @@ include::{snippets}/post-getList/response-fields.adoc[]
 === 요청
 
 ==== Request
+
 include::{snippets}/post-getLatest/http-request.adoc[]
+
 ==== Request Parameters
+
 include::{snippets}/post-getLatest/request-parameters.adoc[]
+
 === 응답
 
 ==== Response
+
 include::{snippets}/post-getLatest/http-response.adoc[]
+
 ==== Response Fields
+
 include::{snippets}/post-getLatest/response-fields.adoc[]
 
 == 게시글 수정
@@ -106,20 +140,28 @@ include::{snippets}/post-getLatest/response-fields.adoc[]
 === 요청
 
 ==== Request
+
 include::{snippets}/post-modify/http-request.adoc[]
-==== Request Path Parameters
-include::{snippets}/post-modify/path-parameters.adoc[]
+//==== Request Path Parameters
+//include::{snippets}/post-modify/path-parameters.adoc[]
 ==== Request Parameters
+
 include::{snippets}/post-modify/request-parameters.adoc[]
+
 ==== Request Parts
+
 NOTE: Parts 부분 또한 Parameter로 넘겨주면 됩니다.
+
 include::{snippets}/post-modify/request-parts.adoc[]
 
 === 응답
 
 ==== Response
+
 include::{snippets}/post-modify/http-response.adoc[]
+
 ==== Response Body
+
 include::{snippets}/post-modify/response-body.adoc[]
 
 == 게시글 삭제
@@ -127,15 +169,21 @@ include::{snippets}/post-modify/response-body.adoc[]
 === 요청
 
 ==== Request
+
 include::{snippets}/post-delete/http-request.adoc[]
+
 ==== Request Path Parameters
+
 include::{snippets}/post-delete/path-parameters.adoc[]
 
 === 응답
 
 ==== Response
+
 include::{snippets}/post-delete/http-response.adoc[]
+
 ==== Response Body
+
 include::{snippets}/post-delete/response-body.adoc[]
 
 == 게시글 검색
@@ -143,15 +191,21 @@ include::{snippets}/post-delete/response-body.adoc[]
 === 요청
 
 ==== Request
+
 include::{snippets}/post-search/http-request.adoc[]
+
 ==== Request Parameters
+
 include::{snippets}/post-search/request-parameters.adoc[]
 
 === 응답
 
 ==== Response
+
 include::{snippets}/post-search/http-response.adoc[]
+
 ==== Response Fields
+
 include::{snippets}/post-search/response-fields.adoc[]
 
 == 게시글 좋아요
@@ -159,13 +213,17 @@ include::{snippets}/post-search/response-fields.adoc[]
 === 요청
 
 ==== Request
+
 include::{snippets}/post-like/http-request.adoc[]
+
 ==== Request Parameters
+
 include::{snippets}/post-like/request-parameters.adoc[]
 
 === 응답
 
 ==== Response
+
 include::{snippets}/post-like/http-response.adoc[]
 
 == 게시글 싫어요
@@ -173,11 +231,15 @@ include::{snippets}/post-like/http-response.adoc[]
 === 요청
 
 ==== Request
+
 include::{snippets}/post-dislike/http-request.adoc[]
+
 ==== Request Parameters
+
 include::{snippets}/post-dislike/request-parameters.adoc[]
 
 === 응답
 
 ==== Response
+
 include::{snippets}/post-dislike/http-response.adoc[]

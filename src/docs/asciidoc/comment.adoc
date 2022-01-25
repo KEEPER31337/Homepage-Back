@@ -17,7 +17,7 @@ endif::[]
 
 == API 목록
 
-http://localhost:8080/docs/keeper.html[API 목록으로 돌아가기]
+link:keeper.html[API 목록으로 돌아가기]
 
 == *댓글 생성*
 

@@ -17,20 +17,20 @@ endif::[]
 
 == *회원가입*
 
-http://localhost:8080/docs/signup.html[API 문서 보기]
+link:signup.html[API 문서 보기]
 
 == *로그인*
 
-http://localhost:8080/docs/signin.html[API 문서 보기]
+link:signin.html[API 문서 보기]
 
 == *도서관리*
 
-http://localhost:8080/docs/bookmanage.html[API 문서 보기]
+link:bookmanage.html[API 문서 보기]
 
 == *게시판*
 
-http://localhost:8080/docs/posting.html[API 문서 보기]
+link:posting.html[API 문서 보기]
 
 == *댓글*
 
-http://localhost:8080/docs/comment.html[API 문서 보기]
+link:comment.html[API 문서 보기]

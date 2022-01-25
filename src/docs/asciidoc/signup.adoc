@@ -17,7 +17,7 @@ endif::[]
 
 == API 목록
 
-http://localhost:8080/docs/keeper.html[API 목록으로 돌아가기]
+link:keeper.html[API 목록으로 돌아가기]
 
 == *회원가입*
 
@@ -38,6 +38,7 @@ include::{snippets}/sign-up/response-fields.adoc[]
 include::{snippets}/email-auth/http-request.adoc[]
 
 NOTE: 요청한 이메일 주소로 인증코드가 전송됩니다.
+
 include::{snippets}/email-auth/request-fields.adoc[]
 
 === 응답
