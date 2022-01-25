@@ -1,13 +1,9 @@
 package keeper.project.homepage.controller;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
@@ -17,69 +13,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Date;
+import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.entity.CategoryEntity;
 import keeper.project.homepage.entity.CommentEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.PostingEntity;
-import keeper.project.homepage.repository.CategoryRepository;
-import keeper.project.homepage.repository.CommentRepository;
-import keeper.project.homepage.repository.member.MemberRepository;
-import keeper.project.homepage.repository.PostingRepository;
-import keeper.project.homepage.service.MemberHasCommentDislikeService;
-import keeper.project.homepage.service.MemberHasCommentLikeService;
+import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.filter.CharacterEncodingFilter;
 
-@ExtendWith({SpringExtension.class, RestDocumentationExtension.class})
-@SpringBootTest
-@AutoConfigureMockMvc
 @Transactional
 @Log4j2
-public class CommentControllerTest {
-
-  @Autowired
-  private MockMvc mockMvc;
-
-  // service로 수정
-  @Autowired
-  private CommentRepository commentRepository;
-
-  @Autowired
-  private WebApplicationContext ctx;
-
-  @Autowired
-  private CategoryRepository categoryRepository;
-
-  @Autowired
-  private PostingRepository postingRepository;
-
-  @Autowired
-  private MemberRepository memberRepository;
-
-  @Autowired
-  private MemberHasCommentLikeService memberHasCommentLikeService;
-
-  @Autowired
-  private MemberHasCommentDislikeService memberHasCommentDislikeService;
+public class CommentControllerTest extends ApiControllerTestSetUp {
 
   private LocalDate registerTime = LocalDate.now();
   private LocalDate updateTime = LocalDate.now();
@@ -91,7 +42,7 @@ public class CommentControllerTest {
   private MemberEntity memberEntity;
 
   @BeforeEach
-  public void setUp(RestDocumentationContextProvider restDocumentation) throws Exception {
+  public void setUp() throws Exception {
     memberEntity = memberRepository.save(
         MemberEntity.builder()
             .loginId("로그인")
@@ -101,17 +52,6 @@ public class CommentControllerTest {
             .emailAddress("이메일")
             .studentId("학번")
             .roles(Collections.singletonList("ROLE_USER")).build());
-
-    // mockMvc의 한글 사용을 위한 코드
-    this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
-        .addFilters(new CharacterEncodingFilter("UTF-8", true))  // 필터 추가
-        .apply(documentationConfiguration(restDocumentation)
-            .operationPreprocessors()
-            .withRequestDefaults(modifyUris().host("test.com").removePort(), prettyPrint())
-            .withResponseDefaults(prettyPrint())
-        )
-        .alwaysDo(print())
-        .build();
 
     CategoryEntity categoryEntity = categoryRepository.save(
         CategoryEntity.builder().name("test category").build());

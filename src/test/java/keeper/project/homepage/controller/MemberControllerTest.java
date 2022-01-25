@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.ArrayList;
 import java.util.List;
+import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.repository.member.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,23 +33,8 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@AutoConfigureMockMvc
 @Transactional
-public class MemberControllerTest {
-
-  @Autowired
-  private MockMvc mockMvc;
-
-  @Autowired
-  private MemberRepository memberRepository;
-
-  @Autowired
-  private PasswordEncoder passwordEncoder;
-
-  @Autowired
-  private WebApplicationContext ctx;
+public class MemberControllerTest extends ApiControllerTestSetUp {
 
   private String userToken;
   private String adminToken;
@@ -70,13 +56,6 @@ public class MemberControllerTest {
 
   @BeforeEach
   public void setUp() throws Exception {
-    // mockMvc의 한글 사용을 위한 코드
-    this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
-        .apply(springSecurity())
-        .addFilters(new CharacterEncodingFilter("UTF-8", true))  // 필터 추가
-        .alwaysDo(print())
-        .build();
-
     memberRepository.save(
         MemberEntity.builder()
             .loginId(loginId)

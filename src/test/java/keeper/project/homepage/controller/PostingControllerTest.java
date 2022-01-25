@@ -1,12 +1,8 @@
 package keeper.project.homepage.controller;
 
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
-import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -18,72 +14,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 import java.util.Collections;
 import java.util.Date;
-import javax.xml.transform.Result;
+import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.entity.CategoryEntity;
 import keeper.project.homepage.entity.FileEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.OriginalImageEntity;
 import keeper.project.homepage.entity.PostingEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
-import keeper.project.homepage.repository.CategoryRepository;
-import keeper.project.homepage.repository.FileRepository;
-import keeper.project.homepage.repository.MemberHasPostingDislikeRepository;
-import keeper.project.homepage.repository.MemberHasPostingLikeRepository;
-import keeper.project.homepage.repository.member.MemberRepository;
-import keeper.project.homepage.repository.OriginalImageRepository;
-import keeper.project.homepage.repository.PostingRepository;
-import keeper.project.homepage.repository.ThumbnailRepository;
+import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.filter.CharacterEncodingFilter;
 
-@ExtendWith({SpringExtension.class, RestDocumentationExtension.class})
-@SpringBootTest
-@AutoConfigureMockMvc
 @Transactional
 @Log4j2
-public class PostingControllerTest {
-
-  @Autowired
-  private PostingRepository postingRepository;
-
-  @Autowired
-  private CategoryRepository categoryRepository;
-
-  @Autowired
-  private MemberRepository memberRepository;
-
-  @Autowired
-  private FileRepository fileRepository;
-
-  @Autowired
-  private PasswordEncoder passwordEncoder;
-
-  @Autowired
-  private ThumbnailRepository thumbnailRepository;
-
-  @Autowired
-  private OriginalImageRepository originalImageRepository;
+public class PostingControllerTest extends ApiControllerTestSetUp {
 
   final private String loginId = "hyeonmomo";
   final private String password = "keeper";
@@ -98,24 +51,9 @@ public class PostingControllerTest {
   private OriginalImageEntity originalImageEntity1;
   private ThumbnailEntity thumbnailEntity2;
   private OriginalImageEntity originalImageEntity2;
-  @Autowired
-  private MockMvc mockMvc;
-
-  @Autowired
-  private WebApplicationContext ctx;
 
   @BeforeEach
-  public void setUp(RestDocumentationContextProvider restDocumentation) throws Exception {
-    // mockMvc의 한글 사용을 위한 코드
-    this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
-        .addFilters(new CharacterEncodingFilter("UTF-8", true))  // 필터 추가
-        .apply(documentationConfiguration(restDocumentation)
-            .operationPreprocessors()
-            .withRequestDefaults(modifyUris().host("test.com").removePort(), prettyPrint())
-            .withResponseDefaults(prettyPrint())
-        )
-        .build();
-
+  public void setUp() throws Exception {
     memberEntity = MemberEntity.builder()
         .loginId(loginId)
         .password(passwordEncoder.encode(password))

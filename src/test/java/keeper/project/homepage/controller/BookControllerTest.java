@@ -1,10 +1,7 @@
 package keeper.project.homepage.controller;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -18,39 +15,17 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import javax.transaction.Transactional;
+import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.entity.BookEntity;
-import keeper.project.homepage.repository.BookRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.filter.CharacterEncodingFilter;
 
-@SpringBootTest
-@ExtendWith({SpringExtension.class, RestDocumentationExtension.class})
-@AutoConfigureMockMvc
 @Transactional
-public class BookControllerTest {
-
-  @Autowired
-  private MockMvc mockMvc;
-
-  @Autowired
-  private BookRepository bookRepository;
-
-  @Autowired
-  private WebApplicationContext ctx;
+public class BookControllerTest extends ApiControllerTestSetUp {
 
   final private String bookTitle1 = "Do it! 점프 투 파이썬";
   final private String bookAuthor1 = "박응용";
@@ -82,16 +57,7 @@ public class BookControllerTest {
   final private long epochTime = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
 
   @BeforeEach
-  public void setUp(RestDocumentationContextProvider restDocumentation) throws Exception {
-    // mockMvc의 한글 사용을 위한 코드
-    this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
-        .addFilters(new CharacterEncodingFilter("UTF-8", true))  // 필터 추가
-        .apply(documentationConfiguration(restDocumentation)
-            .operationPreprocessors()
-            .withRequestDefaults(modifyUris().host("test.com").removePort(), prettyPrint())
-            .withResponseDefaults(prettyPrint())
-        )
-        .build();
+  public void setUp() throws Exception {
 
     SimpleDateFormat stringToDate = new SimpleDateFormat("yyyymmdd");
     Date registerDate1 = stringToDate.parse(bookRegisterDate1);

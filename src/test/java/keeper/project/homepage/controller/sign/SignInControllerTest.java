@@ -2,16 +2,10 @@ package keeper.project.homepage.controller.sign;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.documentationConfiguration;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.modifyUris;
-import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -20,55 +14,21 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.CustomMemberNotFoundException;
-import keeper.project.homepage.repository.member.MemberRepository;
-import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.RestDocumentationContextProvider;
-import org.springframework.restdocs.RestDocumentationExtension;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.filter.CharacterEncodingFilter;
 
-@ExtendWith({SpringExtension.class, RestDocumentationExtension.class})
-@SpringBootTest
-@AutoConfigureMockMvc
 @Transactional
-@Log4j2
-public class SignInControllerTest {
-
-  @Autowired
-  private MockMvc mockMvc;
-
-  @Autowired
-  private MemberRepository memberRepository;
-
-  @Autowired
-  private PasswordEncoder passwordEncoder;
-
-  @Autowired
-  private WebApplicationContext ctx;
-
-  @Autowired
-  private MessageSource messageSource;
+public class SignInControllerTest extends ApiControllerTestSetUp {
 
   private final String loginId = "hyeonmomo";
   private final String emailAddress = "gusah@naver.com";
@@ -79,21 +39,18 @@ public class SignInControllerTest {
   private final String studentId = "201724579";
 
   @BeforeEach
-  public void setUp(RestDocumentationContextProvider restDocumentation) throws Exception {
-    // mockMvc의 한글 사용을 위한 코드
-    this.mockMvc = MockMvcBuilders.webAppContextSetup(ctx)
-        .addFilters(new CharacterEncodingFilter("UTF-8", true))  // 필터 추가
-        .apply(springSecurity()).apply(
-            documentationConfiguration(restDocumentation).operationPreprocessors()
-                .withRequestDefaults(modifyUris().host("test.com").removePort(), prettyPrint())
-                .withResponseDefaults(prettyPrint())).build();
-
+  public void setUp() throws Exception {
     SimpleDateFormat stringToDate = new SimpleDateFormat("yyyymmdd");
     Date birthdayDate = stringToDate.parse(birthday);
 
-    memberRepository.save(MemberEntity.builder().loginId(loginId).emailAddress(emailAddress)
-        .password(passwordEncoder.encode(password)).realName(realName).nickName(nickName)
-        .birthday(birthdayDate).studentId(studentId)
+    memberRepository.save(MemberEntity.builder()
+        .loginId(loginId)
+        .emailAddress(emailAddress)
+        .password(passwordEncoder.encode(password))
+        .realName(realName)
+        .nickName(nickName)
+        .birthday(birthdayDate)
+        .studentId(studentId)
         .roles(new ArrayList<String>(List.of("ROLE_USER"))).build());
   }
 
