@@ -31,7 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SignInControllerTest extends ApiControllerTestSetUp {
 
   private final String loginId = "hyeonmomo";
-  private final String emailAddress = "gusah@naver.com";
+  private final String emailAddress = "test@k33p3r.com";
   private final String password = "keeper";
   private final String realName = "JeongHyeonMo";
   private final String nickName = "HyeonMoJeong";
@@ -98,6 +98,65 @@ public class SignInControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(signInFailedCode))
         .andExpect(jsonPath("$.msg").exists());
+  }
+
+  @Test
+  @DisplayName("아이디 찾기 - 이메일로 유저의 아이디를 전송")
+  public void findId() throws Exception {
+    String signInFailedCode = messageSource.getMessage("SigninFailed.code", null,
+        LocaleContextHolder.getLocale());
+
+    String content = "{\n"
+        + "    \"emailAddress\": \"" + emailAddress + "\"\n"
+        + "}";
+    mockMvc.perform(post("/v1/signin/find-id")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(content))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").exists())
+        .andDo(document("find-id",
+            requestFields(
+                fieldWithPath("emailAddress").description("이메일 주소")
+            ),
+            responseFields(
+                fieldWithPath("success").description(
+                    "아이디 찾기 성공 시 true, 존재하지 않는 email일 경우 false 값을 보냅니다."),
+                fieldWithPath("code").description(
+                    "아이디 찾기 성공 시 0, 존재하지 않는 email일 경우 -1001 코드를 보냅니다."),
+                fieldWithPath("msg").description(
+                    "존재하지 않는 email일 경우 " + signInFailedCode)
+            )));
+  }
+
+  @Test
+  @DisplayName("비밀번호 찾기 - 이메일로 유저의 임시 비밀번호를 전송")
+  public void findPassword() throws Exception {
+    String content = "{\n"
+        + "    \"emailAddress\": \"" + emailAddress + "\"\n"
+        + "}";
+    mockMvc.perform(post("/v1/signin/find-password")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(content))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").exists())
+        .andDo(document("find-password",
+            requestFields(
+                fieldWithPath("emailAddress").description("이메일 주소")
+            ),
+            responseFields(
+                fieldWithPath("success").description(
+                    "비밀번호 찾기 성공 시 true, 존재하지 않는 email일 경우 false 값을 보냅니다."),
+                fieldWithPath("code").description(
+                    "비밀번호 찾기 성공 시 0, 존재하지 않는 email일 경우 -1001 코드를 보냅니다."),
+                fieldWithPath("msg").description(
+                    "존재하지 않는 email일 경우 " + "\"해당 이메일을 가진 유저가 존재하지 않습니다\"" + " 메시지를 반환합니다.")
+            )));
   }
 
   @Test

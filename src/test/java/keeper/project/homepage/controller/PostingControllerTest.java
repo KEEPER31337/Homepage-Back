@@ -41,7 +41,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   final private String loginId = "hyeonmomo";
   final private String password = "keeper";
   final private String realName = "JeongHyeonMo";
-  final private String emailAddress = "gusah@naver.com";
+  final private String emailAddress = "test@k33p3r.com";
   final private String studentId = "201724579";
 
   private MemberEntity memberEntity;

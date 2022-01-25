@@ -40,7 +40,7 @@ public class MemberRepositoryTest {
     String loginId = "hyeonmomo";
     String realName = "JeongHyeonMo";
     String nickName = "JeongHyeonMo";
-    String emailAddress = "gusah@naver.com";
+    String emailAddress = "test@k33p3r.com";
     String studentId = "201724579";
     // given
     memberRepository.save(MemberEntity.builder()
@@ -69,7 +69,7 @@ public class MemberRepositoryTest {
     String loginId = "hyeonmomo";
     String realName = "JeongHyeonMo";
     String nickName = "JeongHyeonMo";
-    String emailAddress = "gusah@naver.com";
+    String emailAddress = "test@k33p3r.com";
     String studentId = "201724579";
     String password = "1234";
     String newPassword = password + "1";

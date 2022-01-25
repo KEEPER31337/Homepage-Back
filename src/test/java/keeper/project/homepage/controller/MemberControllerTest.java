@@ -43,14 +43,14 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
   final private String password = "keeper";
   final private String realName = "JeongHyeonMo";
   final private String nickName = "JeongHyeonMo";
-  final private String emailAddress = "gusah@naver.com";
+  final private String emailAddress = "test@k33p3r.com";
   final private String studentId = "201724579";
 
   final private String adminLoginId = "hyeonmoAdmin";
   final private String adminPassword = "keeper2";
   final private String adminRealName = "JeongHyeonMo2";
   final private String adminNickName = "JeongHyeonMo2";
-  final private String adminEmailAddress = "gusah2@naver.com";
+  final private String adminEmailAddress = "test2@k33p3r.com";
   final private String adminStudentId = "201724580";
   final private String adminPhoneNumber = "0100100101";
 
