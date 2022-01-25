@@ -1,4 +1,4 @@
-package keeper.project.homepage.entity;
+package keeper.project.homepage.entity.library;
 
 import java.util.Date;
 import javax.persistence.Column;

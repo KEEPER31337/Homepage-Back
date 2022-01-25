@@ -16,11 +16,10 @@ import java.time.ZoneId;
 import java.util.Date;
 import javax.transaction.Transactional;
 import keeper.project.homepage.ApiControllerTestSetUp;
-import keeper.project.homepage.entity.BookEntity;
+import keeper.project.homepage.entity.library.BookEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
