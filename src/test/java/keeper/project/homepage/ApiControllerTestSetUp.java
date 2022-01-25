@@ -5,7 +5,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.mo
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
-import keeper.project.homepage.repository.BookRepository;
+import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.CategoryRepository;
 import keeper.project.homepage.repository.CommentRepository;
 import keeper.project.homepage.repository.FileRepository;

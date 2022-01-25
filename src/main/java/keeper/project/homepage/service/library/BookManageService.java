@@ -1,8 +1,8 @@
-package keeper.project.homepage.service;
+package keeper.project.homepage.service.library;
 
 import java.util.Date;
-import keeper.project.homepage.entity.BookEntity;
-import keeper.project.homepage.repository.BookRepository;
+import keeper.project.homepage.entity.library.BookEntity;
+import keeper.project.homepage.repository.library.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
