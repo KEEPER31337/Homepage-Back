@@ -2,7 +2,7 @@ package keeper.project.homepage.dto;
 
 import java.util.Date;
 import keeper.project.homepage.entity.FileEntity;
-import keeper.project.homepage.entity.PostingEntity;
+import keeper.project.homepage.entity.posting.PostingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

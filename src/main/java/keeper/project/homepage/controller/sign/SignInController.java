@@ -1,9 +1,9 @@
 package keeper.project.homepage.controller.sign;
 
-import keeper.project.homepage.dto.CommonResult;
+import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.EmailAuthDto;
-import keeper.project.homepage.dto.MemberDto;
-import keeper.project.homepage.dto.SingleResult;
+import keeper.project.homepage.dto.member.MemberDto;
+import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.service.ResponseService;
 import keeper.project.homepage.service.sign.SignInService;
@@ -12,7 +12,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 //@Secured("ROLE_USER") // 모든 url에 공통 설정

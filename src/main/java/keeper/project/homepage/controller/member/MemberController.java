@@ -1,7 +1,7 @@
 package keeper.project.homepage.controller.member;
 
-import keeper.project.homepage.dto.ListResult;
-import keeper.project.homepage.dto.SingleResult;
+import keeper.project.homepage.dto.result.ListResult;
+import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.member.MemberRepository;

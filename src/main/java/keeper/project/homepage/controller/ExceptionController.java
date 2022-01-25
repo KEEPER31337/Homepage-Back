@@ -1,7 +1,7 @@
 package keeper.project.homepage.controller;
 
 import keeper.project.homepage.exception.CustomAuthenticationEntryPointException;
-import keeper.project.homepage.dto.CommonResult;
+import keeper.project.homepage.dto.result.CommonResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.GetMapping;

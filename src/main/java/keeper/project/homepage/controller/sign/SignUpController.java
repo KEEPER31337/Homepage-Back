@@ -1,10 +1,9 @@
 package keeper.project.homepage.controller.sign;
 
-import keeper.project.homepage.dto.CommonResult;
+import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.EmailAuthDto;
-import keeper.project.homepage.dto.MemberDto;
-import keeper.project.homepage.dto.SingleResult;
-import keeper.project.homepage.service.mail.MailService;
+import keeper.project.homepage.dto.member.MemberDto;
+import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.service.sign.DuplicateCheckService;
 import keeper.project.homepage.service.ResponseService;
 import keeper.project.homepage.service.sign.SignUpService;

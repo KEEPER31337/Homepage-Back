@@ -6,14 +6,14 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 import keeper.project.homepage.repository.library.BookRepository;
-import keeper.project.homepage.repository.CategoryRepository;
-import keeper.project.homepage.repository.CommentRepository;
+import keeper.project.homepage.repository.posting.CategoryRepository;
+import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.repository.FileRepository;
-import keeper.project.homepage.repository.PostingRepository;
+import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
-import keeper.project.homepage.service.MemberHasCommentDislikeService;
-import keeper.project.homepage.service.MemberHasCommentLikeService;
+import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
+import keeper.project.homepage.service.member.MemberHasCommentLikeService;
 import keeper.project.homepage.service.sign.SignUpService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
