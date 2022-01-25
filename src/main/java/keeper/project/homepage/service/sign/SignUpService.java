@@ -3,7 +3,7 @@ package keeper.project.homepage.service.sign;
 import java.util.*;
 
 import keeper.project.homepage.dto.EmailAuthDto;
-import keeper.project.homepage.dto.MemberDto;
+import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.entity.member.EmailAuthRedisEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.CustomSignUpFailedException;
