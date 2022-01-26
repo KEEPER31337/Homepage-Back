@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -19,6 +20,7 @@ import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.service.FileService;
+import keeper.project.homepage.service.image.ImageCenterCrop;
 import keeper.project.homepage.service.posting.PostingService;
 import keeper.project.homepage.service.ThumbnailService;
 import lombok.RequiredArgsConstructor;
@@ -81,14 +83,23 @@ public class PostingController {
       @RequestParam(value = "file", required = false) List<MultipartFile> files,
       @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
       PostingDto dto) {
-    UUID uuid = UUID.randomUUID();
-    FileEntity fileEntity = fileService.saveThumbnail(thumbnail, uuid, dto.getIpAddress());
-    ThumbnailEntity thumbnailEntity = thumbnailService.save(thumbnail, fileEntity, uuid,
-        100, 100);
+
+    ThumbnailEntity thumbnailEntity = null;
+    try {
+      FileEntity fileEntity = fileService.saveOriginalImage(thumbnail, dto.getIpAddress());
+      thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
+          thumbnail, fileEntity, 100, 100);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    if (thumbnailEntity == null) {
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
     dto.setThumbnailId(thumbnailEntity.getId());
     PostingEntity postingEntity = postingService.save(dto);
-    fileService.saveFiles(files, dto, postingEntity);
+    fileService.saveFiles(files, dto.getIpAddress(), postingEntity);
 
     return postingEntity.getId() != null ? new ResponseEntity<>("success", HttpStatus.OK)
         : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -132,10 +143,19 @@ public class PostingController {
     ThumbnailEntity savedThumbnail = thumbnailService.findById(dto.getThumbnailId());
     fileService.deleteById(savedThumbnail.getFile().getId());
     thumbnailService.deleteById(savedThumbnail.getId());
-    UUID uuid = UUID.randomUUID();
-    FileEntity fileEntity = fileService.saveThumbnail(thumbnail, uuid, dto.getIpAddress());
-    ThumbnailEntity thumbnailEntity = thumbnailService.save(thumbnail, fileEntity, uuid,
-        100, 100);
+
+    ThumbnailEntity thumbnailEntity = null;
+    try {
+      FileEntity fileEntity = fileService.saveOriginalImage(thumbnail, dto.getIpAddress());
+      thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
+          thumbnail, fileEntity, 100, 100);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    if (thumbnailEntity == null) {
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
     Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
         Long.valueOf(dto.getCategoryId()));
@@ -153,7 +173,7 @@ public class PostingController {
     List<FileEntity> fileEntities = fileService.getFilesByPostingId(
         postingService.getPostingById(postingId));
     fileService.deleteFiles(fileEntities);
-    fileService.saveFiles(files, dto, postingEntity);
+    fileService.saveFiles(files, dto.getIpAddress(), postingEntity);
 
     return postingEntity.getId() != null ? new ResponseEntity<>("success", HttpStatus.OK) :
         new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
