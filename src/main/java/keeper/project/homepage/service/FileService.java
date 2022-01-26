@@ -4,18 +4,18 @@ import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import keeper.project.homepage.dto.FileDto;
 import keeper.project.homepage.dto.posting.PostingDto;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.util.annotation.Nullable;
 
 @RequiredArgsConstructor
 @Service
@@ -24,7 +24,7 @@ public class FileService {
   private final FileRepository fileRepository;
   private final String defaultImageName = "default.jpg";
 
-  public File saveFile(MultipartFile multipartFile, String relDirPath) throws Exception {
+  public File saveFileInServer(MultipartFile multipartFile, String relDirPath) throws Exception {
     if (multipartFile.isEmpty()) {
       return null;
     }
@@ -42,37 +42,38 @@ public class FileService {
     return file;
   }
 
-  public FileEntity saveFileEntity(PostingDto dto, PostingEntity postingEntity,
-      File file, String relDirPath) {
+
+  public FileEntity saveFileEntity(File file, String relDirPath, String ipAddress,
+      @Nullable PostingEntity postingEntity) {
     FileDto fileDto = new FileDto();
     fileDto.setFileName(file.getName());
     // DB엔 상대경로로 저장
     fileDto.setFilePath(relDirPath + "\\" + file.getName());
     fileDto.setFileSize(file.length());
-    fileDto.setUploadTime(dto.getUpdateTime());
-    fileDto.setIpAddress(dto.getIpAddress());
+    fileDto.setUploadTime(new Date());
+    fileDto.setIpAddress(ipAddress);
     return fileRepository.save(fileDto.toEntity(postingEntity));
   }
 
-  public FileEntity saveOriginalImage(File originalImageFile, PostingDto dto) {
+  public FileEntity saveOriginalImage(File originalImageFile, String ipAddress) {
     if (originalImageFile == null) {
       File defaultFile = new File("keeper_files\\" + defaultImageName);
-      return saveFileEntity(dto, null, defaultFile, "keeper_files");
+      return saveFileEntity(defaultFile, "keeper_files", ipAddress, null);
     }
-    return saveFileEntity(dto, null, originalImageFile, "keeper_files");
+    return saveFileEntity(originalImageFile, "keeper_files", ipAddress, null);
   }
 
   @Transactional
-  public void saveFiles(List<MultipartFile> multipartFiles, PostingDto dto,
-      PostingEntity postingEntity) {
+  public void saveFiles(List<MultipartFile> multipartFiles, String ipAddress,
+      @Nullable PostingEntity postingEntity) {
     if (multipartFiles == null) {
       return;
     }
 
     for (MultipartFile multipartFile : multipartFiles) {
       try {
-        File file = saveFile(multipartFile, "keeper_files");
-        saveFileEntity(dto, postingEntity, file, "keeper_files");
+        File file = saveFileInServer(multipartFile, "keeper_files");
+        saveFileEntity(file, "keeper_files", ipAddress, postingEntity);
       } catch (Exception e) {
         e.printStackTrace();
       }

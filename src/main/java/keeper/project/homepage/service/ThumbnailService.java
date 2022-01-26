@@ -1,17 +1,11 @@
 package keeper.project.homepage.service;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-import java.util.UUID;
-import javax.imageio.ImageIO;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.service.image.ImageProcessing;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,7 +25,7 @@ public class ThumbnailService {
       fileName = this.defaultImageName;
     } else {
       try {
-        File thumbnailImage = fileService.saveFile(multipartFile, this.relDirPath);
+        File thumbnailImage = fileService.saveFileInServer(multipartFile, this.relDirPath);
         imageProcessing.imageProcessing(thumbnailImage, width, height, "jpg");
         fileName = thumbnailImage.getName();
       } catch (Exception e) {
