@@ -1,11 +1,10 @@
 package keeper.project.homepage.exception;
 
-import keeper.project.homepage.dto.CommonResult;
+import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.service.ResponseService;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;

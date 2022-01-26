@@ -4,59 +4,96 @@ import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import keeper.project.homepage.dto.FileDto;
-import keeper.project.homepage.dto.PostingDto;
+import keeper.project.homepage.dto.posting.PostingDto;
 import keeper.project.homepage.entity.FileEntity;
-import keeper.project.homepage.entity.PostingEntity;
+import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.repository.FileRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.util.annotation.Nullable;
 
 @RequiredArgsConstructor
 @Service
 public class FileService {
 
-  // @Autowired안하면 fileService가 repository를 불러오지 못한다 .. 왜 ??
-  @Autowired
-  private FileRepository fileRepository;
+  private final FileRepository fileRepository;
+  private final String defaultImageName = "default.jpg";
+  private final String[] enableImageFormat = {"jpg", "jpeg", "png", "gif"};
+
+  public boolean isImageFile(MultipartFile multipartFile) {
+    String contentType = multipartFile.getContentType();
+    if (contentType.startsWith("image")) {
+      for (String format : enableImageFormat) {
+        if (contentType.endsWith(format)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  public File saveFileInServer(MultipartFile multipartFile, String relDirPath) throws Exception {
+    if (multipartFile.isEmpty()) {
+      return null;
+    }
+    String fileName = multipartFile.getOriginalFilename();
+    Timestamp timestamp = new Timestamp(System.nanoTime());
+    fileName += timestamp.toString();
+    fileName = encryptSHA256(fileName);
+    String absDirPath = System.getProperty("user.dir") + "\\" + relDirPath;
+    if (!new File(absDirPath).exists()) {
+      new File(absDirPath).mkdir();
+    }
+    String filePath = absDirPath + "\\" + fileName;
+    File file = new File(filePath);
+    multipartFile.transferTo(file);
+    return file;
+  }
+
+
+  public FileEntity saveFileEntity(File file, String relDirPath, String ipAddress,
+      @Nullable PostingEntity postingEntity) {
+    FileDto fileDto = new FileDto();
+    fileDto.setFileName(file.getName());
+    // DB엔 상대경로로 저장
+    fileDto.setFilePath(relDirPath + "\\" + file.getName());
+    fileDto.setFileSize(file.length());
+    fileDto.setUploadTime(new Date());
+    fileDto.setIpAddress(ipAddress);
+    return fileRepository.save(fileDto.toEntity(postingEntity));
+  }
+
+  public FileEntity saveOriginalImage(MultipartFile imageFile, String ipAddress) throws Exception {
+    if (imageFile == null) {
+      File defaultFile = new File("keeper_files\\" + defaultImageName);
+      return saveFileEntity(defaultFile, "keeper_files", ipAddress, null);
+    }
+    if (isImageFile(imageFile) == false) {
+      throw new Exception("썸네일 용 이미지는 image 타입이어야 합니다.");
+    }
+    File file = saveFileInServer(imageFile, "keeper_files");
+    return saveFileEntity(file, "keeper_files", ipAddress, null);
+  }
 
   @Transactional
-  public void saveFiles(List<MultipartFile> files, PostingDto dto, PostingEntity postingEntity) {
-    if (files == null) {
+  public void saveFiles(List<MultipartFile> multipartFiles, String ipAddress,
+      @Nullable PostingEntity postingEntity) {
+    if (multipartFiles == null) {
       return;
     }
 
-    String fileName;
-    String filePath;
-    Timestamp timeStamp;
-    for (MultipartFile file : files) {
-      fileName = file.getOriginalFilename();
-      timeStamp = new Timestamp(System.nanoTime());
-      fileName += timeStamp.toString(); // 파일명 중복 제거
-      fileName = encryptSHA256(fileName); // SHA-256 암호화
-      filePath = System.getProperty("user.dir") + "\\keeper_files"; //working directory + \\files
-      if (!new File(filePath).exists()) {
-        new File(filePath).mkdir();
-      }
+    for (MultipartFile multipartFile : multipartFiles) {
       try {
-        filePath = filePath + "\\" + fileName;
-        file.transferTo(new File(filePath));
+        File file = saveFileInServer(multipartFile, "keeper_files");
+        saveFileEntity(file, "keeper_files", ipAddress, postingEntity);
       } catch (Exception e) {
         e.printStackTrace();
       }
-      FileDto fileDto = new FileDto();
-      fileDto.setFileName(fileName);
-      // DB엔 상대경로로 저장
-      fileDto.setFilePath("keeper_files\\" + fileName);
-      fileDto.setFileSize(file.getSize());
-      fileDto.setUploadTime(dto.getUpdateTime());
-      fileDto.setIpAddress(dto.getIpAddress());
-      fileRepository.save(fileDto.toEntity(postingEntity)).getId();
     }
   }
 
@@ -99,33 +136,6 @@ public class FileService {
       sha = null;
     }
     return sha;
-  }
-
-  public FileEntity saveThumbnail(MultipartFile originalImageFile, UUID uuid, String ipAddress) {
-    if (originalImageFile == null) {
-      // 나중에 default 이미지로 설정
-      return null;
-    }
-    String fileName = uuid.toString() + "_" + originalImageFile.getOriginalFilename();
-    String relFilePath = "keeper_files";
-    String absFilePath = System.getProperty("user.dir") + "\\" + relFilePath;
-    if (!new File(absFilePath).exists()) {
-      new File(absFilePath).mkdir();
-    }
-    try {
-      absFilePath = absFilePath + "\\" + fileName;
-      File thumbnailFile = new File(absFilePath);
-      originalImageFile.transferTo(thumbnailFile);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return fileRepository.save(
-        FileEntity.builder()
-            .fileName(fileName)
-            .filePath(absFilePath)
-            .fileSize(originalImageFile.getSize())
-            .ipAddress(ipAddress)
-            .build());
   }
 
   public boolean deleteById(Long deleteId) {

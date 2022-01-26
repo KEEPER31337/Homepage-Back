@@ -91,6 +91,23 @@ include::{snippets}/post-getAttachList/http-response.adoc[]
 
 include::{snippets}/post-getAttachList/response-fields.adoc[]
 
+== 파일 다운로드
+
+=== 요청
+
+==== Request
+
+include::{snippets}/post-downloadFile/http-request.adoc[]
+
+==== Request Path Parameters
+
+include::{snippets}/post-downloadFile/path-parameters.adoc[]
+
+=== 응답
+
+NOTE: Response는 삽입시 너무 길어져 생략했습니다.
+단순히 다운로드 되는 Response입니다.
+
 == 게시글 목록
 
 === 요청

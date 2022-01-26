@@ -1,6 +1,6 @@
 package keeper.project.homepage.controller.library;
 
-import keeper.project.homepage.dto.CommonResult;
+import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.service.library.BookManageService;
