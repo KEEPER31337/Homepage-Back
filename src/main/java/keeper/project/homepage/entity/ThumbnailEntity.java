@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import keeper.project.homepage.entity.etc.StaticWriteSubtitleImageEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,6 +40,10 @@ public class ThumbnailEntity implements Serializable {
   @OneToOne(mappedBy = "thumbnail")
   @JsonBackReference(value = "thumbnail")
   private MemberEntity memberEntity;
+
+  @OneToOne(mappedBy = "thumbnail")
+  @JsonBackReference
+  private StaticWriteSubtitleImageEntity staticWriteSubtitleImage;
 
   public void updatePath(String path) {
     this.path = path;
