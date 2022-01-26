@@ -32,6 +32,7 @@ public class PostingDto {
   private Integer allowComment;
   private Integer isNotice;
   private Integer isSecret;
+  private Integer isTemp;
   private String password;
   private Long thumbnailId;
 
@@ -45,7 +46,8 @@ public class PostingDto {
     return PostingEntity.builder().title(title).content(content).visitCount(visitCount)
         .likeCount(likeCount).dislikeCount(dislikeCount).commentCount(commentCount)
         .registerTime(registerTime).updateTime(updateTime).ipAddress(ipAddress)
-        .allowComment(allowComment).isNotice(isNotice).isSecret(isSecret).password(password)
-        .categoryId(categoryEntity).memberId(memberEntity).thumbnailId(thumbnailEntity).build();
+        .allowComment(allowComment).isNotice(isNotice).isSecret(isSecret).isTemp(isTemp)
+        .password(password).categoryId(categoryEntity).memberId(memberEntity)
+        .thumbnailId(thumbnailEntity).build();
   }
 }
