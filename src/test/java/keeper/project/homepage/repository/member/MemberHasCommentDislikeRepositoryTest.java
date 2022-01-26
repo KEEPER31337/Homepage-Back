@@ -82,6 +82,7 @@ public class MemberHasCommentDislikeRepositoryTest {
         .allowComment(0)
         .isNotice(0)
         .isSecret(1)
+        .isTemp(0)
         .likeCount(10)
         .dislikeCount(1)
         .commentCount(0)

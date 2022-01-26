@@ -14,7 +14,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.UUID;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.FileEntity;
@@ -44,7 +43,6 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   final private String studentId = "201724579";
   final private String ipAddress1 = "127.0.0.1";
   final private String ipAddress2 = "127.0.0.2";
-  final private UUID uuid = UUID.randomUUID();
 
   private MemberEntity memberEntity;
   private CategoryEntity categoryEntity;
@@ -72,7 +70,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
     categoryRepository.save(categoryEntity);
 
     fileEntity1 = FileEntity.builder()
-        .fileName(uuid + "_" + "image_1.jpg")
+        .fileName("image_1.jpg")
         .filePath("keeper_files/image_1.jpg")
         .fileSize(0L)
         .ipAddress(ipAddress1)
@@ -84,7 +82,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
     thumbnailRepository.save(thumbnailEntity1);
 
     fileEntity2 = FileEntity.builder()
-        .fileName(uuid + "_" + "image_2.jpg")
+        .fileName("image_2.jpg")
         .filePath("keeper_files/image_2.jpg")
         .fileSize(0L)
         .ipAddress(ipAddress2)
@@ -106,6 +104,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .isNotice(0)
         .isTemp(0)
         .isSecret(1)
+        .isTemp(0)
         .likeCount(0)
         .dislikeCount(0)
         .commentCount(0)
@@ -127,6 +126,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .isNotice(0)
         .isTemp(0)
         .isSecret(1)
+        .isTemp(0)
         .likeCount(0)
         .dislikeCount(1)
         .commentCount(0)
@@ -177,6 +177,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("[].allowComment").description("댓글 허용?"),
                 fieldWithPath("[].isNotice").description("공지글?"),
                 fieldWithPath("[].isSecret").description("비밀글?"),
+                fieldWithPath("[].isTemp").description("임시저장?"),
                 fieldWithPath("[].password").description("비밀번호")
             )
         ));
@@ -214,6 +215,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("[].allowComment").description("댓글 허용?"),
                 fieldWithPath("[].isNotice").description("공지글?"),
                 fieldWithPath("[].isSecret").description("비밀글?"),
+                fieldWithPath("[].isTemp").description("임시저장?"),
                 fieldWithPath("[].password").description("비밀번호")
             )
         ));
@@ -245,6 +247,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("allowComment").description("댓글 허용?"),
                 fieldWithPath("isNotice").description("공지글?"),
                 fieldWithPath("isSecret").description("비밀글?"),
+                fieldWithPath("isTemp").description("임시저장?"),
                 fieldWithPath("password").description("비밀번호")
             )
         ));
@@ -390,6 +393,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 parameterWithName("allowComment").description("댓글 허용?"),
                 parameterWithName("isNotice").description("공지글?"),
                 parameterWithName("isSecret").description("비밀글?"),
+                parameterWithName("isTemp").description("임시저장?"),
                 parameterWithName("password").optional().description("비밀번호"),
                 parameterWithName("isTemp").description("임시저장?")
             ),
@@ -452,6 +456,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("[].allowComment").description("댓글 허용?"),
                 fieldWithPath("[].isNotice").description("공지글?"),
                 fieldWithPath("[].isSecret").description("비밀글?"),
+                fieldWithPath("[].isTemp").description("임시저장?"),
                 fieldWithPath("[].password").description("비밀번호")
             )
         ));

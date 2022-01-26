@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
-import java.util.UUID;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
@@ -38,7 +37,6 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
   final private String studentId = "201724579";
   final private String ipAddress1 = "127.0.0.1";
   final private String ipAddress2 = "127.0.0.2";
-  final private UUID uuid = UUID.randomUUID();
 
   @Autowired
   private ThumbnailService thumbnailService;
@@ -80,7 +78,7 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
     categoryRepository.save(categoryEntity);
 
     fileEntity1 = FileEntity.builder()
-        .fileName(uuid + "_" + "image_1.jpg")
+        .fileName("image_1.jpg")
         .filePath("keeper_files/image_1.jpg")
         .fileSize(0L)
         .ipAddress(ipAddress1)
@@ -92,7 +90,7 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
     thumbnailRepository.save(thumbnailEntity1);
 
     fileEntity2 = FileEntity.builder()
-        .fileName(uuid + "_" + "image_2.jpg")
+        .fileName("image_2.jpg")
         .filePath("keeper_files/image_2.jpg")
         .fileSize(0L)
         .ipAddress(ipAddress2)
@@ -113,6 +111,7 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
         .allowComment(0)
         .isNotice(0)
         .isSecret(1)
+        .isTemp(0)
         .likeCount(0)
         .dislikeCount(0)
         .commentCount(0)
@@ -133,6 +132,7 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
         .allowComment(0)
         .isNotice(0)
         .isSecret(1)
+        .isTemp(0)
         .likeCount(0)
         .dislikeCount(1)
         .commentCount(0)
