@@ -1,11 +1,18 @@
 package keeper.project.homepage.service;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
+import keeper.project.homepage.exception.CustomFileNotFoundException;
 import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.service.image.ImageProcessing;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +24,16 @@ public class ThumbnailService {
   private final FileService fileService;
   private final String relDirPath = "keeper_files\\thumbnail";
   private final String defaultImageName = "thumb_default.jpg";
+
+  public byte[] getThumbnail(Long thumbnailId) throws IOException {
+    ThumbnailEntity thumbnail = thumbnailRepository.findById(thumbnailId).orElseThrow(
+        () -> new CustomFileNotFoundException("썸네일 파일을 찾을 수 없습니다")
+    );
+    String thumbnailPath = System.getProperty("user.dir") + "\\" + thumbnail.getPath();
+    File file = new File(thumbnailPath);
+    InputStream in = new FileInputStream(file);
+    return IOUtils.toByteArray(in);
+  }
 
   public ThumbnailEntity saveThumbnail(ImageProcessing imageProcessing, MultipartFile multipartFile,
       FileEntity fileEntity, Integer width, Integer height) throws Exception {
