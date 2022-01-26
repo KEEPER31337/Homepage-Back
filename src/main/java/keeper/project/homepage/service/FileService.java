@@ -21,42 +21,61 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class FileService {
 
-  // @Autowired안하면 fileService가 repository를 불러오지 못한다 .. 왜 ??
-  @Autowired
-  private FileRepository fileRepository;
+  private final FileRepository fileRepository;
+  private final String defaultImageName = "default.jpg";
+
+  public File saveFile(MultipartFile multipartFile, String relDirPath) throws Exception {
+    if (multipartFile.isEmpty()) {
+      return null;
+    }
+    String fileName = multipartFile.getOriginalFilename();
+    Timestamp timestamp = new Timestamp(System.nanoTime());
+    fileName += timestamp.toString();
+    fileName = encryptSHA256(fileName);
+    String absDirPath = System.getProperty("user.dir") + "\\" + relDirPath;
+    if (!new File(absDirPath).exists()) {
+      new File(absDirPath).mkdir();
+    }
+    String filePath = absDirPath + "\\" + fileName;
+    File file = new File(filePath);
+    multipartFile.transferTo(file);
+    return file;
+  }
+
+  public FileEntity saveFileEntity(PostingDto dto, PostingEntity postingEntity,
+      File file, String relDirPath) {
+    FileDto fileDto = new FileDto();
+    fileDto.setFileName(file.getName());
+    // DB엔 상대경로로 저장
+    fileDto.setFilePath(relDirPath + "\\" + file.getName());
+    fileDto.setFileSize(file.length());
+    fileDto.setUploadTime(dto.getUpdateTime());
+    fileDto.setIpAddress(dto.getIpAddress());
+    return fileRepository.save(fileDto.toEntity(postingEntity));
+  }
+
+  public FileEntity saveOriginalImage(File originalImageFile, PostingDto dto) {
+    if (originalImageFile == null) {
+      File defaultFile = new File("keeper_files\\" + defaultImageName);
+      return saveFileEntity(dto, null, defaultFile, "keeper_files");
+    }
+    return saveFileEntity(dto, null, originalImageFile, "keeper_files");
+  }
 
   @Transactional
-  public void saveFiles(List<MultipartFile> files, PostingDto dto, PostingEntity postingEntity) {
-    if (files == null) {
+  public void saveFiles(List<MultipartFile> multipartFiles, PostingDto dto,
+      PostingEntity postingEntity) {
+    if (multipartFiles == null) {
       return;
     }
 
-    String fileName;
-    String filePath;
-    Timestamp timeStamp;
-    for (MultipartFile file : files) {
-      fileName = file.getOriginalFilename();
-      timeStamp = new Timestamp(System.nanoTime());
-      fileName += timeStamp.toString(); // 파일명 중복 제거
-      fileName = encryptSHA256(fileName); // SHA-256 암호화
-      filePath = System.getProperty("user.dir") + "\\keeper_files"; //working directory + \\files
-      if (!new File(filePath).exists()) {
-        new File(filePath).mkdir();
-      }
+    for (MultipartFile multipartFile : multipartFiles) {
       try {
-        filePath = filePath + "\\" + fileName;
-        file.transferTo(new File(filePath));
+        File file = saveFile(multipartFile, "keeper_files");
+        saveFileEntity(dto, postingEntity, file, "keeper_files");
       } catch (Exception e) {
         e.printStackTrace();
       }
-      FileDto fileDto = new FileDto();
-      fileDto.setFileName(fileName);
-      // DB엔 상대경로로 저장
-      fileDto.setFilePath("keeper_files\\" + fileName);
-      fileDto.setFileSize(file.getSize());
-      fileDto.setUploadTime(dto.getUpdateTime());
-      fileDto.setIpAddress(dto.getIpAddress());
-      fileRepository.save(fileDto.toEntity(postingEntity)).getId();
     }
   }
 
@@ -99,33 +118,6 @@ public class FileService {
       sha = null;
     }
     return sha;
-  }
-
-  public FileEntity saveThumbnail(MultipartFile originalImageFile, UUID uuid, String ipAddress) {
-    if (originalImageFile == null) {
-      // 나중에 default 이미지로 설정
-      return null;
-    }
-    String fileName = uuid.toString() + "_" + originalImageFile.getOriginalFilename();
-    String relFilePath = "keeper_files";
-    String absFilePath = System.getProperty("user.dir") + "\\" + relFilePath;
-    if (!new File(absFilePath).exists()) {
-      new File(absFilePath).mkdir();
-    }
-    try {
-      absFilePath = absFilePath + "\\" + fileName;
-      File thumbnailFile = new File(absFilePath);
-      originalImageFile.transferTo(thumbnailFile);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return fileRepository.save(
-        FileEntity.builder()
-            .fileName(fileName)
-            .filePath(absFilePath)
-            .fileSize(originalImageFile.getSize())
-            .ipAddress(ipAddress)
-            .build());
   }
 
   public boolean deleteById(Long deleteId) {

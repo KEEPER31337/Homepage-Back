@@ -1,5 +1,6 @@
 package keeper.project.homepage.controller.posting;
 
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -14,6 +15,8 @@ import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.service.FileService;
+import keeper.project.homepage.service.image.ImageCenterCrop;
+import keeper.project.homepage.service.image.ImageResize;
 import keeper.project.homepage.service.posting.PostingService;
 import keeper.project.homepage.service.ThumbnailService;
 import lombok.RequiredArgsConstructor;
@@ -73,10 +76,15 @@ public class PostingController {
       @RequestParam(value = "file", required = false) List<MultipartFile> files,
       @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
       PostingDto dto) {
-    UUID uuid = UUID.randomUUID();
-    FileEntity fileEntity = fileService.saveThumbnail(thumbnail, uuid, dto.getIpAddress());
-    ThumbnailEntity thumbnailEntity = thumbnailService.save(thumbnail, fileEntity, uuid,
-        100, 100);
+    File thumbnailImageFile = null;
+    try {
+      thumbnailImageFile = fileService.saveFile(thumbnail, "keeper_files");
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    FileEntity fileEntity = fileService.saveOriginalImage(thumbnailImageFile, dto);
+    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
+        thumbnail, fileEntity, 100, 100);
 
     dto.setThumbnailId(thumbnailEntity.getId());
     PostingEntity postingEntity = postingService.save(dto);
@@ -113,10 +121,16 @@ public class PostingController {
     ThumbnailEntity savedThumbnail = thumbnailService.findById(dto.getThumbnailId());
     fileService.deleteById(savedThumbnail.getFile().getId());
     thumbnailService.deleteById(savedThumbnail.getId());
-    UUID uuid = UUID.randomUUID();
-    FileEntity fileEntity = fileService.saveThumbnail(thumbnail, uuid, dto.getIpAddress());
-    ThumbnailEntity thumbnailEntity = thumbnailService.save(thumbnail, fileEntity, uuid,
-        100, 100);
+
+    File thumbnailImageFile = null;
+    try {
+      thumbnailImageFile = fileService.saveFile(thumbnail, "keeper_files");
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    FileEntity fileEntity = fileService.saveOriginalImage(thumbnailImageFile, dto);
+    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
+        thumbnail, fileEntity, 100, 100);
 
     Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
         Long.valueOf(dto.getCategoryId()));
