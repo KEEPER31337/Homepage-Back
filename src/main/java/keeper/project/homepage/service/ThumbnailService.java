@@ -19,11 +19,14 @@ public class ThumbnailService {
   private final String defaultImageName = "thumb_default.jpg";
 
   public ThumbnailEntity saveThumbnail(ImageProcessing imageProcessing, MultipartFile multipartFile,
-      FileEntity fileEntity, Integer width, Integer height) {
+      FileEntity fileEntity, Integer width, Integer height) throws Exception {
     String fileName = "";
     if (multipartFile == null) {
       fileName = this.defaultImageName;
     } else {
+      if (fileService.isImageFile(multipartFile) == false) {
+        throw new Exception("썸네일 용 파일은 이미지 파일이어야 합니다.");
+      }
       try {
         File thumbnailImage = fileService.saveFileInServer(multipartFile, this.relDirPath);
         imageProcessing.imageProcessing(thumbnailImage, width, height, "jpg");

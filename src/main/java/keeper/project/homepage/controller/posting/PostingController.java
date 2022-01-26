@@ -74,15 +74,19 @@ public class PostingController {
       @RequestParam(value = "file", required = false) List<MultipartFile> files,
       @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
       PostingDto dto) {
-    File thumbnailImageFile = null;
+
+    ThumbnailEntity thumbnailEntity = null;
     try {
-      thumbnailImageFile = fileService.saveFileInServer(thumbnail, "keeper_files");
+      FileEntity fileEntity = fileService.saveOriginalImage(thumbnail, dto.getIpAddress());
+      thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
+          thumbnail, fileEntity, 100, 100);
     } catch (Exception e) {
       e.printStackTrace();
     }
-    FileEntity fileEntity = fileService.saveOriginalImage(thumbnailImageFile, dto.getIpAddress());
-    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
-        thumbnail, fileEntity, 100, 100);
+
+    if (thumbnailEntity == null) {
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
     dto.setThumbnailId(thumbnailEntity.getId());
     PostingEntity postingEntity = postingService.save(dto);
@@ -120,15 +124,18 @@ public class PostingController {
     fileService.deleteById(savedThumbnail.getFile().getId());
     thumbnailService.deleteById(savedThumbnail.getId());
 
-    File thumbnailImageFile = null;
+    ThumbnailEntity thumbnailEntity = null;
     try {
-      thumbnailImageFile = fileService.saveFileInServer(thumbnail, "keeper_files");
+      FileEntity fileEntity = fileService.saveOriginalImage(thumbnail, dto.getIpAddress());
+      thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
+          thumbnail, fileEntity, 100, 100);
     } catch (Exception e) {
       e.printStackTrace();
     }
-    FileEntity fileEntity = fileService.saveOriginalImage(thumbnailImageFile, dto.getIpAddress());
-    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
-        thumbnail, fileEntity, 100, 100);
+
+    if (thumbnailEntity == null) {
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
     Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
         Long.valueOf(dto.getCategoryId()));

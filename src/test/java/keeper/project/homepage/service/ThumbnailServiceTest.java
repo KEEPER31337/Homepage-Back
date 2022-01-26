@@ -160,35 +160,43 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
   @Test
   public void createTest() {
     Assertions.assertTrue(new File(originalFilePath).exists(), "test할 이미지 파일이 없습니다.");
+    try {
 //    FileEntity fileEntity = fileService.saveOriginalImage(originalImage, ipAddress);
-    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
-        originalImage, fileEntity1, 100, 100);
+      ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
+          originalImage, fileEntity1, 100, 100);
 
 //    Assertions.assertTrue(
 //        new File(System.getProperty("user.dir") + "\\" + fileEntity.getFilePath()).exists(),
 //        "original file이 저장되지 않았습니다.");
-    Assertions.assertTrue(
-        new File(System.getProperty("user.dir") + "\\" + thumbnailEntity.getPath()).exists(),
-        "thumbnail file이 저장되지 않았습니다.");
-    Assertions.assertNotNull(thumbnailService.findById(thumbnailEntity.getId()),
-        "thumbnail Entity가 저장되지 않았습니다.");
+      Assertions.assertTrue(
+          new File(System.getProperty("user.dir") + "\\" + thumbnailEntity.getPath()).exists(),
+          "thumbnail file이 저장되지 않았습니다.");
+      Assertions.assertNotNull(thumbnailService.findById(thumbnailEntity.getId()),
+          "thumbnail Entity가 저장되지 않았습니다.");
+
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   @Test
   public void createDefaultTest() {
-    Assertions.assertTrue(new File(defaultOriginalFilePath).exists(), "test할 이미지 파일이 없습니다.");
+    try {
+      Assertions.assertTrue(new File(defaultOriginalFilePath).exists(), "test할 이미지 파일이 없습니다.");
 //    FileEntity fileEntity = fileService.saveOriginalImage(defaultOriginalImage, ipAddress);
-    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(), null,
-        fileEntity1, 100, 100);
+      ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(), null,
+          fileEntity1, 100, 100);
 
 //    Assertions.assertTrue(
 //        new File(System.getProperty("user.dir") + "\\" + fileEntity.getFilePath()).exists(),
 //        "original file이 저장되지 않았습니다.");
-    Assertions.assertTrue(
-        new File(System.getProperty("user.dir") + "\\" + thumbnailEntity.getPath()).exists(),
-        "thumbnail file이 저장되지 않았습니다.");
-    Assertions.assertNotNull(thumbnailService.findById(thumbnailEntity.getId()),
-        "thumbnail Entity가 저장되지 않았습니다.");
-
+      Assertions.assertTrue(
+          new File(System.getProperty("user.dir") + "\\" + thumbnailEntity.getPath()).exists(),
+          "thumbnail file이 저장되지 않았습니다.");
+      Assertions.assertNotNull(thumbnailService.findById(thumbnailEntity.getId()),
+          "thumbnail Entity가 저장되지 않았습니다.");
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }

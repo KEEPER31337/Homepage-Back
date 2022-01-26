@@ -23,6 +23,19 @@ public class FileService {
 
   private final FileRepository fileRepository;
   private final String defaultImageName = "default.jpg";
+  private final String[] enableImageFormat = {"jpg", "jpeg", "png", "gif"};
+
+  public boolean isImageFile(MultipartFile multipartFile) {
+    String contentType = multipartFile.getContentType();
+    if (contentType.startsWith("image")) {
+      for (String format : enableImageFormat) {
+        if (contentType.endsWith(format)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
 
   public File saveFileInServer(MultipartFile multipartFile, String relDirPath) throws Exception {
     if (multipartFile.isEmpty()) {
@@ -55,12 +68,16 @@ public class FileService {
     return fileRepository.save(fileDto.toEntity(postingEntity));
   }
 
-  public FileEntity saveOriginalImage(File originalImageFile, String ipAddress) {
-    if (originalImageFile == null) {
+  public FileEntity saveOriginalImage(MultipartFile imageFile, String ipAddress) throws Exception {
+    if (imageFile == null) {
       File defaultFile = new File("keeper_files\\" + defaultImageName);
       return saveFileEntity(defaultFile, "keeper_files", ipAddress, null);
     }
-    return saveFileEntity(originalImageFile, "keeper_files", ipAddress, null);
+    if (isImageFile(imageFile) == false) {
+      throw new Exception("썸네일 용 이미지는 image 타입이어야 합니다.");
+    }
+    File file = saveFileInServer(imageFile, "keeper_files");
+    return saveFileEntity(file, "keeper_files", ipAddress, null);
   }
 
   @Transactional
