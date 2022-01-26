@@ -80,4 +80,12 @@ public class ExceptionAdvice {
     return responseService.getFailResult(Integer.parseInt(getMessage("signUpFailed.code")),
         e.getMessage() == null ? getMessage("signUpFailed.msg") : e.getMessage());
   }
+
+  @ExceptionHandler(CustomFileNotFoundException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  public CommonResult signUpFailedException(HttpServletRequest request,
+      CustomFileNotFoundException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("fileNotFound.code")),
+        e.getMessage() == null ? getMessage("fileNotFound.msg") : e.getMessage());
+  }
 }
