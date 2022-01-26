@@ -104,6 +104,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .ipAddress("192.11.222.333")
         .allowComment(0)
         .isNotice(0)
+        .isTemp(0)
         .isSecret(1)
         .likeCount(0)
         .dislikeCount(0)
@@ -124,6 +125,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .ipAddress("192.11.223")
         .allowComment(0)
         .isNotice(0)
+        .isTemp(0)
         .isSecret(1)
         .likeCount(0)
         .dislikeCount(1)
@@ -273,6 +275,21 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   }
 
   @Test
+  public void downloadFile() throws Exception {
+    ResultActions result = mockMvc.perform(
+        RestDocumentationRequestBuilders.get("/v1/post/download/{fileId}",
+            fileEntity1.getId().toString()));
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(print())
+        .andDo(document("post-downloadFile",
+            pathParameters(
+                parameterWithName("fileId").description("파일 ID")
+            )
+        ));
+  }
+
+  @Test
   public void createPosting() throws Exception {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     MockMultipartFile file = new MockMultipartFile("file", "image.png", "image/png",
@@ -287,6 +304,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
     params.add("allowComment", "0");
     params.add("isNotice", "0");
     params.add("isSecret", "1");
+    params.add("isTemp", "0");
     params.add("password", "asd");
 
     ResultActions result = mockMvc.perform(
@@ -312,6 +330,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 parameterWithName("allowComment").description("댓글 허용?"),
                 parameterWithName("isNotice").description("공지글?"),
                 parameterWithName("isSecret").description("비밀글?"),
+                parameterWithName("isTemp").description("임시저장?"),
                 parameterWithName("password").optional().description("비밀번호")
             ),
             requestParts(
@@ -339,6 +358,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
     params.add("isNotice", "0");
     params.add("isSecret", "1");
     params.add("password", "asd");
+    params.add("isTemp", "0");
 
     log.info("mockMVc 시작");
     ResultActions result = mockMvc.perform(
@@ -370,7 +390,8 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 parameterWithName("allowComment").description("댓글 허용?"),
                 parameterWithName("isNotice").description("공지글?"),
                 parameterWithName("isSecret").description("비밀글?"),
-                parameterWithName("password").optional().description("비밀번호")
+                parameterWithName("password").optional().description("비밀번호"),
+                parameterWithName("isTemp").description("임시저장?")
             ),
             requestParts(
                 partWithName("file").description("첨부 파일들 (form-data 에서 file= parameter 부분)"),

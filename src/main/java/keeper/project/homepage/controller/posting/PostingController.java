@@ -1,10 +1,16 @@
 package keeper.project.homepage.controller.posting;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.UUID;
+import keeper.project.homepage.dto.FileDto;
 import keeper.project.homepage.dto.posting.PostingDto;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.FileEntity;
@@ -19,9 +25,12 @@ import keeper.project.homepage.service.posting.PostingService;
 import keeper.project.homepage.service.ThumbnailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -110,6 +119,17 @@ public class PostingController {
 
     return ResponseEntity.status(HttpStatus.OK)
         .body(fileService.getFilesByPostingId(postingService.getPostingById(postindId)));
+  }
+
+  @GetMapping(value = "/download/{fileId}")
+  public ResponseEntity<Resource> downloadFile(@PathVariable("fileId") Long fileId) throws IOException {
+    FileEntity fileEntity = fileService.getFileById(fileId);
+    Path path = Paths.get(fileEntity.getFilePath());
+    Resource resource = new InputStreamResource(Files.newInputStream(path));
+
+    return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.parseMediaType("application/octet-stream"))
+        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileEntity.getFileName() + "\"")
+        .body(resource);
   }
 
   @RequestMapping(method = {RequestMethod.PUT,

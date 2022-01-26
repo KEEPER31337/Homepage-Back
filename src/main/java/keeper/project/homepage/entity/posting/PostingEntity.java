@@ -73,6 +73,8 @@ public class PostingEntity {
   private Integer isSecret;
   @Column
   private String password;
+  @Column
+  private Integer isTemp;
   @ManyToOne(targetEntity = CategoryEntity.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "category_id")
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
