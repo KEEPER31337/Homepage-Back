@@ -125,16 +125,17 @@ public class PostingService {
         break;
       }
       case "TC": {
-        postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingOrContentContaining(
-            categoryEntity, keyword, keyword, pageable);
+        postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingOrCategoryIdAndContentContaining(
+            categoryEntity, keyword, categoryEntity, keyword, pageable);
         break;
       }
       case "W": {
-         Optional<MemberEntity> memberEntity = memberRepository.findByNickName(keyword);
-         if(!memberEntity.isPresent()){
-           break;
-         }
-         postingEntities = postingRepository.findAllByCategoryIdAndMemberId(categoryEntity, memberEntity.get(), pageable);
+        Optional<MemberEntity> memberEntity = memberRepository.findByNickName(keyword);
+        if (!memberEntity.isPresent()) {
+          break;
+        }
+        postingEntities = postingRepository.findAllByCategoryIdAndMemberId(categoryEntity,
+            memberEntity.get(), pageable);
         break;
       }
     }

@@ -19,8 +19,9 @@ public interface PostingRepository extends JpaRepository<PostingEntity, Long> {
   List<PostingEntity> findAllByCategoryIdAndContentContaining(CategoryEntity category,
       String content, Pageable pageable);
 
-  List<PostingEntity> findAllByCategoryIdAndTitleContainingOrContentContaining(
-      CategoryEntity category, String title, String content, Pageable pageable);
+  List<PostingEntity> findAllByCategoryIdAndTitleContainingOrCategoryIdAndContentContaining(
+      CategoryEntity category1, String title, CategoryEntity category2, String content,
+      Pageable pageable);
 
   List<PostingEntity> findAllByCategoryIdAndMemberId(CategoryEntity category, MemberEntity member,
       Pageable pageable);
