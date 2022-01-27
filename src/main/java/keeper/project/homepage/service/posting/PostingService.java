@@ -37,7 +37,11 @@ public class PostingService {
     List<PostingEntity> postingEntities = postingRepository.findAll(pageable).getContent();
 
     for (PostingEntity postingEntity : postingEntities) {
-      postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+      if(postingEntity.getCategoryId().getName().equals("비밀게시판")){
+        postingEntity.setWriter("익명");
+      } else {
+        postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+      }
     }
     return postingEntities;
   }
@@ -48,14 +52,15 @@ public class PostingService {
     List<PostingEntity> postingEntities = postingRepository.findAllByCategoryId(
         categoryEntity.get(), pageable);
 
-    for (PostingEntity postingEntity : postingEntities) {
-      postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+    if (categoryEntity.get().getName().equals("비밀게시판")) {
+      for (PostingEntity postingEntity : postingEntities) {
+        postingEntity.setWriter("익명");
+      }
+    } else {
+      for (PostingEntity postingEntity : postingEntities) {
+        postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+      }
     }
-    /* 이후 처리할 code
-     * if (익명게시판 카테고리 id == categoryId) {
-     *  postingEntities.forEach(postingEntity -> postingEntity.makeAnonymous());
-     * }
-     */
 
     return postingEntities;
   }
