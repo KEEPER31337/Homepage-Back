@@ -37,6 +37,8 @@ include::{snippets}/comment-create/request-fields.adoc[]
 
 include::{snippets}/comment-create/http-response.adoc[]
 
+include::{snippets}/comment-create-fail/http-response.adoc[]
+
 ==== Response Fields
 
 include::{snippets}/comment-create/response-fields.adoc[]
@@ -84,6 +86,7 @@ include::{snippets}/comment-delete/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/comment-delete/http-response.adoc[]
+include::{snippets}/comment-delete-fail/http-response.adoc[]
 
 ==== Response Fields
 
@@ -106,6 +109,7 @@ include::{snippets}/comment-update/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/comment-update/http-response.adoc[]
+include::{snippets}/comment-update-fail/http-response.adoc[]
 
 ==== Response Fields
 
