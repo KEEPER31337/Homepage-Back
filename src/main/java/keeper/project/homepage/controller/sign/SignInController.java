@@ -31,7 +31,7 @@ public class SignInController {
     MemberEntity memberEntity = signInService.login(memberDto.getLoginId(),
         memberDto.getPassword());
     String token = signInService.createJwtToken(memberEntity);
-    return responseService.getSingleResult(token);
+    return responseService.getSuccessSingleResult(token);
   }
 
   @PostMapping(value = "/find-id")

@@ -11,7 +11,7 @@ public class ResponseService {
 
   // enum으로 api 요청 결과에 대한 code, message를 정의합니다.
   public enum CommonResponse {
-    SUCCESS(0, "성공하였습니디."),
+    SUCCESS(0, "성공하였습니다."),
     FAIL(-1, "실패하였습니다.");
 
     int code;
@@ -32,18 +32,34 @@ public class ResponseService {
   }
 
   // 단일건 결과를 처리하는 메소드
-  public <T> SingleResult<T> getSingleResult(T data) {
+  public <T> SingleResult<T> getSuccessSingleResult(T data) {
     SingleResult<T> result = new SingleResult<>();
     result.setData(data);
     setSuccessResult(result);
     return result;
   }
 
+  // 단일건 결과를 처리하는 메소드
+  public <T> SingleResult<T> getFailSingleResult(T data, int code, String msg) {
+    SingleResult<T> result = new SingleResult<>();
+    result.setData(data);
+    setFailResult(result, code, msg);
+    return result;
+  }
+
   // 다중건 결과를 처리하는 메소드
-  public <T> ListResult<T> getListResult(List<T> list) {
+  public <T> ListResult<T> getSuccessListResult(List<T> list) {
     ListResult<T> result = new ListResult<>();
     result.setList(list);
     setSuccessResult(result);
+    return result;
+  }
+
+  // 다중건 결과를 처리하는 메소드
+  public <T> ListResult<T> getFailListResult(List<T> list, int code, String msg) {
+    ListResult<T> result = new ListResult<>();
+    result.setList(list);
+    setFailResult(result, code, msg);
     return result;
   }
 
@@ -69,6 +85,18 @@ public class ResponseService {
     result.setCode(CommonResponse.FAIL.getCode());
     result.setMsg(CommonResponse.FAIL.getMsg());
     return result;
+  }
+
+  private void setFailResult(CommonResult result, int code, String msg) {
+    result.setSuccess(false);
+    result.setCode(code);
+    result.setMsg(msg);
+  }
+
+  private void setFailResult(CommonResult result) {
+    result.setSuccess(false);
+    result.setCode(CommonResponse.FAIL.getCode());
+    result.setMsg(CommonResponse.FAIL.getMsg());
   }
 
   // 결과 모델에 api 요청 성공 데이터를 세팅해주는 메소드

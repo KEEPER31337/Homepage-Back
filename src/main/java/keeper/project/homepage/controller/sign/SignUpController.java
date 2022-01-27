@@ -50,7 +50,7 @@ public class SignUpController {
       @RequestParam String loginId
   ) {
 
-    return responseService.getSingleResult(
+    return responseService.getSuccessSingleResult(
         duplicateCheckService.checkLoginIdDuplicate(loginId)
     );
   }
@@ -60,7 +60,7 @@ public class SignUpController {
       @RequestParam String emailAddress
   ) {
 
-    return responseService.getSingleResult(
+    return responseService.getSuccessSingleResult(
         duplicateCheckService.checkEmailAddressDuplicate(emailAddress)
     );
   }
@@ -70,7 +70,7 @@ public class SignUpController {
       @RequestParam String studentId
   ) {
 
-    return responseService.getSingleResult(
+    return responseService.getSuccessSingleResult(
         duplicateCheckService.checkStudentIdDuplicate(studentId)
     );
   }
