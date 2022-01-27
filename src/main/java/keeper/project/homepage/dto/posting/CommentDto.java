@@ -5,6 +5,7 @@ import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,8 +14,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class CommentDto {
 
+  public Long id;
   public String content;
   public LocalDate registerTime;
   public LocalDate updateTime;
@@ -25,11 +28,11 @@ public class CommentDto {
   public Long memberId;
   public Long postingId;
 
-  //memberId, parentId는 나중에
   public CommentEntity toEntity(PostingEntity postingEntity, MemberEntity memberEntity) {
     return CommentEntity.builder()
-        .content(this.content).registerTime(this.registerTime).updateTime(this.updateTime)
-        .ipAddress(this.ipAddress).likeCount(this.likeCount).dislikeCount(this.dislikeCount)
-        .parentId(this.parentId).memberId(memberEntity).postingId(postingEntity).build();
+        .id(this.id).content(this.content).registerTime(this.registerTime)
+        .updateTime(this.updateTime).ipAddress(this.ipAddress).likeCount(this.likeCount)
+        .dislikeCount(this.dislikeCount).parentId(this.parentId).memberId(memberEntity)
+        .postingId(postingEntity).build();
   }
 }
