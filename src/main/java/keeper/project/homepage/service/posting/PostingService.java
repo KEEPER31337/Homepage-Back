@@ -37,7 +37,7 @@ public class PostingService {
     List<PostingEntity> postingEntities = postingRepository.findAll(pageable).getContent();
 
     for (PostingEntity postingEntity : postingEntities) {
-      if(postingEntity.getCategoryId().getName().equals("비밀게시판")){
+      if (postingEntity.getCategoryId().getName().equals("비밀게시판")) {
         postingEntity.setWriter("익명");
       } else {
         postingEntity.setWriter(postingEntity.getMemberId().getNickName());
@@ -84,7 +84,11 @@ public class PostingService {
   public PostingEntity getPostingById(Long pid) {
 
     PostingEntity postingEntity = postingRepository.findById(pid).get();
-    postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+    if (postingEntity.getCategoryId().getName().equals("비밀게시판")) {
+      postingEntity.setWriter("익명");
+    } else {
+      postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+    }
 
     return postingEntity;
   }
@@ -143,6 +147,15 @@ public class PostingService {
         break;
       }
     }
+
+    for (PostingEntity postingEntity : postingEntities) {
+      if (categoryEntity.getName().equals("비밀게시판")) {
+        postingEntity.setWriter("익명");
+      } else {
+        postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+      }
+    }
+
     return postingEntities;
   }
 

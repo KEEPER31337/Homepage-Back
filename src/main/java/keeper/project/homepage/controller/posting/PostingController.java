@@ -204,9 +204,6 @@ public class PostingController {
 
     List<PostingEntity> postingEntities = postingService.searchPosting(type, keyword,
         categoryId, pageable);
-    for (PostingEntity postingEntity : postingEntities) {
-      postingEntity.setWriter(postingEntity.getMemberId().getNickName());
-    }
 
     return ResponseEntity.status(HttpStatus.OK).body(postingEntities);
   }
