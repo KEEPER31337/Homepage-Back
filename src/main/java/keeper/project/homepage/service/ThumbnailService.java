@@ -15,7 +15,7 @@ public class ThumbnailService {
 
   private final ThumbnailRepository thumbnailRepository;
   private final FileService fileService;
-  private final String relDirPath = "keeper_files\\thumbnail";
+  private final String relDirPath = "keeper_files" + File.separator + "thumbnail";
   private final String defaultImageName = "thumb_default.jpg";
 
   public ThumbnailEntity saveThumbnail(ImageProcessing imageProcessing, MultipartFile multipartFile,
@@ -36,7 +36,8 @@ public class ThumbnailService {
       }
     }
     return thumbnailRepository.save(
-        ThumbnailEntity.builder().path(this.relDirPath + "\\" + fileName).file(fileEntity).build());
+        ThumbnailEntity.builder().path(this.relDirPath + File.separator + fileName).file(fileEntity)
+            .build());
   }
 
   public ThumbnailEntity findById(Long findId) {
