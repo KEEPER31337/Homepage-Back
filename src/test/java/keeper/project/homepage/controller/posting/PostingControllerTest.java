@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.Date;
 import keeper.project.homepage.ApiControllerTestSetUp;
@@ -71,25 +72,27 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
 
     fileEntity1 = FileEntity.builder()
         .fileName("image_1.jpg")
-        .filePath("keeper_files/image_1.jpg")
+        .filePath("keeper_files" + File.separator + "image_1.jpg")
         .fileSize(0L)
         .ipAddress(ipAddress1)
         .build();
     fileRepository.save(fileEntity1);
 
-    thumbnailEntity1 = ThumbnailEntity.builder().path("keeper_files/t_image_1.jpg")
+    thumbnailEntity1 = ThumbnailEntity.builder()
+        .path("keeper_files" + File.separator + "t_image_1.jpg")
         .file(fileEntity1).build();
     thumbnailRepository.save(thumbnailEntity1);
 
     fileEntity2 = FileEntity.builder()
         .fileName("image_2.jpg")
-        .filePath("keeper_files/image_2.jpg")
+        .filePath("keeper_files" + File.separator + "image_2.jpg")
         .fileSize(0L)
         .ipAddress(ipAddress2)
         .build();
     fileRepository.save(fileEntity2);
 
-    thumbnailEntity2 = ThumbnailEntity.builder().path("keeper_files/t_image_2.jpg")
+    thumbnailEntity2 = ThumbnailEntity.builder()
+        .path("keeper_files" + File.separator + "t_image_2.jpg")
         .file(fileEntity2).build();
     thumbnailRepository.save(thumbnailEntity2);
 

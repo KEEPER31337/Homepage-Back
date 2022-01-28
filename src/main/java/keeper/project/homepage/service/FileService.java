@@ -45,11 +45,11 @@ public class FileService {
     Timestamp timestamp = new Timestamp(System.nanoTime());
     fileName += timestamp.toString();
     fileName = encryptSHA256(fileName);
-    String absDirPath = System.getProperty("user.dir") + "\\" + relDirPath;
+    String absDirPath = System.getProperty("user.dir") + File.separator + relDirPath;
     if (!new File(absDirPath).exists()) {
       new File(absDirPath).mkdir();
     }
-    String filePath = absDirPath + "\\" + fileName;
+    String filePath = absDirPath + File.separator + fileName;
     File file = new File(filePath);
     multipartFile.transferTo(file);
     return file;
@@ -61,7 +61,7 @@ public class FileService {
     FileDto fileDto = new FileDto();
     fileDto.setFileName(file.getName());
     // DB엔 상대경로로 저장
-    fileDto.setFilePath(relDirPath + "\\" + file.getName());
+    fileDto.setFilePath(relDirPath + File.separator + file.getName());
     fileDto.setFileSize(file.length());
     fileDto.setUploadTime(new Date());
     fileDto.setIpAddress(ipAddress);
@@ -70,7 +70,7 @@ public class FileService {
 
   public FileEntity saveOriginalImage(MultipartFile imageFile, String ipAddress) throws Exception {
     if (imageFile == null) {
-      File defaultFile = new File("keeper_files\\" + defaultImageName);
+      File defaultFile = new File("keeper_files" + File.separator + defaultImageName);
       return saveFileEntity(defaultFile, "keeper_files", ipAddress, null);
     }
     if (isImageFile(imageFile) == false) {

@@ -43,9 +43,11 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
 
   // test 시 "{작업경로}/keeper_files/"에 jpg 이미지 파일을 넣어야 함.
   private final String originalFilePath =
-      System.getProperty("user.dir") + "\\" + "keeper_files/test_file.jpg";
+      System.getProperty("user.dir") + File.separator + "keeper_files" + File.separator
+          + "test_file.jpg";
   private final String defaultOriginalFilePath =
-      System.getProperty("user.dir") + "\\" + "keeper_files/default.jpg";
+      System.getProperty("user.dir") + File.separator + "keeper_files" + File.separator
+          + "default.jpg";
 
   private String ipAddress = "127.0.0.1";
 
@@ -79,25 +81,27 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
 
     fileEntity1 = FileEntity.builder()
         .fileName("image_1.jpg")
-        .filePath("keeper_files/image_1.jpg")
+        .filePath("keeper_files" + File.separator + "image_1.jpg")
         .fileSize(0L)
         .ipAddress(ipAddress1)
         .build();
     fileRepository.save(fileEntity1);
 
-    thumbnailEntity1 = ThumbnailEntity.builder().path("keeper_files/t_image_1.jpg")
+    thumbnailEntity1 = ThumbnailEntity.builder()
+        .path("keeper_files" + File.separator + "t_image_1.jpg")
         .file(fileEntity1).build();
     thumbnailRepository.save(thumbnailEntity1);
 
     fileEntity2 = FileEntity.builder()
         .fileName("image_2.jpg")
-        .filePath("keeper_files/image_2.jpg")
+        .filePath("keeper_files" + File.separator + "image_2.jpg")
         .fileSize(0L)
         .ipAddress(ipAddress2)
         .build();
     fileRepository.save(fileEntity2);
 
-    thumbnailEntity2 = ThumbnailEntity.builder().path("keeper_files/t_image_2.jpg")
+    thumbnailEntity2 = ThumbnailEntity.builder()
+        .path("keeper_files" + File.separator + "t_image_2.jpg")
         .file(fileEntity2).build();
     thumbnailRepository.save(thumbnailEntity2);
 
@@ -166,10 +170,11 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
           originalImage, fileEntity1, 100, 100);
 
 //    Assertions.assertTrue(
-//        new File(System.getProperty("user.dir") + "\\" + fileEntity.getFilePath()).exists(),
+//        new File(System.getProperty("user.dir") + File.separator + fileEntity.getFilePath()).exists(),
 //        "original file이 저장되지 않았습니다.");
       Assertions.assertTrue(
-          new File(System.getProperty("user.dir") + "\\" + thumbnailEntity.getPath()).exists(),
+          new File(
+              System.getProperty("user.dir") + File.separator + thumbnailEntity.getPath()).exists(),
           "thumbnail file이 저장되지 않았습니다.");
       Assertions.assertNotNull(thumbnailService.findById(thumbnailEntity.getId()),
           "thumbnail Entity가 저장되지 않았습니다.");
@@ -188,10 +193,11 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
           fileEntity1, 100, 100);
 
 //    Assertions.assertTrue(
-//        new File(System.getProperty("user.dir") + "\\" + fileEntity.getFilePath()).exists(),
+//        new File(System.getProperty("user.dir") + File.separator + fileEntity.getFilePath()).exists(),
 //        "original file이 저장되지 않았습니다.");
       Assertions.assertTrue(
-          new File(System.getProperty("user.dir") + "\\" + thumbnailEntity.getPath()).exists(),
+          new File(
+              System.getProperty("user.dir") + File.separator + thumbnailEntity.getPath()).exists(),
           "thumbnail file이 저장되지 않았습니다.");
       Assertions.assertNotNull(thumbnailService.findById(thumbnailEntity.getId()),
           "thumbnail Entity가 저장되지 않았습니다.");
