@@ -4,6 +4,6 @@ cp /application.properties /home/keeper/src/main/resources/application.propertie
 
 cd /home/keeper
 
-./gradlew bootJar
-cp build/libs/*.jar /app.jar
+gradle bootJar
+cp build/libs/homepage-0.0.1-SNAPSHOT.jar /app.jar
 java -jar /app.jar

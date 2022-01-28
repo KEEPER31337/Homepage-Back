@@ -3,18 +3,22 @@ version: '3.5'
 services:
   app:
     container_name: app
-    image: keeper:0.1
-    platform: linux/amd64
+    image: keeper:0.2
     volumes:
       - ../:/home/keeper
     ports:
       - 8080:8080
     entrypoint: "/entrypoint.sh"
+    environment:
+      - SECRET=${SECRET}
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
 
   db:
     container_name: db
     image: mysql:8.0
-    platform: linux/amd64
     environment:
       - MYSQL_DATABASE=keeper
       - MYSQL_ROOT_PASSWORD=keeper
@@ -22,3 +26,9 @@ services:
       - MYSQL_PASSWORD=keeper
     ports:
       - 3306:3306
+
+  redis:
+    container_name: redis
+    image: redis:6.2
+    ports:
+     - 6379:6379

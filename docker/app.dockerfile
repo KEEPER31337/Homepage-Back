@@ -1,4 +1,4 @@
-FROM openjdk:17
+FROM gradle:7.3.2-jdk17
 
 WORKDIR /home/keeper
 
