@@ -12,7 +12,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.Date;
 import keeper.project.homepage.ApiControllerTestSetUp;
@@ -22,6 +25,7 @@ import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -52,6 +56,36 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   private FileEntity fileEntity1;
   private ThumbnailEntity thumbnailEntity2;
   private FileEntity fileEntity2;
+
+  @BeforeAll
+  public static void createFile() throws IOException {
+    final String keeperFilesDirectoryPath = System.getProperty("user.dir") + File.separator
+        + "keeper_files";
+    final String thumbnailDirectoryPath = System.getProperty("user.dir") + File.separator
+        + "keeper_files" + File.separator + "thumbnail";
+    final String fileEntity1Path = System.getProperty("user.dir") + File.separator
+        + "keeper_files" + File.separator + "image_1.jpg";
+
+    File keeperFilesDir = new File(keeperFilesDirectoryPath);
+    File thumbnailDir = new File(thumbnailDirectoryPath);
+
+    if (!keeperFilesDir.exists()) {
+      keeperFilesDir.mkdir();
+    }
+
+    if (!thumbnailDir.exists()) {
+      thumbnailDir.mkdir();
+    }
+
+    createFileForTest(fileEntity1Path);
+  }
+
+  private static void createFileForTest(String filePath) throws IOException {
+    String str = "keeper is best dong-a-ri";
+    BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
+    writer.write(str);
+    writer.close();
+  }
 
   @BeforeEach
   public void setUp() throws Exception {
