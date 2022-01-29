@@ -185,8 +185,7 @@ public class CommentServiceTest {
   public void deleteTest() throws RuntimeException {
     Long deleteId = commentEntity.getId();
     commentService.deleteById(deleteId);
-    Assertions.assertThrows(CustomCommentNotFoundException.class,
-        () -> commentService.findById(deleteId));
+    Assertions.assertTrue(commentRepository.findById(deleteId).isEmpty());
   }
 
   @Test
