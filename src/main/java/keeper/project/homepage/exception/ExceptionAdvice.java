@@ -87,7 +87,8 @@ public class ExceptionAdvice {
       CustomAboutFailedException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("aboutFailed.code")),
         e.getMessage() == null ? getMessage("aboutFailed.msg") : e.getMessage());
-        
+  }
+
   @ExceptionHandler(CustomFileNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public CommonResult signUpFailedException(HttpServletRequest request,

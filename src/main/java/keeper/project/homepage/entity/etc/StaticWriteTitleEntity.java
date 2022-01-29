@@ -1,6 +1,7 @@
 package keeper.project.homepage.entity.etc;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -36,4 +37,9 @@ public class StaticWriteTitleEntity {
 
   @OneToMany(mappedBy = "staticWriteTitle")
   private List<StaticWriteSubtitleImageEntity> staticWriteSubtitleImages = new ArrayList<>();
+
+  // type명이 바뀌면 혼란스러울 수 있으므로 type명은 안바뀐다고 가정.
+  public void updateInfo(String title) {
+    this.title = title;
+  }
 }
