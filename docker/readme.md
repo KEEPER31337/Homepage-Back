@@ -7,6 +7,7 @@
 - ```run.sh/bat``` 스크립트를 CTRL+C로 실행 취소 및 컨테이너 stop 동작
 
 ## 실행
+Keeper Homepage Backend 환경 구성을 위해 ```docker/.env``` 파일과 ```docker/config/init.sql``` 2개의 설정 파일 필요합니다.
 ### Linux/Mac
 ```bash
 git clone https://github.com/KEEPER31337/Homepage-Back.git
