@@ -65,3 +65,6 @@ logs
 
 ### env ###
 .env
+
+### sql init file for docker setting ###
+docker/config/*.sql

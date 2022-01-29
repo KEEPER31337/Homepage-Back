@@ -15,15 +15,17 @@ services:
       - MAIL_PORT=${MAIL_PORT}
       - MAIL_USERNAME=${MAIL_USERNAME}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
+    depends_on:
+      - db
 
   db:
     container_name: db
-    image: mysql:8.0
+    image: keeper_db:0.1
     environment:
-      - MYSQL_DATABASE=keeper
-      - MYSQL_ROOT_PASSWORD=keeper
-      - MYSQL_USER=keeper
-      - MYSQL_PASSWORD=keeper
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     ports:
       - 3306:3306
 
