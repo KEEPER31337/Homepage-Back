@@ -3,32 +3,27 @@ package keeper.project.homepage.service.library;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.entity.library.BookBorrowEntity;
 import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
+import keeper.project.homepage.service.ResponseService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class BookManageService {
 
   private final BookRepository bookRepository;
   private final BookBorrowRepository bookBorrowRepository;
   private final MemberRepository memberRepository;
   private static final Integer MAXIMUM_ALLOWD_BOOK_NUMBER = 4;
-
-  @Autowired
-  public BookManageService(BookRepository bookRepository,
-      MemberRepository memberRepository,
-      BookBorrowRepository bookBorrowRepository,
-      MemberRepository memberRepository1) {
-    this.bookRepository = bookRepository;
-    this.bookBorrowRepository = bookBorrowRepository;
-    this.memberRepository = memberRepository1;
-  }
+  private final ResponseService responseService;
 
   /**
    * 도서 최대 권수 체크
@@ -102,20 +97,21 @@ public class BookManageService {
   /**
    * 도서 대여 가능 여부 체크
    */
-  public Long isCanBorrow(String title, String author, Long quantity) {
+  public CommonResult doBorrow(String title, String author, Long borrowMemberId, Long quantity) {
 
     Long nowEnable = 0L;
     if (bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
       nowEnable = bookRepository.findByTitleAndAuthor(title, author).get().getEnable();
     } else {
-      return -2L;
+      return responseService.getFailResult(-2, "책이 존재하지 않습니다.");
     }
 
     if (quantity > nowEnable) {
-      return -1L;
+      return responseService.getFailResult(-1, "수량 초과입니다.");
     }
 
-    return quantity;
+    borrowBook(title, author, borrowMemberId, quantity);
+    return responseService.getSuccessResult();
   }
 
   /**

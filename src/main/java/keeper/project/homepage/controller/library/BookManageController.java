@@ -27,7 +27,6 @@ public class BookManageController {
   private final BookManageService bookManageService;
 
   @PostMapping(value = "/addbook")
-  @ResponseBody
   public CommonResult add(
       @RequestParam String title,
       @RequestParam String author,
@@ -44,7 +43,6 @@ public class BookManageController {
   }
 
   @PostMapping(value = "/deletebook")
-  @ResponseBody
   public CommonResult delete(@RequestParam String title, @RequestParam String author,
       @RequestParam Long quantity) {
 
@@ -67,21 +65,12 @@ public class BookManageController {
   }
 
   @PostMapping(value = "/borrowbook")
-  @ResponseBody
   public CommonResult borrow(
       @RequestParam String title,
       @RequestParam String author,
       @RequestParam Long borrowMemberId,
       @RequestParam Long quantity) {
 
-    Long enable = bookManageService.isCanBorrow(title, author, quantity);
-
-    if (enable == -1L) {
-      return responseService.getFailResult(-1, "수량 초과입니다.");
-    } else if (enable == -2L) {
-      return responseService.getFailResult(-2, "책이 존재하지 않습니다.");
-    }
-    bookManageService.borrowBook(title, author, borrowMemberId, quantity);
-    return responseService.getSuccessResult();
+    return bookManageService.doBorrow(title, author, borrowMemberId, quantity);
   }
 }
