@@ -16,6 +16,7 @@ import lombok.ToString;
 @AllArgsConstructor
 public class FileDto {
 
+  private Long id;
   private String fileName;
   private String filePath;
   private Long fileSize;

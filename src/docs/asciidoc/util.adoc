@@ -31,3 +31,27 @@ NOTE: Bearer JWT 토큰이 필요합니다.
 
 include::{snippets}/get-auth/http-response.adoc[]
 include::{snippets}/get-auth/response-fields.adoc[]
+
+== *이미지 불러오기*
+
+=== 요청
+
+include::{snippets}/get-image/http-request.adoc[]
+include::{snippets}/get-image/path-parameters.adoc[]
+
+=== 응답
+
+NOTE: Response는 삽입시 너무 길어져 생략했습니다.
+단순히 Response Body에 이미지가 담겨갑니다.
+
+== *썸네일 불러오기*
+
+=== 요청
+
+include::{snippets}/get-thumbnail/http-request.adoc[]
+include::{snippets}/get-thumbnail/path-parameters.adoc[]
+
+=== 응답
+
+NOTE: Response는 삽입시 너무 길어져 생략했습니다.
+단순히 Response Body에 썸네일 이미지가 담겨갑니다.

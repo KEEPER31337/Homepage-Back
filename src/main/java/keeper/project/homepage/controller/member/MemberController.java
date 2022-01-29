@@ -29,7 +29,7 @@ public class MemberController {
   @GetMapping(value = "/members")
   public ListResult<MemberEntity> findAllMember() {
     // 결과데이터가 여러건인경우 getListResult를 이용해서 결과를 출력한다.
-    return responseService.getListResult(memberRepository.findAll());
+    return responseService.getSuccessListResult(memberRepository.findAll());
   }
 
   @Secured("ROLE_회원") // 각 리소스별 권한 설정
@@ -39,7 +39,7 @@ public class MemberController {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     Long id = Long.valueOf(authentication.getName());
     // 결과데이터가 단일건인경우 getSingleResult를 이용해서 결과를 출력한다.
-    return responseService.getSingleResult(
+    return responseService.getSuccessSingleResult(
         memberRepository.findById(id).orElseThrow(CustomMemberNotFoundException::new));
   }
 }

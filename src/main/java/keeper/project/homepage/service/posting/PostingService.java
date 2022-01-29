@@ -37,7 +37,11 @@ public class PostingService {
     List<PostingEntity> postingEntities = postingRepository.findAll(pageable).getContent();
 
     for (PostingEntity postingEntity : postingEntities) {
-      postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+      if (postingEntity.getCategoryId().getName().equals("비밀게시판")) {
+        postingEntity.setWriter("익명");
+      } else {
+        postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+      }
     }
     return postingEntities;
   }
@@ -48,14 +52,15 @@ public class PostingService {
     List<PostingEntity> postingEntities = postingRepository.findAllByCategoryId(
         categoryEntity.get(), pageable);
 
-    for (PostingEntity postingEntity : postingEntities) {
-      postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+    if (categoryEntity.get().getName().equals("비밀게시판")) {
+      for (PostingEntity postingEntity : postingEntities) {
+        postingEntity.setWriter("익명");
+      }
+    } else {
+      for (PostingEntity postingEntity : postingEntities) {
+        postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+      }
     }
-    /* 이후 처리할 code
-     * if (익명게시판 카테고리 id == categoryId) {
-     *  postingEntities.forEach(postingEntity -> postingEntity.makeAnonymous());
-     * }
-     */
 
     return postingEntities;
   }
@@ -79,7 +84,11 @@ public class PostingService {
   public PostingEntity getPostingById(Long pid) {
 
     PostingEntity postingEntity = postingRepository.findById(pid).get();
-    postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+    if (postingEntity.getCategoryId().getName().equals("비밀게시판")) {
+      postingEntity.setWriter("익명");
+    } else {
+      postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+    }
 
     return postingEntity;
   }
@@ -125,19 +134,29 @@ public class PostingService {
         break;
       }
       case "TC": {
-        postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingOrContentContaining(
-            categoryEntity, keyword, keyword, pageable);
+        postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingOrCategoryIdAndContentContaining(
+            categoryEntity, keyword, categoryEntity, keyword, pageable);
         break;
       }
       case "W": {
-        /*
-         * 멤버 기능 구현 완료시 추가
-         * MemberEntity memberEntity = memberRepository.findByNickname??(keyword);
-         * postingEntities = postingRepository.findAllByCategoryIdAndMemberId(categoryEntity, memberEntity, pageable);
-         */
+        Optional<MemberEntity> memberEntity = memberRepository.findByNickName(keyword);
+        if (!memberEntity.isPresent()) {
+          break;
+        }
+        postingEntities = postingRepository.findAllByCategoryIdAndMemberId(categoryEntity,
+            memberEntity.get(), pageable);
         break;
       }
     }
+
+    for (PostingEntity postingEntity : postingEntities) {
+      if (categoryEntity.getName().equals("비밀게시판")) {
+        postingEntity.setWriter("익명");
+      } else {
+        postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+      }
+    }
+
     return postingEntities;
   }
 

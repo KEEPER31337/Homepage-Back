@@ -1,17 +1,24 @@
 package keeper.project.homepage.service;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.dto.FileDto;
-import keeper.project.homepage.dto.posting.PostingDto;
 import keeper.project.homepage.entity.FileEntity;
+import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.exception.CustomFileNotFoundException;
 import keeper.project.homepage.repository.FileRepository;
+import keeper.project.homepage.repository.ThumbnailRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,6 +29,7 @@ import reactor.util.annotation.Nullable;
 public class FileService {
 
   private final FileRepository fileRepository;
+  private final ThumbnailRepository thumbnailRepository;
   private final String defaultImageName = "default.jpg";
   private final String[] enableImageFormat = {"jpg", "jpeg", "png", "gif"};
 
@@ -35,6 +43,31 @@ public class FileService {
       }
     }
     return false;
+  }
+
+  public boolean isImageFile(String fileName) {
+    String[] fileNameSplitArray = fileName.split("\\.");
+    String fileFormat = fileNameSplitArray[fileNameSplitArray.length - 1];
+    for (String format : enableImageFormat) {
+      if (fileFormat.equals(format)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public byte[] getImage(Long fileId) throws IOException {
+    FileEntity fileEntity = fileRepository.findById(fileId).orElseThrow(
+        () -> new CustomFileNotFoundException("이미지 파일을 찾을 수 없습니다.")
+    );
+    if (!isImageFile(fileEntity.getFileName())) {
+      throw new CustomFileNotFoundException("이미지 파일이 아닙니다.");
+    }
+    String filePath = System.getProperty("user.dir") + "\\" + fileEntity.getFilePath();
+    File file = new File(filePath);
+    InputStream in = new FileInputStream(file);
+
+    return IOUtils.toByteArray(in);
   }
 
   public File saveFileInServer(MultipartFile multipartFile, String relDirPath) throws Exception {
