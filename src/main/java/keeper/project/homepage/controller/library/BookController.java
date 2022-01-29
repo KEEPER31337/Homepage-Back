@@ -81,7 +81,7 @@ public class BookController {
     } else if (enable == -2L) {
       return responseService.getFailResult(-2, "책이 존재하지 않습니다.");
     }
-    bookManageService.borrowBook(title, author, borrowMemberId, enable);
+    bookManageService.borrowBook(title, author, borrowMemberId, quantity);
     return responseService.getSuccessResult();
   }
 }
