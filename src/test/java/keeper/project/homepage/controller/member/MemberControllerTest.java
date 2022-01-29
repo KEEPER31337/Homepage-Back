@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
+import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.repository.member.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -191,5 +192,26 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data").exists());
+  }
+
+  @Test
+  @DisplayName("기본 권한으로 본인 실명, 닉네임 변경하기")
+  public void updateNames() throws Exception {
+    String updateContent = "{"
+        + "\"realName\":\"변경한\","
+        + "\"nickName\":\"변경한 닉네임\""
+        + "}";
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .put("/v1/member/update/names")
+            .header("Authorization", userToken)
+            .content(updateContent)
+            .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.data").exists())
+        .andExpect(jsonPath("$.data.realName").value("변경한"))
+        .andExpect(jsonPath("$.data.nickName").value("변경한 닉네임"));
   }
 }
