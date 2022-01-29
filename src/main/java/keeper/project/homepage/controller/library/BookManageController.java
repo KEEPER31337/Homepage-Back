@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Log4j2
-public class BookController {
+public class BookManageController {
 
   private final BookRepository bookRepository;
   private final ResponseService responseService;

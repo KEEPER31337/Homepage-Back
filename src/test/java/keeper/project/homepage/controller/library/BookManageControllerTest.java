@@ -1,4 +1,4 @@
-package keeper.project.homepage.controller;
+package keeper.project.homepage.controller.library;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -24,7 +24,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 @Transactional
-public class BookControllerTest extends ApiControllerTestSetUp {
+public class BookManageControllerTest extends ApiControllerTestSetUp {
 
   final private String bookTitle1 = "Do it! 점프 투 파이썬";
   final private String bookAuthor1 = "박응용";
