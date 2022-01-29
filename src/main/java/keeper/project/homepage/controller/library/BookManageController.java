@@ -66,12 +66,12 @@ public class BookManageController {
 
   }
 
-  @PostMapping(value = "/borrowbook/{borrowMemberId}")
+  @PostMapping(value = "/borrowbook")
   @ResponseBody
   public CommonResult borrow(
       @RequestParam String title,
       @RequestParam String author,
-      @PathVariable(value = "borrowMemberId") Long borrowMemberId,
+      @RequestParam Long borrowMemberId,
       @RequestParam Long quantity) {
 
     Long enable = bookManageService.isCanBorrow(title, author, quantity);

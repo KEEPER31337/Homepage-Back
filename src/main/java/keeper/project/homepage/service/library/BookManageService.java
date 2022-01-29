@@ -133,8 +133,8 @@ public class BookManageService {
    * 도서 대여
    */
   public void borrowBook(String title, String author, Long borrowMemberId, Long quantity) {
-    Long bookId = bookRepository.findByTitleAndAuthor(title, author).get().getId();
-    Long memberId = memberRepository.findById(borrowMemberId).get().getId();
+    BookEntity bookId = bookRepository.findByTitleAndAuthor(title, author).get();
+    MemberEntity memberId = memberRepository.findById(borrowMemberId).get();
     String borrowDate = transferFormat(new Date());
     String expireDate = getExpireDate();
 

@@ -2,7 +2,7 @@ package keeper.project.homepage.entity.library;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import java.sql.Date;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -37,18 +37,18 @@ public class BookBorrowEntity {
   // 한명의 유저는 여러개의 책 대여 가능이므로 1 : N 관계
   @JoinColumn(name = "member_id") // foreign key 매핑
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-  private Long memberId;
+  private MemberEntity memberId;
   @OneToOne(targetEntity = BookEntity.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "book_id")
   @JsonIgnore
-  private Long bookId;
+  private BookEntity bookId;
   @Column(name = "quantity", nullable = false)
   private Long quantity;
   @Column(name = "borrow_date", nullable = false)
-  @Temporal(TemporalType.TIMESTAMP)
+  @Temporal(TemporalType.DATE)
   private Date borrowDate;
   @Column(name = "expire_date", nullable = false)
-  @Temporal(TemporalType.TIMESTAMP)
+  @Temporal(TemporalType.DATE)
   private Date expireDate;
 
 }
