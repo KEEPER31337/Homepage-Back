@@ -2,7 +2,6 @@ package keeper.project.homepage.controller.member;
 
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -11,27 +10,16 @@ import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.repository.member.MemberRepository;
+import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
+import keeper.project.homepage.entity.member.MemberJobEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.filter.CharacterEncodingFilter;
 
 @Transactional
 public class MemberControllerTest extends ApiControllerTestSetUp {
@@ -56,16 +44,20 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
 
   @BeforeEach
   public void setUp() throws Exception {
-    memberRepository.save(
-        MemberEntity.builder()
-            .loginId(loginId)
-            .password(passwordEncoder.encode(password))
-            .realName(realName)
-            .nickName(nickName)
-            .emailAddress(emailAddress)
-            .studentId(studentId)
-            .roles(new ArrayList<String>(List.of("ROLE_USER")))
-            .build());
+    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
+    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
+        .memberJobEntity(memberJobEntity)
+        .build();
+    MemberEntity memberEntity = MemberEntity.builder()
+        .loginId(loginId)
+        .password(passwordEncoder.encode(password))
+        .realName(realName)
+        .nickName(nickName)
+        .emailAddress(emailAddress)
+        .studentId(studentId)
+        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
+        .build();
+    memberRepository.save(memberEntity);
 
     String content = "{\n"
         + "    \"loginId\": \"" + loginId + "\",\n"
@@ -86,16 +78,20 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
     JacksonJsonParser jsonParser = new JacksonJsonParser();
     userToken = jsonParser.parseMap(resultString).get("data").toString();
 
-    memberRepository.save(
-        MemberEntity.builder()
-            .loginId(adminLoginId)
-            .password(passwordEncoder.encode(adminPassword))
-            .realName(adminRealName)
-            .nickName(adminNickName)
-            .emailAddress(adminEmailAddress)
-            .studentId(adminStudentId)
-            .roles(new ArrayList<String>(List.of("ROLE_ADMIN")))
-            .build());
+    MemberJobEntity memberAdminJobEntity = memberJobRepository.findByName("ROLE_회장").get();
+    MemberHasMemberJobEntity hasMemberAdminJobEntity = MemberHasMemberJobEntity.builder()
+        .memberJobEntity(memberAdminJobEntity)
+        .build();
+    MemberEntity memberAdmin = MemberEntity.builder()
+        .loginId(adminLoginId)
+        .password(passwordEncoder.encode(adminPassword))
+        .realName(adminRealName)
+        .nickName(adminNickName)
+        .emailAddress(adminEmailAddress)
+        .studentId(adminStudentId)
+        .memberJobs(new ArrayList<>(List.of(hasMemberAdminJobEntity)))
+        .build();
+    memberRepository.save(memberAdmin);
 
     String adminContent = "{\n"
         + "    \"loginId\": \"" + adminLoginId + "\",\n"

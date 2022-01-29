@@ -6,8 +6,12 @@ import keeper.project.homepage.dto.EmailAuthDto;
 import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.entity.member.EmailAuthRedisEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
+import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.exception.CustomSignUpFailedException;
 import keeper.project.homepage.repository.member.EmailAuthRedisRepository;
+import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
+import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberRankRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.member.MemberTypeRepository;
@@ -25,6 +29,8 @@ public class SignUpService {
   private static final int AUTH_CODE_LENGTH = 10;
 
   private final MemberRepository memberRepository;
+  private final MemberHasMemberJobRepository hasMemberJobRepository;
+  private final MemberJobRepository memberJobRepository;
   private final MemberTypeRepository memberTypeRepository;
   private final MemberRankRepository memberRankRepository;
   private final PasswordEncoder passwordEncoder;
@@ -58,7 +64,7 @@ public class SignUpService {
     if (!authCode.equals(getEmailAuthRedisEntity.get().getAuthCode())) {
       throw new CustomSignUpFailedException("이메일 인증 코드가 일치하지 않습니다.");
     }
-    memberRepository.save(MemberEntity.builder()
+    MemberEntity memberEntity = MemberEntity.builder()
         .loginId(memberDto.getLoginId())
         .emailAddress(memberDto.getEmailAddress())
         .password(passwordEncoder.encode(memberDto.getPassword()))
@@ -68,9 +74,15 @@ public class SignUpService {
         .studentId(memberDto.getStudentId())
         .memberType(memberTypeRepository.getById(1L))
         .memberRank(memberRankRepository.getById(1L))
-        .roles(new ArrayList<>(List.of("ROLE_USER")))
-        .build());
+        .build();
+    memberRepository.save(memberEntity);
 
+    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
+    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
+        .memberEntity(memberEntity)
+        .memberJobEntity(memberJobEntity)
+        .build();
+    hasMemberJobRepository.save(hasMemberJobEntity);
   }
 
   private String generateRandomAuthCode(int targetStringLength) {

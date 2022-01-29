@@ -25,14 +25,14 @@ public class MemberController {
   private final MemberRepository memberRepository;
   private final ResponseService responseService;
 
-  @Secured("ROLE_ADMIN") // 각 리소스별 권한 설정
+  @Secured("ROLE_회장") // 각 리소스별 권한 설정
   @GetMapping(value = "/members")
   public ListResult<MemberEntity> findAllMember() {
     // 결과데이터가 여러건인경우 getListResult를 이용해서 결과를 출력한다.
     return responseService.getListResult(memberRepository.findAll());
   }
 
-  @Secured("ROLE_USER") // 각 리소스별 권한 설정
+  @Secured("ROLE_회원") // 각 리소스별 권한 설정
   @GetMapping(value = "/member")
   public SingleResult<MemberEntity> findMember() {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.

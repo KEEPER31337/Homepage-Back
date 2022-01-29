@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 public class MailServiceTest {
 
-  final private List<String> toUserList = new ArrayList<>(List.of("gusah009@gmail.com"));
+  final private List<String> toUserList = new ArrayList<>(List.of("test@k33p3r.com"));
 
   @Autowired
   MailService mailService;
