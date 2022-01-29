@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.awt.print.Book;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -17,12 +18,15 @@ import java.util.Collections;
 import java.util.Date;
 import javax.transaction.Transactional;
 import keeper.project.homepage.ApiControllerTestSetUp;
+import keeper.project.homepage.entity.library.BookBorrowEntity;
 import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.library.BookRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -325,8 +329,8 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   public void borrowBook() throws Exception {
     Long borrowQuantity = 1L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("title", bookTitle2);
-    params.add("author", bookAuthor2);
+    params.add("title", bookTitle1);
+    params.add("author", bookAuthor1);
     params.add("borrowMemberId", memberEntity.getId().toString());
     params.add("quantity", String.valueOf(borrowQuantity));
 
@@ -350,5 +354,41 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("msg").description(
                     "책 대여 실패가 수량 초과 일 때 수량 초과 메시지를, 없는 책일 때 책이 없다는 메시지를 발생시킵니다.")
             )));
+  }
+
+  @Test
+  @DisplayName("책 대여 실패(수량 초과)")
+  public void borrowBookFailedOverMax() throws Exception {
+    Long borrowQuantity = 2L;
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("title", bookTitle2);
+    params.add("author", bookAuthor2);
+    params.add("borrowMemberId", memberEntity.getId().toString());
+    params.add("quantity", String.valueOf(borrowQuantity));
+
+    mockMvc.perform(post("/v1/borrowbook").params(params))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(-1))
+        .andExpect(jsonPath("$.msg").exists());
+  }
+
+  @Test
+  @DisplayName("책 대여 실패(없는 책)")
+  public void borrowBookFailedNotExist() throws Exception {
+    Long borrowQuantity = 1L;
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("title", bookTitle2 + epochTime);
+    params.add("author", bookAuthor2);
+    params.add("borrowMemberId", memberEntity.getId().toString());
+    params.add("quantity", String.valueOf(borrowQuantity));
+
+    mockMvc.perform(post("/v1/borrowbook").params(params))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(-2))
+        .andExpect(jsonPath("$.msg").exists());
   }
 }
