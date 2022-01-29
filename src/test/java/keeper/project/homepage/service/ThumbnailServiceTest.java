@@ -18,6 +18,7 @@ import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,9 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
   private final String defaultOriginalFilePath =
       System.getProperty("user.dir") + File.separator + "keeper_files" + File.separator
           + "default.jpg";
+  private final String defaultThumbnailFilePath =
+      System.getProperty("user.dir") + File.separator + "keeper_files" + File.separator
+          + "thumbnail" + File.separator + "thumb_detail.jpg";
 
   private String ipAddress = "127.0.0.1";
 
@@ -60,10 +64,10 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
   private MemberEntity memberEntity;
   private CategoryEntity categoryEntity;
   private PostingEntity postingEntity;
-  private ThumbnailEntity thumbnailEntity1;
-  private FileEntity fileEntity1;
-  private ThumbnailEntity thumbnailEntity2;
-  private FileEntity fileEntity2;
+  private FileEntity fileEntity;
+  private ThumbnailEntity thumbnailEntity;
+  private FileEntity defaultFileEntity;
+  private ThumbnailEntity defaultThumbnailEntity;
 
 
   @BeforeAll
@@ -74,6 +78,8 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
         + "keeper_files" + File.separator + "thumbnail";
     final String testImageForTest = System.getProperty("user.dir") + File.separator
         + "keeper_files" + File.separator + "test_file.jpg";
+    final String testThumbnailForTest = System.getProperty("user.dir") + File.separator
+        + "keeper_files" + File.separator + "thumbnail" + File.separator + "thumb_test_file.jpg";
     final String defaultImageForTest = System.getProperty("user.dir") + File.separator
         + "keeper_files" + File.separator + "default.jpg";
     final String defaultThumbnailForTest = System.getProperty("user.dir") + File.separator
@@ -91,6 +97,7 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
     }
 
     createFileForTest(testImageForTest);
+    createFileForTest(testThumbnailForTest);
     createFileForTest(defaultImageForTest);
     createFileForTest(defaultThumbnailForTest);
   }
@@ -119,38 +126,39 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
         .name("테스트 게시판").build();
     categoryRepository.save(categoryEntity);
 
-    fileEntity1 = FileEntity.builder()
+    fileEntity = FileEntity.builder()
         .fileName("image_1.jpg")
-        .filePath("keeper_files" + File.separator + "image_1.jpg")
+        .filePath("keeper_files" + File.separator + "test_file.jpg")
         .fileSize(0L)
         .ipAddress(ipAddress1)
         .build();
-    fileRepository.save(fileEntity1);
+    fileRepository.save(fileEntity);
 
-    thumbnailEntity1 = ThumbnailEntity.builder()
-        .path("keeper_files" + File.separator + "t_image_1.jpg")
-        .file(fileEntity1).build();
-    thumbnailRepository.save(thumbnailEntity1);
+    thumbnailEntity = ThumbnailEntity.builder()
+        .path(
+            "keeper_files" + File.separator + "thumbnail" + File.separator + "thumb_test_file.jpg")
+        .file(fileEntity).build();
+    thumbnailRepository.save(thumbnailEntity);
 
-    fileEntity2 = FileEntity.builder()
-        .fileName("image_2.jpg")
-        .filePath("keeper_files" + File.separator + "image_2.jpg")
+    defaultFileEntity = FileEntity.builder()
+        .fileName("image_1.jpg")
+        .filePath("keeper_files" + File.separator + "default.jpg")
         .fileSize(0L)
-        .ipAddress(ipAddress2)
+        .ipAddress(ipAddress1)
         .build();
-    fileRepository.save(fileEntity2);
+    fileRepository.save(defaultFileEntity);
 
-    thumbnailEntity2 = ThumbnailEntity.builder()
-        .path("keeper_files" + File.separator + "t_image_2.jpg")
-        .file(fileEntity2).build();
-    thumbnailRepository.save(thumbnailEntity2);
+    defaultThumbnailEntity = ThumbnailEntity.builder()
+        .path("keeper_files" + File.separator + "thumbnail" + File.separator + "thumb_default.jpg")
+        .file(defaultFileEntity).build();
+    thumbnailRepository.save(defaultThumbnailEntity);
 
     postingEntity = PostingEntity.builder()
         .title("test 게시판 제목")
         .content("test 게시판 제목 내용")
         .memberId(memberEntity)
         .categoryId(categoryEntity)
-        .thumbnailId(thumbnailEntity1)
+        .thumbnailId(thumbnailEntity)
         .ipAddress("192.11.222.333")
         .allowComment(0)
         .isNotice(0)
@@ -171,7 +179,7 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
         .content("test 게시판 제목 내용2")
         .memberId(memberEntity)
         .categoryId(categoryEntity)
-        .thumbnailId(thumbnailEntity2)
+        .thumbnailId(defaultThumbnailEntity)
         .ipAddress("192.11.223")
         .allowComment(0)
         .isNotice(0)
@@ -186,7 +194,7 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
         .password("asd2")
         .build());
 
-    fileEntity1 = fileRepository.save(FileEntity.builder()
+    fileEntity = fileRepository.save(FileEntity.builder()
         .postingId(postingEntity)
         .fileName("test file")
         .filePath("test/file.txt")
@@ -207,7 +215,7 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
     try {
 //    FileEntity fileEntity = fileService.saveOriginalImage(originalImage, ipAddress);
       ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
-          originalImage, fileEntity1, 100, 100);
+          originalImage, fileEntity, 100, 100);
 
 //    Assertions.assertTrue(
 //        new File(System.getProperty("user.dir") + File.separator + fileEntity.getFilePath()).exists(),
@@ -230,7 +238,7 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
       Assertions.assertTrue(new File(defaultOriginalFilePath).exists(), "test할 이미지 파일이 없습니다.");
 //    FileEntity fileEntity = fileService.saveOriginalImage(defaultOriginalImage, ipAddress);
       ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(), null,
-          fileEntity1, 100, 100);
+          fileEntity, 100, 100);
 
 //    Assertions.assertTrue(
 //        new File(System.getProperty("user.dir") + File.separator + fileEntity.getFilePath()).exists(),
@@ -245,5 +253,27 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  @Test
+  @DisplayName("썸네일 삭제")
+  public void deleteTest() {
+    String thumbnailPath =
+        System.getProperty("user.dir") + File.separator + thumbnailEntity.getPath();
+    thumbnailService.deleteById(thumbnailEntity.getId());
+
+    Assertions.assertTrue(thumbnailRepository.findById(thumbnailEntity.getId()).isEmpty());
+    Assertions.assertFalse(new File(thumbnailPath).exists());
+  }
+
+  @Test
+  @DisplayName("기본 이미지로 생성한 썸네일 삭제")
+  public void deleteDefaultTest() {
+    String thumbnailPath =
+        System.getProperty("user.dir") + File.separator + defaultThumbnailEntity.getPath();
+    thumbnailService.deleteById(defaultThumbnailEntity.getId());
+
+    Assertions.assertTrue(thumbnailRepository.findById(defaultThumbnailEntity.getId()).isEmpty());
+    Assertions.assertTrue(new File(thumbnailPath).exists());
   }
 }
