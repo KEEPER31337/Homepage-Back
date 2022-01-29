@@ -147,10 +147,12 @@ public class BookManageService {
             .expireDate(java.sql.Date.valueOf(expireDate))
             .build());
 
-    String infromation = bookRepository.findByTitleAndAuthor(title, author).get().getInformation();
-    Long total = bookRepository.findByTitleAndAuthor(title, author).get().getTotal();
-    Long borrow = bookRepository.findByTitleAndAuthor(title, author).get().getBorrow() + quantity;
-    Long enable = bookRepository.findByTitleAndAuthor(title, author).get().getEnable() - quantity;
+    BookEntity nowBookEntity = bookRepository.findByTitleAndAuthor(title, author).get();
+    String infromation = nowBookEntity.getInformation();
+    Long total = nowBookEntity.getTotal();
+    Long borrow = nowBookEntity.getBorrow() + quantity;
+    Long enable = nowBookEntity.getEnable() - quantity;
+    Date registerDate = nowBookEntity.getRegisterDate();
 
     bookRepository.save(
         BookEntity.builder()
@@ -160,6 +162,7 @@ public class BookManageService {
             .total(total)
             .borrow(borrow)
             .enable(enable)
+            .registerDate(registerDate)
             .build()
     );
   }
