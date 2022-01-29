@@ -13,9 +13,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
+import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
+import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
@@ -34,6 +38,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 public class CommentControllerTest extends ApiControllerTestSetUp {
 
+  final private String loginId = "hyeonmomo";
+  final private String password = "keeper";
+  final private String realName = "JeongHyeonMo";
+  final private String nickName = "JeongHyeonMo";
+  final private String emailAddress = "gusah@naver.com";
+  final private String studentId = "201724579";
+
   private LocalDate registerTime = LocalDate.now();
   private LocalDate updateTime = LocalDate.now();
   private String ipAddress = "127.0.0.1";
@@ -47,15 +58,20 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
 
   @BeforeEach
   public void setUp() throws Exception {
-    memberEntity = memberRepository.save(
-        MemberEntity.builder()
-            .loginId("로그인")
-            .password("비밀번호")
-            .realName("이름")
-            .nickName("닉네임")
-            .emailAddress("이메일")
-            .studentId("학번")
-            .roles(Collections.singletonList("ROLE_USER")).build());
+    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
+    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
+        .memberJobEntity(memberJobEntity)
+        .build();
+    memberEntity = MemberEntity.builder()
+        .loginId(loginId)
+        .password(passwordEncoder.encode(password))
+        .realName(realName)
+        .nickName(nickName)
+        .emailAddress(emailAddress)
+        .studentId(studentId)
+        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
+        .build();
+    memberRepository.save(memberEntity);
 
     CategoryEntity categoryEntity = categoryRepository.save(
         CategoryEntity.builder().name("test category").build());

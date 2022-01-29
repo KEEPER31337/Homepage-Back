@@ -16,6 +16,8 @@ import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
+import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.exception.CustomMemberNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -43,15 +45,20 @@ public class SignInControllerTest extends ApiControllerTestSetUp {
     SimpleDateFormat stringToDate = new SimpleDateFormat("yyyymmdd");
     Date birthdayDate = stringToDate.parse(birthday);
 
-    memberRepository.save(MemberEntity.builder()
+    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
+    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
+        .memberJobEntity(memberJobEntity)
+        .build();
+    MemberEntity memberEntity = MemberEntity.builder()
         .loginId(loginId)
-        .emailAddress(emailAddress)
         .password(passwordEncoder.encode(password))
         .realName(realName)
         .nickName(nickName)
-        .birthday(birthdayDate)
+        .emailAddress(emailAddress)
         .studentId(studentId)
-        .roles(new ArrayList<String>(List.of("ROLE_USER"))).build());
+        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
+        .build();
+    memberRepository.save(memberEntity);
   }
 
   @Test

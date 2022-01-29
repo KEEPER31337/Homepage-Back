@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
+import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.repository.member.MemberRepository;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +34,12 @@ public class MemberRepositoryTest {
   private MemberRepository memberRepository;
 
   @Autowired
+  private MemberJobRepository memberJobRepository;
+
+
+  @Autowired
   private PasswordEncoder passwordEncoder;
+
 
   @Test
   @DisplayName("LoginId로 유저 찾기")
@@ -40,18 +47,25 @@ public class MemberRepositoryTest {
     String loginId = "hyeonmomo";
     String realName = "JeongHyeonMo";
     String nickName = "JeongHyeonMo";
+    String password = "abcd";
     String emailAddress = "gusah@naver.com";
     String studentId = "201724579";
     // given
-    memberRepository.save(MemberEntity.builder()
+    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
+    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
+        .memberJobEntity(memberJobEntity)
+        .build();
+    MemberEntity memberEntity = MemberEntity.builder()
         .loginId(loginId)
-        .password(passwordEncoder.encode("1234"))
+        .password(passwordEncoder.encode(password))
         .realName(realName)
         .nickName(nickName)
         .emailAddress(emailAddress)
         .studentId(studentId)
-        .roles(new ArrayList<String>(List.of("ROLE_USER")))
-        .build());
+        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
+        .build();
+    memberRepository.save(memberEntity);
+
     // when
     Optional<MemberEntity> member = memberRepository.findByLoginId(loginId);
     // then
@@ -74,14 +88,19 @@ public class MemberRepositoryTest {
     String password = "1234";
     String newPassword = password + "1";
     // given
+
+    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
+    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
+        .memberJobEntity(memberJobEntity)
+        .build();
     MemberEntity member = MemberEntity.builder()
         .loginId(loginId)
-        .password(passwordEncoder.encode(password))
+        .password(passwordEncoder.encode("1234"))
         .realName(realName)
         .nickName(nickName)
         .emailAddress(emailAddress)
         .studentId(studentId)
-        .roles(new ArrayList<String>(List.of("ROLE_USER")))
+        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
     memberRepository.save(member);
     // when

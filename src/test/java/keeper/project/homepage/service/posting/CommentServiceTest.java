@@ -1,23 +1,24 @@
 package keeper.project.homepage.service.posting;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import java.time.LocalDate;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
+import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.dto.posting.CommentDto;
 import keeper.project.homepage.entity.member.MemberHasCommentEntityPK;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.CustomCommentNotFoundException;
+import keeper.project.homepage.repository.member.MemberJobRepository;
+import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.member.MemberHasCommentDislikeRepository;
 import keeper.project.homepage.repository.member.MemberHasCommentLikeRepository;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.posting.CommentRepository;
-import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.posting.PostingRepository;
 import lombok.extern.log4j.Log4j2;
 import org.apache.logging.log4j.LogManager;
@@ -33,6 +34,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,6 +60,11 @@ public class CommentServiceTest {
   private MemberRepository memberRepository;
 
   @Autowired
+  private MemberJobRepository memberJobRepository;
+
+  @Autowired
+  private PasswordEncoder passwordEncoder;
+  
   private MemberHasCommentLikeRepository memberHasCommentLikeRepository;
 
   @Autowired
@@ -74,16 +81,29 @@ public class CommentServiceTest {
   private Integer likeCount = 0;
   private Integer dislikeCount = 0;
 
+  final private String loginId = "hyeonmomo";
+  final private String password = "keeper";
+  final private String realName = "JeongHyeonMo";
+  final private String nickName = "JeongHyeonMo";
+  final private String emailAddress = "gusah@naver.com";
+  final private String studentId = "201724579";
+
   @BeforeEach
   public void setup() throws Exception {
-    memberEntity = memberRepository.save(MemberEntity.builder()
-        .loginId("로그인")
-        .password("비밀번호")
-        .realName("이름")
-        .nickName("닉네임")
-        .emailAddress("이메일")
-        .studentId("학번")
-        .roles(Collections.singletonList("ROLE_USER")).build());
+    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
+    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
+        .memberJobEntity(memberJobEntity)
+        .build();
+    memberEntity = MemberEntity.builder()
+        .loginId(loginId)
+        .password(passwordEncoder.encode(password))
+        .realName(realName)
+        .nickName(nickName)
+        .emailAddress(emailAddress)
+        .studentId(studentId)
+        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
+        .build();
+    memberRepository.save(memberEntity);
 
     CategoryEntity categoryEntity = categoryRepository.save(
         CategoryEntity.builder().name("test category").build());

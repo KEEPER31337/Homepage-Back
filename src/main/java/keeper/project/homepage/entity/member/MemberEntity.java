@@ -1,14 +1,12 @@
 package keeper.project.homepage.entity.member;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -55,7 +53,7 @@ public class MemberEntity implements UserDetails, Serializable {
 
   @Column(name = "real_name", length = 40, nullable = false)
   private String realName;
-  
+
   @Column(name = "nick_name", length = 40, nullable = false)
   private String nickName;
 
@@ -72,14 +70,14 @@ public class MemberEntity implements UserDetails, Serializable {
   @ManyToOne
   @JoinColumn(name = "member_type_id")
   @NotFound(action = NotFoundAction.IGNORE)
-  
+
   // DEFAULT 1
   private MemberTypeEntity memberType;
 
   @ManyToOne
   @JoinColumn(name = "member_rank_id")
   @NotFound(action = NotFoundAction.IGNORE)
-  
+
   // DEFAULT 1
   private MemberRankEntity memberRank;
 
@@ -91,26 +89,26 @@ public class MemberEntity implements UserDetails, Serializable {
 
   @OneToOne
   @JoinColumn(name = "thumbnail_id")
-  
+
   // DEFAULT 1
   private ThumbnailEntity thumbnail;
-
-  @ElementCollection(fetch = FetchType.EAGER)
-  @Builder.Default
-  private List<String> roles = new ArrayList<>();
 
   public void changePassword(String newPassword) {
     this.password = newPassword;
   }
 
-  @OneToMany(mappedBy = "memberEntity")
-  
+  @OneToMany(mappedBy = "memberEntity", fetch = FetchType.EAGER)
   @Builder.Default
   private List<MemberHasMemberJobEntity> memberJobs = new ArrayList<>();
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return this.roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+    List<SimpleGrantedAuthority> roles = new ArrayList<>();
+
+    for (MemberHasMemberJobEntity memberJob : memberJobs) {
+      roles.add(new SimpleGrantedAuthority(memberJob.getMemberJobEntity().getName()));
+    }
+    return roles;
   }
 
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

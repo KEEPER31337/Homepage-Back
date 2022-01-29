@@ -41,9 +41,14 @@ public class MemberDto {
   private ThumbnailEntity thumbnail;
 
   public MemberEntity toEntity() {
-    return MemberEntity.builder().loginId(loginId).password(password).realName(realName)
-        .nickName(nickName).emailAddress(emailAddress).studentId(studentId)
-        .roles(new ArrayList<String>(List.of("ROLE_USER"))).build();
+    return MemberEntity.builder()
+        .loginId(loginId)
+        .password(password)
+        .realName(realName)
+        .nickName(nickName)
+        .emailAddress(emailAddress)
+        .studentId(studentId)
+        .build();
   }
 
 }

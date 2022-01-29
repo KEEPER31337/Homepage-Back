@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 import keeper.project.homepage.config.security.JwtTokenProvider;
 import keeper.project.homepage.dto.EmailAuthDto;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.exception.CustomLoginIdSigninFailedException;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.service.mail.MailService;
@@ -42,8 +43,11 @@ public class SignInService {
   }
 
   public String createJwtToken(MemberEntity memberEntity) {
-    return "Bearer " + jwtTokenProvider.createToken(String.valueOf(memberEntity.getId()),
-        memberEntity.getRoles());
+    List<String> roles = new ArrayList<>();
+    for (MemberHasMemberJobEntity memberJob : memberEntity.getMemberJobs()) {
+      roles.add(memberJob.getMemberJobEntity().getName());
+    }
+    return "Bearer " + jwtTokenProvider.createToken(String.valueOf(memberEntity.getId()), roles);
   }
 
   public void findIdWithEmail(EmailAuthDto emailAuthDto) {
