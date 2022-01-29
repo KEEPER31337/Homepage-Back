@@ -135,10 +135,6 @@ public class PostingEntity {
     this.dislikeCount -= 1;
   }
 
-  public void makeAnonymous() {
-    this.writer = null;
-  }
-
   public void setWriter(String writer) {
     this.writer = writer;
   }
