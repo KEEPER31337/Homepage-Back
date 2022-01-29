@@ -14,13 +14,17 @@ import java.awt.print.Book;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import javax.transaction.Transactional;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.entity.library.BookBorrowEntity;
 import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
+import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.library.BookRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,6 +67,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   final private String loginId = "hyeonmomo";
   final private String password = "keeper";
   final private String realName = "JeongHyeonMo";
+  final private String nickName = "JeongHyeonMo";
   final private String emailAddress = "gusah@naver.com";
   final private String studentId = "201724579";
 
@@ -72,14 +77,18 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
 
   @BeforeEach
   public void setUp() throws Exception {
+    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
+    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
+        .memberJobEntity(memberJobEntity)
+        .build();
     memberEntity = MemberEntity.builder()
         .loginId(loginId)
         .password(passwordEncoder.encode(password))
         .realName(realName)
-        .nickName("test작성자")
+        .nickName(nickName)
         .emailAddress(emailAddress)
         .studentId(studentId)
-        .roles(Collections.singletonList("ROLE_USER"))
+        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
     memberRepository.save(memberEntity);
 

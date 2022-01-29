@@ -32,7 +32,7 @@ public class AboutTitleController {
   public SingleResult<StaticWriteTitleEntity> getAllContent(
       @PathVariable("title-type") String titleType) {
 
-    return responseService.getSingleResult(aboutService.findAllByTitleType(titleType));
+    return responseService.getSuccessSingleResult(aboutService.findAllByTitleType(titleType));
   }
 
   @PostMapping(value = "/new")

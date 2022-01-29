@@ -97,7 +97,7 @@ public class MemberEntity implements UserDetails, Serializable {
     this.password = newPassword;
   }
 
-  @OneToMany(mappedBy = "memberEntity", fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "memberEntity")
   @Builder.Default
   private List<MemberHasMemberJobEntity> memberJobs = new ArrayList<>();
 
@@ -105,7 +105,7 @@ public class MemberEntity implements UserDetails, Serializable {
   public Collection<? extends GrantedAuthority> getAuthorities() {
     List<SimpleGrantedAuthority> roles = new ArrayList<>();
 
-    for (MemberHasMemberJobEntity memberJob : memberJobs) {
+    for (MemberHasMemberJobEntity memberJob : this.getMemberJobs()) {
       roles.add(new SimpleGrantedAuthority(memberJob.getMemberJobEntity().getName()));
     }
     return roles;

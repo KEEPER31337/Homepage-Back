@@ -63,7 +63,7 @@ public class FileService {
     if (!isImageFile(fileEntity.getFileName())) {
       throw new CustomFileNotFoundException("이미지 파일이 아닙니다.");
     }
-    String filePath = System.getProperty("user.dir") + "\\" + fileEntity.getFilePath();
+    String filePath = System.getProperty("user.dir") + File.separator + fileEntity.getFilePath();
     File file = new File(filePath);
     InputStream in = new FileInputStream(file);
 

@@ -19,6 +19,6 @@ public class AuthController {
   @GetMapping("")
   public ListResult<String> getAuth() {
 
-    return responseService.getListResult(authService.getAuthByJWT());
+    return responseService.getSuccessListResult(authService.getAuthByJWT());
   }
 }

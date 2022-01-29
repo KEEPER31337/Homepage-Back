@@ -28,7 +28,7 @@ public class MemberController {
   @Secured("ROLE_회장") // 각 리소스별 권한 설정
   @GetMapping(value = "/members")
   public ListResult<MemberEntity> findAllMember() {
-    // 결과데이터가 여러건인경우 getListResult를 이용해서 결과를 출력한다.
+    // 결과데이터가 여러건인경우 getSuccessListResult 이용해서 결과를 출력한다.
     return responseService.getSuccessListResult(memberRepository.findAll());
   }
 
@@ -38,7 +38,7 @@ public class MemberController {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     Long id = Long.valueOf(authentication.getName());
-    // 결과데이터가 단일건인경우 getSingleResult를 이용해서 결과를 출력한다.
+    // 결과데이터가 단일건인경우 getSuccessSingleResult 이용해서 결과를 출력한다.
     return responseService.getSuccessSingleResult(
         memberRepository.findById(id).orElseThrow(CustomMemberNotFoundException::new));
   }

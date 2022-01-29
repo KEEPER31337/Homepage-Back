@@ -1,5 +1,7 @@
 package keeper.project.homepage.dto.member;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,14 +33,8 @@ public class MemberDto {
   private Date birthday;
   private String studentId;
   private Date registerDate;
-  // DEFAULT 1
-  private MemberTypeEntity memberType;
-  // DEFAULT 1
-  private MemberRankEntity memberRank;
   private int point;
   private int level;
-  // DEFAULT 1
-  private ThumbnailEntity thumbnail;
 
   public MemberEntity toEntity() {
     return MemberEntity.builder()

@@ -64,7 +64,8 @@ public class CommentServiceTest {
 
   @Autowired
   private PasswordEncoder passwordEncoder;
-  
+
+  @Autowired
   private MemberHasCommentLikeRepository memberHasCommentLikeRepository;
 
   @Autowired

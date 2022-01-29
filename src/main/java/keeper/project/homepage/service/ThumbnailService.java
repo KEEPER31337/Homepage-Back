@@ -29,7 +29,7 @@ public class ThumbnailService {
     ThumbnailEntity thumbnail = thumbnailRepository.findById(thumbnailId).orElseThrow(
         () -> new CustomFileNotFoundException("썸네일 파일을 찾을 수 없습니다")
     );
-    String thumbnailPath = System.getProperty("user.dir") + "\\" + thumbnail.getPath();
+    String thumbnailPath = System.getProperty("user.dir") + File.separator + thumbnail.getPath();
     File file = new File(thumbnailPath);
     InputStream in = new FileInputStream(file);
     return IOUtils.toByteArray(in);
