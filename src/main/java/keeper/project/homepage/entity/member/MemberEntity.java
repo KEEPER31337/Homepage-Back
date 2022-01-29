@@ -55,7 +55,7 @@ public class MemberEntity implements UserDetails, Serializable {
 
   @Column(name = "real_name", length = 40, nullable = false)
   private String realName;
-  
+
   @Column(name = "nick_name", length = 40, nullable = false)
   private String nickName;
 
@@ -72,14 +72,14 @@ public class MemberEntity implements UserDetails, Serializable {
   @ManyToOne
   @JoinColumn(name = "member_type_id")
   @NotFound(action = NotFoundAction.IGNORE)
-  
+
   // DEFAULT 1
   private MemberTypeEntity memberType;
 
   @ManyToOne
   @JoinColumn(name = "member_rank_id")
   @NotFound(action = NotFoundAction.IGNORE)
-  
+
   // DEFAULT 1
   private MemberRankEntity memberRank;
 
@@ -91,7 +91,7 @@ public class MemberEntity implements UserDetails, Serializable {
 
   @OneToOne
   @JoinColumn(name = "thumbnail_id")
-  
+
   // DEFAULT 1
   private ThumbnailEntity thumbnail;
 
@@ -103,8 +103,20 @@ public class MemberEntity implements UserDetails, Serializable {
     this.password = newPassword;
   }
 
+  public void changeRealName(String newRealName) {
+    this.realName = newRealName;
+  }
+
+  public void changeNickName(String newNickName) {
+    this.nickName = newNickName;
+  }
+
+  public void changeThumbnail(ThumbnailEntity newThumbnail) {
+    this.thumbnail = newThumbnail;
+  }
+
   @OneToMany(mappedBy = "memberEntity")
-  
+
   @Builder.Default
   private List<MemberHasMemberJobEntity> memberJobs = new ArrayList<>();
 

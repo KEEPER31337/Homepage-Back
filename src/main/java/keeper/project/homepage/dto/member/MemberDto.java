@@ -46,4 +46,19 @@ public class MemberDto {
         .roles(new ArrayList<String>(List.of("ROLE_USER"))).build();
   }
 
+  public void initWithEntity(MemberEntity memberEntity) {
+    this.id = memberEntity.getId();
+    this.loginId = memberEntity.getLoginId();
+    this.password = memberEntity.getPassword();
+    this.realName = memberEntity.getRealName();
+    this.nickName = memberEntity.getNickName();
+    this.emailAddress = memberEntity.getEmailAddress();
+    this.studentId = memberEntity.getStudentId();
+    this.registerDate = memberEntity.getRegisterDate();
+    this.memberType = memberEntity.getMemberType();
+    this.memberRank = memberEntity.getMemberRank();
+    this.point = memberEntity.getPoint();
+    this.level = memberEntity.getLevel();
+    this.thumbnail = memberEntity.getThumbnail();
+  }
 }
