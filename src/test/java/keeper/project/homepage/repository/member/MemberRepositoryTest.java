@@ -48,7 +48,7 @@ public class MemberRepositoryTest {
     String realName = "JeongHyeonMo";
     String nickName = "JeongHyeonMo";
     String password = "abcd";
-    String emailAddress = "gusah@naver.com";
+    String emailAddress = "test@k33p3r.com";
     String studentId = "201724579";
     // given
     MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
@@ -83,7 +83,7 @@ public class MemberRepositoryTest {
     String loginId = "hyeonmomo";
     String realName = "JeongHyeonMo";
     String nickName = "JeongHyeonMo";
-    String emailAddress = "gusah@naver.com";
+    String emailAddress = "test@k33p3r.com";
     String studentId = "201724579";
     String password = "1234";
     String newPassword = password + "1";

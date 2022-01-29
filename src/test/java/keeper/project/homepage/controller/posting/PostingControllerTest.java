@@ -49,7 +49,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   final private String password = "keeper";
   final private String realName = "JeongHyeonMo";
   final private String nickName = "JeongHyeonMo";
-  final private String emailAddress = "gusah@naver.com";
+  final private String emailAddress = "test@k33p3r.com";
   final private String studentId = "201724579";
   final private String ipAddress1 = "127.0.0.1";
   final private String ipAddress2 = "127.0.0.2";
