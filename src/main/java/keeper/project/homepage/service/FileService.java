@@ -22,7 +22,7 @@ import reactor.util.annotation.Nullable;
 public class FileService {
 
   private final FileRepository fileRepository;
-  private final String defaultImageName = "default.jpg";
+  private final String defaultImageName = "default.jpg"; // deleteOriginalImage 에서 변수 값 비교
   private final String[] enableImageFormat = {"jpg", "jpeg", "png", "gif"};
 
   public boolean isImageFile(MultipartFile multipartFile) {
@@ -139,8 +139,28 @@ public class FileService {
   }
 
   public boolean deleteById(Long deleteId) {
-    if (fileRepository.findById(deleteId).isPresent()) {
+    if (!fileRepository.findById(deleteId).isPresent()) {
       return false;
+    }
+    fileRepository.deleteById(deleteId);
+    return true;
+  }
+
+  public boolean deleteOriginalImageById(Long deleteId) throws RuntimeException {
+    // issue : 각 예외사항에서 return 대신 custom exception으로 수정
+    // original image file을 가지고 있으면 서버에 있는 이미지는 삭제 X
+    FileEntity deleted = fileRepository.findById(deleteId).orElse(null);
+    if (deleted == null) {
+      return false;
+    }
+    File originalImageFile = new File(System.getProperty("user.dir") + "/" + deleted.getFilePath());
+    String originalImageFileName = originalImageFile.getName();
+    if (originalImageFileName.equals(defaultImageName) == false) {
+      if (originalImageFile.exists() == false) {
+        throw new RuntimeException("썸네일 원본 이미지가 이미 존재하지 않습니다.");
+      } else if (originalImageFile.delete() == false) {
+        throw new RuntimeException("썸네일 원본 이미지 삭제를 실패하였습니다.");
+      }
     }
     fileRepository.deleteById(deleteId);
     return true;

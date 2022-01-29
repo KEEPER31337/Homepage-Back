@@ -16,7 +16,7 @@ public class ThumbnailService {
   private final ThumbnailRepository thumbnailRepository;
   private final FileService fileService;
   private final String relDirPath = "keeper_files" + File.separator + "thumbnail";
-  private final String defaultImageName = "thumb_default.jpg";
+  private final String defaultImageName = "thumb_default.jpg"; // thumbnail delete시 파일명 비교
 
   public ThumbnailEntity saveThumbnail(ImageProcessing imageProcessing, MultipartFile multipartFile,
       FileEntity fileEntity, Integer width, Integer height) throws Exception {
@@ -44,11 +44,22 @@ public class ThumbnailService {
     return thumbnailRepository.findById(findId).orElse(null);
   }
 
-  public boolean deleteById(Long deleteId) {
-    // original thumbnail file을 가지고 있으면
-    // file은 삭제하면 안됨. entity만 삭제하기.
-    if (thumbnailRepository.findById(deleteId).isPresent()) {
+  public boolean deleteById(Long deleteId) throws RuntimeException {
+    // issue : 각 예외사항에서 return 대신 custom exception으로 수정
+    // original thumbnail file을 가지고 있으면 서버에 있는 이미지는 삭제 X
+    ThumbnailEntity deleted = thumbnailRepository.findById(deleteId).orElse(null);
+    if (deleted == null) {
       return false;
+    }
+    File thumbnailFile = new File(System.getProperty("user.dir") + "/" + deleted.getPath());
+    String thumbnailFileName = thumbnailFile.getName();
+    if (thumbnailFileName.equals(defaultImageName) == false) {
+      if (thumbnailFile.exists() == false) {
+        throw new RuntimeException("썸네일 파일이 이미 존재하지 않습니다.");
+      }
+      else if (thumbnailFile.delete() == false) {
+        throw new RuntimeException("썸네일 파일 삭제를 실패하였습니다.");
+      }
     }
     thumbnailRepository.deleteById(deleteId);
     return true;
