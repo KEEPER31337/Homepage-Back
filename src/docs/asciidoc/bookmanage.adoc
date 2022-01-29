@@ -42,3 +42,15 @@ include::{snippets}/delete-book/request-parameters.adoc[]
 
 include::{snippets}/delete-book/http-response.adoc[]
 include::{snippets}/delete-book/response-fields.adoc[]
+
+== *도서대여*
+
+=== 요청
+
+include::{snippets}/borrow-book/http-request.adoc[]
+include::{snippets}/borrow-book/request-parameters.adoc[]
+
+=== 응답
+
+include::{snippets}/borrow-book/http-response.adoc[]
+include::{snippets}/borrow-book/response-fields.adoc[]

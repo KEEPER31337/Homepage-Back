@@ -13,10 +13,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Collections;
 import java.util.Date;
 import javax.transaction.Transactional;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.entity.library.BookEntity;
+import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.repository.library.BookRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,10 +56,28 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   final private Long bookEnable3 = bookQuantity3 - bookBorrow3;
   final private String bookRegisterDate3 = "20220116";
 
+  final private String loginId = "hyeonmomo";
+  final private String password = "keeper";
+  final private String realName = "JeongHyeonMo";
+  final private String emailAddress = "gusah@naver.com";
+  final private String studentId = "201724579";
+
   final private long epochTime = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
+
+  private MemberEntity memberEntity;
 
   @BeforeEach
   public void setUp() throws Exception {
+    memberEntity = MemberEntity.builder()
+        .loginId(loginId)
+        .password(passwordEncoder.encode(password))
+        .realName(realName)
+        .nickName("test작성자")
+        .emailAddress(emailAddress)
+        .studentId(studentId)
+        .roles(Collections.singletonList("ROLE_USER"))
+        .build();
+    memberRepository.save(memberEntity);
 
     SimpleDateFormat stringToDate = new SimpleDateFormat("yyyymmdd");
     Date registerDate1 = stringToDate.parse(bookRegisterDate1);
@@ -97,6 +118,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
             .build());
   }
 
+  //--------------------------도서 등록------------------------------------
   @Test
   @DisplayName("책 등록 성공(기존 책)")
   public void addBook() throws Exception {
@@ -198,6 +220,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.msg").exists());
   }
 
+  //--------------------------도서 삭제------------------------------------
   @Test
   @DisplayName("책 삭제 성공(일부 삭제)")
   public void deleteBook() throws Exception {
@@ -294,5 +317,38 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-1))
         .andExpect(jsonPath("$.msg").exists());
+  }
+
+  //--------------------------도서 대여------------------------------------
+  @Test
+  @DisplayName("책 대여 성공")
+  public void borrowBook() throws Exception {
+    Long borrowQuantity = 1L;
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("title", bookTitle2);
+    params.add("author", bookAuthor2);
+    params.add("borrowMemberId", memberEntity.getId().toString());
+    params.add("quantity", String.valueOf(borrowQuantity));
+
+    mockMvc.perform(post("/v1/borrowbook").params(params))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").exists())
+        .andDo(document("borrow-book",
+            requestParameters(
+                parameterWithName("title").description("책 제목"),
+                parameterWithName("author").description("저자"),
+                parameterWithName("borrowMemberId").description("대여자 ID"),
+                parameterWithName("quantity").description("대여 할 수량")
+            ),
+            responseFields(
+                fieldWithPath("success").description("책 대여 완료 시 true, 실패 시 false 값을 보냅니다."),
+                fieldWithPath("code").description(
+                    "책 대여 완료 시 0, 수량 초과로 실패 시 -1, 존재하지 않을 시 -2 코드를 보냅니다."),
+                fieldWithPath("msg").description(
+                    "책 대여 실패가 수량 초과 일 때 수량 초과 메시지를, 없는 책일 때 책이 없다는 메시지를 발생시킵니다.")
+            )));
   }
 }
