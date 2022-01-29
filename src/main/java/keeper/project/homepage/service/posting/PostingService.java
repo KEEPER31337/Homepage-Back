@@ -134,16 +134,17 @@ public class PostingService {
         break;
       }
       case "TC": {
-        postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingOrContentContaining(
-            categoryEntity, keyword, keyword, pageable);
+        postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingOrCategoryIdAndContentContaining(
+            categoryEntity, keyword, categoryEntity, keyword, pageable);
         break;
       }
       case "W": {
-        /*
-         * 멤버 기능 구현 완료시 추가
-         * MemberEntity memberEntity = memberRepository.findByNickname??(keyword);
-         * postingEntities = postingRepository.findAllByCategoryIdAndMemberId(categoryEntity, memberEntity, pageable);
-         */
+        Optional<MemberEntity> memberEntity = memberRepository.findByNickName(keyword);
+        if (!memberEntity.isPresent()) {
+          break;
+        }
+        postingEntities = postingRepository.findAllByCategoryIdAndMemberId(categoryEntity,
+            memberEntity.get(), pageable);
         break;
       }
     }
