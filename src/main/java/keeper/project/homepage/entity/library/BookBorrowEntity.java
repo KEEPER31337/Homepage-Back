@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -37,7 +38,8 @@ public class BookBorrowEntity {
   // 한명의 유저는 여러개의 책 대여 가능이므로 1 : N 관계
   @JoinColumn(name = "member_id") // foreign key 매핑
   private MemberEntity memberId;
-  @OneToOne(targetEntity = BookEntity.class, fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = BookEntity.class, fetch = FetchType.LAZY)
+  //책 한 권이 여러 유저에게 대여 될 수 있으므로 1:N
   @JoinColumn(name = "book_id")
   private BookEntity bookId;
   @Column(name = "quantity", nullable = false)
