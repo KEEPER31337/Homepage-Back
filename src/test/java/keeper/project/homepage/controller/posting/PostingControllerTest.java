@@ -16,9 +16,13 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
+import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
+import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
@@ -44,7 +48,8 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   final private String loginId = "hyeonmomo";
   final private String password = "keeper";
   final private String realName = "JeongHyeonMo";
-  final private String emailAddress = "gusah@naver.com";
+  final private String nickName = "JeongHyeonMo";
+  final private String emailAddress = "test@k33p3r.com";
   final private String studentId = "201724579";
   final private String ipAddress1 = "127.0.0.1";
   final private String ipAddress2 = "127.0.0.2";
@@ -89,14 +94,19 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
 
   @BeforeEach
   public void setUp() throws Exception {
+
+    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
+    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
+        .memberJobEntity(memberJobEntity)
+        .build();
     memberEntity = MemberEntity.builder()
         .loginId(loginId)
         .password(passwordEncoder.encode(password))
         .realName(realName)
-        .nickName("test작성자")
+        .nickName(nickName)
         .emailAddress(emailAddress)
         .studentId(studentId)
-        .roles(Collections.singletonList("ROLE_USER"))
+        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
     memberRepository.save(memberEntity);
 
@@ -203,7 +213,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("[].id").description("게시물 ID"),
                 fieldWithPath("[].title").description("게시물 제목"),
                 fieldWithPath("[].content").description("게시물 내용"),
-                fieldWithPath("[].writer").optional().description("작성자"),
+                fieldWithPath("[].writer").optional().description("작성자 (비밀 게시글일 경우 익명)"),
                 fieldWithPath("[].visitCount").description("조회 수"),
                 fieldWithPath("[].likeCount").description("좋아요 수"),
                 fieldWithPath("[].dislikeCount").description("싫어요 수"),
@@ -241,7 +251,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("[].id").description("게시물 ID"),
                 fieldWithPath("[].title").description("게시물 제목"),
                 fieldWithPath("[].content").description("게시물 내용"),
-                fieldWithPath("[].writer").description("작성자"),
+                fieldWithPath("[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("[].visitCount").description("조회 수"),
                 fieldWithPath("[].likeCount").description("좋아요 수"),
                 fieldWithPath("[].dislikeCount").description("싫어요 수"),
@@ -273,7 +283,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("id").description("게시물 ID"),
                 fieldWithPath("title").description("게시물 제목"),
                 fieldWithPath("content").description("게시물 내용"),
-                fieldWithPath("writer").description("작성자"),
+                fieldWithPath("writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("visitCount").description("조회 수"),
                 fieldWithPath("likeCount").description("좋아요 수"),
                 fieldWithPath("dislikeCount").description("싫어요 수"),
@@ -482,7 +492,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("[].id").description("게시물 ID"),
                 fieldWithPath("[].title").description("게시물 제목"),
                 fieldWithPath("[].content").description("게시물 내용"),
-                fieldWithPath("[].writer").description("작성자"),
+                fieldWithPath("[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("[].visitCount").description("조회 수"),
                 fieldWithPath("[].likeCount").description("좋아요 수"),
                 fieldWithPath("[].dislikeCount").description("싫어요 수"),

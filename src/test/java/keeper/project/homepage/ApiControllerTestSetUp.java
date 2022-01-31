@@ -6,6 +6,8 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 import keeper.project.homepage.repository.library.BookRepository;
+import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
+import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.repository.FileRepository;
@@ -37,6 +39,12 @@ public abstract class ApiControllerTestSetUp {
   /********* Repository Start ********/
   @Autowired
   protected MemberRepository memberRepository;
+
+  @Autowired
+  protected MemberJobRepository memberJobRepository;
+
+  @Autowired
+  protected MemberHasMemberJobRepository memberHasMemberJobRepository;
 
   @Autowired
   protected BookRepository bookRepository;

@@ -8,6 +8,7 @@ import keeper.project.homepage.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.lang.Nullable;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Log4j2
-public class BookController {
+public class BookManageController {
 
   private final BookRepository bookRepository;
   private final ResponseService responseService;
@@ -63,5 +64,24 @@ public class BookController {
 
     return responseService.getFailResult(-2, "책이 존재하지 않습니다.");
 
+  }
+
+  @PostMapping(value = "/borrowbook")
+  @ResponseBody
+  public CommonResult borrow(
+      @RequestParam String title,
+      @RequestParam String author,
+      @RequestParam Long borrowMemberId,
+      @RequestParam Long quantity) {
+
+    Long enable = bookManageService.isCanBorrow(title, author, quantity);
+
+    if (enable == -1L) {
+      return responseService.getFailResult(-1, "수량 초과입니다.");
+    } else if (enable == -2L) {
+      return responseService.getFailResult(-2, "책이 존재하지 않습니다.");
+    }
+    bookManageService.borrowBook(title, author, borrowMemberId, quantity);
+    return responseService.getSuccessResult();
   }
 }

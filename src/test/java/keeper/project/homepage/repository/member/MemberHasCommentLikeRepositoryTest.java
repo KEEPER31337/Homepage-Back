@@ -1,10 +1,13 @@
 package keeper.project.homepage.repository.member;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
+import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -26,6 +29,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 @ExtendWith(SpringExtension.class)
@@ -50,6 +54,12 @@ public class MemberHasCommentLikeRepositoryTest {
   @Autowired
   private MemberRepository memberRepository;
 
+  @Autowired
+  private MemberJobRepository memberJobRepository;
+
+  @Autowired
+  private PasswordEncoder passwordEncoder;
+
   private CommentEntity commentEntity;
   private CommentEntity parentComment;
   private MemberEntity memberEntity;
@@ -61,16 +71,30 @@ public class MemberHasCommentLikeRepositoryTest {
   private Integer likeCount = 0;
   private Integer dislikeCount = 0;
 
+  private final String loginId = "hyeonmomo";
+  private final String realName = "JeongHyeonMo";
+  private final String nickName = "JeongHyeonMo";
+  private final String password = "abcd";
+  private final String emailAddress = "gusah@naver.com";
+  private final String studentId = "201724579";
+
   @BeforeEach
   public void setup() {
-    memberEntity = memberRepository.save(MemberEntity.builder()
-        .loginId("로그인")
-        .password("비밀번호")
-        .realName("이름")
-        .nickName("닉네임")
-        .emailAddress("이메일")
-        .studentId("학번")
-        .roles(Collections.singletonList("ROLE_USER")).build());
+    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
+    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
+        .memberJobEntity(memberJobEntity)
+        .build();
+    memberEntity = MemberEntity.builder()
+        .loginId(loginId)
+        .password(passwordEncoder.encode(password))
+        .realName(realName)
+        .nickName(nickName)
+        .emailAddress(emailAddress)
+        .studentId(studentId)
+        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
+        .build();
+    memberRepository.save(memberEntity);
+
     CategoryEntity categoryEntity = categoryRepository.save(
         CategoryEntity.builder().name("test category").build());
 
