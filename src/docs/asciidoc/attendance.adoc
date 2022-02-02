@@ -15,30 +15,28 @@ endif::[]
 :sectlinks:
 // section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
 
-== *유틸리티*
+== API 목록
 
-link:util.html[API 문서 보기]
+link:keeper.html[API 목록으로 돌아가기]
 
-== *회원가입*
+== 출석 생성
 
-link:signup.html[API 문서 보기]
+=== 요청
 
-== *로그인*
+==== Request
 
-link:signin.html[API 문서 보기]
+include::{snippets}/attend-create/http-request.adoc[]
 
-== *도서관리*
+==== Request Parameters
 
-link:bookmanage.html[API 문서 보기]
+include::{snippets}/attend-create/request-fields.adoc[]
 
-== *게시판*
+=== 응답
 
-link:posting.html[API 문서 보기]
+==== Response
 
-== *댓글*
+include::{snippets}/attend-create/http-response.adoc[]
 
-link:comment.html[API 문서 보기]
+==== Response Body
 
-== *출석*
-
-link:attendance.html[API 문서 보기]
+include::{snippets}/attend-create/response-body.adoc[]
