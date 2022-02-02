@@ -68,12 +68,22 @@ public class BookManageService {
   /**
    * 도서 삭제가 가능한지 체크
    */
-  public boolean isExist(String title, String author) {
+  public CommonResult doDelete(String title, String author, Long quantity) {
 
     if (!bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
-      return false;
+      throw new CustomBookNotFoundException("책이 존재하지 않습니다.");
     }
-    return true;
+    Long numOfBooks = bookRepository.findByTitleAndAuthor(title, author).get().getEnable();
+    Long numOfBorrow = bookRepository.findByTitleAndAuthor(title, author).get().getBorrow();
+    if (numOfBooks - quantity == 0 && numOfBorrow == 0) {
+      BookEntity bookEntity = bookRepository.findByTitleAndAuthor(title, author).get();
+      bookRepository.delete(bookEntity);
+    } else if (numOfBooks - quantity < 0) {
+      throw new CustomBookOverTheMaxException("수량 초과입니다.");
+    } else {
+      updateDeleteInformation(title, author, quantity);
+    }
+    return responseService.getSuccessResult();
   }
 
   /**
