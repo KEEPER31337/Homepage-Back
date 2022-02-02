@@ -7,12 +7,13 @@ import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.entity.library.BookBorrowEntity;
 import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.exception.CustomBookNotFoundException;
+import keeper.project.homepage.exception.CustomBookOverTheMaxException;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.service.ResponseService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -103,11 +104,11 @@ public class BookManageService {
     if (bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
       nowEnable = bookRepository.findByTitleAndAuthor(title, author).get().getEnable();
     } else {
-      return responseService.getFailResult(-2, "책이 존재하지 않습니다.");
+      throw new CustomBookNotFoundException("책이 존재하지 않습니다.");
     }
 
     if (quantity > nowEnable) {
-      return responseService.getFailResult(-1, "수량 초과입니다.");
+      throw new CustomBookOverTheMaxException("수량 초과입니다.");
     }
 
     borrowBook(title, author, borrowMemberId, quantity);
