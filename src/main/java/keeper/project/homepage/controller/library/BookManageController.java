@@ -33,13 +33,8 @@ public class BookManageController {
       @RequestParam @Nullable String information,
       @RequestParam Long quantity) {
 
-    Long total = bookManageService.isCanAdd(title, author, quantity);
+    return bookManageService.doAdd(title, author, information, quantity);
 
-    if (total != -1L) {
-      bookManageService.addBook(title, author, information, total);
-      return responseService.getSuccessResult();
-    }
-    return responseService.getFailResult(-1, "수량 초과입니다.");
   }
 
   @PostMapping(value = "/deletebook")
@@ -53,7 +48,7 @@ public class BookManageController {
         BookEntity bookEntity = bookRepository.findByTitleAndAuthor(title, author).get();
         bookRepository.delete(bookEntity);
       } else if (numOfBooks - quantity < 0) {
-        return responseService.getFailResult(-1, "삭제 가능한 수량보다 많습니다.");
+        return responseService.getFailResult(-1, "수량 초과입니다.");
       } else {
         bookManageService.updateDeleteInformation(title, author, quantity);
       }

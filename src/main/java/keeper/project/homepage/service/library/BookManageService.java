@@ -29,18 +29,20 @@ public class BookManageService {
   /**
    * 도서 최대 권수 체크
    */
-  public Long isCanAdd(String title, String author, Long quantity) {
+  public CommonResult doAdd(String title, String author, String information, Long quantity) {
 
     Long nowTotal = 0L;
     if (bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
       nowTotal = bookRepository.findByTitleAndAuthor(title, author).get().getTotal();
     }
+    Long total = quantity + nowTotal;
 
     if (quantity + nowTotal > MAXIMUM_ALLOWD_BOOK_NUMBER) {
-      return -1L;
+      throw new CustomBookOverTheMaxException("수량 초과입니다.");
     }
 
-    return nowTotal + quantity;
+    addBook(title, author, information, total);
+    return responseService.getSuccessResult();
   }
 
   /**

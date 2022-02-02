@@ -173,7 +173,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
 
     mockMvc.perform(post("/v1/addbook").params(params))
         .andDo(print())
-        .andExpect(status().isOk())
+        .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-1))
         .andExpect(jsonPath("$.msg").exists());
@@ -227,7 +227,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
 
     mockMvc.perform(post("/v1/addbook").params(params))
         .andDo(print())
-        .andExpect(status().isOk())
+        .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-1))
         .andExpect(jsonPath("$.msg").exists());
