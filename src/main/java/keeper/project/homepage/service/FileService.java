@@ -9,15 +9,14 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
+import keeper.project.homepage.common.ImageFormatChecking;
 import keeper.project.homepage.dto.FileDto;
 import keeper.project.homepage.entity.FileEntity;
-import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.CustomFileNotFoundException;
 import keeper.project.homepage.repository.FileRepository;
 import keeper.project.homepage.repository.ThumbnailRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,38 +28,14 @@ import reactor.util.annotation.Nullable;
 public class FileService {
 
   private final FileRepository fileRepository;
-  private final ThumbnailRepository thumbnailRepository;
   private final String defaultImageName = "default.jpg";
-  private final String[] enableImageFormat = {"jpg", "jpeg", "png", "gif"};
-
-  public boolean isImageFile(MultipartFile multipartFile) {
-    String contentType = multipartFile.getContentType();
-    if (contentType.startsWith("image")) {
-      for (String format : enableImageFormat) {
-        if (contentType.endsWith(format)) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
-
-  public boolean isImageFile(String fileName) {
-    String[] fileNameSplitArray = fileName.split("\\.");
-    String fileFormat = fileNameSplitArray[fileNameSplitArray.length - 1];
-    for (String format : enableImageFormat) {
-      if (fileFormat.equals(format)) {
-        return true;
-      }
-    }
-    return false;
-  }
+  private final ImageFormatChecking imageFormatChecking;
 
   public byte[] getImage(Long fileId) throws IOException {
     FileEntity fileEntity = fileRepository.findById(fileId).orElseThrow(
         () -> new CustomFileNotFoundException("이미지 파일을 찾을 수 없습니다.")
     );
-    if (!isImageFile(fileEntity.getFileName())) {
+    if (!imageFormatChecking.isImageFile(fileEntity.getFileName())) {
       throw new CustomFileNotFoundException("이미지 파일이 아닙니다.");
     }
     String filePath = System.getProperty("user.dir") + File.separator + fileEntity.getFilePath();
@@ -70,7 +45,7 @@ public class FileService {
     return IOUtils.toByteArray(in);
   }
 
-  public File saveFileInServer(MultipartFile multipartFile, String relDirPath) throws Exception {
+  public File saveFileInServer(MultipartFile multipartFile, String relDirPath) {
     if (multipartFile.isEmpty()) {
       return null;
     }
@@ -84,7 +59,12 @@ public class FileService {
     }
     String filePath = absDirPath + File.separator + fileName;
     File file = new File(filePath);
-    multipartFile.transferTo(file);
+    try {
+      multipartFile.transferTo(file);
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new RuntimeException("파일을 서버에 저장하는 것을 실패하였습니다.");
+    }
     return file;
   }
 
@@ -101,15 +81,23 @@ public class FileService {
     return fileRepository.save(fileDto.toEntity(postingEntity));
   }
 
-  public FileEntity saveOriginalImage(MultipartFile imageFile, String ipAddress) throws Exception {
-    if (imageFile == null) {
+  public FileEntity saveOriginalImage(MultipartFile multipartFile, String ipAddress) {
+    if (multipartFile == null || multipartFile.isEmpty()) {
       File defaultFile = new File("keeper_files" + File.separator + defaultImageName);
       return saveFileEntity(defaultFile, "keeper_files", ipAddress, null);
     }
-    if (isImageFile(imageFile) == false) {
-      throw new Exception("썸네일 용 이미지는 image 타입이어야 합니다.");
+    if (imageFormatChecking.isImageFile(multipartFile) == false) {
+      throw new RuntimeException("썸네일 용 이미지는 image 타입이어야 합니다.");
     }
-    File file = saveFileInServer(imageFile, "keeper_files");
+    try {
+      if (imageFormatChecking.isNormalImageFile(multipartFile) == false) {
+        throw new RuntimeException("이미지 파일을 BufferedImage로 읽어들일 수 없습니다.");
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new RuntimeException("이미지 파일을 읽는 것을 실패했습니다.");
+    }
+    File file = saveFileInServer(multipartFile, "keeper_files");
     return saveFileEntity(file, "keeper_files", ipAddress, null);
   }
 
@@ -121,12 +109,8 @@ public class FileService {
     }
 
     for (MultipartFile multipartFile : multipartFiles) {
-      try {
-        File file = saveFileInServer(multipartFile, "keeper_files");
-        saveFileEntity(file, "keeper_files", ipAddress, postingEntity);
-      } catch (Exception e) {
-        e.printStackTrace();
-      }
+      File file = saveFileInServer(multipartFile, "keeper_files");
+      saveFileEntity(file, "keeper_files", ipAddress, postingEntity);
     }
   }
 
@@ -186,7 +170,8 @@ public class FileService {
     if (deleted == null) {
       return false;
     }
-    File originalImageFile = new File(System.getProperty("user.dir") + "/" + deleted.getFilePath());
+    File originalImageFile = new File(
+        System.getProperty("user.dir") + File.separator + deleted.getFilePath());
     String originalImageFileName = originalImageFile.getName();
     if (originalImageFileName.equals(defaultImageName) == false) {
       if (originalImageFile.exists() == false) {
