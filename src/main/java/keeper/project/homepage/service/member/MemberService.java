@@ -104,6 +104,12 @@ public class MemberService {
     memberDto.initWithEntity(memberRepository.save(updateEntity));
     return memberDto;
   }
+
+  public MemberDto updateThumbnails(Long memberId, ThumbnailEntity thumbnailEntity) {
+    MemberEntity updateEntity = memberRepository.findById(memberId)
+        .orElseThrow(CustomMemberNotFoundException::new);
+
+    updateEntity.changeThumbnail(thumbnailEntity);
     MemberDto result = new MemberDto();
     result.initWithEntity(memberRepository.save(updateEntity));
     return result;

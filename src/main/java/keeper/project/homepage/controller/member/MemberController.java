@@ -73,6 +73,29 @@ public class MemberController {
     return responseService.getSuccessSingleResult(updated);
   }
 
+  @Secured("ROLE_회원")
+  @PutMapping(value = "/member/update/thumbnail")
+  public SingleResult<MemberDto> updateThumbnail(MultipartFile image, String ipAddress) {
+    // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    Long id = Long.valueOf(authentication.getName());
+
+    MemberEntity memberEntity = memberService.findById(id);
+    if (memberEntity.getThumbnail() != null) {
+      ThumbnailEntity prevThumbnail = thumbnailService.findById(
+          memberEntity.getThumbnail().getId());
+      fileService.deleteById(prevThumbnail.getFile().getId());
+      thumbnailService.deleteById(prevThumbnail.getId());
+    }
+
+    FileEntity fileEntity = fileService.saveOriginalImage(image, ipAddress);
+    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
+        image, fileEntity, 100, 100);
+
+    MemberDto updated = memberService.updateThumbnails(id, thumbnailEntity);
+    return responseService.getSuccessSingleResult(updated);
+  }
+
   @PostMapping(value = "/member/update/emailauth")
   public CommonResult emailAuth(
       @RequestBody EmailAuthDto emailAuthDto
