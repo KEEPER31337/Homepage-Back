@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
-import keeper.project.homepage.entity.member.MemberRankEntity;
-import keeper.project.homepage.entity.member.MemberTypeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,6 +29,9 @@ public class MemberDto {
   private Date registerDate;
   private Integer point;
   private Integer level;
+  private String rank;
+  private String type;
+  private List<String> jobs = new ArrayList<>();
 
   public MemberEntity toEntity() {
     return MemberEntity.builder()
@@ -53,10 +53,18 @@ public class MemberDto {
     this.emailAddress = memberEntity.getEmailAddress();
     this.studentId = memberEntity.getStudentId();
     this.registerDate = memberEntity.getRegisterDate();
-    this.memberType = memberEntity.getMemberType();
-    this.memberRank = memberEntity.getMemberRank();
     this.point = memberEntity.getPoint();
     this.level = memberEntity.getLevel();
-    this.thumbnail = memberEntity.getThumbnail();
+    if (memberEntity.getMemberRank() != null) {
+      this.rank = memberEntity.getMemberRank().getName();
+    }
+    if (memberEntity.getMemberType() != null) {
+      this.type = memberEntity.getMemberType().getName();
+    }
+    if (memberEntity.getMemberJobs() != null || memberEntity.getMemberJobs().isEmpty() == false) {
+      memberEntity.getMemberJobs()
+          .forEach(job ->
+              this.jobs.add(job.getMemberJobEntity().getName()));
+    }
   }
 }

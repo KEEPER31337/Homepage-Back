@@ -2,6 +2,9 @@ package keeper.project.homepage.controller.member;
 
 import keeper.project.homepage.dto.EmailAuthDto;
 import keeper.project.homepage.dto.member.MemberDto;
+import keeper.project.homepage.dto.member.MemberJobDto;
+import keeper.project.homepage.dto.member.MemberRankDto;
+import keeper.project.homepage.dto.member.MemberTypeDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.dto.result.SingleResult;
@@ -130,4 +133,27 @@ public class MemberController {
     return responseService.getSuccessSingleResult(update);
   }
 
+  @Secured("ROLE_회장")
+  @PutMapping("member/update/rank")
+  public SingleResult<MemberDto> updateMemberRank(@RequestBody MemberRankDto memberRankDto) {
+    String loginId = memberRankDto.getMemberLoginId();
+    MemberDto update = memberService.updateMemberRank(memberRankDto, loginId);
+    return responseService.getSuccessSingleResult(update);
+  }
+
+  @Secured("ROLE_회장")
+  @PutMapping("member/update/type")
+  public SingleResult<MemberDto> updateMemberType(@RequestBody MemberTypeDto memberTypeDto) {
+    String loginId = memberTypeDto.getMemberLoginId();
+    MemberDto update = memberService.updateMemberType(memberTypeDto, loginId);
+    return responseService.getSuccessSingleResult(update);
+  }
+
+  @Secured("ROLE_회장")
+  @PutMapping("member/update/job")
+  public SingleResult<MemberDto> updateMemberJob(@RequestBody MemberJobDto memberJobDto) {
+    String loginId = memberJobDto.getMemberLoginId();
+    MemberDto update = memberService.updateMemberJobs(memberJobDto, loginId);
+    return responseService.getSuccessSingleResult(update);
+  }
 }

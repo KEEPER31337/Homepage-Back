@@ -117,10 +117,28 @@ public class MemberEntity implements UserDetails, Serializable {
     this.thumbnail = newThumbnail;
   }
 
-  @OneToMany(mappedBy = "memberEntity")
+  public void changeMemberRank(MemberRankEntity memberRankEntity) {
+    this.memberRank = memberRankEntity;
+  }
 
+  public void changeMemberType(MemberTypeEntity memberTypeEntity) {
+    this.memberType = memberTypeEntity;
+  }
+
+  @OneToMany(mappedBy = "memberEntity")
   @Builder.Default
   private List<MemberHasMemberJobEntity> memberJobs = new ArrayList<>();
+
+  public boolean addJob(MemberHasMemberJobEntity job) {
+    if (memberJobs.contains(job)) {
+      return false;
+    }
+    return this.memberJobs.add(job);
+  }
+
+  public boolean removeJob(MemberHasMemberJobEntity job) {
+    return this.memberJobs.remove(job);
+  }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
