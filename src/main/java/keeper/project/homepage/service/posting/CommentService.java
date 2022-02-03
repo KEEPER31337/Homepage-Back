@@ -60,7 +60,6 @@ public class CommentService {
     return dtoPage;
   }
 
-  @Transactional
   public CommentEntity findById(Long id) {
     Optional<CommentEntity> commentEntity = commentRepository.findById(id);
     return commentEntity.orElse(null);
