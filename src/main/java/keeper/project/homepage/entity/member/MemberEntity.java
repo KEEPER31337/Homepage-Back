@@ -105,6 +105,14 @@ public class MemberEntity implements UserDetails, Serializable {
     this.nickName = newNickName;
   }
 
+  public void changeStudentId(String newStudentId) {
+    this.studentId = newStudentId;
+  }
+
+  public void changeEmailAddress(String newEmailAddress) {
+    this.emailAddress = newEmailAddress;
+  }
+
   public void changeThumbnail(ThumbnailEntity newThumbnail) {
     this.thumbnail = newThumbnail;
   }

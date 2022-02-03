@@ -33,8 +33,8 @@ public class MemberDto {
   private Date birthday;
   private String studentId;
   private Date registerDate;
-  private int point;
-  private int level;
+  private Integer point;
+  private Integer level;
 
   public MemberEntity toEntity() {
     return MemberEntity.builder()
