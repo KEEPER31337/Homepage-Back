@@ -28,4 +28,10 @@ public class AuthService {
     }
     return roles;
   }
+
+  public Long getMemberIdByJWT() {
+
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    return Long.valueOf(authentication.getName());
+  }
 }
