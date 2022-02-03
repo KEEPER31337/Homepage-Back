@@ -1,4 +1,4 @@
-package keeper.project.homepage.service.image;
+package keeper.project.homepage.common;
 
 import java.io.File;
 import java.io.IOException;
