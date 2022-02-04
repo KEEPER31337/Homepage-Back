@@ -5,6 +5,7 @@ import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.service.library.BookManageService;
 import keeper.project.homepage.service.ResponseService;
+import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.lang.Nullable;
@@ -25,6 +26,7 @@ public class BookManageController {
   private final BookRepository bookRepository;
   private final ResponseService responseService;
   private final BookManageService bookManageService;
+  private final AuthService authService;
 
   @PostMapping(value = "/addbook")
   public CommonResult add(
@@ -49,9 +51,9 @@ public class BookManageController {
   public CommonResult borrow(
       @RequestParam String title,
       @RequestParam String author,
-      @RequestParam Long borrowMemberId,
       @RequestParam Long quantity) {
 
+    Long borrowMemberId = authService.getMemberIdByJWT();
     return bookManageService.doBorrow(title, author, borrowMemberId, quantity);
   }
 }
