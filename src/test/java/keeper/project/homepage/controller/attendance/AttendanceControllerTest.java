@@ -92,9 +92,10 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
     generateNewAttendanceWithTime(now);
 
     String newGreeting = "new 출석인삿말";
-    String newContent = "{\n"
-        + "    \"greetings\": \"" + newGreeting + "\"\n"
-        + "}";
+    AttendanceDto attendanceDto = AttendanceDto.builder()
+        .greetings(newGreeting)
+        .build();
+    String newContent = objectMapper.writeValueAsString(attendanceDto);
     mockMvc.perform(MockMvcRequestBuilders
             .patch("/v1/attend/")
             .header("Authorization", userToken)
