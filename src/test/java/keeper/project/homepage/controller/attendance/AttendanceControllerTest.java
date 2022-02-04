@@ -92,10 +92,9 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
     generateNewAttendanceWithTime(now);
 
     String newGreeting = "new 출석인삿말";
-    AttendanceDto newAttendanceDto = AttendanceDto.builder()
-        .greetings(newGreeting)
-        .build();
-    String newContent = objectMapper.writeValueAsString(newAttendanceDto);
+    String newContent = "{\n"
+        + "    \"greetings\": \"" + newGreeting + "\"\n"
+        + "}";
     mockMvc.perform(MockMvcRequestBuilders
             .patch("/v1/attend/")
             .header("Authorization", userToken)
@@ -105,10 +104,7 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
         .andDo(print())
         .andDo(document("attend-update",
             requestFields(
-                fieldWithPath("greetings").description("출석 메시지"),
-                subsectionWithPath("time").description("출석 시간"),
-                subsectionWithPath("memberId").description("멤버 ID"),
-                subsectionWithPath("ipAddress").description("IP 주소")
+                fieldWithPath("greetings").description("출석 메시지")
             ),
             responseFields(
                 fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
