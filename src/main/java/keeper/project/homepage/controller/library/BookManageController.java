@@ -56,4 +56,14 @@ public class BookManageController {
     Long borrowMemberId = authService.getMemberIdByJWT();
     return bookManageService.doBorrow(title, author, borrowMemberId, quantity);
   }
+
+  @PostMapping(value = "/returnbook")
+  public CommonResult returnBook(
+      @RequestParam String title,
+      @RequestParam String author,
+      @RequestParam Long quantity) {
+    
+    Long borrowMemberId = authService.getMemberIdByJWT();
+    return bookManageService.doReturn(title, author, borrowMemberId, quantity);
+  }
 }

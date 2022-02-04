@@ -186,4 +186,68 @@ public class BookManageService {
 
     return transferFormat(calendar.getTime());
   }
+
+  /**
+   * 반납 기능 구현
+   */
+  public CommonResult doReturn(String title, String author, Long borrowMemberId, Long quantity) {
+
+    if (!bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author, borrowMemberId)
+        .isPresent()) {
+      throw new CustomBookNotFoundException("책이 존재하지 않습니다.");
+    }
+    Long nowBorrowTotal = bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author,
+        borrowMemberId).get().getQuantity();
+    if (nowBorrowTotal < quantity) {
+      throw new CustomBookOverTheMaxException("수량 초과입니다.");
+    }
+    if (nowBorrowTotal == quantity) {
+      bookBorrowRepository.delete(
+          bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author, borrowMemberId)
+              .get());
+    }
+    returnBook(title, author, borrowMemberId, quantity);
+    return responseService.getSuccessResult();
+  }
+
+  private void returnBook(String title, String author, Long borrowMemberId, Long quantity) {
+    BookEntity bookId = bookRepository.findByTitleAndAuthor(title, author).get();
+    MemberEntity memberId = memberRepository.findById(borrowMemberId).get();
+    String borrowDate = String.valueOf(
+        bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author, borrowMemberId)
+            .get().getBorrowDate());
+    String expireDate = String.valueOf(
+        bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author, borrowMemberId)
+            .get().getExpireDate());
+    Long totalBorrow = bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author,
+        borrowMemberId).get().getQuantity();
+
+    bookBorrowRepository.save(
+        BookBorrowEntity.builder()
+            .memberId(memberId)
+            .bookId(bookId)
+            .quantity(totalBorrow - quantity)
+            .borrowDate(java.sql.Date.valueOf(borrowDate))
+            .expireDate(java.sql.Date.valueOf(expireDate))
+            .build());
+
+    BookEntity nowBookEntity = bookRepository.findByTitleAndAuthor(title, author).get();
+    String infromation = nowBookEntity.getInformation();
+    Long total = nowBookEntity.getTotal();
+    Long borrow = nowBookEntity.getBorrow() - quantity;
+    Long enable = nowBookEntity.getEnable() + quantity;
+    Date registerDate = nowBookEntity.getRegisterDate();
+
+    bookRepository.save(
+        BookEntity.builder()
+            .title(title)
+            .author(author)
+            .information(infromation)
+            .total(total)
+            .borrow(borrow)
+            .enable(enable)
+            .registerDate(registerDate)
+            .build()
+    );
+  }
 }
