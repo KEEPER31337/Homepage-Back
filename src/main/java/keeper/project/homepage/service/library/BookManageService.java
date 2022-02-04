@@ -190,37 +190,37 @@ public class BookManageService {
   /**
    * 반납 기능 구현
    */
-  public CommonResult doReturn(String title, String author, Long borrowMemberId, Long quantity) {
+  public CommonResult doReturn(String title, String author, Long returnMemberId, Long quantity) {
 
-    if (!bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author, borrowMemberId)
+    if (!bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author, returnMemberId)
         .isPresent()) {
       throw new CustomBookNotFoundException("책이 존재하지 않습니다.");
     }
     Long nowBorrowTotal = bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author,
-        borrowMemberId).get().getQuantity();
+        returnMemberId).get().getQuantity();
     if (nowBorrowTotal < quantity) {
       throw new CustomBookOverTheMaxException("수량 초과입니다.");
     }
     if (nowBorrowTotal == quantity) {
       bookBorrowRepository.delete(
-          bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author, borrowMemberId)
+          bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author, returnMemberId)
               .get());
     }
-    returnBook(title, author, borrowMemberId, quantity);
+    returnBook(title, author, returnMemberId, quantity);
     return responseService.getSuccessResult();
   }
 
-  private void returnBook(String title, String author, Long borrowMemberId, Long quantity) {
+  private void returnBook(String title, String author, Long returnMemberId, Long quantity) {
     BookEntity bookId = bookRepository.findByTitleAndAuthor(title, author).get();
-    MemberEntity memberId = memberRepository.findById(borrowMemberId).get();
+    MemberEntity memberId = memberRepository.findById(returnMemberId).get();
     String borrowDate = String.valueOf(
-        bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author, borrowMemberId)
+        bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author, returnMemberId)
             .get().getBorrowDate());
     String expireDate = String.valueOf(
-        bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author, borrowMemberId)
+        bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author, returnMemberId)
             .get().getExpireDate());
     Long totalBorrow = bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author,
-        borrowMemberId).get().getQuantity();
+        returnMemberId).get().getQuantity();
 
     bookBorrowRepository.save(
         BookBorrowEntity.builder()

@@ -62,8 +62,8 @@ public class BookManageController {
       @RequestParam String title,
       @RequestParam String author,
       @RequestParam Long quantity) {
-    
-    Long borrowMemberId = authService.getMemberIdByJWT();
-    return bookManageService.doReturn(title, author, borrowMemberId, quantity);
+
+    Long returnMemberId = authService.getMemberIdByJWT();
+    return bookManageService.doReturn(title, author, returnMemberId, quantity);
   }
 }
