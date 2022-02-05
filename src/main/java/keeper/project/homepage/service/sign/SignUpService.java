@@ -1,7 +1,10 @@
 package keeper.project.homepage.service.sign;
 
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Random;
+import java.util.regex.Pattern;
 import keeper.project.homepage.dto.EmailAuthDto;
 import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.entity.member.EmailAuthRedisEntity;
@@ -36,6 +39,7 @@ public class SignUpService {
   private final PasswordEncoder passwordEncoder;
   private final EmailAuthRedisRepository emailAuthRedisRepository;
   private final MailService mailService;
+  private final DuplicateCheckService duplicateCheckService;
 
   public EmailAuthDto generateEmailAuth(EmailAuthDto emailAuthDto) {
     String generatedAuthCode = generateRandomAuthCode(AUTH_CODE_LENGTH);
@@ -63,6 +67,10 @@ public class SignUpService {
     }
     if (!authCode.equals(getEmailAuthRedisEntity.get().getAuthCode())) {
       throw new CustomSignUpFailedException("이메일 인증 코드가 일치하지 않습니다.");
+    }
+
+    if (!isValidAll(memberDto)) {
+      throw new CustomSignUpFailedException("유효성 검사 실패");
     }
     MemberEntity memberEntity = MemberEntity.builder()
         .loginId(memberDto.getLoginId())
@@ -96,5 +104,80 @@ public class SignUpService {
         .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
         .toString();
     // 출처: https://www.baeldung.com/java-random-string
+  }
+
+  private boolean isValidAll(MemberDto memberDto) {
+    return !isDuplicate(memberDto) && isValid(memberDto);
+  }
+
+  private boolean isDuplicate(MemberDto memberDto) {
+    return duplicateCheckService.checkEmailAddressDuplicate(memberDto.getEmailAddress()) ||
+        duplicateCheckService.checkLoginIdDuplicate(memberDto.getLoginId()) ||
+        duplicateCheckService.checkStudentIdDuplicate(memberDto.getStudentId());
+  }
+
+  private boolean isValid(MemberDto memberDto) {
+    return isLoginIdValid(memberDto.getLoginId()) &&
+        isPasswordValid(memberDto.getPassword()) &&
+        isNicknameValid(memberDto.getNickName()) &&
+        isRealnameValid(memberDto.getRealName()) &&
+        isEmailValid(memberDto.getEmailAddress()) &&
+        isStudentIdValid(memberDto.getStudentId());
+  }
+
+  private boolean checkSpecialCharacter(String val) {
+    String pattern = "\\W"; // a-z,A-Z,0-9, '_'를 제외한 모든 특수문자
+    return Pattern.matches(pattern, val);
+  }
+
+  private boolean isLoginIdValid(String emailAddress) {
+
+    if (checkSpecialCharacter(emailAddress)) {
+      return false;
+    }
+    String pattern = "^[a-zA-Z\\d_]{3,12}$"; // 4 ~ 12자 영어, 숫자, '_' 가능
+    return Pattern.matches(pattern, emailAddress);
+  }
+
+  private boolean isPasswordValid(String password) {
+
+    if (checkSpecialCharacter(password)) {
+      return false;
+    }
+    String pattern = "^(?=.*[a-zA-Z])(?=.*\\d).{7,20}$"; // 8자 이상 영어, 숫자 조합 필수
+    return Pattern.matches(pattern, password);
+  }
+
+  private boolean isNicknameValid(String nickname) {
+
+    if (checkSpecialCharacter(nickname)) {
+      return false;
+    }
+    String pattern = "^[a-zA-Z가-힣0-9].{3,16}$"; // 4~16자 한글, 영어, 숫자 가능
+    return Pattern.matches(pattern, nickname);
+  }
+
+  private boolean isRealnameValid(String realname) {
+
+    if (checkSpecialCharacter(realname)) {
+      return false;
+    }
+    String pattern = "^[a-zA-Z가-힣].{3,20}$"; // 4~20자 한글, 영어 가능
+    return Pattern.matches(pattern, realname);
+  }
+
+  private boolean isEmailValid(String emailAddress) {
+
+    String pattern = "\\w+@\\w+\\.\\w+(\\.\\w+)?"; //Email 형식인지 아닌지
+    return Pattern.matches(pattern, emailAddress);
+  }
+
+  private boolean isStudentIdValid(String studentId) {
+
+    if (checkSpecialCharacter(studentId)) {
+      return false;
+    }
+    String pattern = "^[0-9]*$"; // 숫자 형식인지 아닌지
+    return Pattern.matches(pattern, studentId);
   }
 }
