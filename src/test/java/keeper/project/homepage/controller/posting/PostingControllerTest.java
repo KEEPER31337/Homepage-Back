@@ -159,9 +159,10 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .updateTime(new Date())
         .password("asd")
         .build();
+    memberEntity.addPosting(postingEntity);
 
     postingRepository.save(postingEntity);
-    postingRepository.save(PostingEntity.builder()
+    PostingEntity postingEntity2 = postingRepository.save(PostingEntity.builder()
         .title("test 게시판 제목2")
         .content("test 게시판 제목 내용2")
         .memberId(memberEntity)
@@ -180,7 +181,8 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .updateTime(new Date())
         .password("asd2")
         .build());
-    postingRepository.save(PostingEntity.builder()
+    memberEntity.addPosting(postingEntity2);
+    PostingEntity postingEntity3 = postingRepository.save(PostingEntity.builder()
         .title("test 게시판 제목3")
         .content("test 게시판 제목 내용3")
         .memberId(memberEntity)
@@ -198,6 +200,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .updateTime(new Date())
         .password("asd2")
         .build());
+    memberEntity.addPosting(postingEntity3);
 
     fileRepository.save(FileEntity.builder()
         .postingId(postingEntity)
