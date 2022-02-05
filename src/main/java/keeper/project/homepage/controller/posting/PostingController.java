@@ -20,6 +20,7 @@ import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.ThumbnailService;
 import keeper.project.homepage.service.image.ImageCenterCrop;
 import keeper.project.homepage.service.posting.PostingService;
+import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.io.InputStreamResource;
@@ -52,6 +53,7 @@ public class PostingController {
   private final CategoryRepository categoryRepository;
   private final FileService fileService;
   private final ThumbnailService thumbnailService;
+  private final AuthService authService;
 
   /* ex) http://localhost:8080/v1/posts?category=6&page=1
    * page default 0, size default 10
@@ -105,8 +107,15 @@ public class PostingController {
   @GetMapping(value = "/{pid}")
   public ResponseEntity<PostingEntity> getPosting(@PathVariable("pid") Long postingId) {
     PostingEntity postingEntity = postingService.getPostingById(postingId);
-    postingEntity.increaseVisitCount();
-    postingService.updateById(postingEntity, postingId);
+    Long visitMemberId = authService.getMemberIdByJWT();
+    if (visitMemberId != postingEntity.getMemberId().getId()) {
+      // 본인이 아닌 경우
+      if (postingEntity.getIsTemp() == PostingService.isTempPosting) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+      }
+      postingEntity.increaseVisitCount();
+      postingService.updateById(postingEntity, postingId);
+    }
 
     return ResponseEntity.status(HttpStatus.OK).body(postingEntity);
   }

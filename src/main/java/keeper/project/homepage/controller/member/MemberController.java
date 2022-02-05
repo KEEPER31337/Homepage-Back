@@ -1,5 +1,6 @@
 package keeper.project.homepage.controller.member;
 
+import javax.servlet.http.HttpServletResponse;
 import keeper.project.homepage.dto.posting.PostingDto;
 import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.dto.result.SingleResult;
@@ -20,8 +21,12 @@ import org.springframework.data.web.SortDefault;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 //@Secured("ROLE_USER") // 모든 url에 공통 설정
@@ -55,7 +60,7 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @GetMapping(value = "/member/posting")
+  @GetMapping(value = "/member/post")
   public ListResult<PostingDto> findAllPosting(
       @SortDefault(sort = "registerDate", direction = Direction.ASC)
       @PageableDefault(page = 0, size = 10) Pageable pageable) {
@@ -67,7 +72,7 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @GetMapping(value = "/member/temp_posting")
+  @GetMapping(value = "/member/temp_post")
   public ListResult<PostingDto> findAllTempPosting(
       @SortDefault(sort = "registerDate", direction = Direction.ASC)
       @PageableDefault(page = 0, size = 10) Pageable pageable) {
@@ -76,5 +81,39 @@ public class MemberController {
     Page<PostingDto> page = memberService.findAllPostingByIsTemp(id, pageable,
         PostingService.isTempPosting);
     return responseService.getSuccessListResult(page.getContent());
+  }
+
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/member/temp_post/{pid}")
+  public void findPosting(@PathVariable("pid") Long postingId, HttpServletResponse response) {
+    String uri = "/v1/post/" + postingId;
+    try {
+      response.sendRedirect(uri);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Secured("ROLE_회원")
+  @RequestMapping(method = {RequestMethod.PUT,
+      RequestMethod.PATCH}, value = "/member/post/{pid}")
+  public void modifyPosting(@PathVariable("pid") Long postingId, HttpServletResponse response) {
+    String uri = "/v1/post/" + postingId.toString();
+    try {
+      response.sendRedirect(uri);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Secured("ROLE_회원")
+  @DeleteMapping(value = "/member/post/{pid}")
+  public void deletePosting(@PathVariable("pid") Long postingId, HttpServletResponse response) {
+    String uri = "/v1/post/" + postingId.toString();
+    try {
+      response.sendRedirect(uri);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 }
