@@ -18,6 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import keeper.project.homepage.entity.ThumbnailEntity;
+import keeper.project.homepage.entity.posting.PostingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -74,14 +75,12 @@ public class MemberEntity implements UserDetails, Serializable {
   @ManyToOne
   @JoinColumn(name = "member_type_id")
   @NotFound(action = NotFoundAction.IGNORE)
-
   // DEFAULT 1
   private MemberTypeEntity memberType;
 
   @ManyToOne
   @JoinColumn(name = "member_rank_id")
   @NotFound(action = NotFoundAction.IGNORE)
-
   // DEFAULT 1
   private MemberRankEntity memberRank;
 
@@ -93,7 +92,6 @@ public class MemberEntity implements UserDetails, Serializable {
 
   @OneToOne
   @JoinColumn(name = "thumbnail_id")
-
   // DEFAULT 1
   private ThumbnailEntity thumbnail;
 
@@ -104,6 +102,22 @@ public class MemberEntity implements UserDetails, Serializable {
   @OneToMany(mappedBy = "memberEntity")
   @Builder.Default
   private List<MemberHasMemberJobEntity> memberJobs = new ArrayList<>();
+
+  @OneToMany(targetEntity = PostingEntity.class, mappedBy = "memberId", fetch = FetchType.LAZY)
+  @Builder.Default
+  private List<PostingEntity> posting = new ArrayList<>();
+
+  public boolean addPosting(PostingEntity postingEntity) {
+    if (this.posting.contains(postingEntity)) {
+      return false;
+    }
+    this.posting.add(postingEntity);
+    return true;
+  }
+
+  public boolean removePosting(PostingEntity postingEntity) {
+    return this.posting.remove(postingEntity);
+  }
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

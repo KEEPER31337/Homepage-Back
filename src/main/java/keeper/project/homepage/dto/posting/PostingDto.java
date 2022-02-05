@@ -50,4 +50,26 @@ public class PostingDto {
         .password(password).categoryId(categoryEntity).memberId(memberEntity)
         .thumbnailId(thumbnailEntity).build();
   }
+
+  public static PostingDto create(PostingEntity postingEntity) {
+    return PostingDto.builder()
+        .memberId(postingEntity.getMemberId().getId())
+        .categoryId(postingEntity.getCategoryId().getId())
+        .title(postingEntity.getTitle())
+        .content(postingEntity.getContent())
+        .visitCount(postingEntity.getVisitCount())
+        .likeCount(postingEntity.getLikeCount())
+        .dislikeCount(postingEntity.getDislikeCount())
+        .commentCount(postingEntity.getCommentCount())
+        .registerTime(postingEntity.getRegisterTime())
+        .updateTime(postingEntity.getUpdateTime())
+        .ipAddress(postingEntity.getIpAddress())
+        .allowComment(postingEntity.getAllowComment())
+        .isNotice(postingEntity.getIsNotice())
+        .isSecret(postingEntity.getIsSecret())
+        .isTemp(postingEntity.getIsTemp())
+//        .password(postingEntity.getPassword())
+//        .thumbnailId(postingEntity.getThumbnailId().getId())
+        .build();
+  }
 }

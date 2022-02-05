@@ -33,8 +33,8 @@ public class PostingService {
   private final MemberHasPostingLikeRepository memberHasPostingLikeRepository;
   private final MemberHasPostingDislikeRepository memberHasPostingDislikeRepository;
 
-  private static final Integer isNotTempPosting = 0;
-  private static final Integer isTempPosting = 1;
+  public static final Integer isNotTempPosting = 0;
+  public static final Integer isTempPosting = 1;
 
   public List<PostingEntity> findAll(Pageable pageable) {
 //    List<PostingEntity> postingEntities = postingRepository.findAll(pageable).getContent();
@@ -74,14 +74,15 @@ public class PostingService {
 
     Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
         Long.valueOf(dto.getCategoryId()));
+    Optional<ThumbnailEntity> thumbnailEntity = thumbnailRepository.findById(dto.getThumbnailId());
     Optional<MemberEntity> memberEntity = memberRepository.findById(
         Long.valueOf(dto.getMemberId()));
-    Optional<ThumbnailEntity> thumbnailEntity = thumbnailRepository.findById(dto.getThumbnailId());
     dto.setRegisterTime(new Date());
     dto.setUpdateTime(new Date());
     PostingEntity postingEntity = dto.toEntity(categoryEntity.get(), memberEntity.get(),
         thumbnailEntity.get());
 
+    memberEntity.get().addPosting(postingEntity);
     return postingRepository.save(postingEntity);
   }
 
@@ -114,6 +115,9 @@ public class PostingService {
     Optional<PostingEntity> postingEntity = postingRepository.findById(postingId);
 
     if (postingEntity.isPresent()) {
+      MemberEntity memberEntity = memberRepository.findById(
+          postingEntity.get().getMemberId().getId()).get();
+      memberEntity.removePosting(postingEntity.get());
       postingRepository.delete(postingEntity.get());
       return 1;
     } else {
