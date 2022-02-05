@@ -5,6 +5,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -232,7 +233,8 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.randomPoint").description("해당일 받은 random Point"),
                 fieldWithPath("data.ipAddress").description("출석 당시 ip 주소"),
                 fieldWithPath("data.greetings").description("해당일 출석 메시지"),
-                fieldWithPath("data.continousDay").description("현재 개근 일 수")
+                fieldWithPath("data.continousDay").description("현재 개근 일 수"),
+                subsectionWithPath("data.memberId").description("회원 정보")
             )));
 
     LocalDate twoDaysAgoParam = LocalDate.now().minusDays(2);
@@ -248,6 +250,42 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(jsonPath("$.data").exists())
         .andDo(print());
+  }
+
+  @Test
+  @DisplayName("모든 출석 정보 불러오기 성공")
+  public void getAllAttendSuccess() throws Exception {
+
+    LocalDate threeDaysAgoParam = LocalDate.now().minusDays(3);
+    AttendanceDto attendanceDto = AttendanceDto.builder()
+        .date(threeDaysAgoParam)
+        .build();
+    String content = objectMapper.writeValueAsString(attendanceDto);
+    mockMvc.perform(MockMvcRequestBuilders
+            .get("/v1/attend/all")
+            .header("Authorization", userToken1)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(jsonPath("$.list.length()").value(2))
+        .andDo(print())
+        .andDo(document("attend-get-all",
+            requestFields(
+                fieldWithPath("date").description("정보를 가져올 날짜(YYYY-MM-DD)")
+            ),
+            responseFields(
+                fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
+                fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
+                fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
+                fieldWithPath("list[].id").description("출석 id"),
+                fieldWithPath("list[].time").description("출석한 시간"),
+                fieldWithPath("list[].point").description("해당일 받은 순위권 + 개근 point"),
+                fieldWithPath("list[].randomPoint").description("해당일 받은 random Point"),
+                fieldWithPath("list[].ipAddress").description("출석 당시 ip 주소"),
+                fieldWithPath("list[].greetings").description("해당일 출석 메시지"),
+                fieldWithPath("list[].continousDay").description("현재 개근 일 수"),
+                subsectionWithPath("list[].memberId").description("회원 정보")
+            )));
   }
 
   private void generateNewAttendanceWithTime(Date time, MemberEntity memberEntity)

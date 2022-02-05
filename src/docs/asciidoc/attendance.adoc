@@ -118,3 +118,27 @@ include::{snippets}/attend-get-info/http-response.adoc[]
 ==== Response Body
 
 include::{snippets}/attend-get-info/response-fields.adoc[]
+
+== 모든 출석정보 확인
+
+=== 요청
+
+==== Request
+
+include::{snippets}/attend-get-all/http-request.adoc[]
+
+NOTE: Bearer JWT 토큰이 필요합니다.
+
+==== Request Parameters
+
+include::{snippets}/attend-get-all/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/attend-get-all/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/attend-get-all/response-fields.adoc[]
