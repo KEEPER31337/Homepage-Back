@@ -1,19 +1,24 @@
 package keeper.project.homepage.service.attendance;
 
+
+import static keeper.project.homepage.dto.attendance.AttendancePointDto.*;
 import static keeper.project.homepage.service.attendance.DateUtils.clearTime;
 import static keeper.project.homepage.service.attendance.DateUtils.isBeforeDay;
 import static keeper.project.homepage.service.attendance.DateUtils.isToday;
 
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.Random;
 import keeper.project.homepage.dto.attendance.AttendanceDto;
+import keeper.project.homepage.dto.attendance.AttendancePointDto;
 import keeper.project.homepage.entity.attendance.AttendanceEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.CustomAttendanceException;
@@ -30,15 +35,6 @@ public class AttendanceService {
   private final AttendanceRepository attendanceRepository;
   private final MemberRepository memberRepository;
   private final AuthService authService;
-  public static final int FIRST_PLACE_POINT = 500;
-  public static final int SECOND_PLACE_POINT = 300;
-  public static final int THIRD_PLACE_POINT = 100;
-  public static final int WEEK_ATTENDANCE = 7 - 1;
-  public static final int MONTH_ATTENDANCE = 28 - 1;
-  public static final int YEAR_ATTENDANCE = 365 - 1;
-  public static final int WEEK_ATTENDANCE_POINT = 3000;
-  public static final int MONTH_ATTENDANCE_POINT = 10000;
-  public static final int YEAR_ATTENDANCE_POINT = 100000;
 
   public boolean save(AttendanceDto attendanceDto) {
 
@@ -128,6 +124,17 @@ public class AttendanceService {
 
     return attendanceRepository.findAllByTimeBetween(
         java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
+  }
+
+  public HashMap<String, Integer> getAllBonusPointInfo() throws IllegalAccessException {
+    Field[] declaredFields = AttendancePointDto.class.getDeclaredFields();
+    HashMap<String, Integer> staticFields = new HashMap<>();
+    for (Field field : declaredFields) {
+      if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) {
+        staticFields.put(field.getName(), field.getInt(null));
+      }
+    }
+    return staticFields;
   }
 
   private List<AttendanceEntity> getAttendanceEntitiesInPeriodWithMemberId(

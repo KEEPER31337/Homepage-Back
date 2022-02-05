@@ -308,6 +308,29 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
             )));
   }
 
+  @Test
+  @DisplayName("보너스 포인트 정보 불러오기")
+  public void getPointInfo() throws Exception {
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .get("/v1/attend/point-info"))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(print())
+        .andDo(document("attend-get-point-info",
+            responseFields(
+
+                fieldWithPath("FIRST_PLACE_POINT").description("1등 추가 포인트"),
+                fieldWithPath("SECOND_PLACE_POINT").description("2등 추가 포인트"),
+                fieldWithPath("THIRD_PLACE_POINT").description("3등 추가 포인트"),
+                fieldWithPath("WEEK_ATTENDANCE").description("주 개근 일 수"),
+                fieldWithPath("MONTH_ATTENDANCE").description("월 개근 일 수"),
+                fieldWithPath("YEAR_ATTENDANCE").description("연 개근 일 수"),
+                fieldWithPath("WEEK_ATTENDANCE_POINT").description("주 개근 추가 포인트"),
+                fieldWithPath("MONTH_ATTENDANCE_POINT").description("월 개근 추가 포인트"),
+                fieldWithPath("YEAR_ATTENDANCE_POINT").description("연 개근 추가 포인트")
+            )));
+  }
+
   private void generateNewAttendanceWithTime(Date time, MemberEntity memberEntity)
       throws Exception {
     Random random = new Random();

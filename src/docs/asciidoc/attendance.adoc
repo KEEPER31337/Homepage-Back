@@ -142,3 +142,21 @@ include::{snippets}/attend-get-all/http-response.adoc[]
 ==== Response Body
 
 include::{snippets}/attend-get-all/response-fields.adoc[]
+
+== 보너스 포인트 정보 불러오기
+
+=== 요청
+
+==== Request
+
+include::{snippets}/attend-get-point-info/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/attend-get-point-info/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/attend-get-point-info/response-fields.adoc[]
