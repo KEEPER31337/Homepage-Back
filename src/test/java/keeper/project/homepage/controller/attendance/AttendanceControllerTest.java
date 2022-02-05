@@ -73,36 +73,56 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
     generateNewAttendanceWithTime(threeDaysAgo, memberEntity1);
     generateNewAttendanceWithTime(twoDaysAgo, memberEntity1);
     generateNewAttendanceWithTime(oneDayAgo, memberEntity1);
-    generateNewAttendanceWithTime(now, memberEntity1);
 
     generateNewAttendanceWithTime(threeDaysAgo, memberEntity2);
   }
 
   @Test
-  public void createAttend() throws Exception {
-    AttendanceDto attendanceDto = AttendanceDto.builder().greetings("hi").ipAddress(ipAddress1)
-        .memberId(memberEntity1.getId())
-        .time(LocalDateTime.now()).build();
+  public void createAttendSuccess() throws Exception {
+    AttendanceDto attendanceDto = AttendanceDto.builder()
+        .greetings("hi")
+        .ipAddress(ipAddress1)
+        .build();
     String content = objectMapper.writeValueAsString(attendanceDto);
 
     ResultActions result = mockMvc.perform(
-        MockMvcRequestBuilders.post("/v1/attend/check").contentType(
-            MediaType.APPLICATION_JSON).content(content));
+        MockMvcRequestBuilders.post("/v1/attend/check")
+            .header("Authorization", userToken1)
+            .contentType(MediaType.APPLICATION_JSON).content(content));
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
         .andDo(document("attend-create",
             requestFields(
-                fieldWithPath("time").description("출석 시간"),
-                fieldWithPath("memberId").description("멤버 ID"),
                 fieldWithPath("ipAddress").description("IP 주소"),
                 fieldWithPath("greetings").optional().description("인삿말")
             )));
   }
 
   @Test
+  @DisplayName("이미 출석한 상태라 출석 실패")
+  public void createAttendFailedAlreadyAttend() throws Exception {
+    generateNewAttendanceWithTime(now, memberEntity1);
+
+    AttendanceDto attendanceDto = AttendanceDto.builder()
+        .greetings("hi")
+        .ipAddress(ipAddress1)
+        .build();
+    String content = objectMapper.writeValueAsString(attendanceDto);
+
+    ResultActions result = mockMvc.perform(
+        MockMvcRequestBuilders.post("/v1/attend/check")
+            .header("Authorization", userToken1)
+            .contentType(MediaType.APPLICATION_JSON).content(content));
+
+    result.andExpect(MockMvcResultMatchers.status().is5xxServerError())
+        .andDo(print());
+  }
+
+  @Test
   @DisplayName("출석 업데이트 성공")
   public void updateAttendSuccess() throws Exception {
+    generateNewAttendanceWithTime(now, memberEntity1);
 
     String newGreeting = "new 출석인삿말";
     AttendanceDto attendanceDto = AttendanceDto.builder()
@@ -154,11 +174,11 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
   @DisplayName("내 출석 날짜 불러오기 성공")
   public void getMyAttendDateListSuccess() throws Exception {
 
-    LocalDate nowParam = LocalDate.now();
+    LocalDate oneDayAgoParam = LocalDate.now().minusDays(1);
     LocalDate twoDaysAgoParam = LocalDate.now().minusDays(2);
     AttendanceDto attendanceDto = AttendanceDto.builder()
         .startDate(twoDaysAgoParam)
-        .endDate(nowParam)
+        .endDate(oneDayAgoParam)
         .build();
     String content = objectMapper.writeValueAsString(attendanceDto);
     mockMvc.perform(MockMvcRequestBuilders
@@ -167,7 +187,7 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
             .contentType(MediaType.APPLICATION_JSON)
             .content(content))
         .andExpect(MockMvcResultMatchers.status().isOk())
-        .andExpect(jsonPath("$.list.length()").value(2))
+        .andExpect(jsonPath("$.list.length()").value(1))
         .andDo(print())
         .andDo(document("attend-get-my-date-list",
             requestFields(
@@ -206,9 +226,9 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
   @DisplayName("내 출석 정보 불러오기 성공")
   public void getMyAttendSuccess() throws Exception {
 
-    LocalDate nowParam = LocalDate.now();
+    LocalDate oneDayAgoParam = LocalDate.now().minusDays(1);
     AttendanceDto attendanceDto = AttendanceDto.builder()
-        .date(nowParam)
+        .date(oneDayAgoParam)
         .build();
     String content = objectMapper.writeValueAsString(attendanceDto);
     mockMvc.perform(MockMvcRequestBuilders
