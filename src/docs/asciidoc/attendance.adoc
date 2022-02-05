@@ -94,3 +94,27 @@ include::{snippets}/attend-get-my-date-list/http-response.adoc[]
 ==== Response Body
 
 include::{snippets}/attend-get-my-date-list/response-fields.adoc[]
+
+== 내 출석정보 확인
+
+=== 요청
+
+==== Request
+
+include::{snippets}/attend-get-info/http-request.adoc[]
+
+NOTE: Bearer JWT 토큰이 필요합니다.
+
+==== Request Parameters
+
+include::{snippets}/attend-get-info/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/attend-get-info/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/attend-get-info/response-fields.adoc[]
