@@ -39,9 +39,11 @@ public class MemberEntity implements UserDetails, Serializable {
 
   @Id // pk
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Long id;
 
   @Column(name = "login_id", length = 80, nullable = false, unique = true)
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private String loginId;
 
   @Column(name = "email_address", length = 250, nullable = false, unique = true)
@@ -52,6 +54,7 @@ public class MemberEntity implements UserDetails, Serializable {
   private String password;
 
   @Column(name = "real_name", length = 40, nullable = false)
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private String realName;
 
   @Column(name = "nick_name", length = 40, nullable = false)
@@ -61,6 +64,7 @@ public class MemberEntity implements UserDetails, Serializable {
   private Date birthday;
 
   @Column(name = "student_id", length = 45, nullable = false, unique = true)
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private String studentId;
 
   @CreationTimestamp
