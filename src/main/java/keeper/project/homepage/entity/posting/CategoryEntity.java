@@ -24,7 +24,6 @@ import org.hibernate.annotations.NotFoundAction;
 
 @Builder
 @Entity
-@Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,7 +40,7 @@ public class CategoryEntity {
   @Column(name = "parent_id")
   private Long parentId;
 
-  @OneToMany(mappedBy = "parentId", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "parentId")
   private List<CategoryEntity> children = new ArrayList<>();
 
 }
