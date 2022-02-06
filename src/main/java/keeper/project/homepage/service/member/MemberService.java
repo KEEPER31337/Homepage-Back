@@ -1,6 +1,5 @@
 package keeper.project.homepage.service.member;
 
-import com.sun.jdi.request.DuplicateRequestException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +16,7 @@ import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.member.MemberRankEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
+import keeper.project.homepage.exception.CustomAuthenticationEntryPointException;
 import keeper.project.homepage.exception.CustomMemberNotFoundException;
 import keeper.project.homepage.exception.CustomSignUpFailedException;
 import keeper.project.homepage.repository.member.EmailAuthRedisRepository;
@@ -47,6 +47,10 @@ public class MemberService {
 
   public MemberEntity findById(Long id) throws RuntimeException {
     return memberRepository.findById(id).orElseThrow(CustomMemberNotFoundException::new);
+  }
+
+  public List<MemberEntity> findAll() {
+    return memberRepository.findAll();
   }
 
   public MemberDto updateMemberRank(MemberRankDto rankDto, String loginId) {
@@ -165,7 +169,7 @@ public class MemberService {
       throw new RuntimeException("변경할 학번을 입력해주세요.");
     }
     if (duplicateCheckService.checkStudentIdDuplicate(memberDto.getStudentId())) {
-      throw new DuplicateRequestException("이미 사용중인 학번입니다.");
+      throw new RuntimeException("이미 사용중인 학번입니다.");
     }
     updateEntity.changeStudentId(memberDto.getStudentId());
     memberDto.initWithEntity(memberRepository.save(updateEntity));
@@ -192,7 +196,7 @@ public class MemberService {
       throw new RuntimeException("변경할 이메일을 입력해주세요.");
     }
     if (duplicateCheckService.checkEmailAddressDuplicate(memberDto.getEmailAddress())) {
-      throw new DuplicateRequestException("이미 사용중인 이메일 입니다.");
+      throw new RuntimeException("이미 사용중인 이메일 입니다.");
     }
     String memberEmail = memberDto.getEmailAddress();
     String authCode = memberDto.getAuthCode();
@@ -200,10 +204,10 @@ public class MemberService {
     Optional<EmailAuthRedisEntity> getEmailAuthRedisEntity = emailAuthRedisRepository.findById(
         memberEmail);
     if (getEmailAuthRedisEntity.isEmpty()) {
-      throw new CustomSignUpFailedException("이메일 인증 코드가 만료되었습니다.");
+      throw new CustomAuthenticationEntryPointException("이메일 인증 코드가 만료되었습니다.");
     }
     if (!authCode.equals(getEmailAuthRedisEntity.get().getAuthCode())) {
-      throw new CustomSignUpFailedException("이메일 인증 코드가 일치하지 않습니다.");
+      throw new CustomAuthenticationEntryPointException("이메일 인증 코드가 일치하지 않습니다.");
     }
 
     MemberEntity updateEntity = memberRepository.findById(memberId)

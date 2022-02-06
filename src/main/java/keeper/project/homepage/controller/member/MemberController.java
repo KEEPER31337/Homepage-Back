@@ -19,6 +19,7 @@ import keeper.project.homepage.service.ThumbnailService;
 import keeper.project.homepage.common.ImageCenterCrop;
 import keeper.project.homepage.service.member.MemberService;
 import keeper.project.homepage.service.sign.DuplicateCheckService;
+import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.annotation.Secured;
@@ -44,32 +45,29 @@ public class MemberController {
   private final MemberService memberService;
   private final ThumbnailService thumbnailService;
   private final FileService fileService;
-  private final DuplicateCheckService duplicateCheckService;
+  private final AuthService authService;
 
   @Secured("ROLE_회장") // 각 리소스별 권한 설정
   @GetMapping(value = "/members")
   public ListResult<MemberEntity> findAllMember() {
     // 결과데이터가 여러건인경우 getSuccessListResult 이용해서 결과를 출력한다.
-    return responseService.getSuccessListResult(memberRepository.findAll());
+    return responseService.getSuccessListResult(memberService.findAll());
   }
 
   @Secured("ROLE_회원") // 각 리소스별 권한 설정
   @GetMapping(value = "/member")
   public SingleResult<MemberEntity> findMember() {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    Long id = Long.valueOf(authentication.getName());
+    Long id = authService.getMemberIdByJWT();
     // 결과데이터가 단일건인경우 getSuccessSingleResult 이용해서 결과를 출력한다.
-    return responseService.getSuccessSingleResult(
-        memberRepository.findById(id).orElseThrow(CustomMemberNotFoundException::new));
+    return responseService.getSuccessSingleResult(memberService.findById(id));
   }
 
   @Secured("ROLE_회원")
   @PutMapping(value = "/member/update/names")
   public SingleResult<MemberDto> updateNames(@RequestBody MemberDto memberDto) {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    Long id = Long.valueOf(authentication.getName());
+    Long id = authService.getMemberIdByJWT();
 
     MemberDto updated = memberService.updateNames(memberDto, id);
 
@@ -80,8 +78,7 @@ public class MemberController {
   @PutMapping(value = "/member/update/thumbnail")
   public SingleResult<MemberDto> updateThumbnail(MultipartFile image, String ipAddress) {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    Long id = Long.valueOf(authentication.getName());
+    Long id = authService.getMemberIdByJWT();
 
     MemberEntity memberEntity = memberService.findById(id);
     if (memberEntity.getThumbnail() != null) {
@@ -100,10 +97,7 @@ public class MemberController {
   }
 
   @PostMapping(value = "/member/update/emailauth")
-  public CommonResult emailAuth(
-      @RequestBody EmailAuthDto emailAuthDto
-  ) {
-
+  public CommonResult emailAuth(@RequestBody EmailAuthDto emailAuthDto) {
     EmailAuthDto emailAuthDtoForSend = memberService.generateEmailAuth(emailAuthDto);
     memberService.sendEmailAuthCode(emailAuthDtoForSend);
     return responseService.getSuccessResult();
@@ -113,8 +107,7 @@ public class MemberController {
   @PutMapping(value = "/member/update/email")
   public SingleResult<MemberDto> updateEmailAddress(@RequestBody MemberDto memberDto) {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    Long id = Long.valueOf(authentication.getName());
+    Long id = authService.getMemberIdByJWT();
 
     // 실제 존재하는 email인지 인증 코드를 통해 확인
     MemberDto updated = memberService.updateEmailAddress(memberDto, id);
@@ -125,8 +118,7 @@ public class MemberController {
   @PutMapping("/member/update/studentid")
   public SingleResult<MemberDto> updateStudentId(@RequestBody MemberDto memberDto) {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    Long id = Long.valueOf(authentication.getName());
+    Long id = authService.getMemberIdByJWT();
 
     MemberDto update = memberService.updateStudentId(memberDto, id);
 

@@ -31,7 +31,7 @@ public class MemberDto {
   private Integer level;
   private String rank;
   private String type;
-  private List<String> jobs = new ArrayList<>();
+  private List<String> jobs;
 
   public MemberEntity toEntity() {
     return MemberEntity.builder()
@@ -45,13 +45,14 @@ public class MemberDto {
   }
 
   public void initWithEntity(MemberEntity memberEntity) {
-    this.id = memberEntity.getId();
-    this.loginId = memberEntity.getLoginId();
-    this.password = memberEntity.getPassword();
-    this.realName = memberEntity.getRealName();
+    // 민감한 정보 제외
+    this.id = null; //memberEntity.getId();
+    this.loginId = null;//memberEntity.getLoginId();
+    this.password = null;//memberEntity.getPassword();
+    this.realName = null;//memberEntity.getRealName();
     this.nickName = memberEntity.getNickName();
     this.emailAddress = memberEntity.getEmailAddress();
-    this.studentId = memberEntity.getStudentId();
+    this.studentId = null;//memberEntity.getStudentId();
     this.registerDate = memberEntity.getRegisterDate();
     this.point = memberEntity.getPoint();
     this.level = memberEntity.getLevel();
@@ -62,6 +63,7 @@ public class MemberDto {
       this.type = memberEntity.getMemberType().getName();
     }
     if (memberEntity.getMemberJobs() != null || memberEntity.getMemberJobs().isEmpty() == false) {
+      this.jobs = new ArrayList<>();
       memberEntity.getMemberJobs()
           .forEach(job ->
               this.jobs.add(job.getMemberJobEntity().getName()));
