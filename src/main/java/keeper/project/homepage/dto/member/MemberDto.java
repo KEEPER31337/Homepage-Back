@@ -35,6 +35,7 @@ public class MemberDto {
   private Date registerDate;
   private int point;
   private int level;
+  private String followeeLoginId;
 
   public MemberEntity toEntity() {
     return MemberEntity.builder()
@@ -47,4 +48,14 @@ public class MemberDto {
         .build();
   }
 
+  public static MemberDto initWithEntity(MemberEntity memberEntity) {
+    return MemberDto.builder()
+        .emailAddress(memberEntity.getEmailAddress())
+        .nickName(memberEntity.getNickName())
+        .birthday(memberEntity.getBirthday())
+        .registerDate(memberEntity.getRegisterDate())
+        .point(memberEntity.getPoint())
+        .level(memberEntity.getLevel())
+        .build();
+  }
 }
