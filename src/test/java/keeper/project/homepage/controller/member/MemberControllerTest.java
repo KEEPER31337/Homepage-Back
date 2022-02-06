@@ -3,8 +3,11 @@ package keeper.project.homepage.controller.member;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.PayloadDocumentation.beneathPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -21,6 +24,8 @@ import keeper.project.homepage.dto.EmailAuthDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
+import keeper.project.homepage.entity.member.MemberRankEntity;
+import keeper.project.homepage.exception.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberRankRepository;
@@ -62,6 +67,8 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
   final private String adminEmailAddress = "test2@k33p3r.com";
   final private String adminStudentId = "201724580";
   final private String adminPhoneNumber = "0100100101";
+
+  private MemberEntity memberEntity;
 
   @Autowired
   private MemberService memberService;
@@ -109,7 +116,7 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
   @BeforeEach
   public void setUp() throws Exception {
     MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
-    MemberEntity memberEntity = MemberEntity.builder()
+    memberEntity = MemberEntity.builder()
         .loginId(loginId)
         .password(passwordEncoder.encode(password))
         .realName(realName)
@@ -266,6 +273,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         + "\"memberLoginId\" : \"" + loginId + "\",\n"
         + "\"name\" : \"우수회원\"\n"
         + "}";
+    String docMsg = "실패 문구 종류: " + " +\n"
+        + "* 변경할 등급을 입력해주세요." + " +\n"
+        + "* xxx인 member rank가 존재하지 않습니다.";
     mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/member/update/rank")
             .header("Authorization", adminToken)
@@ -275,7 +285,34 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data").exists())
-        .andExpect(jsonPath("$.data.rank").value("우수회원"));
+        .andExpect(jsonPath("$.data.rank").value("우수회원"))
+        .andDo(document("member-update-rank",
+            requestFields(
+                fieldWithPath("memberLoginId").description("변경할 회원의 로그인 아이디"),
+                fieldWithPath("name").description("변경할 등급명")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("실패 시: -9999"),
+                fieldWithPath("msg").description(docMsg),
+                fieldWithPath("data.id").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.loginId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.emailAddress").description("이메일 주소"),
+                fieldWithPath("data.password").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.realName").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.nickName").description("닉네임"),
+                fieldWithPath("data.authCode").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.birthday").description("생일"),
+                fieldWithPath("data.studentId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.registerDate").description("가입 날짜"),
+                fieldWithPath("data.point").description("포인트 점수"),
+                fieldWithPath("data.level").description("레벨"),
+                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
+                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
+                fieldWithPath("data.jobs").description(
+                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
+            )));
+    ;
 
     MemberEntity member = memberRepository.findByLoginId(loginId).get();
     Assertions.assertTrue(
@@ -289,6 +326,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         + "\"memberLoginId\" : \"" + loginId + "\",\n"
         + "\"name\" : \"탈퇴\"\n"
         + "}";
+    String docMsg = "실패 문구 종류: " + " +\n"
+        + "* 변경할 유형을 입력해주세요." + " +\n"
+        + "* xxx인 member type이 존재하지 않습니다.";
     mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/member/update/type")
             .header("Authorization", adminToken)
@@ -298,7 +338,33 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data").exists())
-        .andExpect(jsonPath("$.data.type").value("탈퇴"));
+        .andExpect(jsonPath("$.data.type").value("탈퇴"))
+        .andDo(document("member-update-type",
+            requestFields(
+                fieldWithPath("memberLoginId").description("변경할 회원의 로그인 아이디"),
+                fieldWithPath("name").description("변경할 유형")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("실패 시: -9999"),
+                fieldWithPath("msg").description(docMsg),
+                fieldWithPath("data.id").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.loginId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.emailAddress").description("이메일 주소"),
+                fieldWithPath("data.password").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.realName").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.nickName").description("닉네임"),
+                fieldWithPath("data.authCode").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.birthday").description("생일"),
+                fieldWithPath("data.studentId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.registerDate").description("가입 날짜"),
+                fieldWithPath("data.point").description("포인트 점수"),
+                fieldWithPath("data.level").description("레벨"),
+                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
+                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
+                fieldWithPath("data.jobs").description(
+                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
+            )));
 
     MemberEntity member = memberRepository.findByLoginId(loginId).get();
     Assertions.assertTrue(
@@ -313,6 +379,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         + "\"memberLoginId\" : \"" + loginId + "\",\n"
         + "\"names\" : [\"ROLE_사서\",\"ROLE_총무\"]\n"
         + "}";
+
+    String docMsg = "실패 문구 종류: " + " +\n"
+        + "* 존재하지 않는 회원입니다.";
     mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/member/update/job")
             .header("Authorization", adminToken)
@@ -323,7 +392,33 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data").exists())
         .andExpect(jsonPath("$.data.jobs[0]").value("ROLE_사서"))
-        .andExpect(jsonPath("$.data.jobs[1]").value("ROLE_총무"));
+        .andExpect(jsonPath("$.data.jobs[1]").value("ROLE_총무"))
+        .andDo(document("member-update-job",
+            requestFields(
+                fieldWithPath("memberLoginId").description("변경할 회원의 로그인 아이디"),
+                fieldWithPath("names").description("변경할 직책명 리스트")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("실패 시: -1000"),
+                fieldWithPath("msg").description(docMsg),
+                fieldWithPath("data.id").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.loginId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.emailAddress").description("이메일 주소"),
+                fieldWithPath("data.password").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.realName").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.nickName").description("닉네임"),
+                fieldWithPath("data.authCode").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.birthday").description("생일"),
+                fieldWithPath("data.studentId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.registerDate").description("가입 날짜"),
+                fieldWithPath("data.point").description("포인트 점수"),
+                fieldWithPath("data.level").description("레벨"),
+                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
+                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
+                fieldWithPath("data.jobs").description(
+                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
+            )));
 
     MemberEntity member = memberRepository.findByLoginId(loginId).get();
     MemberJobEntity job1 = memberJobRepository.findByName("ROLE_사서").get();
@@ -340,10 +435,12 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
   @DisplayName("기본 권한으로 본인 실명, 닉네임 변경하기")
   public void updateNames() throws Exception {
     String updateContent = "{"
-        + "\"realName\":\"변경한\","
-        + "\"nickName\":\"변경한 닉네임\""
+        + "\"realName\":\"Changed\","
+        + "\"nickName\":\"Changed Nick\""
         + "}";
 
+    String docMsg = "실패 문구 종류: " + " +\n"
+        + "* 알 수 없는 오류가 발생하였습니다";
     mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/member/update/names")
             .header("Authorization", userToken)
@@ -353,8 +450,34 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data").exists())
-        .andExpect(jsonPath("$.data.realName").value("변경한"))
-        .andExpect(jsonPath("$.data.nickName").value("변경한 닉네임"));
+        .andExpect(jsonPath("$.data.nickName").value("Changed Nick"))
+        .andDo(document("member-update-names",
+            requestFields(
+                fieldWithPath("realName").description("변경할 이름"),
+                fieldWithPath("nickName").description("변경할 닉네임")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("실패 시: -9999"),
+                fieldWithPath("msg").description(docMsg),
+                fieldWithPath("data.id").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.loginId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.emailAddress").description("이메일 주소"),
+                fieldWithPath("data.password").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.realName").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.nickName").description("닉네임"),
+                fieldWithPath("data.authCode").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.birthday").description("생일"),
+                fieldWithPath("data.studentId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.registerDate").description("가입 날짜"),
+                fieldWithPath("data.point").description("포인트 점수"),
+                fieldWithPath("data.level").description("레벨"),
+                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
+                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
+                fieldWithPath("data.jobs").description(
+                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
+            )));
+    Assertions.assertTrue(memberEntity.getRealName().equals("Changed"));
   }
 
   @Test
@@ -368,6 +491,10 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         + "    \"authCode\": \"" + emailAuthDtoForSend.getAuthCode() + "\""
         + "}";
 
+    String docMsg = "실패 문구 종류: " + " +\n"
+        + "알 수 없는 오류가 발생하였습니다" + " +\n"
+        + "이메일 인증 코드가 만료되었습니다." + " +\n"
+        + "이메일 인증 코드가 일치하지 않습니다.";
     mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/member/update/email")
             .header("Authorization", userToken)
@@ -376,7 +503,35 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.data.emailAddress").value(newEmail));
+        .andExpect(jsonPath("$.data.emailAddress").value(newEmail))
+        .andDo(document("member-update-email",
+            requestFields(
+                fieldWithPath("emailAddress").description("이메일 주소"),
+                fieldWithPath("authCode").description("이메일 인증 코드")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("실패 시: " + " +\n"
+                    + "* 인증 실패: -1002" + " +\n"
+                    + "* 그 외: -9999"),
+                fieldWithPath("msg").description(docMsg),
+                fieldWithPath("data.id").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.loginId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.emailAddress").description("이메일 주소"),
+                fieldWithPath("data.password").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.realName").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.nickName").description("닉네임"),
+                fieldWithPath("data.authCode").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.birthday").description("생일"),
+                fieldWithPath("data.studentId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.registerDate").description("가입 날짜"),
+                fieldWithPath("data.point").description("포인트 점수"),
+                fieldWithPath("data.level").description("레벨"),
+                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
+                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
+                fieldWithPath("data.jobs").description(
+                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
+            )));
   }
 
   @Test
@@ -417,9 +572,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
             .content(content)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andDo(print())
-        .andExpect(status().is5xxServerError())
+        .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(-1001));
+        .andExpect(jsonPath("$.code").value(-1002));
   }
 
   @Test
@@ -429,6 +584,15 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         new FileInputStream(new File(
             System.getProperty("user.dir") + File.separator + "keeper_files" + File.separator
                 + "test_file.jpg")));
+
+    String docMsg = "실패 문구 종류 : " + " +\n"
+        + "* 썸네일 용 이미지는 image 타입이어야 합니다." + " +\n"
+        + "* 이미지 파일을 BufferedImage로 읽어들일 수 없습니다." + " +\n"
+        + "* 이미지 파일을 읽는 것을 실패했습니다." + " +\n"
+        + "* 썸네일 용 파일은 이미지 파일이어야 합니다." + " +\n"
+        + "* 이미지 파일을 BufferedImage로 읽어들일 수 없습니다." + " +\n"
+        + "* 이미지 파일을 읽는 것을 실패했습니다." + " +\n"
+        + "* 썸네일 이미지용 후처리를 실패했습니다.";
     mockMvc.perform(RestDocumentationRequestBuilders.fileUpload("/v1/member/update/thumbnail")
             .file(image)
             .param("ipAddress", "111.111.111.111")
@@ -449,20 +613,24 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
 //            ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description(""),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("data.id").description(""),
-                fieldWithPath("data.loginId").description(""),
-                fieldWithPath("data.emailAddress").description(""),
-                fieldWithPath("data.password").description(""),
-                fieldWithPath("data.realName").description(""),
-                fieldWithPath("data.nickName").description(""),
-                fieldWithPath("data.authCode").description(""),
-                fieldWithPath("data.birthday").description(""),
-                fieldWithPath("data.studentId").description(""),
-                fieldWithPath("data.registerDate").description(""),
-                fieldWithPath("data.point").description(""),
-                fieldWithPath("data.level").description("")
+                fieldWithPath("code").description("실패 시: -9999"),
+                fieldWithPath("msg").description(docMsg),
+                fieldWithPath("data.id").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.loginId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.emailAddress").description("이메일 주소"),
+                fieldWithPath("data.password").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.realName").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.nickName").description("닉네임"),
+                fieldWithPath("data.authCode").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.birthday").description("생일"),
+                fieldWithPath("data.studentId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.registerDate").description("가입 날짜"),
+                fieldWithPath("data.point").description("포인트 점수"),
+                fieldWithPath("data.level").description("레벨"),
+                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
+                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
+                fieldWithPath("data.jobs").description(
+                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
             )));
   }
 
@@ -474,6 +642,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         + "\"studentId\":\"" + newStudentId + "\""
         + "}";
 
+    String docMsg = "실패 문구 종류: " + " +\n"
+        + "* 알 수 없는 오류가 발생하였습니다" + " +\n"
+        + "* 이미 사용중인 학번입니다.";
     mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/member/update/studentid")
             .header("Authorization", userToken)
@@ -482,7 +653,33 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.data.studentId").value(newStudentId));
+//        .andExpect(jsonPath("$.data.studentId").value(newStudentId))
+        .andDo(document("member-update-studentid",
+            requestFields(
+                fieldWithPath("studentId").description("회원의 학번")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("실패 시 -9999"),
+                fieldWithPath("msg").description(docMsg),
+                fieldWithPath("data.id").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.loginId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.emailAddress").description("이메일 주소"),
+                fieldWithPath("data.password").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.realName").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.nickName").description("닉네임"),
+                fieldWithPath("data.authCode").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.birthday").description("생일"),
+                fieldWithPath("data.studentId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.registerDate").description("가입 날짜"),
+                fieldWithPath("data.point").description("포인트 점수"),
+                fieldWithPath("data.level").description("레벨"),
+                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
+                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
+                fieldWithPath("data.jobs").description(
+                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
+            )));
+    Assertions.assertTrue(memberEntity.getStudentId().equals("123456789"));
   }
 
   @Test
