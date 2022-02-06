@@ -6,6 +6,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 import keeper.project.homepage.repository.library.BookRepository;
+import keeper.project.homepage.repository.member.FriendRepository;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.posting.CategoryRepository;
@@ -16,6 +17,7 @@ import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.service.member.MemberHasCommentLikeService;
+import keeper.project.homepage.service.member.MemberService;
 import keeper.project.homepage.service.sign.SignUpService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -64,6 +66,9 @@ public abstract class ApiControllerTestSetUp {
   @Autowired
   protected ThumbnailRepository thumbnailRepository;
 
+  @Autowired
+  protected FriendRepository friendRepository;
+
   /********* Service Start ********/
   @Autowired
   protected SignUpService signUpService;
@@ -73,6 +78,9 @@ public abstract class ApiControllerTestSetUp {
 
   @Autowired
   protected MemberHasCommentDislikeService memberHasCommentDislikeService;
+
+  @Autowired
+  protected MemberService memberService;
 
   /********* Others Start ********/
   @Autowired
