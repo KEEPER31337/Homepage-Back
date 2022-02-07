@@ -10,4 +10,7 @@ public interface MemberHasMemberJobRepository extends
     JpaRepository<MemberHasMemberJobEntity, Long> {
 
   List<MemberHasMemberJobEntity> findAllByMemberEntity_Id(Long id);
+
+  List<MemberHasMemberJobEntity> findAllByMemberEntity_IdAndAndMemberJobEntity_Id(Long memberId,
+      Long jobId);
 }

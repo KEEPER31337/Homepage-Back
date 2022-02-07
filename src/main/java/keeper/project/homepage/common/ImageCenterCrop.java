@@ -1,11 +1,10 @@
-package keeper.project.homepage.service.image;
+package keeper.project.homepage.common;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import lombok.extern.log4j.Log4j2;
 
 public class ImageCenterCrop implements ImageProcessing {
 

@@ -5,6 +5,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.mo
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
+import keeper.project.homepage.repository.attendance.AttendanceRepository;
 import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.member.FriendRepository;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
@@ -68,6 +69,9 @@ public abstract class ApiControllerTestSetUp {
 
   @Autowired
   protected FriendRepository friendRepository;
+  
+  @Autowired
+  protected AttendanceRepository attendanceRepository;
 
   /********* Service Start ********/
   @Autowired
