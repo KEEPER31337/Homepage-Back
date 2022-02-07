@@ -40,3 +40,27 @@ include::{snippets}/attend-create/http-response.adoc[]
 ==== Response Body
 
 include::{snippets}/attend-create/response-body.adoc[]
+
+== 출석 메시지 업데이트
+
+=== 요청
+
+==== Request
+
+include::{snippets}/attend-update/http-request.adoc[]
+
+NOTE: Bearer JWT 토큰이 필요합니다.
+
+==== Request Parameters
+
+include::{snippets}/attend-update/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/attend-update/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/attend-update/response-fields.adoc[]

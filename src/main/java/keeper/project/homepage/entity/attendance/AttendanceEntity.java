@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @Getter
@@ -42,6 +43,7 @@ public class AttendanceEntity {
   @Column(name = "ip_address", nullable = false, length = 128)
   private String ipAddress;
 
+  @Setter
   @Column(name = "greetings", length = 250)
   private String greetings;
 
@@ -52,4 +54,5 @@ public class AttendanceEntity {
   @JoinColumn(name = "member_id", nullable = false)
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private MemberEntity memberId;
+
 }
