@@ -14,7 +14,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -199,6 +198,55 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
             .contentType(MediaType.APPLICATION_JSON)
             .content(content))
         .andExpect(MockMvcResultMatchers.status().is5xxServerError())
+        .andDo(print());
+  }
+
+  @Test
+  @DisplayName("내 출석 정보 불러오기 성공")
+  public void getMyAttendSuccess() throws Exception {
+
+    LocalDate nowParam = LocalDate.now();
+    AttendanceDto attendanceDto = AttendanceDto.builder()
+        .date(nowParam)
+        .build();
+    String content = objectMapper.writeValueAsString(attendanceDto);
+    mockMvc.perform(MockMvcRequestBuilders
+            .get("/v1/attend/info")
+            .header("Authorization", userToken1)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(jsonPath("$.data").exists())
+        .andDo(print())
+        .andDo(document("attend-get-info",
+            requestFields(
+                fieldWithPath("date").description("정보를 가져올 날짜(YYYY-MM-DD)")
+            ),
+            responseFields(
+                fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
+                fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
+                fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
+                fieldWithPath("data.id").description("출석 id"),
+                fieldWithPath("data.time").description("출석한 시간"),
+                fieldWithPath("data.point").description("해당일 받은 순위권 + 개근 point"),
+                fieldWithPath("data.randomPoint").description("해당일 받은 random Point"),
+                fieldWithPath("data.ipAddress").description("출석 당시 ip 주소"),
+                fieldWithPath("data.greetings").description("해당일 출석 메시지"),
+                fieldWithPath("data.continousDay").description("현재 개근 일 수")
+            )));
+
+    LocalDate twoDaysAgoParam = LocalDate.now().minusDays(2);
+    AttendanceDto newAttendanceDto = AttendanceDto.builder()
+        .date(twoDaysAgoParam)
+        .build();
+    String newContent = objectMapper.writeValueAsString(newAttendanceDto);
+    mockMvc.perform(MockMvcRequestBuilders
+            .get("/v1/attend/info")
+            .header("Authorization", userToken1)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(newContent))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(jsonPath("$.data").exists())
         .andDo(print());
   }
 

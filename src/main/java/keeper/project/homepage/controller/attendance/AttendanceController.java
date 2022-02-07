@@ -5,6 +5,9 @@ import java.util.Date;
 import keeper.project.homepage.dto.attendance.AttendanceDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.ListResult;
+import keeper.project.homepage.dto.result.SingleResult;
+import keeper.project.homepage.entity.attendance.AttendanceEntity;
+import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.service.ResponseService;
 import keeper.project.homepage.service.attendance.AttendanceService;
 import lombok.RequiredArgsConstructor;
@@ -52,5 +55,12 @@ public class AttendanceController {
   public ListResult<String> getDate(@RequestBody AttendanceDto attendanceDto) {
     return responseService.getSuccessListResult(
         attendanceService.getMyAttendanceDateList(attendanceDto));
+  }
+
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/info")
+  public SingleResult<AttendanceEntity> getAttend(@RequestBody AttendanceDto attendanceDto) {
+    return responseService.getSuccessSingleResult(
+        attendanceService.getMyAttendance(attendanceDto));
   }
 }

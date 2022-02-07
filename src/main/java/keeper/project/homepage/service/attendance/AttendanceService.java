@@ -106,6 +106,12 @@ public class AttendanceService {
     return myAttendanceDateList;
   }
 
+  public AttendanceEntity getMyAttendance(AttendanceDto attendanceDto) {
+
+    return getMyAttendanceWithDate(attendanceDto);
+  }
+
+
   private List<AttendanceEntity> getAttendanceEntitiesInPeriodWithMemberId(
       AttendanceDto attendanceDto) {
     LocalDate startDate =
@@ -116,28 +122,49 @@ public class AttendanceService {
     if (startDate.isAfter(endDate)) {
       throw new CustomAttendanceException("시작 날짜와 종료 날짜를 잘못 입력하였습니다.");
     }
-    Long memberId = authService.getMemberIdByJWT();
-    Optional<MemberEntity> member = memberRepository.findById(memberId);
-    if (member.isEmpty()) {
-      throw new CustomAttendanceException("존재하지 않는 회원 입니다.");
-    }
+    MemberEntity member = getMemberEntity();
 
     return attendanceRepository.findByMemberIdAndTimeBetween(
-        member.get(), java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
+        member, java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
   }
 
   private AttendanceEntity getMostRecentlyAttendance() {
-    Long memberId = authService.getMemberIdByJWT();
-    Optional<MemberEntity> memberEntity = memberRepository.findById(memberId);
-    if (memberEntity.isEmpty()) {
-      throw new CustomAttendanceException("존재하지 않는 회원 입니다.");
-    }
+    MemberEntity memberEntity = getMemberEntity();
     Optional<AttendanceEntity> attendanceEntity = attendanceRepository
-        .findTopByMemberIdOrderByIdDesc(memberEntity.get());
+        .findTopByMemberIdOrderByIdDesc(memberEntity);
 
     if (attendanceEntity.isEmpty() || !isToday(attendanceEntity.get().getTime())) {
       throw new CustomAttendanceException("출석을 하지 않았습니다.");
     }
     return attendanceEntity.get();
+  }
+
+  private MemberEntity getMemberEntity() {
+    Long memberId = authService.getMemberIdByJWT();
+    Optional<MemberEntity> member = memberRepository.findById(memberId);
+    if (member.isEmpty()) {
+      throw new CustomAttendanceException("존재하지 않는 회원 입니다.");
+    }
+    return member.get();
+  }
+
+  private AttendanceEntity getMyAttendanceWithDate(AttendanceDto attendanceDto) {
+
+    MemberEntity member = getMemberEntity();
+
+    LocalDate date = attendanceDto.getDate();
+    if (date == null) {
+      throw new CustomAttendanceException("date를 입력하지 않았습니다.");
+    }
+    LocalDate startDate = date.atStartOfDay().toLocalDate();
+    LocalDate endDate = date.plusDays(1).atStartOfDay().toLocalDate();
+
+    List<AttendanceEntity> attendanceEntities = attendanceRepository.findByMemberIdAndTimeBetween(
+        member, java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
+
+    if (attendanceEntities.size() != 1) {
+      throw new CustomAttendanceException("출석 저장에 문제가 생겼습니다");
+    }
+    return attendanceEntities.get(0);
   }
 }
