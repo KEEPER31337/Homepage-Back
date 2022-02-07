@@ -1,7 +1,10 @@
 package keeper.project.homepage.controller.attendance;
 
+import java.time.LocalDate;
+import java.util.Date;
 import keeper.project.homepage.dto.attendance.AttendanceDto;
 import keeper.project.homepage.dto.result.CommonResult;
+import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.service.ResponseService;
 import keeper.project.homepage.service.attendance.AttendanceService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,5 +45,12 @@ public class AttendanceController {
 
     attendanceService.updateGreeting(attendanceDto);
     return responseService.getSuccessResult();
+  }
+
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/date")
+  public ListResult<String> getDate(@RequestBody AttendanceDto attendanceDto) {
+    return responseService.getSuccessListResult(
+        attendanceService.getMyAttendanceDateList(attendanceDto));
   }
 }

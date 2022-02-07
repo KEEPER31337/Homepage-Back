@@ -4,8 +4,16 @@ import static keeper.project.homepage.service.attendance.DateUtils.clearTime;
 import static keeper.project.homepage.service.attendance.DateUtils.isBeforeDay;
 import static keeper.project.homepage.service.attendance.DateUtils.isToday;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.Random;
 import keeper.project.homepage.dto.attendance.AttendanceDto;
@@ -85,18 +93,51 @@ public class AttendanceService {
     attendanceRepository.save(attendanceEntity);
   }
 
+  public List<String> getMyAttendanceDateList(AttendanceDto attendanceDto) {
+    List<AttendanceEntity> attendanceEntities = getAttendanceEntitiesInPeriodWithMemberId(
+        attendanceDto);
+
+    List<String> myAttendanceDateList = new ArrayList<>();
+
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA);
+    for (AttendanceEntity attendance : attendanceEntities) {
+      myAttendanceDateList.add(dateFormat.format(attendance.getTime()));
+    }
+    return myAttendanceDateList;
+  }
+
+  private List<AttendanceEntity> getAttendanceEntitiesInPeriodWithMemberId(
+      AttendanceDto attendanceDto) {
+    LocalDate startDate =
+        attendanceDto.getStartDate() == null ? LocalDate.EPOCH : attendanceDto.getStartDate();
+    LocalDate endDate =
+        attendanceDto.getEndDate() == null ? LocalDate.now() : attendanceDto.getEndDate();
+
+    if (startDate.isAfter(endDate)) {
+      throw new CustomAttendanceException("시작 날짜와 종료 날짜를 잘못 입력하였습니다.");
+    }
+    Long memberId = authService.getMemberIdByJWT();
+    Optional<MemberEntity> member = memberRepository.findById(memberId);
+    if (member.isEmpty()) {
+      throw new CustomAttendanceException("존재하지 않는 회원 입니다.");
+    }
+
+    return attendanceRepository.findByMemberIdAndTimeBetween(
+        member.get(), java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
+  }
+
   private AttendanceEntity getMostRecentlyAttendance() {
     Long memberId = authService.getMemberIdByJWT();
     Optional<MemberEntity> memberEntity = memberRepository.findById(memberId);
     if (memberEntity.isEmpty()) {
       throw new CustomAttendanceException("존재하지 않는 회원 입니다.");
     }
-    AttendanceEntity attendanceEntity = attendanceRepository
+    Optional<AttendanceEntity> attendanceEntity = attendanceRepository
         .findTopByMemberIdOrderByIdDesc(memberEntity.get());
 
-    if (!isToday(attendanceEntity.getTime())) {
+    if (attendanceEntity.isEmpty() || !isToday(attendanceEntity.get().getTime())) {
       throw new CustomAttendanceException("출석을 하지 않았습니다.");
     }
-    return attendanceEntity;
+    return attendanceEntity.get();
   }
 }

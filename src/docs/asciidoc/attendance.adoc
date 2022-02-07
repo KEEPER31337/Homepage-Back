@@ -64,3 +64,33 @@ include::{snippets}/attend-update/http-response.adoc[]
 ==== Response Body
 
 include::{snippets}/attend-update/response-fields.adoc[]
+
+== 내 출석날짜 확인
+
+=== 요청
+
+==== Request
+
+include::{snippets}/attend-get-my-date-list/http-request.adoc[]
+
+NOTE: Bearer JWT 토큰이 필요합니다.
+
+==== Request Parameters
+
+include::{snippets}/attend-get-my-date-list/request-fields.adoc[]
+
+NOTE: startDate가 null일 경우 처음부터 endDate까지 받아옵니다.
+
+NOTE: endDate가 null일 경우 startDate부터 최근 데이터까지 받아옵니다.
+
+NOTE: 모두 null일 경우 모든 데이터를 받아옵니다.
+
+=== 응답
+
+==== Response
+
+include::{snippets}/attend-get-my-date-list/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/attend-get-my-date-list/response-fields.adoc[]
