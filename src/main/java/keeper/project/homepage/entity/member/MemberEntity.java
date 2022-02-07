@@ -101,31 +101,9 @@ public class MemberEntity implements UserDetails, Serializable {
   @Builder.Default
   private List<FriendEntity> follower = new ArrayList<>();
 
-  public boolean addFollower(FriendEntity friend) {
-    if (follower.contains(friend)) {
-      return false;
-    }
-    return follower.add(friend);
-  }
-
-  public boolean removeFollower(FriendEntity friend) {
-    return follower.remove(friend);
-  }
-
   @OneToMany(mappedBy = "followee")
   @Builder.Default
   private List<FriendEntity> followee = new ArrayList<>();
-
-  public boolean addFollowee(FriendEntity friend) {
-    if (followee.contains(friend)) {
-      return false;
-    }
-    return followee.add(friend);
-  }
-
-  public boolean removeFollowee(FriendEntity friend) {
-    return followee.remove(friend);
-  }
 
   public void changePassword(String newPassword) {
     this.password = newPassword;

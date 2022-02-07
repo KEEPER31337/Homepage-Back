@@ -40,8 +40,8 @@ public class MemberService {
         .build();
     friendRepository.save(friend);
 
-    me.addFollowee(friend);
-    followee.addFollower(friend);
+    me.getFollowee().add(friend);
+    followee.getFollower().add(friend);
   }
 
   public void unfollow(Long myId, String followLoginId) {
@@ -51,8 +51,8 @@ public class MemberService {
         .orElseThrow(CustomMemberNotFoundException::new);
 
     FriendEntity friend = friendRepository.findByFolloweeAndFollower(followee, me);
-    me.removeFollowee(friend);
-    followee.removeFollower(friend);
+    me.getFollowee().remove(friend);
+    followee.getFollower().remove(friend);
     friendRepository.delete(friend);
   }
 
