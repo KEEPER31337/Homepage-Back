@@ -1,8 +1,12 @@
 package keeper.project.homepage.controller.attendance;
 
+import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import keeper.project.homepage.dto.attendance.AttendanceDto;
+import keeper.project.homepage.dto.attendance.AttendancePointDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.dto.result.SingleResult;
@@ -69,5 +73,10 @@ public class AttendanceController {
   public ListResult<AttendanceEntity> getAllAttend(@RequestBody AttendanceDto attendanceDto) {
     return responseService.getSuccessListResult(
         attendanceService.getAllAttendance(attendanceDto));
+  }
+
+  @GetMapping(value = "/point-info")
+  public HashMap<String, Integer> getPointInfo() throws IllegalAccessException {
+    return attendanceService.getAllBonusPointInfo();
   }
 }
