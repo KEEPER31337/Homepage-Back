@@ -130,13 +130,13 @@ public class SignUpService {
     return Pattern.matches(pattern, val);
   }
 
-  private boolean isLoginIdValid(String emailAddress) {
+  private boolean isLoginIdValid(String loginId) {
 
-    if (checkSpecialCharacter(emailAddress)) {
+    if (checkSpecialCharacter(loginId)) {
       return false;
     }
     String pattern = "^[a-zA-Z\\d_]{4,12}$"; // 4 ~ 12자 영어, 숫자, '_' 가능
-    return Pattern.matches(pattern, emailAddress);
+    return Pattern.matches(pattern, loginId);
   }
 
   private boolean isPasswordValid(String password) {
