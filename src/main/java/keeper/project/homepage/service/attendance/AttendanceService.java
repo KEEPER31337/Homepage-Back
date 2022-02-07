@@ -22,6 +22,7 @@ import keeper.project.homepage.dto.attendance.AttendancePointDto;
 import keeper.project.homepage.entity.attendance.AttendanceEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.CustomAttendanceException;
+import keeper.project.homepage.exception.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.attendance.AttendanceRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.service.util.AuthService;
@@ -168,7 +169,7 @@ public class AttendanceService {
     Long memberId = authService.getMemberIdByJWT();
     Optional<MemberEntity> member = memberRepository.findById(memberId);
     if (member.isEmpty()) {
-      throw new CustomAttendanceException("존재하지 않는 회원 입니다.");
+      throw new CustomMemberNotFoundException();
     }
     return member.get();
   }
