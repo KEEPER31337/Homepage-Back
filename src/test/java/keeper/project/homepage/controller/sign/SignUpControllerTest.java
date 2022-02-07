@@ -36,13 +36,15 @@ public class SignUpControllerTest extends ApiControllerTestSetUp {
 
   final private String loginId = "hyeonmomo";
   final private String emailAddress = "test@k33p3r.com";
-  final private String password = "keeper";
+  final private String password = "keeperlove123";
   final private String realName = "JeongHyeonMo";
   final private String nickName = "HyeonMoJeong";
   final private String birthday = "1998-01-01";
   final private String studentId = "201724579";
 
-  final private long epochTime = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
+  final private String epochTime = String.valueOf(
+      LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond());
+  final private String sliceEpochTime = epochTime.substring(epochTime.length() - 4);
 
   @BeforeEach
   public void setUp() throws Exception {
@@ -68,17 +70,17 @@ public class SignUpControllerTest extends ApiControllerTestSetUp {
   @Test
   @DisplayName("회원가입 성공 시")
   public void signUp() throws Exception {
-    EmailAuthDto emailAuthDto = new EmailAuthDto(emailAddress + epochTime, "");
+    EmailAuthDto emailAuthDto = new EmailAuthDto(emailAddress + "1", "");
     EmailAuthDto emailAuthDtoForSend = signUpService.generateEmailAuth(emailAuthDto);
     String content = "{\n"
-        + "    \"loginId\": \"" + loginId + epochTime + "\",\n"
-        + "    \"emailAddress\": \"" + emailAddress + epochTime + "\",\n"
+        + "    \"loginId\": \"" + loginId + "1" + "\",\n"
+        + "    \"emailAddress\": \"" + emailAddress + "1" + "\",\n"
         + "    \"password\": \"" + password + "\",\n"
-        + "    \"realName\": \"" + realName + "\",\n"
-        + "    \"nickName\": \"" + nickName + "\",\n"
+        + "    \"realName\": \"" + realName + "a" + "\",\n"
+        + "    \"nickName\": \"" + nickName + "1" + "\",\n"
         + "    \"authCode\": \"" + emailAuthDtoForSend.getAuthCode() + "\",\n"
         + "    \"birthday\": \"" + birthday + "\",\n"
-        + "    \"studentId\": \"" + studentId + epochTime + "\"\n"
+        + "    \"studentId\": \"" + studentId + "1" + "\"\n"
         + "}";
     mockMvc.perform(post("/v1/signup")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -131,17 +133,17 @@ public class SignUpControllerTest extends ApiControllerTestSetUp {
   @Test
   @DisplayName("회원가입 이메일 인증코드 불일치로 실패 시")
   public void signUpAuthCodeMismatch() throws Exception {
-    EmailAuthDto emailAuthDto = new EmailAuthDto(emailAddress + epochTime, "");
+    EmailAuthDto emailAuthDto = new EmailAuthDto(emailAddress + sliceEpochTime, "");
     EmailAuthDto emailAuthDtoForSend = signUpService.generateEmailAuth(emailAuthDto);
     String content = "{\n"
-        + "    \"loginId\": \"" + loginId + epochTime + "\",\n"
-        + "    \"emailAddress\": \"" + emailAddress + epochTime + "\",\n"
+        + "    \"loginId\": \"" + loginId + sliceEpochTime + "\",\n"
+        + "    \"emailAddress\": \"" + emailAddress + sliceEpochTime + "\",\n"
         + "    \"password\": \"" + password + "\",\n"
         + "    \"realName\": \"" + realName + "\",\n"
         + "    \"nickName\": \"" + nickName + "\",\n"
-        + "    \"authCode\": \"" + emailAuthDtoForSend.getAuthCode() + epochTime + "\",\n"
+        + "    \"authCode\": \"" + emailAuthDtoForSend.getAuthCode() + sliceEpochTime + "\",\n"
         + "    \"birthday\": \"" + birthday + "\",\n"
-        + "    \"studentId\": \"" + studentId + epochTime + "\"\n"
+        + "    \"studentId\": \"" + studentId + sliceEpochTime + "\"\n"
         + "}";
     mockMvc.perform(post("/v1/signup")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -232,7 +234,7 @@ public class SignUpControllerTest extends ApiControllerTestSetUp {
   @DisplayName("아이디 중복 검사 - 중복이 존재 하지 않을 때")
   public void checkLoginIdNoDuplication() throws Exception {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("loginId", loginId + epochTime);
+    params.add("loginId", loginId + sliceEpochTime);
     mockMvc.perform(get("/v1/signup/checkloginidduplication").params(params))
         .andDo(print())
         .andExpect(status().isOk())
@@ -265,7 +267,7 @@ public class SignUpControllerTest extends ApiControllerTestSetUp {
   @DisplayName("이메일 중복 검사 - 중복이 존재 하지 않을 때")
   public void checkEmailAddressNoDuplication() throws Exception {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("emailAddress", emailAddress + epochTime);
+    params.add("emailAddress", emailAddress + sliceEpochTime);
     mockMvc.perform(get("/v1/signup/checkemailaddressduplication").params(params))
         .andDo(print())
         .andExpect(status().isOk())
@@ -297,7 +299,7 @@ public class SignUpControllerTest extends ApiControllerTestSetUp {
   @DisplayName("학번 중복 검사 - 중복이 존재 하지 않을 때")
   public void checkStudentIdNoDuplication() throws Exception {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("studentId", studentId + epochTime);
+    params.add("studentId", studentId + sliceEpochTime);
     mockMvc.perform(get("/v1/signup/checkstudentidduplication").params(params))
         .andDo(print())
         .andExpect(status().isOk())
