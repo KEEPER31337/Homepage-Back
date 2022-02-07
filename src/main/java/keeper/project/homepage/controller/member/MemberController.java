@@ -199,4 +199,36 @@ public class MemberController {
       e.printStackTrace();
     }
   }
+
+  @Secured("ROLE_회원")
+  @PostMapping(value = "/member/follow")
+  public CommonResult followByLoginId(@RequestBody MemberDto memberDto) {
+    Long id = authService.getMemberIdByJWT();
+    memberService.follow(id, memberDto.getFolloweeLoginId());
+    return responseService.getSuccessResult();
+  }
+
+  @Secured("ROLE_회원")
+  @DeleteMapping(value = "/member/unfollow")
+  public CommonResult unfollowByLoginId(@RequestBody MemberDto memberDto) {
+    Long id = authService.getMemberIdByJWT();
+    memberService.unfollow(id, memberDto.getFolloweeLoginId());
+    return responseService.getSuccessResult();
+  }
+
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/member/follower")
+  public ListResult<MemberDto> showFollowerList() {
+    Long id = authService.getMemberIdByJWT();
+    List<MemberDto> followerList = memberService.showFollower(id);
+    return responseService.getSuccessListResult(followerList);
+  }
+
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/member/followee")
+  public ListResult<MemberDto> showFolloweeList() {
+    Long id = authService.getMemberIdByJWT();
+    List<MemberDto> followeeList = memberService.showFollowee(id);
+    return responseService.getSuccessListResult(followeeList);
+  }
 }

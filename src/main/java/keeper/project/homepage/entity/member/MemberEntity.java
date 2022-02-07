@@ -95,6 +95,14 @@ public class MemberEntity implements UserDetails, Serializable {
   // DEFAULT 1
   private ThumbnailEntity thumbnail;
 
+  @OneToMany(mappedBy = "follower")
+  @Builder.Default
+  private List<FriendEntity> follower = new ArrayList<>();
+
+  @OneToMany(mappedBy = "followee")
+  @Builder.Default
+  private List<FriendEntity> followee = new ArrayList<>();
+
   public void changePassword(String newPassword) {
     this.password = newPassword;
   }

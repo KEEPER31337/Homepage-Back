@@ -3,6 +3,9 @@ package keeper.project.homepage.controller.member;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.beneathPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -20,6 +23,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
+import keeper.project.homepage.entity.member.FriendEntity;
+import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
+import keeper.project.homepage.entity.member.MemberJobEntity;
+import org.junit.jupiter.api.Assertions;
 import keeper.project.homepage.common.FileConversion;
 import keeper.project.homepage.dto.EmailAuthDto;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -42,6 +50,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.PayloadDocumentation;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.MvcResult;
@@ -275,6 +284,105 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.data").exists());
   }
 
+  @Test
+  @DisplayName("팔로우하기")
+  public void follow() throws Exception {
+    String content = "{"
+        + "\"followeeLoginId\" : \"" + adminLoginId + "\""
+        + "}";
+    mockMvc.perform(MockMvcRequestBuilders.post("/v1/member/follow")
+            .header("Authorization", userToken)
+            .content(content)
+            .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andDo(document("member-follow",
+            requestFields(
+                fieldWithPath("followeeLoginId").description("팔로우할 회원의 로그인 아이디")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("실패 시: -9999")
+            )));
+
+    MemberEntity memberEntity = memberRepository.findByLoginId(loginId).get();
+    MemberEntity memberAdmin = memberRepository.findByLoginId(adminLoginId).get();
+    List<FriendEntity> followeeList = memberEntity.getFollowee();
+    FriendEntity followee = followeeList.get(followeeList.size() - 1);
+    // friend entity에 followee와 follower가 잘 들어갔나요?
+    Assertions.assertTrue(followee.getFollowee().equals(memberAdmin));
+    Assertions.assertTrue(followee.getFollower().equals(memberEntity));
+  }
+
+  @Test
+  @DisplayName("언팔로우하기")
+  public void unfollow() throws Exception {
+    String content = "{"
+        + "\"followeeLoginId\" : \"" + adminLoginId + "\""
+        + "}";
+    // follow
+    MemberEntity memberEntity = memberRepository.findByLoginId(loginId).get();
+    MemberEntity memberAdmin = memberRepository.findByLoginId(adminLoginId).get();
+    memberService.follow(memberEntity.getId(), adminLoginId);
+    List<FriendEntity> followeeList = memberEntity.getFollowee();
+    FriendEntity followee = followeeList.get(followeeList.size() - 1);
+
+    // unfollow
+    mockMvc.perform(MockMvcRequestBuilders.delete("/v1/member/unfollow")
+            .header("Authorization", userToken)
+            .content(content)
+            .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andDo(document("member-unfollow",
+            requestFields(
+                fieldWithPath("followeeLoginId").description("팔로우한 회원의 로그인 아이디")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("실패 시: -9999")
+            )));
+
+    Assertions.assertTrue(friendRepository.findById(followee.getId()).isEmpty());
+    Assertions.assertFalse(memberEntity.getFollowee().contains(followee));
+    Assertions.assertFalse(memberAdmin.getFollower().contains(followee));
+  }
+
+  @Test
+  @DisplayName("내가 팔로우한 사람 조회하기")
+  public void showFollowee() throws Exception {
+    // follow: member -> admin(followee)
+    MemberEntity memberEntity = memberRepository.findByLoginId(loginId).get();
+    MemberEntity memberAdmin = memberRepository.findByLoginId(adminLoginId).get();
+    memberService.follow(memberEntity.getId(), adminLoginId);
+
+    mockMvc.perform(get("/v1/member/followee")
+            .header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.list[0].nickName").value(adminNickName))
+        .andDo(document("friend-show-followee",
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("실패 시: -9999"),
+                fieldWithPath("list[].id").description("민감한 정보 제외").ignored(),
+                fieldWithPath("list[].loginId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("list[].emailAddress").description("이메일 주소"),
+                fieldWithPath("list[].password").description("민감한 정보 제외").ignored(),
+                fieldWithPath("list[].realName").description("민감한 정보 제외").ignored(),
+                fieldWithPath("list[].nickName").description("닉네임"),
+                fieldWithPath("list[].authCode").description("민감한 정보 제외").ignored(),
+                fieldWithPath("list[].birthday").description("생일"),
+                fieldWithPath("list[].studentId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("list[].registerDate").description("가입 날짜"),
+                fieldWithPath("list[].point").description("포인트 점수"),
+                fieldWithPath("list[].level").description("레벨"),
+                fieldWithPath("list[].followeeLoginId").description("민감한 정보 제외").ignored()
+      
+      
   @Test
   @DisplayName("Admin 권한으로 회원 등급 변경하기")
   public void updateRank() throws Exception {
@@ -608,6 +716,38 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
             )));
   }
 
+  @Test
+  @DisplayName("나를 팔로우한 사람 조회하기")
+  public void showFollower() throws Exception {
+    // follow: admin(follower) -> member
+    MemberEntity memberEntity = memberRepository.findByLoginId(loginId).get();
+    MemberEntity memberAdmin = memberRepository.findByLoginId(adminLoginId).get();
+    memberService.follow(memberAdmin.getId(), loginId);
+
+    mockMvc.perform(get("/v1/member/follower")
+            .header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.list[0].nickName").value(adminNickName))
+        .andDo(document("friend-show-follower",
+            responseFields(
+                fieldWithPath("success").description(""),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description(""),
+                fieldWithPath("list[].id").description("민감한 정보 제외").ignored(),
+                fieldWithPath("list[].loginId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("list[].emailAddress").description("이메일 주소"),
+                fieldWithPath("list[].password").description("민감한 정보 제외").ignored(),
+                fieldWithPath("list[].realName").description("민감한 정보 제외").ignored(),
+                fieldWithPath("list[].nickName").description("닉네임"),
+                fieldWithPath("list[].authCode").description("민감한 정보 제외").ignored(),
+                fieldWithPath("list[].birthday").description("생일"),
+                fieldWithPath("list[].studentId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("list[].registerDate").description("가입 날짜"),
+                fieldWithPath("list[].point").description("포인트 점수"),
+                fieldWithPath("list[].level").description("레벨"),
+                fieldWithPath("list[].followeeLoginId").description("민감한 정보 제외").ignored()
+            )));
   @Test
   @DisplayName("기본 권한으로 학번 변경하기")
   public void updateStudentId() throws Exception {

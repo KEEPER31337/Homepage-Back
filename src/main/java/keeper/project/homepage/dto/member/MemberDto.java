@@ -30,6 +30,7 @@ public class MemberDto {
   private Date birthday;
   private String studentId;
   private Date registerDate;
+  private String followeeLoginId;
   private Integer point;
   private Integer level;
   private String rank;
@@ -47,6 +48,16 @@ public class MemberDto {
         .build();
   }
 
+  public static MemberDto initWithEntity(MemberEntity memberEntity) {
+    return MemberDto.builder()
+        .emailAddress(memberEntity.getEmailAddress())
+        .nickName(memberEntity.getNickName())
+        .birthday(memberEntity.getBirthday())
+        .registerDate(memberEntity.getRegisterDate())
+        .point(memberEntity.getPoint())
+        .level(memberEntity.getLevel())
+        .build();
+  
   public void initWithEntity(MemberEntity memberEntity) {
     // 민감한 정보 제외
     this.id = null; //memberEntity.getId();
