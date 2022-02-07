@@ -1,5 +1,7 @@
 package keeper.project.homepage.dto.member;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonInclude(Include.NON_NULL)
 public class MemberDto {
 
   private Long id;
@@ -51,6 +54,7 @@ public class MemberDto {
     this.password = null;//memberEntity.getPassword();
     this.realName = null;//memberEntity.getRealName();
     this.nickName = memberEntity.getNickName();
+    this.birthday = memberEntity.getBirthday();
     this.emailAddress = memberEntity.getEmailAddress();
     this.studentId = null;//memberEntity.getStudentId();
     this.registerDate = memberEntity.getRegisterDate();

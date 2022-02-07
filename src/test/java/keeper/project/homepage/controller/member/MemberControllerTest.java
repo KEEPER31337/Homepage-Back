@@ -17,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.common.FileConversion;
@@ -25,6 +26,7 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.member.MemberRankEntity;
+import keeper.project.homepage.entity.member.MemberTypeEntity;
 import keeper.project.homepage.exception.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
@@ -116,6 +118,8 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
   @BeforeEach
   public void setUp() throws Exception {
     MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
+    MemberTypeEntity memberTypeEntity = memberTypeRepository.findByName("정회원").get();
+    MemberRankEntity memberRankEntity = memberRankRepository.findByName("일반회원").get();
     memberEntity = MemberEntity.builder()
         .loginId(loginId)
         .password(passwordEncoder.encode(password))
@@ -123,9 +127,14 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         .nickName(nickName)
         .emailAddress(emailAddress)
         .studentId(studentId)
+        .memberType(memberTypeEntity)
+        .memberRank(memberRankEntity)
 //        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
     memberEntity = memberRepository.save(memberEntity);
+    memberTypeEntity.addMember(memberEntity);
+    memberRankEntity.addMember(memberEntity);
+
     MemberHasMemberJobEntity mj = memberHasMemberJobRepository.save(
         MemberHasMemberJobEntity.builder()
             .memberJobEntity(memberJobEntity)
@@ -295,15 +304,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("실패 시: -9999"),
                 fieldWithPath("msg").description(docMsg),
-                fieldWithPath("data.id").description("민감한 정보 제외").ignored(),
-                fieldWithPath("data.loginId").description("민감한 정보 제외").ignored(),
                 fieldWithPath("data.emailAddress").description("이메일 주소"),
-                fieldWithPath("data.password").description("민감한 정보 제외").ignored(),
-                fieldWithPath("data.realName").description("민감한 정보 제외").ignored(),
                 fieldWithPath("data.nickName").description("닉네임"),
-                fieldWithPath("data.authCode").description("민감한 정보 제외").ignored(),
-                fieldWithPath("data.birthday").description("생일"),
-                fieldWithPath("data.studentId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
                 fieldWithPath("data.registerDate").description("가입 날짜"),
                 fieldWithPath("data.point").description("포인트 점수"),
                 fieldWithPath("data.level").description("레벨"),
@@ -348,15 +351,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("실패 시: -9999"),
                 fieldWithPath("msg").description(docMsg),
-                fieldWithPath("data.id").description("민감한 정보 제외").ignored(),
-                fieldWithPath("data.loginId").description("민감한 정보 제외").ignored(),
                 fieldWithPath("data.emailAddress").description("이메일 주소"),
-                fieldWithPath("data.password").description("민감한 정보 제외").ignored(),
-                fieldWithPath("data.realName").description("민감한 정보 제외").ignored(),
                 fieldWithPath("data.nickName").description("닉네임"),
-                fieldWithPath("data.authCode").description("민감한 정보 제외").ignored(),
-                fieldWithPath("data.birthday").description("생일"),
-                fieldWithPath("data.studentId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
                 fieldWithPath("data.registerDate").description("가입 날짜"),
                 fieldWithPath("data.point").description("포인트 점수"),
                 fieldWithPath("data.level").description("레벨"),
@@ -402,15 +399,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("실패 시: -1000"),
                 fieldWithPath("msg").description(docMsg),
-                fieldWithPath("data.id").description("민감한 정보 제외").ignored(),
-                fieldWithPath("data.loginId").description("민감한 정보 제외").ignored(),
                 fieldWithPath("data.emailAddress").description("이메일 주소"),
-                fieldWithPath("data.password").description("민감한 정보 제외").ignored(),
-                fieldWithPath("data.realName").description("민감한 정보 제외").ignored(),
                 fieldWithPath("data.nickName").description("닉네임"),
-                fieldWithPath("data.authCode").description("민감한 정보 제외").ignored(),
-                fieldWithPath("data.birthday").description("생일"),
-                fieldWithPath("data.studentId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
                 fieldWithPath("data.registerDate").description("가입 날짜"),
                 fieldWithPath("data.point").description("포인트 점수"),
                 fieldWithPath("data.level").description("레벨"),
@@ -460,15 +451,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("실패 시: -9999"),
                 fieldWithPath("msg").description(docMsg),
-                fieldWithPath("data.id").description("민감한 정보 제외").ignored(),
-                fieldWithPath("data.loginId").description("민감한 정보 제외").ignored(),
                 fieldWithPath("data.emailAddress").description("이메일 주소"),
-                fieldWithPath("data.password").description("민감한 정보 제외").ignored(),
-                fieldWithPath("data.realName").description("민감한 정보 제외").ignored(),
                 fieldWithPath("data.nickName").description("닉네임"),
-                fieldWithPath("data.authCode").description("민감한 정보 제외").ignored(),
-                fieldWithPath("data.birthday").description("생일"),
-                fieldWithPath("data.studentId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
                 fieldWithPath("data.registerDate").description("가입 날짜"),
                 fieldWithPath("data.point").description("포인트 점수"),
                 fieldWithPath("data.level").description("레벨"),
@@ -515,18 +500,13 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                     + "* 인증 실패: -1002" + " +\n"
                     + "* 그 외: -9999"),
                 fieldWithPath("msg").description(docMsg),
-                fieldWithPath("data.id").description("민감한 정보 제외").ignored(),
-                fieldWithPath("data.loginId").description("민감한 정보 제외").ignored(),
                 fieldWithPath("data.emailAddress").description("이메일 주소"),
-                fieldWithPath("data.password").description("민감한 정보 제외").ignored(),
-                fieldWithPath("data.realName").description("민감한 정보 제외").ignored(),
                 fieldWithPath("data.nickName").description("닉네임"),
-                fieldWithPath("data.authCode").description("민감한 정보 제외").ignored(),
-                fieldWithPath("data.birthday").description("생일"),
-                fieldWithPath("data.studentId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
                 fieldWithPath("data.registerDate").description("가입 날짜"),
                 fieldWithPath("data.point").description("포인트 점수"),
                 fieldWithPath("data.level").description("레벨"),
+                fieldWithPath("data.authCode").description("인증 코드"),
                 fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
                 fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
                 fieldWithPath("data.jobs").description(
@@ -615,15 +595,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("실패 시: -9999"),
                 fieldWithPath("msg").description(docMsg),
-                fieldWithPath("data.id").description("민감한 정보 제외").ignored(),
-                fieldWithPath("data.loginId").description("민감한 정보 제외").ignored(),
                 fieldWithPath("data.emailAddress").description("이메일 주소"),
-                fieldWithPath("data.password").description("민감한 정보 제외").ignored(),
-                fieldWithPath("data.realName").description("민감한 정보 제외").ignored(),
                 fieldWithPath("data.nickName").description("닉네임"),
-                fieldWithPath("data.authCode").description("민감한 정보 제외").ignored(),
-                fieldWithPath("data.birthday").description("생일"),
-                fieldWithPath("data.studentId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
                 fieldWithPath("data.registerDate").description("가입 날짜"),
                 fieldWithPath("data.point").description("포인트 점수"),
                 fieldWithPath("data.level").description("레벨"),
@@ -662,15 +636,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("실패 시 -9999"),
                 fieldWithPath("msg").description(docMsg),
-                fieldWithPath("data.id").description("민감한 정보 제외").ignored(),
-                fieldWithPath("data.loginId").description("민감한 정보 제외").ignored(),
                 fieldWithPath("data.emailAddress").description("이메일 주소"),
-                fieldWithPath("data.password").description("민감한 정보 제외").ignored(),
-                fieldWithPath("data.realName").description("민감한 정보 제외").ignored(),
                 fieldWithPath("data.nickName").description("닉네임"),
-                fieldWithPath("data.authCode").description("민감한 정보 제외").ignored(),
-                fieldWithPath("data.birthday").description("생일"),
-                fieldWithPath("data.studentId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
                 fieldWithPath("data.registerDate").description("가입 날짜"),
                 fieldWithPath("data.point").description("포인트 점수"),
                 fieldWithPath("data.level").description("레벨"),
