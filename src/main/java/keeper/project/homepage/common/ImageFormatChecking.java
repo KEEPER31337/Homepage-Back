@@ -25,7 +25,7 @@ public class ImageFormatChecking {
   }
 
   public boolean isImageFile(String fileName) {
-    String[] fileNameSplitArray = fileName.split(File.separator);
+    String[] fileNameSplitArray = fileName.split("\\.");
     String fileFormat = fileNameSplitArray[fileNameSplitArray.length - 1];
     for (String format : enableImageFormat) {
       if (fileFormat.equals(format)) {

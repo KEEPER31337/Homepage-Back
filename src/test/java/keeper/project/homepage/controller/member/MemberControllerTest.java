@@ -6,11 +6,6 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.beneathPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -23,19 +18,14 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
-import keeper.project.homepage.entity.member.FriendEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
-import keeper.project.homepage.entity.member.MemberJobEntity;
-import org.junit.jupiter.api.Assertions;
 import keeper.project.homepage.common.FileConversion;
 import keeper.project.homepage.dto.EmailAuthDto;
+import keeper.project.homepage.entity.member.FriendEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.member.MemberRankEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
-import keeper.project.homepage.exception.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberRankRepository;
@@ -50,7 +40,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.payload.PayloadDocumentation;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.MvcResult;
@@ -368,21 +357,16 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("msg").description(""),
                 fieldWithPath("code").description("실패 시: -9999"),
-                fieldWithPath("list[].id").description("민감한 정보 제외").ignored(),
-                fieldWithPath("list[].loginId").description("민감한 정보 제외").ignored(),
                 fieldWithPath("list[].emailAddress").description("이메일 주소"),
-                fieldWithPath("list[].password").description("민감한 정보 제외").ignored(),
-                fieldWithPath("list[].realName").description("민감한 정보 제외").ignored(),
                 fieldWithPath("list[].nickName").description("닉네임"),
-                fieldWithPath("list[].authCode").description("민감한 정보 제외").ignored(),
-                fieldWithPath("list[].birthday").description("생일"),
-                fieldWithPath("list[].studentId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("list[].birthday").description("생일").type(Date.class).optional(),
                 fieldWithPath("list[].registerDate").description("가입 날짜"),
                 fieldWithPath("list[].point").description("포인트 점수"),
-                fieldWithPath("list[].level").description("레벨"),
-                fieldWithPath("list[].followeeLoginId").description("민감한 정보 제외").ignored()
-      
-      
+                fieldWithPath("list[].level").description("레벨")
+            )));
+  }
+
+
   @Test
   @DisplayName("Admin 권한으로 회원 등급 변경하기")
   public void updateRank() throws Exception {
@@ -734,20 +718,15 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("success").description(""),
                 fieldWithPath("msg").description(""),
                 fieldWithPath("code").description(""),
-                fieldWithPath("list[].id").description("민감한 정보 제외").ignored(),
-                fieldWithPath("list[].loginId").description("민감한 정보 제외").ignored(),
                 fieldWithPath("list[].emailAddress").description("이메일 주소"),
-                fieldWithPath("list[].password").description("민감한 정보 제외").ignored(),
-                fieldWithPath("list[].realName").description("민감한 정보 제외").ignored(),
                 fieldWithPath("list[].nickName").description("닉네임"),
-                fieldWithPath("list[].authCode").description("민감한 정보 제외").ignored(),
-                fieldWithPath("list[].birthday").description("생일"),
-                fieldWithPath("list[].studentId").description("민감한 정보 제외").ignored(),
+                fieldWithPath("list[].birthday").description("생일").type(Date.class).optional(),
                 fieldWithPath("list[].registerDate").description("가입 날짜"),
                 fieldWithPath("list[].point").description("포인트 점수"),
-                fieldWithPath("list[].level").description("레벨"),
-                fieldWithPath("list[].followeeLoginId").description("민감한 정보 제외").ignored()
+                fieldWithPath("list[].level").description("레벨")
             )));
+  }
+
   @Test
   @DisplayName("기본 권한으로 학번 변경하기")
   public void updateStudentId() throws Exception {

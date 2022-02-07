@@ -103,7 +103,8 @@ public class ExceptionAdvice {
       CustomAttendanceException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("attendanceFailed.code")),
         e.getMessage() == null ? getMessage("attendanceFailed.msg") : e.getMessage());
-  
+  }
+
   @ExceptionHandler(CustomBookNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult bookNotFoundException(HttpServletRequest request,

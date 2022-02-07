@@ -48,7 +48,8 @@ public class MemberDto {
         .build();
   }
 
-  public static MemberDto initWithEntity(MemberEntity memberEntity) {
+  // FIXME 꼭 바꿔야댐 변수명 조짐
+  public static MemberDto initWithEntity2(MemberEntity memberEntity) {
     return MemberDto.builder()
         .emailAddress(memberEntity.getEmailAddress())
         .nickName(memberEntity.getNickName())
@@ -57,6 +58,7 @@ public class MemberDto {
         .point(memberEntity.getPoint())
         .level(memberEntity.getLevel())
         .build();
+  }
   
   public void initWithEntity(MemberEntity memberEntity) {
     // 민감한 정보 제외

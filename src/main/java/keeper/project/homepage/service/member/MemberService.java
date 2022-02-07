@@ -212,7 +212,7 @@ public class MemberService {
     List<FriendEntity> friendList = me.getFollower();
 
     List<MemberDto> followerList = friendList.stream()
-        .map(friend -> MemberDto.initWithEntity(friend.getFollower())).toList();
+        .map(friend -> MemberDto.initWithEntity2(friend.getFollower())).toList();
     return followerList;
   }
 
@@ -222,10 +222,10 @@ public class MemberService {
     List<FriendEntity> friendList = me.getFollowee();
 
     List<MemberDto> followeeList = friendList.stream()
-        .map(friend -> MemberDto.initWithEntity(friend.getFollowee())).toList();
+        .map(friend -> MemberDto.initWithEntity2(friend.getFollowee())).toList();
     return followeeList;
   }
-  
+
   // update realName, nickName
   public MemberDto updateNames(MemberDto memberDto, Long memberId) {
     MemberEntity updateEntity = memberRepository.findById(memberId)
