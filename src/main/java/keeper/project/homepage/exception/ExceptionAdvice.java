@@ -96,4 +96,29 @@ public class ExceptionAdvice {
     return responseService.getFailResult(Integer.parseInt(getMessage("fileNotFound.code")),
         e.getMessage() == null ? getMessage("fileNotFound.msg") : e.getMessage());
   }
+
+  @ExceptionHandler(CustomAttendanceException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  public CommonResult attendanceException(HttpServletRequest request,
+      CustomAttendanceException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("attendanceFailed.code")),
+        e.getMessage() == null ? getMessage("attendanceFailed.msg") : e.getMessage());
+  
+  @ExceptionHandler(CustomBookNotFoundException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected CommonResult bookNotFoundException(HttpServletRequest request,
+      CustomBookNotFoundException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(Integer.parseInt(getMessage("bookNotFound.code")),
+        getMessage("bookNotFound.msg"));
+  }
+
+  @ExceptionHandler(CustomBookOverTheMaxException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected CommonResult bookOverTheMaxException(HttpServletRequest request,
+      CustomBookOverTheMaxException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(Integer.parseInt(getMessage("bookOverTheMax.code")),
+        getMessage("bookOverTheMax.msg"));
+  }
 }
