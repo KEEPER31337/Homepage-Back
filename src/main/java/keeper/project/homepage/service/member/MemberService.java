@@ -70,7 +70,7 @@ public class MemberService {
         .orElseThrow(CustomMemberNotFoundException::new);
     MemberRankEntity prevRank = updateEntity.getMemberRank();
     if (prevRank != null) {
-      prevRank.removeMember(updateEntity);
+      prevRank.getMembers().remove(updateEntity);
     }
 
     MemberRankEntity updateRank = memberRankRepository.findByName(rankDto.getName())
@@ -78,7 +78,7 @@ public class MemberService {
     if (updateRank == null) { // 나중에 custom exception 으로 변경
       throw new RuntimeException(rankDto.getName() + "인 member rank가 존재하지 않습니다.");
     }
-    updateRank.addMember(updateEntity);
+    updateRank.getMembers().add(updateEntity);
     updateEntity.changeMemberRank(updateRank);
     MemberDto result = new MemberDto();
     result.initWithEntity(memberRepository.save(updateEntity));
@@ -94,7 +94,7 @@ public class MemberService {
         .orElseThrow(CustomMemberNotFoundException::new);
     MemberTypeEntity prevType = updateEntity.getMemberType();
     if (prevType != null) {
-      prevType.removeMember(updateEntity);
+      prevType.getMembers().remove(updateEntity);
     }
 
     MemberTypeEntity updateType = memberTypeRepository.findByName(typeDto.getName())
@@ -102,7 +102,7 @@ public class MemberService {
     if (updateType == null) { // 나중에 custom exception 으로 변경
       throw new RuntimeException(typeDto.getName() + "인 member type이 존재하지 않습니다.");
     }
-    updateType.addMember(updateEntity);
+    updateType.getMembers().add(updateEntity);
     updateEntity.changeMemberType(updateType);
     MemberDto result = new MemberDto();
     result.initWithEntity(memberRepository.save(updateEntity));
@@ -111,8 +111,8 @@ public class MemberService {
 
   private MemberEntity removeMemberJob(MemberHasMemberJobEntity mj, MemberEntity member) {
     memberHasMemberJobRepository.delete(mj);
-    mj.getMemberJobEntity().removeMember(mj);
-    member.removeJob(mj);
+    mj.getMemberJobEntity().getMembers().remove(mj);
+    member.getMemberJobs().remove(mj);
     return member;
   }
 
@@ -125,8 +125,8 @@ public class MemberService {
     MemberHasMemberJobEntity newMJ = memberHasMemberJobRepository.save(
         MemberHasMemberJobEntity.builder().memberEntity(member)
             .memberJobEntity(newJob).build());
-    newJob.addMember(newMJ);
-    member.addJob(newMJ);
+    newJob.getMembers().add(newMJ);
+    member.getMemberJobs().add(newMJ);
     return member;
   }
 

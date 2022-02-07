@@ -133,17 +133,6 @@ public class MemberEntity implements UserDetails, Serializable {
   @Builder.Default
   private List<MemberHasMemberJobEntity> memberJobs = new ArrayList<>();
 
-  public boolean addJob(MemberHasMemberJobEntity job) {
-    if (memberJobs.contains(job)) {
-      return false;
-    }
-    return this.memberJobs.add(job);
-  }
-
-  public boolean removeJob(MemberHasMemberJobEntity job) {
-    return this.memberJobs.remove(job);
-  }
-
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     List<SimpleGrantedAuthority> roles = new ArrayList<>();

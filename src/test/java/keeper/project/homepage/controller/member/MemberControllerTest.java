@@ -132,17 +132,17 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
 //        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
     memberEntity = memberRepository.save(memberEntity);
-    memberTypeEntity.addMember(memberEntity);
-    memberRankEntity.addMember(memberEntity);
+    memberTypeEntity.getMembers().add(memberEntity);
+    memberRankEntity.getMembers().add(memberEntity);
 
     MemberHasMemberJobEntity mj = memberHasMemberJobRepository.save(
         MemberHasMemberJobEntity.builder()
             .memberJobEntity(memberJobEntity)
             .memberEntity(memberEntity)
             .build());
-    memberJobEntity.addMember(mj);
+    memberJobEntity.getMembers().add(mj);
     memberJobRepository.save(memberJobEntity);
-    memberEntity.addJob(mj);
+    memberEntity.getMemberJobs().add(mj);
     memberRepository.save(memberEntity);
 
     String content = "{\n"

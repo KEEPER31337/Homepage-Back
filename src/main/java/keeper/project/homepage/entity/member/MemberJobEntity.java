@@ -31,14 +31,4 @@ public class MemberJobEntity implements Serializable {
   @Builder.Default
   private List<MemberHasMemberJobEntity> members = new ArrayList<>();
 
-  public boolean addMember(MemberHasMemberJobEntity member) {
-    if (members.contains(member)) {
-      return false;
-    }
-    return this.members.add(member);
-  }
-
-  public boolean removeMember(MemberHasMemberJobEntity member) {
-    return this.members.remove(member);
-  }
 }
