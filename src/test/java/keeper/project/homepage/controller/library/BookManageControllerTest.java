@@ -31,11 +31,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.json.JacksonJsonParser;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 @Transactional
 public class BookManageControllerTest extends ApiControllerTestSetUp {
+
+  private String userToken;
 
   final private String bookTitle1 = "Do it! 점프 투 파이썬";
   final private String bookAuthor1 = "박응용";
@@ -129,6 +134,25 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
             .enable(bookEnable3)
             .registerDate(registerDate3)
             .build());
+
+    String content = "{\n"
+        + "    \"loginId\": \"" + loginId + "\",\n"
+        + "    \"password\": \"" + password + "\"\n"
+        + "}";
+    MvcResult result = mockMvc.perform(post("/v1/signin")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(content))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").exists())
+        .andExpect(jsonPath("$.data").exists())
+        .andReturn();
+
+    String resultString = result.getResponse().getContentAsString();
+    JacksonJsonParser jsonParser = new JacksonJsonParser();
+    userToken = jsonParser.parseMap(resultString).get("data").toString();
   }
 
   //--------------------------도서 등록------------------------------------
@@ -173,7 +197,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
 
     mockMvc.perform(post("/v1/addbook").params(params))
         .andDo(print())
-        .andExpect(status().isOk())
+        .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-1))
         .andExpect(jsonPath("$.msg").exists());
@@ -227,7 +251,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
 
     mockMvc.perform(post("/v1/addbook").params(params))
         .andDo(print())
-        .andExpect(status().isOk())
+        .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-1))
         .andExpect(jsonPath("$.msg").exists());
@@ -292,7 +316,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
 
     mockMvc.perform(post("/v1/deletebook").params(params))
         .andDo(print())
-        .andExpect(status().isOk())
+        .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-2))
         .andExpect(jsonPath("$.msg").exists());
@@ -309,7 +333,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
 
     mockMvc.perform(post("/v1/deletebook").params(params))
         .andDo(print())
-        .andExpect(status().isOk())
+        .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-1))
         .andExpect(jsonPath("$.msg").exists());
@@ -326,7 +350,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
 
     mockMvc.perform(post("/v1/deletebook").params(params))
         .andDo(print())
-        .andExpect(status().isOk())
+        .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-1))
         .andExpect(jsonPath("$.msg").exists());
@@ -340,10 +364,9 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1);
     params.add("author", bookAuthor1);
-    params.add("borrowMemberId", memberEntity.getId().toString());
     params.add("quantity", String.valueOf(borrowQuantity));
 
-    mockMvc.perform(post("/v1/borrowbook").params(params))
+    mockMvc.perform(post("/v1/borrowbook").params(params).header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -353,7 +376,6 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
             requestParameters(
                 parameterWithName("title").description("책 제목"),
                 parameterWithName("author").description("저자"),
-                parameterWithName("borrowMemberId").description("대여자 ID"),
                 parameterWithName("quantity").description("대여 할 수량")
             ),
             responseFields(
@@ -372,12 +394,11 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle2);
     params.add("author", bookAuthor2);
-    params.add("borrowMemberId", memberEntity.getId().toString());
     params.add("quantity", String.valueOf(borrowQuantity));
 
-    mockMvc.perform(post("/v1/borrowbook").params(params))
+    mockMvc.perform(post("/v1/borrowbook").params(params).header("Authorization", userToken))
         .andDo(print())
-        .andExpect(status().isOk())
+        .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-1))
         .andExpect(jsonPath("$.msg").exists());
@@ -390,12 +411,11 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle2 + epochTime);
     params.add("author", bookAuthor2);
-    params.add("borrowMemberId", memberEntity.getId().toString());
     params.add("quantity", String.valueOf(borrowQuantity));
 
-    mockMvc.perform(post("/v1/borrowbook").params(params))
+    mockMvc.perform(post("/v1/borrowbook").params(params).header("Authorization", userToken))
         .andDo(print())
-        .andExpect(status().isOk())
+        .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-2))
         .andExpect(jsonPath("$.msg").exists());
