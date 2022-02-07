@@ -105,7 +105,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
         .ipAddress("192.11.222.333")
         .allowComment(0)
         .isNotice(0)
-        .isTemp(1)
+        .isTemp(0)
         .isSecret(1)
         .likeCount(0)
         .dislikeCount(0)
@@ -115,11 +115,11 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
         .updateTime(new Date())
         .password("asd")
         .build();
-    memberEntity.addPosting(postingEntity);
+    memberEntity.getPosting().add(postingEntity);
 
     postingRepository.save(postingEntity);
     for (Integer i = 0; i < 15; i++) {
-      PostingEntity postingEntity2 = postingRepository.save(PostingEntity.builder()
+      PostingEntity posting = postingRepository.save(PostingEntity.builder()
           .title("test 게시판 제목" + i.toString())
           .content("test 게시판 제목 내용" + i.toString())
           .memberId(memberEntity)
@@ -127,7 +127,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
           .ipAddress("192.11.223")
           .allowComment(0)
           .isNotice(0)
-          .isSecret(1)
+          .isSecret(0)
           .isTemp(0)
           .likeCount(0)
           .dislikeCount(1)
@@ -137,10 +137,10 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
           .updateTime(new Date())
           .password("asd2")
           .build());
-      memberEntity.addPosting(postingEntity2);
+      memberEntity.getPosting().add(posting);
     }
     for (Integer i = 0; i < 15; i++) {
-      PostingEntity postingEntity2 = postingRepository.save(PostingEntity.builder()
+      PostingEntity tempPosting = postingRepository.save(PostingEntity.builder()
           .title("test 임시글 제목" + i.toString())
           .content("test 임시글 내용" + i.toString())
           .memberId(memberEntity)
@@ -148,7 +148,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
           .ipAddress("192.11.223")
           .allowComment(0)
           .isNotice(0)
-          .isSecret(1)
+          .isSecret(0)
           .isTemp(1)
           .likeCount(0)
           .dislikeCount(1)
@@ -158,7 +158,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
           .updateTime(new Date())
           .password("asd2")
           .build());
-      memberEntity.addPosting(postingEntity2);
+      memberEntity.getPosting().add(tempPosting);
     }
   }
 
@@ -166,36 +166,55 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
   @Test
   @DisplayName("자신이 작성한 게시글 조회하기")
   public void findAllPostingById() throws Exception {
+    String isExistTitle = "$.list[?(@.title == '%s')]";
+    String normalTitle = "test 게시판 제목";
     mockMvc.perform(get("/v1/member/post")
             .header("Authorization", userToken)
             .param("page", "0")
             .param("size", "5"))
         .andDo(print())
+        .andExpect(jsonPath(isExistTitle, normalTitle).exists())
+        .andExpect(jsonPath(isExistTitle, normalTitle + "0").exists())
+        .andExpect(jsonPath(isExistTitle, normalTitle + "1").exists())
+        .andExpect(jsonPath(isExistTitle, normalTitle + "2").exists())
+        .andExpect(jsonPath(isExistTitle, normalTitle + "3").exists())
+        .andExpect(jsonPath(isExistTitle, normalTitle + "4").doesNotExist())
         .andExpect(status().isOk());
 
     mockMvc.perform(get("/v1/member/post")
             .header("Authorization", userToken)
-            .param("page", "2")
+            .param("page", "3")
             .param("size", "5"))
         .andDo(print())
+        .andExpect(jsonPath(isExistTitle, normalTitle + "14").exists())
+        .andExpect(jsonPath(isExistTitle, normalTitle + "15").doesNotExist())
         .andExpect(status().isOk());
   }
 
   @Test
   @DisplayName("자신이 임시저장한 게시글 조회하기")
   public void findAllTempPostingById() throws Exception {
+    String isExistTitle = "$.list[?(@.title == '%s')]";
+    String tempTitle = "test 임시글 제목";
     mockMvc.perform(get("/v1/member/temp_post")
             .header("Authorization", userToken)
             .param("page", "0")
             .param("size", "5"))
         .andDo(print())
+        .andExpect(jsonPath(isExistTitle, tempTitle + "0").exists())
+        .andExpect(jsonPath(isExistTitle, tempTitle + "1").exists())
+        .andExpect(jsonPath(isExistTitle, tempTitle + "2").exists())
+        .andExpect(jsonPath(isExistTitle, tempTitle + "3").exists())
+        .andExpect(jsonPath(isExistTitle, tempTitle + "4").exists())
+        .andExpect(jsonPath(isExistTitle, tempTitle + "5").doesNotExist())
         .andExpect(status().isOk());
 
     mockMvc.perform(get("/v1/member/temp_post")
             .header("Authorization", userToken)
-            .param("page", "2")
+            .param("page", "3")
             .param("size", "5"))
         .andDo(print())
+        .andExpect(jsonPath("$.list").isEmpty())
         .andExpect(status().isOk());
   }
 

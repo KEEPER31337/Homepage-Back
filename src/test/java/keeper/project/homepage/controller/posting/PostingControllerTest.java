@@ -1,6 +1,7 @@
 package keeper.project.homepage.controller.posting;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -11,6 +12,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.requestP
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -32,9 +35,11 @@ import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
@@ -53,6 +58,8 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   final private String studentId = "201724579";
   final private String ipAddress1 = "127.0.0.1";
   final private String ipAddress2 = "127.0.0.2";
+
+  private String userToken;
 
   private MemberEntity memberEntity;
   private CategoryEntity categoryEntity;
@@ -110,6 +117,25 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .build();
     memberRepository.save(memberEntity);
 
+    String content = "{\n"
+        + "    \"loginId\": \"" + loginId + "\",\n"
+        + "    \"password\": \"" + password + "\"\n"
+        + "}";
+    MvcResult result = mockMvc.perform(post("/v1/signin")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(content))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").exists())
+        .andExpect(jsonPath("$.data").exists())
+        .andReturn();
+
+    String resultString = result.getResponse().getContentAsString();
+    JacksonJsonParser jsonParser = new JacksonJsonParser();
+    userToken = jsonParser.parseMap(resultString).get("data").toString();
+
     categoryEntity = CategoryEntity.builder()
         .name("테스트 게시판").build();
     categoryRepository.save(categoryEntity);
@@ -159,7 +185,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .updateTime(new Date())
         .password("asd")
         .build();
-    memberEntity.addPosting(postingEntity);
+    memberEntity.getPosting().add(postingEntity);
 
     postingRepository.save(postingEntity);
     PostingEntity postingEntity2 = postingRepository.save(PostingEntity.builder()
@@ -171,7 +197,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .ipAddress("192.11.223")
         .allowComment(0)
         .isNotice(0)
-        .isSecret(1)
+        .isSecret(0)
         .isTemp(0)
         .likeCount(0)
         .dislikeCount(1)
@@ -181,16 +207,18 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .updateTime(new Date())
         .password("asd2")
         .build());
-    memberEntity.addPosting(postingEntity2);
-    PostingEntity postingEntity3 = postingRepository.save(PostingEntity.builder()
-        .title("test 게시판 제목3")
-        .content("test 게시판 제목 내용3")
+    memberEntity.getPosting().add(postingEntity2);
+
+    PostingEntity tempPosting = postingRepository.save(PostingEntity.builder()
+        .title("임시 게시글 제목")
+        .content("임시 게시글 내용")
         .memberId(memberEntity)
         .categoryId(categoryEntity)
+        .thumbnailId(thumbnailEntity2)
         .ipAddress("192.11.223")
         .allowComment(0)
         .isNotice(0)
-        .isSecret(1)
+        .isSecret(0)
         .isTemp(1)
         .likeCount(0)
         .dislikeCount(1)
@@ -200,7 +228,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .updateTime(new Date())
         .password("asd2")
         .build());
-    memberEntity.addPosting(postingEntity3);
+    memberEntity.getPosting().add(tempPosting);
 
     fileRepository.save(FileEntity.builder()
         .postingId(postingEntity)
@@ -223,6 +251,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
+        .andExpect(jsonPath("$.[?(@.title == \"%s\")]", "test 게시판 제목").exists())
+        .andExpect(jsonPath("$.[?(@.title == \"%s\")]", "test 게시판 제목2").exists())
+        .andExpect(jsonPath("$.[?(@.title == \"%s\")]", "임시 게시글 제목").doesNotExist())
         .andDo(document("post-getLatest",
             requestParameters(
                 parameterWithName("page").optional().description("페이지 번호(default = 0)"),
@@ -260,6 +291,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
+        .andExpect(jsonPath("$.[?(@.title == \"%s\")]", "test 게시판 제목").exists())
+        .andExpect(jsonPath("$.[?(@.title == \"%s\")]", "test 게시판 제목2").exists())
+        .andExpect(jsonPath("$.[?(@.title == \"%s\")]", "임시 게시글 제목").doesNotExist())
         .andDo(document("post-getList",
             requestParameters(
                 parameterWithName("category").description("게시판 종류 ID"),
@@ -290,7 +324,8 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   @Test
   public void getPosting() throws Exception {
     ResultActions result = mockMvc.perform(
-        RestDocumentationRequestBuilders.get("/v1/post/{pid}", postingEntity.getId()));
+        RestDocumentationRequestBuilders.get("/v1/post/{pid}", postingEntity.getId())
+            .header("Authorization", userToken));
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())

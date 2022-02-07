@@ -82,7 +82,7 @@ public class PostingService {
     PostingEntity postingEntity = dto.toEntity(categoryEntity.get(), memberEntity.get(),
         thumbnailEntity.get());
 
-    memberEntity.get().addPosting(postingEntity);
+    memberEntity.get().getPosting().add(postingEntity);
     return postingRepository.save(postingEntity);
   }
 
@@ -117,7 +117,7 @@ public class PostingService {
     if (postingEntity.isPresent()) {
       MemberEntity memberEntity = memberRepository.findById(
           postingEntity.get().getMemberId().getId()).get();
-      memberEntity.removePosting(postingEntity.get());
+      memberEntity.getPosting().remove(postingEntity.get());
       postingRepository.delete(postingEntity.get());
       return 1;
     } else {

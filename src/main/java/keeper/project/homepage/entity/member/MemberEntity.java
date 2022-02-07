@@ -107,18 +107,6 @@ public class MemberEntity implements UserDetails, Serializable {
   @Builder.Default
   private List<PostingEntity> posting = new ArrayList<>();
 
-  public boolean addPosting(PostingEntity postingEntity) {
-    if (this.posting.contains(postingEntity)) {
-      return false;
-    }
-    this.posting.add(postingEntity);
-    return true;
-  }
-
-  public boolean removePosting(PostingEntity postingEntity) {
-    return this.posting.remove(postingEntity);
-  }
-
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
     List<SimpleGrantedAuthority> roles = new ArrayList<>();
