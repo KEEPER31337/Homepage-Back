@@ -33,8 +33,13 @@ public class PostingService {
   private final MemberHasPostingLikeRepository memberHasPostingLikeRepository;
   private final MemberHasPostingDislikeRepository memberHasPostingDislikeRepository;
 
+  public static final Integer isNotTempPosting = 0;
+  public static final Integer isTempPosting = 1;
+
   public List<PostingEntity> findAll(Pageable pageable) {
-    List<PostingEntity> postingEntities = postingRepository.findAll(pageable).getContent();
+//    List<PostingEntity> postingEntities = postingRepository.findAll(pageable).getContent();
+    List<PostingEntity> postingEntities = postingRepository.findAllByIsTemp(isNotTempPosting,
+        pageable).getContent();
 
     for (PostingEntity postingEntity : postingEntities) {
       if (postingEntity.getCategoryId().getName().equals("비밀게시판")) {
@@ -49,8 +54,8 @@ public class PostingService {
   public List<PostingEntity> findAllByCategoryId(Long categoryId, Pageable pageable) {
 
     Optional<CategoryEntity> categoryEntity = categoryRepository.findById(Long.valueOf(categoryId));
-    List<PostingEntity> postingEntities = postingRepository.findAllByCategoryId(
-        categoryEntity.get(), pageable);
+    List<PostingEntity> postingEntities = postingRepository.findAllByCategoryIdAndIsTemp(
+        categoryEntity.get(), isNotTempPosting, pageable);
 
     if (categoryEntity.get().getName().equals("비밀게시판")) {
       for (PostingEntity postingEntity : postingEntities) {
@@ -69,14 +74,15 @@ public class PostingService {
 
     Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
         Long.valueOf(dto.getCategoryId()));
+    Optional<ThumbnailEntity> thumbnailEntity = thumbnailRepository.findById(dto.getThumbnailId());
     Optional<MemberEntity> memberEntity = memberRepository.findById(
         Long.valueOf(dto.getMemberId()));
-    Optional<ThumbnailEntity> thumbnailEntity = thumbnailRepository.findById(dto.getThumbnailId());
     dto.setRegisterTime(new Date());
     dto.setUpdateTime(new Date());
     PostingEntity postingEntity = dto.toEntity(categoryEntity.get(), memberEntity.get(),
         thumbnailEntity.get());
 
+    memberEntity.get().getPosting().add(postingEntity);
     return postingRepository.save(postingEntity);
   }
 
@@ -109,6 +115,9 @@ public class PostingService {
     Optional<PostingEntity> postingEntity = postingRepository.findById(postingId);
 
     if (postingEntity.isPresent()) {
+      MemberEntity memberEntity = memberRepository.findById(
+          postingEntity.get().getMemberId().getId()).get();
+      memberEntity.getPosting().remove(postingEntity.get());
       postingRepository.delete(postingEntity.get());
       return 1;
     } else {
@@ -124,18 +133,18 @@ public class PostingService {
     List<PostingEntity> postingEntities = new ArrayList<>();
     switch (type) {
       case "T": {
-        postingEntities = postingRepository.findAllByCategoryIdAndTitleContaining(categoryEntity,
-            keyword, pageable);
+        postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingAndIsTemp(
+            categoryEntity, keyword, isNotTempPosting, pageable);
         break;
       }
       case "C": {
-        postingEntities = postingRepository.findAllByCategoryIdAndContentContaining(categoryEntity,
-            keyword, pageable);
+        postingEntities = postingRepository.findAllByCategoryIdAndContentContainingAndIsTemp(
+            categoryEntity, keyword, isNotTempPosting, pageable);
         break;
       }
       case "TC": {
-        postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingOrCategoryIdAndContentContaining(
-            categoryEntity, keyword, categoryEntity, keyword, pageable);
+        postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingOrCategoryIdAndContentContainingAndIsTemp(
+            categoryEntity, keyword, categoryEntity, keyword, isNotTempPosting, pageable);
         break;
       }
       case "W": {
@@ -143,8 +152,8 @@ public class PostingService {
         if (!memberEntity.isPresent()) {
           break;
         }
-        postingEntities = postingRepository.findAllByCategoryIdAndMemberId(categoryEntity,
-            memberEntity.get(), pageable);
+        postingEntities = postingRepository.findAllByCategoryIdAndMemberIdAndIsTemp(categoryEntity,
+            memberEntity.get(), isNotTempPosting, pageable);
         break;
       }
     }
