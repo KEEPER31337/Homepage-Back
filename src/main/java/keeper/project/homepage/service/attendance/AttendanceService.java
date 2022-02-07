@@ -111,6 +111,18 @@ public class AttendanceService {
     return getMyAttendanceWithDate(attendanceDto);
   }
 
+  public List<AttendanceEntity> getAllAttendance(AttendanceDto attendanceDto) {
+
+    LocalDate date = attendanceDto.getDate();
+    if (date == null) {
+      throw new CustomAttendanceException("date를 입력하지 않았습니다.");
+    }
+    LocalDate startDate = date.atStartOfDay().toLocalDate();
+    LocalDate endDate = date.plusDays(1).atStartOfDay().toLocalDate();
+
+    return attendanceRepository.findAllByTimeBetween(
+        java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
+  }
 
   private List<AttendanceEntity> getAttendanceEntitiesInPeriodWithMemberId(
       AttendanceDto attendanceDto) {

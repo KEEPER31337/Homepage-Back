@@ -63,4 +63,11 @@ public class AttendanceController {
     return responseService.getSuccessSingleResult(
         attendanceService.getMyAttendance(attendanceDto));
   }
+
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/all")
+  public ListResult<AttendanceEntity> getAllAttend(@RequestBody AttendanceDto attendanceDto) {
+    return responseService.getSuccessListResult(
+        attendanceService.getAllAttendance(attendanceDto));
+  }
 }
