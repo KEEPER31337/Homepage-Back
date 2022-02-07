@@ -96,4 +96,12 @@ public class ExceptionAdvice {
     return responseService.getFailResult(Integer.parseInt(getMessage("fileNotFound.code")),
         e.getMessage() == null ? getMessage("fileNotFound.msg") : e.getMessage());
   }
+
+  @ExceptionHandler(CustomTransferPointLackException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  public CommonResult transferPointLackException(HttpServletRequest request,
+      CustomTransferPointLackException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("pointLackException.code")),
+        e.getMessage() == null ? getMessage("pointLackException.msg") : e.getMessage());
+  }
 }
