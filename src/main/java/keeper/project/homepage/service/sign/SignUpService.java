@@ -135,7 +135,7 @@ public class SignUpService {
     if (checkSpecialCharacter(emailAddress)) {
       return false;
     }
-    String pattern = "^[a-zA-Z\\d_]{3,12}$"; // 4 ~ 12자 영어, 숫자, '_' 가능
+    String pattern = "^[a-zA-Z\\d_]{4,12}$"; // 4 ~ 12자 영어, 숫자, '_' 가능
     return Pattern.matches(pattern, emailAddress);
   }
 
@@ -144,7 +144,7 @@ public class SignUpService {
     if (checkSpecialCharacter(password)) {
       return false;
     }
-    String pattern = "^(?=.*[a-zA-Z])(?=.*\\d).{7,20}$"; // 8자 이상 영어, 숫자 조합 필수
+    String pattern = "^(?=.*[a-zA-Z])(?=.*\\d).{8,20}$"; // 8자 이상 영어, 숫자 조합 필수
     return Pattern.matches(pattern, password);
   }
 
@@ -153,7 +153,7 @@ public class SignUpService {
     if (checkSpecialCharacter(nickname)) {
       return false;
     }
-    String pattern = "^[a-zA-Z가-힣0-9].{3,16}$"; // 4~16자 한글, 영어, 숫자 가능
+    String pattern = "^[a-zA-Z가-힣0-9].{0,16}$"; // 1~16자 한글, 영어, 숫자 가능
     return Pattern.matches(pattern, nickname);
   }
 
@@ -162,7 +162,7 @@ public class SignUpService {
     if (checkSpecialCharacter(realname)) {
       return false;
     }
-    String pattern = "^[a-zA-Z가-힣].{3,20}$"; // 4~20자 한글, 영어 가능
+    String pattern = "^[a-zA-Z가-힣].{0,20}$"; // 1~20자 한글, 영어 가능
     return Pattern.matches(pattern, realname);
   }
 
