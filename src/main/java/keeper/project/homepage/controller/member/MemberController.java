@@ -68,9 +68,7 @@ public class MemberController {
   public SingleResult<MemberDto> updateNames(@RequestBody MemberDto memberDto) {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
     Long id = authService.getMemberIdByJWT();
-
     MemberDto updated = memberService.updateNames(memberDto, id);
-
     return responseService.getSuccessSingleResult(updated);
   }
 
@@ -79,20 +77,7 @@ public class MemberController {
   public SingleResult<MemberDto> updateThumbnail(MultipartFile image, String ipAddress) {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
     Long id = authService.getMemberIdByJWT();
-
-    MemberEntity memberEntity = memberService.findById(id);
-    if (memberEntity.getThumbnail() != null) {
-      ThumbnailEntity prevThumbnail = thumbnailService.findById(
-          memberEntity.getThumbnail().getId());
-      fileService.deleteById(prevThumbnail.getFile().getId());
-      thumbnailService.deleteById(prevThumbnail.getId());
-    }
-
-    FileEntity fileEntity = fileService.saveOriginalImage(image, ipAddress);
-    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
-        image, fileEntity, 100, 100);
-
-    MemberDto updated = memberService.updateThumbnails(id, thumbnailEntity);
+    MemberDto updated = memberService.updateThumbnails(id, image, ipAddress);
     return responseService.getSuccessSingleResult(updated);
   }
 
@@ -108,7 +93,6 @@ public class MemberController {
   public SingleResult<MemberDto> updateEmailAddress(@RequestBody MemberDto memberDto) {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
     Long id = authService.getMemberIdByJWT();
-
     // 실제 존재하는 email인지 인증 코드를 통해 확인
     MemberDto updated = memberService.updateEmailAddress(memberDto, id);
     return responseService.getSuccessSingleResult(updated);
@@ -119,9 +103,7 @@ public class MemberController {
   public SingleResult<MemberDto> updateStudentId(@RequestBody MemberDto memberDto) {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
     Long id = authService.getMemberIdByJWT();
-
     MemberDto update = memberService.updateStudentId(memberDto, id);
-
     return responseService.getSuccessSingleResult(update);
   }
 

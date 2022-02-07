@@ -84,7 +84,7 @@ public class PostingController {
     ThumbnailEntity thumbnailEntity = null;
     FileEntity fileEntity = fileService.saveOriginalImage(thumbnail, dto.getIpAddress());
     thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
-        thumbnail, fileEntity, 100, 100);
+        thumbnail, fileEntity, "large");
 
     if (thumbnailEntity == null) {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -144,7 +144,7 @@ public class PostingController {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
     newThumbnail = thumbnailService.saveThumbnail(new ImageCenterCrop(),
-        thumbnail, fileEntity, 100, 100);
+        thumbnail, fileEntity, "large");
     if (newThumbnail == null) {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }

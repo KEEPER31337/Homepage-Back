@@ -223,7 +223,7 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
     try {
 //    FileEntity fileEntity = fileService.saveOriginalImage(originalImage, ipAddress);
       ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
-          originalImage, fileEntity, 100, 100);
+          originalImage, fileEntity, "large");
 
 //    Assertions.assertTrue(
 //        new File(System.getProperty("user.dir") + File.separator + fileEntity.getFilePath()).exists(),
@@ -246,7 +246,7 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
       Assertions.assertTrue(new File(defaultOriginalFilePath).exists(), "test할 이미지 파일이 없습니다.");
 //    FileEntity fileEntity = fileService.saveOriginalImage(defaultOriginalImage, ipAddress);
       ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(), null,
-          fileEntity, 100, 100);
+          fileEntity, "large");
 
 //    Assertions.assertTrue(
 //        new File(System.getProperty("user.dir") + File.separator + fileEntity.getFilePath()).exists(),

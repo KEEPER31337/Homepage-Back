@@ -4,11 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import keeper.project.homepage.common.ImageCenterCrop;
 import keeper.project.homepage.dto.EmailAuthDto;
 import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.dto.member.MemberJobDto;
 import keeper.project.homepage.dto.member.MemberRankDto;
 import keeper.project.homepage.dto.member.MemberTypeDto;
+import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.EmailAuthRedisEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -25,10 +27,13 @@ import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberRankRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.member.MemberTypeRepository;
+import keeper.project.homepage.service.FileService;
+import keeper.project.homepage.service.ThumbnailService;
 import keeper.project.homepage.service.mail.MailService;
 import keeper.project.homepage.service.sign.DuplicateCheckService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -38,12 +43,15 @@ public class MemberService {
 
   private final MemberRepository memberRepository;
   private final EmailAuthRedisRepository emailAuthRedisRepository;
-  private final MailService mailService;
-  private final DuplicateCheckService duplicateCheckService;
   private final MemberRankRepository memberRankRepository;
   private final MemberTypeRepository memberTypeRepository;
   private final MemberJobRepository memberJobRepository;
   private final MemberHasMemberJobRepository memberHasMemberJobRepository;
+
+  private final ThumbnailService thumbnailService;
+  private final FileService fileService;
+  private final MailService mailService;
+  private final DuplicateCheckService duplicateCheckService;
 
   public MemberEntity findById(Long id) throws RuntimeException {
     return memberRepository.findById(id).orElseThrow(CustomMemberNotFoundException::new);
@@ -101,14 +109,14 @@ public class MemberService {
     return result;
   }
 
-  public MemberEntity removeMemberJob(MemberHasMemberJobEntity mj, MemberEntity member) {
+  private MemberEntity removeMemberJob(MemberHasMemberJobEntity mj, MemberEntity member) {
     memberHasMemberJobRepository.delete(mj);
     mj.getMemberJobEntity().removeMember(mj);
     member.removeJob(mj);
     return member;
   }
 
-  public MemberEntity addMemberJob(String jobName, MemberEntity member) {
+  private MemberEntity addMemberJob(String jobName, MemberEntity member) {
     MemberJobEntity newJob = memberJobRepository.findByName(jobName).orElse(null);
     if (newJob == null) { // 나중에 custom exception 으로 변경
       throw new RuntimeException(jobName + "인 member job이 존재하지 않습니다.");
@@ -176,6 +184,8 @@ public class MemberService {
     return memberDto;
   }
 
+  //TODO
+  // Signup service와 중복되는 메소드, 리팩토링 필요
   public EmailAuthDto generateEmailAuth(EmailAuthDto emailAuthDto) {
     String generatedAuthCode = generateRandomAuthCode(AUTH_CODE_LENGTH);
     emailAuthDto.setAuthCode(generatedAuthCode);
@@ -184,6 +194,8 @@ public class MemberService {
     return emailAuthDto;
   }
 
+  //TODO
+  // Signup service와 중복되는 메소드, 리팩토링 필요
   public void sendEmailAuthCode(EmailAuthDto emailAuthDto) {
     List<String> toUserList = new ArrayList<>(List.of(emailAuthDto.getEmailAddress()));
     String subject = "KEEPER 인증코드 발송 메일입니다.";
@@ -217,16 +229,29 @@ public class MemberService {
     return memberDto;
   }
 
-  public MemberDto updateThumbnails(Long memberId, ThumbnailEntity thumbnailEntity) {
-    MemberEntity updateEntity = memberRepository.findById(memberId)
+  public MemberDto updateThumbnails(Long memberId, MultipartFile image, String ipAddress) {
+    MemberEntity memberEntity = memberRepository.findById(memberId)
         .orElseThrow(CustomMemberNotFoundException::new);
 
-    updateEntity.changeThumbnail(thumbnailEntity);
+    if (memberEntity.getThumbnail() != null) {
+      ThumbnailEntity prevThumbnail = thumbnailService.findById(
+          memberEntity.getThumbnail().getId());
+      fileService.deleteById(prevThumbnail.getFile().getId());
+      thumbnailService.deleteById(prevThumbnail.getId());
+    }
+
+    FileEntity fileEntity = fileService.saveOriginalImage(image, ipAddress);
+    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
+        image, fileEntity, "small");
+
+    memberEntity.changeThumbnail(thumbnailEntity);
     MemberDto result = new MemberDto();
-    result.initWithEntity(memberRepository.save(updateEntity));
+    result.initWithEntity(memberRepository.save(memberEntity));
     return result;
   }
 
+  //TODO
+  // Signup service와 중복되는 메소드, 리팩토링 필요
   private String generateRandomAuthCode(int targetStringLength) {
     int leftLimit = 48; // numeral '0'
     int rightLimit = 122; // letter 'z'
