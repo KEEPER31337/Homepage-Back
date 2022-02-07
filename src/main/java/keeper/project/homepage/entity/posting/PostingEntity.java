@@ -85,10 +85,12 @@ public class PostingEntity {
   private ThumbnailEntity thumbnailId;
   @OneToMany(cascade = CascadeType.ALL, targetEntity = MemberHasPostingLikeEntity.class, mappedBy = "postingId", orphanRemoval = true, fetch = FetchType.LAZY)
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+  @Builder.Default
   private List<MemberHasPostingLikeEntity> memberHasPostingLikeEntities = new ArrayList<>();
 
   @OneToMany(cascade = CascadeType.ALL, targetEntity = MemberHasPostingDislikeEntity.class, mappedBy = "postingId", orphanRemoval = true, fetch = FetchType.LAZY)
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+  @Builder.Default
   private List<MemberHasPostingDislikeEntity> memberHasPostingDislikeEntities = new ArrayList<>();
 
   public void updateInfo(String title, String content, Date updateTime, String ipAddress,

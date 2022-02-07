@@ -99,6 +99,34 @@ public class MemberEntity implements UserDetails, Serializable {
     this.password = newPassword;
   }
 
+  public void changeRealName(String newRealName) {
+    this.realName = newRealName;
+  }
+
+  public void changeNickName(String newNickName) {
+    this.nickName = newNickName;
+  }
+
+  public void changeStudentId(String newStudentId) {
+    this.studentId = newStudentId;
+  }
+
+  public void changeEmailAddress(String newEmailAddress) {
+    this.emailAddress = newEmailAddress;
+  }
+
+  public void changeThumbnail(ThumbnailEntity newThumbnail) {
+    this.thumbnail = newThumbnail;
+  }
+
+  public void changeMemberRank(MemberRankEntity memberRankEntity) {
+    this.memberRank = memberRankEntity;
+  }
+
+  public void changeMemberType(MemberTypeEntity memberTypeEntity) {
+    this.memberType = memberTypeEntity;
+  }
+
   @OneToMany(mappedBy = "memberEntity")
   @Builder.Default
   private List<MemberHasMemberJobEntity> memberJobs = new ArrayList<>();

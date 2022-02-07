@@ -18,7 +18,7 @@ import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.ThumbnailService;
-import keeper.project.homepage.service.image.ImageCenterCrop;
+import keeper.project.homepage.common.ImageCenterCrop;
 import keeper.project.homepage.service.posting.PostingService;
 import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -85,13 +85,9 @@ public class PostingController {
       PostingDto dto) {
 
     ThumbnailEntity thumbnailEntity = null;
-    try {
-      FileEntity fileEntity = fileService.saveOriginalImage(thumbnail, dto.getIpAddress());
-      thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
-          thumbnail, fileEntity, 100, 100);
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
+    FileEntity fileEntity = fileService.saveOriginalImage(thumbnail, dto.getIpAddress());
+    thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
+        thumbnail, fileEntity, "large");
 
     if (thumbnailEntity == null) {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -123,10 +119,10 @@ public class PostingController {
   }
 
   @GetMapping(value = "/attach/{pid}")
-  public ResponseEntity<List<FileEntity>> getAttachList(@PathVariable("pid") Long postindId) {
+  public ResponseEntity<List<FileEntity>> getAttachList(@PathVariable("pid") Long postingId) {
 
     return ResponseEntity.status(HttpStatus.OK)
-        .body(fileService.getFilesByPostingId(postingService.getPostingById(postindId)));
+        .body(fileService.getFilesByPostingId(postingService.getPostingById(postingId)));
   }
 
   @GetMapping(value = "/download/{fileId}")
@@ -151,20 +147,16 @@ public class PostingController {
       @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
       PostingDto dto, @PathVariable("pid") Long postingId) {
 
-    ThumbnailEntity savedThumbnail = thumbnailService.findById(dto.getThumbnailId());
-    fileService.deleteById(savedThumbnail.getFile().getId());
-    thumbnailService.deleteById(savedThumbnail.getId());
+    ThumbnailEntity prevThumbnail = thumbnailService.findById(dto.getThumbnailId());
 
-    ThumbnailEntity thumbnailEntity = null;
-    try {
-      FileEntity fileEntity = fileService.saveOriginalImage(thumbnail, dto.getIpAddress());
-      thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
-          thumbnail, fileEntity, 100, 100);
-    } catch (Exception e) {
-      e.printStackTrace();
+    ThumbnailEntity newThumbnail = null;
+    FileEntity fileEntity = fileService.saveOriginalImage(thumbnail, dto.getIpAddress());
+    if (fileEntity == null) {
+      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    if (thumbnailEntity == null) {
+    newThumbnail = thumbnailService.saveThumbnail(new ImageCenterCrop(),
+        thumbnail, fileEntity, "large");
+    if (newThumbnail == null) {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
@@ -179,12 +171,15 @@ public class PostingController {
     dto.setDislikeCount(postingEntity.getDislikeCount());
     dto.setVisitCount(postingEntity.getVisitCount());
     postingService.updateById(
-        dto.toEntity(categoryEntity.get(), memberEntity.get(), thumbnailEntity),
+        dto.toEntity(categoryEntity.get(), memberEntity.get(), newThumbnail),
         postingId);
     List<FileEntity> fileEntities = fileService.getFilesByPostingId(
         postingService.getPostingById(postingId));
     fileService.deleteFiles(fileEntities);
     fileService.saveFiles(files, dto.getIpAddress(), postingEntity);
+
+    thumbnailService.deleteById(prevThumbnail.getId());
+    fileService.deleteById(prevThumbnail.getFile().getId());
 
     return postingEntity.getId() != null ? new ResponseEntity<>("success", HttpStatus.OK) :
         new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -195,13 +190,14 @@ public class PostingController {
 
     ThumbnailEntity deleteThumbnail = thumbnailService.findById(
         postingService.getPostingById(postingId).getThumbnailId().getId());
-    fileService.deleteById(deleteThumbnail.getFile().getId());
-    thumbnailService.deleteById(deleteThumbnail.getId());
 
     List<FileEntity> fileEntities = fileService.getFilesByPostingId(
         postingService.getPostingById(postingId));
     fileService.deleteFiles(fileEntities);
     int result = postingService.deleteById(postingId);
+
+    fileService.deleteById(deleteThumbnail.getFile().getId());
+    thumbnailService.deleteById(deleteThumbnail.getId());
 
     return result == 1 ? new ResponseEntity<>("success",
         HttpStatus.OK) : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
