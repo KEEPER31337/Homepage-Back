@@ -10,6 +10,7 @@ import keeper.project.homepage.dto.member.MemberTypeDto;
 import keeper.project.homepage.dto.posting.PostingDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.ListResult;
+import keeper.project.homepage.dto.result.OtherMemberInfoResult;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.repository.member.MemberRepository;
@@ -224,5 +225,13 @@ public class MemberController {
     Long id = authService.getMemberIdByJWT();
     List<MemberDto> followeeList = memberService.showFollowee(id);
     return responseService.getSuccessListResult(followeeList);
+  }
+
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/member/other/info/{id}")
+  public SingleResult<OtherMemberInfoResult> getOtherMemberInfo(
+      @PathVariable("id") Long id
+  ) {
+    return responseService.getSuccessSingleResult(memberService.getOtherMemberInfo(id));
   }
 }

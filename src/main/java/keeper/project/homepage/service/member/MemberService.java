@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.dto.member.MemberDto;
+import keeper.project.homepage.dto.result.OtherMemberInfoResult;
 import keeper.project.homepage.entity.member.FriendEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.CustomMemberNotFoundException;
@@ -353,5 +354,12 @@ public class MemberService {
         postings.size());
 
     return page;
+  }
+
+  public OtherMemberInfoResult getOtherMemberInfo(Long otherMemberId) {
+    MemberEntity memberEntity = memberRepository.findById(otherMemberId)
+        .orElseThrow(CustomMemberNotFoundException::new);
+
+    return new OtherMemberInfoResult(memberEntity);
   }
 }
