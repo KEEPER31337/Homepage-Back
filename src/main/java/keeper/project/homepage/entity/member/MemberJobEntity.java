@@ -1,7 +1,6 @@
 package keeper.project.homepage.entity.member;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,4 +30,5 @@ public class MemberJobEntity implements Serializable {
   @JsonBackReference(value = "member-jobs")
   @Builder.Default
   private List<MemberHasMemberJobEntity> members = new ArrayList<>();
+
 }

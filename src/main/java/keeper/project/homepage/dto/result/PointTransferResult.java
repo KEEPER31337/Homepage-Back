@@ -1,6 +1,5 @@
 package keeper.project.homepage.dto.result;
 
-import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.dto.request.PointTransferRequest;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,13 +16,13 @@ public class PointTransferResult {
   private int senderRemainingPoint;
   private int receiverRemainingPoint;
 
-  public PointTransferResult(PointTransferRequest pointTransferRequest, MemberDto sender,
-      MemberDto receiver) {
-    this.senderId = pointTransferRequest.getSenderId();
+  public PointTransferResult(Long senderId, PointTransferRequest pointTransferRequest,
+      int senderRemainingPoint, int receiverRemainingPoint) {
+    this.senderId = senderId;
     this.receiverId = pointTransferRequest.getReceiverId();
     this.transmissionPoint = pointTransferRequest.getTransmissionPoint();
-    this.senderRemainingPoint = sender.getPoint();
-    this.receiverRemainingPoint = receiver.getPoint();
+    this.senderRemainingPoint = senderRemainingPoint;
+    this.receiverRemainingPoint = receiverRemainingPoint;
   }
 
 }

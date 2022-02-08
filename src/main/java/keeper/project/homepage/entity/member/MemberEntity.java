@@ -18,6 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import keeper.project.homepage.entity.ThumbnailEntity;
+import keeper.project.homepage.entity.posting.PostingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -74,14 +75,12 @@ public class MemberEntity implements UserDetails, Serializable {
   @ManyToOne
   @JoinColumn(name = "member_type_id")
   @NotFound(action = NotFoundAction.IGNORE)
-
   // DEFAULT 1
   private MemberTypeEntity memberType;
 
   @ManyToOne
   @JoinColumn(name = "member_rank_id")
   @NotFound(action = NotFoundAction.IGNORE)
-
   // DEFAULT 1
   private MemberRankEntity memberRank;
 
@@ -93,17 +92,56 @@ public class MemberEntity implements UserDetails, Serializable {
 
   @OneToOne
   @JoinColumn(name = "thumbnail_id")
-
   // DEFAULT 1
   private ThumbnailEntity thumbnail;
+
+  @OneToMany(mappedBy = "follower")
+  @Builder.Default
+  private List<FriendEntity> follower = new ArrayList<>();
+
+  @OneToMany(mappedBy = "followee")
+  @Builder.Default
+  private List<FriendEntity> followee = new ArrayList<>();
 
   public void changePassword(String newPassword) {
     this.password = newPassword;
   }
 
+  public void changeRealName(String newRealName) {
+    this.realName = newRealName;
+  }
+
+  public void changeNickName(String newNickName) {
+    this.nickName = newNickName;
+  }
+
+  public void changeStudentId(String newStudentId) {
+    this.studentId = newStudentId;
+  }
+
+  public void changeEmailAddress(String newEmailAddress) {
+    this.emailAddress = newEmailAddress;
+  }
+
+  public void changeThumbnail(ThumbnailEntity newThumbnail) {
+    this.thumbnail = newThumbnail;
+  }
+
+  public void changeMemberRank(MemberRankEntity memberRankEntity) {
+    this.memberRank = memberRankEntity;
+  }
+
+  public void changeMemberType(MemberTypeEntity memberTypeEntity) {
+    this.memberType = memberTypeEntity;
+  }
+
   @OneToMany(mappedBy = "memberEntity")
   @Builder.Default
   private List<MemberHasMemberJobEntity> memberJobs = new ArrayList<>();
+
+  @OneToMany(targetEntity = PostingEntity.class, mappedBy = "memberId", fetch = FetchType.LAZY)
+  @Builder.Default
+  private List<PostingEntity> posting = new ArrayList<>();
 
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {

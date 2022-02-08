@@ -9,8 +9,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PointTransferRequest {
 
-  private Long senderId;
-
   private Long receiverId;
 
   private int transmissionPoint;
