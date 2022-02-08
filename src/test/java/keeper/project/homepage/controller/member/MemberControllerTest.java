@@ -200,13 +200,10 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
   @Test
   @DisplayName("포인트 선물하기 - 성공")
   public void transferPoint() throws Exception {
-    MemberEntity sender = memberRepository.findByLoginId("hyeonmomo").orElseThrow(
-        CustomAboutFailedException::new);
     MemberEntity receiver = memberRepository.findByLoginId("hyeonmoAdmin").orElseThrow(
         CustomAboutFailedException::new);
 
     String content = "{\n"
-        + "\"senderId\":\"" + sender.getId() + "\",\n"
         + "\"receiverId\":\"" + receiver.getId() + "\",\n"
         + "\"transmissionPoint\":\"" + 20 + "\""
         + "}";
@@ -217,19 +214,18 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
             .content(content)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andDo(print())
-        .andExpect(status().isOk());
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.senderRemainingPoint").value(point-20))
+        .andExpect(jsonPath("$.data.receiverRemainingPoint").value(adminPoint+20));
   }
 
   @Test
   @DisplayName("포인트 선물하기 - 실패(포인트 부족)")
   public void transferPointFailByPointLack() throws Exception {
-    MemberEntity sender = memberRepository.findByLoginId("hyeonmomo").orElseThrow(
-        CustomAboutFailedException::new);
     MemberEntity receiver = memberRepository.findByLoginId("hyeonmoAdmin").orElseThrow(
         CustomAboutFailedException::new);
 
     String content = "{\n"
-        + "\"senderId\":\"" + sender.getId() + "\",\n"
         + "\"receiverId\":\"" + receiver.getId() + "\",\n"
         + "\"transmissionPoint\":\"" + 101 + "\""
         + "}";
@@ -247,13 +243,7 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
   @Test
   @DisplayName("포인트 선물하기 - 실패(멤버 존재 X)")
   public void transferPointFailByNullMember() throws Exception {
-    MemberEntity sender = memberRepository.findByLoginId("hyeonmomo").orElseThrow(
-        CustomAboutFailedException::new);
-    MemberEntity receiver = memberRepository.findByLoginId("hyeonmoAdmin").orElseThrow(
-        CustomAboutFailedException::new);
-
     String content = "{\n"
-        + "\"senderId\":\"" + sender.getId() + "\",\n"
         + "\"receiverId\":\"" + 0 + "\",\n"
         + "\"transmissionPoint\":\"" + 20 + "\""
         + "}";
