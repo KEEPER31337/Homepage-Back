@@ -8,7 +8,9 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 import keeper.project.homepage.ApiControllerTestSetUp;
+import keeper.project.homepage.entity.posting.CategoryEntity;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
@@ -20,43 +22,65 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 public class CategoryControllerTest extends ApiControllerTestSetUp {
 
-//  @Test
-//  @DisplayName("부모 카테고리 ID로 카테고리 불러오기")
-//  public void getAllCategoryByParentId() throws Exception {
-//    ResultActions result = mockMvc.perform(
-//        RestDocumentationRequestBuilders.get("/v1/category/id/{parentId}", 0L));
-//
-//    result.andExpect(MockMvcResultMatchers.status().isOk())
-//        .andDo(print())
-//        .andDo(document("categories-getByParentId",
-//            pathParameters(
-//                parameterWithName("parentId").description("찾고자 하는 카테고리의 이름")
-//            ),
-//            relaxedResponseFields(
-//                fieldWithPath("[].id").description("카테고리 ID"),
-//                fieldWithPath("[].name").description("카테고리 이름"),
-//                fieldWithPath("[].children[]").description("하위 카테고리 리스트")
-//            )
-//        ));
-//  }
-//
-//  @Test
-//  @DisplayName("카테고리 이름으로 카테고리 불러오기")
-//  public void getAllCategoryByName() throws Exception {
-//    ResultActions result = mockMvc.perform(
-//        RestDocumentationRequestBuilders.get("/v1/category/name/{name}", "one"));
-//
-//    result.andExpect(MockMvcResultMatchers.status().isOk())
-//        .andDo(print())
-//        .andDo(document("categories-getByName",
-//            pathParameters(
-//                parameterWithName("name").description("찾고자 하는 카테고리의 이름")
-//            ),
-//            relaxedResponseFields(
-//                fieldWithPath("[].id").description("카테고리 ID"),
-//                fieldWithPath("[].name").description("카테고리 이름"),
-//                fieldWithPath("[].children[]").description("하위 카테고리 리스트")
-//            )
-//        ));
-//  }
+  final private String rootName = "root";
+  final private Long parentId = 0L;
+
+  final private String childName = "child";
+
+  @BeforeEach
+  public void setUp() throws Exception {
+    CategoryEntity rootEntity = CategoryEntity.builder()
+        .name(rootName)
+        .parentId(parentId)
+        .build();
+    categoryRepository.save(rootEntity);
+
+    CategoryEntity childEntity = CategoryEntity.builder()
+        .name(childName)
+        .parentId(rootEntity.getId())
+        .build();
+    categoryRepository.save(childEntity);
+  }
+
+  @Test
+  @DisplayName("부모 카테고리 ID로 카테고리 불러오기")
+  public void getAllCategoryByParentId() throws Exception {
+    CategoryEntity findEntity = categoryRepository.findByName(rootName);
+
+    ResultActions result = mockMvc.perform(
+        RestDocumentationRequestBuilders.get("/v1/category/id/{parentId}", 0L));
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(print())
+        .andDo(document("categories-getByParentId",
+            pathParameters(
+                parameterWithName("parentId").description("찾고자 하는 카테고리의 이름")
+            ),
+            relaxedResponseFields(
+                fieldWithPath("[].id").description("카테고리 ID"),
+                fieldWithPath("[].name").description("카테고리 이름"),
+                fieldWithPath("[].children[]").description("하위 카테고리 리스트")
+            )
+        ));
+  }
+
+  @Test
+  @DisplayName("카테고리 이름으로 카테고리 불러오기")
+  public void getAllCategoryByName() throws Exception {
+    ResultActions result = mockMvc.perform(
+        RestDocumentationRequestBuilders.get("/v1/category/name/{name}", "child"));
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(print())
+        .andDo(document("categories-getByName",
+            pathParameters(
+                parameterWithName("name").description("찾고자 하는 카테고리의 이름")
+            ),
+            relaxedResponseFields(
+                fieldWithPath("[].id").description("카테고리 ID"),
+                fieldWithPath("[].name").description("카테고리 이름"),
+                fieldWithPath("[].children[]").description("하위 카테고리 리스트")
+            )
+        ));
+  }
 }
