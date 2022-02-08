@@ -56,6 +56,8 @@ public class MemberController {
   public SingleResult<PointTransferResult> transferPoint(
       @RequestBody PointTransferRequest pointTransferRequest
   ) {
-    return responseService.getSuccessSingleResult(memberService.transferPoint(pointTransferRequest));
+    Long senderId = authService.getMemberIdByJWT();
+    return responseService.getSuccessSingleResult(
+        memberService.transferPoint(senderId, pointTransferRequest));
   }
 }

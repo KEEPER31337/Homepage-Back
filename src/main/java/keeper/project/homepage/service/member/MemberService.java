@@ -1,7 +1,6 @@
 package keeper.project.homepage.service.member;
 
 import java.util.Optional;
-import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.dto.request.PointTransferRequest;
 import keeper.project.homepage.dto.result.PointTransferResult;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -22,8 +21,9 @@ public class MemberService {
     return memberEntity.orElse(null);
   }
 
-  public PointTransferResult transferPoint(PointTransferRequest pointTransferRequest) {
-    MemberEntity senderMember = memberRepository.findById(pointTransferRequest.getSenderId())
+  public PointTransferResult transferPoint(Long senderId,
+      PointTransferRequest pointTransferRequest) {
+    MemberEntity senderMember = memberRepository.findById(senderId)
         .orElseThrow(CustomMemberNotFoundException::new);
     MemberEntity receiverMember = memberRepository.findById(pointTransferRequest.getReceiverId())
         .orElseThrow(CustomMemberNotFoundException::new);
@@ -32,30 +32,28 @@ public class MemberService {
       throw new CustomTransferPointLackException("잔여 포인트가 부족합니다.");
     }
 
-    MemberDto senderDto = updateSenderPoint(senderMember,
+    int senderRemainingPoint = updateSenderPoint(senderMember,
         pointTransferRequest.getTransmissionPoint());
-    MemberDto receiverDto = updateReceiverPoint(receiverMember,
+    int receiverRemainingPoint = updateReceiverPoint(receiverMember,
         pointTransferRequest.getTransmissionPoint());
 
-    return new PointTransferResult(pointTransferRequest,
-        senderDto, receiverDto);
+    return new PointTransferResult(senderId, pointTransferRequest, senderRemainingPoint,
+        receiverRemainingPoint);
   }
 
-  public MemberDto updateSenderPoint(MemberEntity member, int point) {
+  public int updateSenderPoint(MemberEntity member, int point) {
     int remainingPoint = member.getPoint();
     member.updatePoint(remainingPoint - point);
+    memberRepository.save(member);
 
-    MemberDto result = new MemberDto();
-    result.initWithEntity(member);
-    return result;
+    return member.getPoint();
   }
 
-  public MemberDto updateReceiverPoint(MemberEntity member, int point) {
+  public int updateReceiverPoint(MemberEntity member, int point) {
     int remainingPoint = member.getPoint();
     member.updatePoint(remainingPoint + point);
+    memberRepository.save(member);
 
-    MemberDto result = new MemberDto();
-    result.initWithEntity(member);
-    return result;
+    return member.getPoint();
   }
 }
