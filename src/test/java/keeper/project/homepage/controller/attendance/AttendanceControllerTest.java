@@ -1,5 +1,7 @@
 package keeper.project.homepage.controller.attendance;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -97,6 +99,11 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("ipAddress").description("IP 주소"),
                 fieldWithPath("greetings").optional().description("인삿말")
             )));
+
+    List<AttendanceEntity> attendanceEntities = attendanceRepository.findAllByMemberId(
+        memberEntity1);
+    AttendanceEntity attendance = attendanceEntities.get(attendanceEntities.size() - 1);
+    assertEquals(1, (int) attendance.getRank());
   }
 
   @Test
@@ -254,6 +261,7 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.ipAddress").description("출석 당시 ip 주소"),
                 fieldWithPath("data.greetings").description("해당일 출석 메시지"),
                 fieldWithPath("data.continousDay").description("현재 개근 일 수"),
+                fieldWithPath("data.rank").description("랭킹"),
                 subsectionWithPath("data.memberId").description("회원 정보")
             )));
 
@@ -304,6 +312,7 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].ipAddress").description("출석 당시 ip 주소"),
                 fieldWithPath("list[].greetings").description("해당일 출석 메시지"),
                 fieldWithPath("list[].continousDay").description("현재 개근 일 수"),
+                fieldWithPath("list[].rank").description("랭킹"),
                 subsectionWithPath("list[].memberId").description("회원 정보")
             )));
   }
@@ -342,6 +351,7 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
             .ipAddress(ipAddress1)
             .time(time)
             .memberId(memberEntity)
+            .rank(3)
             .randomPoint(random.nextInt(100, 1001)).build());
   }
 

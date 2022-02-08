@@ -74,6 +74,7 @@ public class AttendanceService {
             .time(now)
             .memberId(memberEntity)
             .randomPoint(random.nextInt(100, 1001))
+            .rank(rank)
             .build());
 
     return true;
