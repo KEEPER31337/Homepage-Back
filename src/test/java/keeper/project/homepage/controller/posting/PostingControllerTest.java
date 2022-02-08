@@ -521,21 +521,20 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         ));
   }
 
-  // FIXME @고태영 고쳐줘
-//  @Test
-//  public void deletePosting() throws Exception {
-//    ResultActions result = mockMvc.perform(
-//        RestDocumentationRequestBuilders.delete("/v1/post/{pid}",
-//            postingDeleteTest.getId().toString()));
-//
-//    result.andExpect(MockMvcResultMatchers.status().isOk())
-//        .andDo(print())
-//        .andDo(document("post-delete",
-//            pathParameters(
-//                parameterWithName("pid").description("게시물 ID")
-//            )
-//        ));
-//  }
+  @Test
+  public void deletePosting() throws Exception {
+    ResultActions result = mockMvc.perform(
+        RestDocumentationRequestBuilders.delete("/v1/post/{pid}",
+            postingGeneralTest.getId().toString()));
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(print())
+        .andDo(document("post-delete",
+            pathParameters(
+                parameterWithName("pid").description("게시물 ID")
+            )
+        ));
+  }
 
   @Test
   public void searchPosting() throws Exception {
