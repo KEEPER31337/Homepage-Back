@@ -1,5 +1,6 @@
 package keeper.project.homepage.controller.member;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -20,12 +21,16 @@ import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.common.FileConversion;
 import keeper.project.homepage.dto.EmailAuthDto;
+import keeper.project.homepage.entity.FileEntity;
+import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.FriendEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.member.MemberRankEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
+import keeper.project.homepage.exception.CustomAboutFailedException;
+import keeper.project.homepage.exception.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberRankRepository;
@@ -68,7 +73,11 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
   final private String adminStudentId = "201724580";
   final private String adminPhoneNumber = "0100100101";
 
+  final private String ipAddress1 = "127.0.0.1";
+
   private MemberEntity memberEntity;
+  private ThumbnailEntity thumbnailEntity;
+  private FileEntity imageEntity;
 
   @Autowired
   private MemberService memberService;
@@ -115,6 +124,19 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
 
   @BeforeEach
   public void setUp() throws Exception {
+    imageEntity = FileEntity.builder()
+        .fileName("image.jpg")
+        .filePath("keeper_files" + File.separator + "image.jpg")
+        .fileSize(0L)
+        .ipAddress(ipAddress1)
+        .build();
+    fileRepository.save(imageEntity);
+
+    thumbnailEntity = ThumbnailEntity.builder()
+        .path("keeper_files" + File.separator + "thumbnail" + File.separator + "t_image.jpg")
+        .file(imageEntity).build();
+    thumbnailRepository.save(thumbnailEntity);
+
     MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
     MemberTypeEntity memberTypeEntity = memberTypeRepository.findByName("정회원").get();
     MemberRankEntity memberRankEntity = memberRankRepository.findByName("일반회원").get();
@@ -127,6 +149,7 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         .studentId(studentId)
         .memberType(memberTypeEntity)
         .memberRank(memberRankEntity)
+        .thumbnail(thumbnailEntity)
 //        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
     memberEntity = memberRepository.save(memberEntity);
@@ -173,6 +196,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         .nickName(adminNickName)
         .emailAddress(adminEmailAddress)
         .studentId(adminStudentId)
+        .memberType(memberTypeEntity)
+        .memberRank(memberRankEntity)
+        .thumbnail(thumbnailEntity)
         .memberJobs(new ArrayList<>(List.of(hasMemberAdminJobEntity)))
         .build();
     memberRepository.save(memberAdmin);
@@ -300,8 +326,8 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
     List<FriendEntity> followeeList = memberEntity.getFollowee();
     FriendEntity followee = followeeList.get(followeeList.size() - 1);
     // friend entity에 followee와 follower가 잘 들어갔나요?
-    Assertions.assertTrue(followee.getFollowee().equals(memberAdmin));
-    Assertions.assertTrue(followee.getFollower().equals(memberEntity));
+    assertTrue(followee.getFollowee().equals(memberAdmin));
+    assertTrue(followee.getFollower().equals(memberEntity));
   }
 
   @Test
@@ -334,7 +360,7 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("code").description("실패 시: -9999")
             )));
 
-    Assertions.assertTrue(friendRepository.findById(followee.getId()).isEmpty());
+    assertTrue(friendRepository.findById(followee.getId()).isEmpty());
     Assertions.assertFalse(memberEntity.getFollowee().contains(followee));
     Assertions.assertFalse(memberAdmin.getFollower().contains(followee));
   }
@@ -410,7 +436,7 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
     ;
 
     MemberEntity member = memberRepository.findByLoginId(loginId).get();
-    Assertions.assertTrue(
+    assertTrue(
         memberRankRepository.findByName("우수회원").get().getMembers().contains(member));
   }
 
@@ -456,7 +482,7 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
             )));
 
     MemberEntity member = memberRepository.findByLoginId(loginId).get();
-    Assertions.assertTrue(
+    assertTrue(
         memberTypeRepository.findByName("탈퇴").get().getMembers().contains(member));
   }
 
@@ -506,10 +532,10 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
     MemberEntity member = memberRepository.findByLoginId(loginId).get();
     MemberJobEntity job1 = memberJobRepository.findByName("ROLE_사서").get();
     MemberJobEntity job2 = memberJobRepository.findByName("ROLE_총무").get();
-    Assertions.assertTrue(
+    assertTrue(
         memberHasMemberJobRepository.findAllByMemberEntity_IdAndAndMemberJobEntity_Id(
             member.getId(), job1.getId()).isEmpty() == false);
-    Assertions.assertTrue(
+    assertTrue(
         memberHasMemberJobRepository.findAllByMemberEntity_IdAndAndMemberJobEntity_Id(
             member.getId(), job2.getId()).isEmpty() == false);
   }
@@ -554,7 +580,7 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.jobs").description(
                     "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
             )));
-    Assertions.assertTrue(memberEntity.getRealName().equals("Changed"));
+    assertTrue(memberEntity.getRealName().equals("Changed"));
   }
 
   @Test
@@ -766,7 +792,7 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.jobs").description(
                     "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
             )));
-    Assertions.assertTrue(memberEntity.getStudentId().equals("123456789"));
+    assertTrue(memberEntity.getStudentId().equals("123456789"));
   }
 
   @Test
@@ -786,4 +812,33 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-9999));
   }
+
+  @Test
+  @DisplayName("회원 권한으로 다른 회원 정보 조회 - 성공")
+  public void getOtherMemberInfoSuccess() throws Exception {
+    MemberEntity otherMember = memberRepository.findByLoginId("hyeonmoAdmin")
+        .orElseThrow(CustomMemberNotFoundException::new);
+
+    mockMvc.perform(get("/v1/member/other/info/{id}", otherMember.getId())
+            .header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true));
+  }
+
+
+  @Test
+  @DisplayName("회원 권한으로 다른 회원 정보 조회 - 실패(존재하지 않는 회원)")
+  public void getOtherMemberInfoFailByNullMember() throws Exception {
+    MemberEntity otherMember = memberRepository.findByLoginId("hyeonmoAdmin")
+        .orElseThrow(CustomMemberNotFoundException::new);
+
+    mockMvc.perform(get("/v1/member/other/info/{id}", 3001)
+            .header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(result -> assertTrue(
+            result.getResolvedException() instanceof CustomMemberNotFoundException))
+        .andExpect(jsonPath("$.success").value(false));
+  }
+
 }
