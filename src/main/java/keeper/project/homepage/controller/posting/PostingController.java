@@ -112,7 +112,7 @@ public class PostingController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
       }
       postingEntity.increaseVisitCount();
-      postingService.updateById(postingEntity, postingId);
+      postingService.updateInfoById(postingEntity, postingId);
     }
 
     return ResponseEntity.status(HttpStatus.OK).body(postingEntity);
@@ -160,19 +160,7 @@ public class PostingController {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
-        Long.valueOf(dto.getCategoryId()));
-    Optional<MemberEntity> memberEntity = memberRepository.findById(
-        Long.valueOf(dto.getMemberId()));
-    PostingEntity postingEntity = postingService.getPostingById(postingId);
-    dto.setUpdateTime(new Date());
-    dto.setCommentCount(postingEntity.getCommentCount());
-    dto.setLikeCount(postingEntity.getLikeCount());
-    dto.setDislikeCount(postingEntity.getDislikeCount());
-    dto.setVisitCount(postingEntity.getVisitCount());
-    postingService.updateById(
-        dto.toEntity(categoryEntity.get(), memberEntity.get(), newThumbnail),
-        postingId);
+    PostingEntity postingEntity = postingService.updateById(dto, postingId);
     List<FileEntity> fileEntities = fileService.getFilesByPostingId(
         postingService.getPostingById(postingId));
     fileService.deleteFiles(fileEntities);

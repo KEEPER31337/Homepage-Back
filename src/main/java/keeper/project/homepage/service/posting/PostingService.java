@@ -102,7 +102,28 @@ public class PostingService {
   }
 
   @Transactional
-  public PostingEntity updateById(PostingEntity postingEntity, Long postingId) {
+  public PostingEntity updateById(PostingDto dto, Long postingId) {
+    PostingEntity tempEntity = postingRepository.findById(postingId).get();
+
+    dto.setUpdateTime(new Date());
+    dto.setCommentCount(tempEntity.getCommentCount());
+    dto.setLikeCount(tempEntity.getLikeCount());
+    dto.setDislikeCount(tempEntity.getDislikeCount());
+    dto.setVisitCount(tempEntity.getVisitCount());
+
+    if (tempEntity.getMemberId().getId() != getMemberEntityWithJWT().getId()) {
+      throw new RuntimeException("작성자만 수정할 수 있습니다.");
+    }
+
+    tempEntity.updateInfo(dto.getTitle(), dto.getContent(),
+        dto.getUpdateTime(), dto.getIpAddress(),
+        dto.getAllowComment(), dto.getIsNotice(), dto.getIsSecret());
+
+    return postingRepository.save(tempEntity);
+  }
+
+  @Transactional
+  public PostingEntity updateInfoById(PostingEntity postingEntity, Long postingId){
     PostingEntity tempEntity = postingRepository.findById(postingId).get();
 
     tempEntity.updateInfo(postingEntity.getTitle(), postingEntity.getContent(),
@@ -119,6 +140,11 @@ public class PostingService {
     if (postingEntity.isPresent()) {
       MemberEntity memberEntity = memberRepository.findById(
           postingEntity.get().getMemberId().getId()).get();
+
+      if (memberEntity.getId() != getMemberEntityWithJWT().getId()) {
+        throw new RuntimeException("작성자만 삭제할 수 있습니다.");
+      }
+
       memberEntity.getPosting().remove(postingEntity.get());
       postingRepository.delete(postingEntity.get());
       return 1;

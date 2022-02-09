@@ -467,7 +467,6 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         new FileInputStream(imagePath));
     params.add("title", "수정 mvc제목");
     params.add("content", "수정 mvc내용");
-    params.add("memberId", memberEntity.getId().toString());
     params.add("categoryId", categoryEntity.getId().toString());
     params.add("thumbnailId", thumbnailEntity.getId().toString());
     params.add("ipAddress", "192.111.222");
@@ -483,6 +482,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
             .file(file)
             .file(thumbnail)
             .contentType(MediaType.MULTIPART_FORM_DATA)
+            .header("Authorization", userToken)
             .params(params)
             .with(request -> {
               request.setMethod("PUT");
@@ -500,7 +500,6 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
             requestParameters(
                 parameterWithName("title").description("제목"),
                 parameterWithName("content").description("내용"),
-                parameterWithName("memberId").description("멤버 ID"),
                 parameterWithName("categoryId").description("게시판 종류 ID"),
                 parameterWithName("thumbnailId").description("썸네일 ID"),
                 parameterWithName("ipAddress").description("IP 주소"),
@@ -523,7 +522,8 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   public void deletePosting() throws Exception {
     ResultActions result = mockMvc.perform(
         RestDocumentationRequestBuilders.delete("/v1/post/{pid}",
-            postingGeneralTest.getId().toString()));
+                postingGeneralTest.getId().toString())
+            .header("Authorization", userToken));
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
