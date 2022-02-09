@@ -30,3 +30,15 @@ include::{snippets}/display-recentbooks/request-parameters.adoc[]
 
 include::{snippets}/display-recentbooks/http-response.adoc[]
 include::{snippets}/display-recentbooks/response-fields.adoc[]
+
+== *도서 검색*
+
+=== 요청
+
+include::{snippets}/search-books/http-request.adoc[]
+include::{snippets}/search-books/request-parameters.adoc[]
+
+=== 응답
+
+include::{snippets}/search-books/http-response.adoc[]
+include::{snippets}/search-books/response-fields.adoc[]
