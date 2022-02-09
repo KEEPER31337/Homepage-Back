@@ -48,7 +48,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   final private String bookInformation1 = "파이썬의 기본이 잘 정리된 책이다.";
   final private Long bookQuantity1 = 2L;
   final private Long bookBorrow1 = 0L;
-  final private Long bookEnable1 = bookQuantity1;
+  final private Long bookEnable1 = bookQuantity1-bookBorrow1;
   final private String bookRegisterDate1 = "20220116";
 
   final private String bookTitle2 = "일반물리학";
@@ -153,6 +153,8 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     String resultString = result.getResponse().getContentAsString();
     JacksonJsonParser jsonParser = new JacksonJsonParser();
     userToken = jsonParser.parseMap(resultString).get("data").toString();
+
+    borrowBook();
   }
 
   //--------------------------도서 등록------------------------------------
@@ -360,7 +362,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   @Test
   @DisplayName("책 대여 성공")
   public void borrowBook() throws Exception {
-    Long borrowQuantity = 1L;
+    Long borrowQuantity = 2L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1);
     params.add("author", bookAuthor1);
@@ -414,6 +416,71 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("quantity", String.valueOf(borrowQuantity));
 
     mockMvc.perform(post("/v1/borrowbook").params(params).header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().is5xxServerError())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(-2))
+        .andExpect(jsonPath("$.msg").exists());
+  }
+
+  //--------------------------도서 대여------------------------------------
+  @Test
+  @DisplayName("책 반납 성공")
+  public void returnBook() throws Exception {
+    Long returnQuantity = 1L;
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("title", bookTitle1);
+    params.add("author", bookAuthor1);
+    params.add("quantity", String.valueOf(returnQuantity));
+
+    mockMvc.perform(post("/v1/returnbook").params(params).header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").exists())
+        .andDo(document("return-book",
+            requestParameters(
+                parameterWithName("title").description("책 제목"),
+                parameterWithName("author").description("저자"),
+                parameterWithName("quantity").description("반납 할 수량")
+            ),
+            responseFields(
+                fieldWithPath("success").description("책 반납 완료 시 true, 실패 시 false 값을 보냅니다."),
+                fieldWithPath("code").description(
+                    "책 반납 완료 시 0, 수량 초과로 실패 시 -1, 존재하지 않을 시 -2 코드를 보냅니다."),
+                fieldWithPath("msg").description(
+                    "책 반납 실패가 수량 초과 일 때 수량 초과 메시지를, 없는 책일 때 책이 없다는 메시지를 발생시킵니다.")
+            )));
+  }
+
+  @Test
+  @DisplayName("책 반납 실패(수량 초과)")
+  public void returnBookFailedOverMax() throws Exception {
+    Long borrowQuantity = 3L;
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("title", bookTitle2);
+    params.add("author", bookAuthor2);
+    params.add("quantity", String.valueOf(borrowQuantity));
+
+    mockMvc.perform(post("/v1/returnbook").params(params).header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().is5xxServerError())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(-1))
+        .andExpect(jsonPath("$.msg").exists());
+  }
+
+  @Test
+  @DisplayName("책 반납 실패(없는 책)")
+  public void returnBookFailedNotExist() throws Exception {
+    Long borrowQuantity = 1L;
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("title", bookTitle2 + epochTime);
+    params.add("author", bookAuthor2);
+    params.add("quantity", String.valueOf(borrowQuantity));
+
+    mockMvc.perform(post("/v1/returnbook").params(params).header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
