@@ -46,4 +46,8 @@ public class LibraryMainService {
 
     return bookEntities;
   }
+
+  public BookEntity selectedBook(String title, String author){
+    return bookRepository.findByTitleAndAuthor(title, author).get();
+  }
 }
