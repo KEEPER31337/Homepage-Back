@@ -1,4 +1,4 @@
-package keeper.project.homepage.controller;
+package keeper.project.homepage.controller.library;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -10,21 +10,37 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.awt.print.Book;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import javax.transaction.Transactional;
 import keeper.project.homepage.ApiControllerTestSetUp;
+import keeper.project.homepage.entity.library.BookBorrowEntity;
 import keeper.project.homepage.entity.library.BookEntity;
+import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
+import keeper.project.homepage.entity.member.MemberJobEntity;
+import keeper.project.homepage.repository.library.BookBorrowRepository;
+import keeper.project.homepage.repository.library.BookRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.json.JacksonJsonParser;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 @Transactional
-public class BookControllerTest extends ApiControllerTestSetUp {
+public class BookManageControllerTest extends ApiControllerTestSetUp {
+
+  private String userToken;
 
   final private String bookTitle1 = "Do it! 점프 투 파이썬";
   final private String bookAuthor1 = "박응용";
@@ -53,10 +69,33 @@ public class BookControllerTest extends ApiControllerTestSetUp {
   final private Long bookEnable3 = bookQuantity3 - bookBorrow3;
   final private String bookRegisterDate3 = "20220116";
 
+  final private String loginId = "hyeonmomo";
+  final private String password = "keeper";
+  final private String realName = "JeongHyeonMo";
+  final private String nickName = "JeongHyeonMo";
+  final private String emailAddress = "gusah@naver.com";
+  final private String studentId = "201724579";
+
   final private long epochTime = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
+
+  private MemberEntity memberEntity;
 
   @BeforeEach
   public void setUp() throws Exception {
+    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
+    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
+        .memberJobEntity(memberJobEntity)
+        .build();
+    memberEntity = MemberEntity.builder()
+        .loginId(loginId)
+        .password(passwordEncoder.encode(password))
+        .realName(realName)
+        .nickName(nickName)
+        .emailAddress(emailAddress)
+        .studentId(studentId)
+        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
+        .build();
+    memberRepository.save(memberEntity);
 
     SimpleDateFormat stringToDate = new SimpleDateFormat("yyyymmdd");
     Date registerDate1 = stringToDate.parse(bookRegisterDate1);
@@ -95,8 +134,28 @@ public class BookControllerTest extends ApiControllerTestSetUp {
             .enable(bookEnable3)
             .registerDate(registerDate3)
             .build());
+
+    String content = "{\n"
+        + "    \"loginId\": \"" + loginId + "\",\n"
+        + "    \"password\": \"" + password + "\"\n"
+        + "}";
+    MvcResult result = mockMvc.perform(post("/v1/signin")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(content))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").exists())
+        .andExpect(jsonPath("$.data").exists())
+        .andReturn();
+
+    String resultString = result.getResponse().getContentAsString();
+    JacksonJsonParser jsonParser = new JacksonJsonParser();
+    userToken = jsonParser.parseMap(resultString).get("data").toString();
   }
 
+  //--------------------------도서 등록------------------------------------
   @Test
   @DisplayName("책 등록 성공(기존 책)")
   public void addBook() throws Exception {
@@ -138,7 +197,7 @@ public class BookControllerTest extends ApiControllerTestSetUp {
 
     mockMvc.perform(post("/v1/addbook").params(params))
         .andDo(print())
-        .andExpect(status().isOk())
+        .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-1))
         .andExpect(jsonPath("$.msg").exists());
@@ -192,12 +251,13 @@ public class BookControllerTest extends ApiControllerTestSetUp {
 
     mockMvc.perform(post("/v1/addbook").params(params))
         .andDo(print())
-        .andExpect(status().isOk())
+        .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-1))
         .andExpect(jsonPath("$.msg").exists());
   }
 
+  //--------------------------도서 삭제------------------------------------
   @Test
   @DisplayName("책 삭제 성공(일부 삭제)")
   public void deleteBook() throws Exception {
@@ -256,7 +316,7 @@ public class BookControllerTest extends ApiControllerTestSetUp {
 
     mockMvc.perform(post("/v1/deletebook").params(params))
         .andDo(print())
-        .andExpect(status().isOk())
+        .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-2))
         .andExpect(jsonPath("$.msg").exists());
@@ -273,7 +333,7 @@ public class BookControllerTest extends ApiControllerTestSetUp {
 
     mockMvc.perform(post("/v1/deletebook").params(params))
         .andDo(print())
-        .andExpect(status().isOk())
+        .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-1))
         .andExpect(jsonPath("$.msg").exists());
@@ -290,9 +350,74 @@ public class BookControllerTest extends ApiControllerTestSetUp {
 
     mockMvc.perform(post("/v1/deletebook").params(params))
         .andDo(print())
-        .andExpect(status().isOk())
+        .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-1))
+        .andExpect(jsonPath("$.msg").exists());
+  }
+
+  //--------------------------도서 대여------------------------------------
+  @Test
+  @DisplayName("책 대여 성공")
+  public void borrowBook() throws Exception {
+    Long borrowQuantity = 1L;
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("title", bookTitle1);
+    params.add("author", bookAuthor1);
+    params.add("quantity", String.valueOf(borrowQuantity));
+
+    mockMvc.perform(post("/v1/borrowbook").params(params).header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").exists())
+        .andDo(document("borrow-book",
+            requestParameters(
+                parameterWithName("title").description("책 제목"),
+                parameterWithName("author").description("저자"),
+                parameterWithName("quantity").description("대여 할 수량")
+            ),
+            responseFields(
+                fieldWithPath("success").description("책 대여 완료 시 true, 실패 시 false 값을 보냅니다."),
+                fieldWithPath("code").description(
+                    "책 대여 완료 시 0, 수량 초과로 실패 시 -1, 존재하지 않을 시 -2 코드를 보냅니다."),
+                fieldWithPath("msg").description(
+                    "책 대여 실패가 수량 초과 일 때 수량 초과 메시지를, 없는 책일 때 책이 없다는 메시지를 발생시킵니다.")
+            )));
+  }
+
+  @Test
+  @DisplayName("책 대여 실패(수량 초과)")
+  public void borrowBookFailedOverMax() throws Exception {
+    Long borrowQuantity = 2L;
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("title", bookTitle2);
+    params.add("author", bookAuthor2);
+    params.add("quantity", String.valueOf(borrowQuantity));
+
+    mockMvc.perform(post("/v1/borrowbook").params(params).header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().is5xxServerError())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(-1))
+        .andExpect(jsonPath("$.msg").exists());
+  }
+
+  @Test
+  @DisplayName("책 대여 실패(없는 책)")
+  public void borrowBookFailedNotExist() throws Exception {
+    Long borrowQuantity = 1L;
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("title", bookTitle2 + epochTime);
+    params.add("author", bookAuthor2);
+    params.add("quantity", String.valueOf(borrowQuantity));
+
+    mockMvc.perform(post("/v1/borrowbook").params(params).header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().is5xxServerError())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(-2))
         .andExpect(jsonPath("$.msg").exists());
   }
 }

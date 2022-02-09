@@ -1,0 +1,57 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+// 자동으로 생성된 snippet 설정하는 부분
+
+= KEEPER API 문서
+:icons: font
+// NOTE, TIP, WARNING, CAUTION, IMPORTANT 같은 경고구들 아이콘화 해줌
+:source-highlighter: highlight.js
+// source code 블럭에서 사용되는 highlighter 설정, 4개 정도 있던데 차이를 아직 잘 모르겠음.
+:toc: left
+// table of contents(toc) 왼쪽정렬하여 생성
+:toclevels: 3
+// default : 2 (==,  ===) 까지 toc에 보여줌.
+:sectlinks:
+// section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
+
+== API 목록
+
+link:keeper.html[API 목록으로 돌아가기]
+
+== *사용자 권한 불러오기*
+
+=== 요청
+
+include::{snippets}/get-auth/http-request.adoc[]
+
+NOTE: Bearer JWT 토큰이 필요합니다.
+
+=== 응답
+
+include::{snippets}/get-auth/http-response.adoc[]
+include::{snippets}/get-auth/response-fields.adoc[]
+
+== *이미지 불러오기*
+
+=== 요청
+
+include::{snippets}/get-image/http-request.adoc[]
+include::{snippets}/get-image/path-parameters.adoc[]
+
+=== 응답
+
+NOTE: Response는 삽입시 너무 길어져 생략했습니다.
+단순히 Response Body에 이미지가 담겨갑니다.
+
+== *썸네일 불러오기*
+
+=== 요청
+
+include::{snippets}/get-thumbnail/http-request.adoc[]
+include::{snippets}/get-thumbnail/path-parameters.adoc[]
+
+=== 응답
+
+NOTE: Response는 삽입시 너무 길어져 생략했습니다.
+단순히 Response Body에 썸네일 이미지가 담겨갑니다.

@@ -1,24 +1,14 @@
 package keeper.project.homepage.controller.posting;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.dto.posting.CommentDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.dto.result.SingleResult;
-import keeper.project.homepage.entity.posting.CommentEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.service.posting.CommentService;
-import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
-import keeper.project.homepage.service.member.MemberHasCommentLikeService;
-import keeper.project.homepage.service.member.MemberService;
-import keeper.project.homepage.service.posting.PostingService;
 import keeper.project.homepage.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
@@ -45,116 +35,81 @@ public class CommentController {
 
   private final CommentService commentService;
 
-  private final PostingService postingService;
-
-  private final MemberService memberService;
-
   private final ResponseService responseService;
 
-  private final MemberHasCommentLikeService memberHasCommentLikeService;
-
-  private final MemberHasCommentDislikeService memberHasCommentDislikeService;
-
   @PostMapping(value = "/{postId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public SingleResult<String> createComment(
+  public ResponseEntity<CommonResult> createComment(
       @PathVariable("postId") Long postId,
       @RequestBody CommentDto commentDto) {
 
-    PostingEntity postingEntity = postingService.getPostingById(postId);
-    MemberEntity memberEntity = memberService.findById(commentDto.getMemberId());
-    commentDto.setRegisterTime(LocalDate.now());
-    commentDto.setUpdateTime(LocalDate.now());
-    if (commentDto.getParentId() == null) {
-      commentDto.setParentId(0L);
+    if (commentDto.getContent().isEmpty()) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(responseService.getFailResult(HttpStatus.BAD_REQUEST.value(), "댓글의 내용이 비어있습니다."));
     }
-    commentService.save(commentDto.toEntity(postingEntity, memberEntity));
 
-    return responseService.getSingleResult("success");
+    commentService.save(commentDto, postId);
+
+    return ResponseEntity.ok().body(responseService.getSuccessResult());
   }
 
   @GetMapping(value = "/{postId}")
-  public ListResult<CommentDto> findCommentByPostId(
+  public ResponseEntity<ListResult<CommentDto>> findCommentByPostId(
       @PathVariable("postId") Long postId,
       @SortDefaults({@SortDefault(sort = "id", direction = Direction.ASC),
           @SortDefault(sort = "registerTime", direction = Direction.ASC)})
       @PageableDefault(page = 0, size = 10) Pageable pageable) {
 
-    PostingEntity postingEntity = postingService.getPostingById(postId);
-    Page<CommentEntity> entityPage = commentService.findAllByPost(postingEntity, pageable);
-
-    List<CommentDto> dtoPage = new ArrayList<>();
-    entityPage.getContent().forEach(content -> dtoPage.add(
-        new CommentDto(content.getContent(), content.getRegisterTime(), content.getUpdateTime(),
-            content.getIpAddress(), content.getLikeCount(), content.getDislikeCount(),
-            content.getParentId(), content.getMemberId().getId(), postId)));
-    return responseService.getListResult(dtoPage);
-  }
-
-  @GetMapping("/{postId}/{parentId}")
-  public ResponseEntity<List<CommentEntity>> findCommentByParentId(
-      @PathVariable("postId") Long postId, @PathVariable("parentId") Long parentId,
-      @SortDefaults({@SortDefault(sort = "id", direction = Direction.ASC),
-          @SortDefault(sort = "registerTime", direction = Direction.ASC)})
-      @PageableDefault(page = 0, size = 10) Pageable pageable) {
-    PostingEntity postingEntity = postingService.getPostingById(postId);
-    Page<CommentEntity> entityPage = commentService.findAllByParentIdAndPost(parentId,
-        postingEntity,
-        pageable);
-
-    return ResponseEntity.status(HttpStatus.OK).body(entityPage.getContent());
+    List<CommentDto> dtoPage = commentService.findAllByPost(postId, pageable);
+    return ResponseEntity.ok().body(responseService.getSuccessListResult(dtoPage));
   }
 
   @DeleteMapping("/{commentId}")
-  public CommonResult deleteComment(@PathVariable("commentId") Long commentId) {
+  public ResponseEntity<CommonResult> deleteComment(@PathVariable("commentId") Long commentId) {
+    if (commentService.findById(commentId) == null) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(responseService.getFailResult(HttpStatus.BAD_REQUEST.value(), "존재하지 않는 댓글입니다."));
+    }
+
     commentService.deleteById(commentId);
-    return responseService.getSuccessResult();
+
+    return commentService.findById(commentId) == null ?
+        ResponseEntity.ok().body(responseService.getSuccessResult())
+        : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(responseService.getFailResult(HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "댓글의 삭제가 진행되지 않았습니다."));
   }
 
   @PutMapping(value = "/{commentId}", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public SingleResult<String> modifyComment(
+  public ResponseEntity<SingleResult<CommentDto>> updateComment(
       @PathVariable("commentId") Long commentId,
       @RequestBody CommentDto commentDto) {
 
-    CommentEntity original = commentService.findById(commentId);
-    commentDto.setLikeCount(original.getLikeCount());
-    commentDto.setDislikeCount(original.getDislikeCount());
-    commentDto.setUpdateTime(LocalDate.now());
-    commentDto.setIpAddress(original.getIpAddress());
+    if (commentService.findById(commentId) == null) {
+      return ResponseEntity.badRequest().body(
+          responseService.getFailSingleResult(commentDto, HttpStatus.BAD_REQUEST.value(),
+              "더이상 존재하지 않는 댓글입니다."));
+    }
+    if (commentDto.getContent().isEmpty()) {
+      return ResponseEntity.badRequest().body(
+          responseService.getFailSingleResult(commentDto, HttpStatus.BAD_REQUEST.value(),
+              "댓글의 내용이 비어있습니다."));
+    }
 
-    CommentEntity result = commentService.updateById(commentId,
-        commentDto.toEntity(original.getPostingId(), original.getMemberId()));
-
-    return result.getId() != null ? responseService.getSingleResult("success")
-        : responseService.getSingleResult("fail to update");
+    CommentDto updateDto = commentService.updateById(commentDto, commentId);
+    return ResponseEntity.ok().body(responseService.getSuccessSingleResult(updateDto));
   }
 
   @GetMapping(value = "/like")
-  public SingleResult<String> updateLike(@RequestParam("commentId") Long commentId,
+  public ResponseEntity<CommonResult> updateLike(@RequestParam("commentId") Long commentId,
       @RequestParam("memberId") Long memberId) {
-    MemberEntity memberEntity = memberService.findById(memberId);
-    CommentEntity commentEntity = commentService.findById(commentId);
-    if (memberHasCommentLikeService.findById(memberEntity, commentEntity) == null) {
-      memberHasCommentLikeService.saveWithMemberAndCommentEntity(memberEntity, commentEntity);
-      commentService.increaseLikeCount(commentId);
-    } else {
-      memberHasCommentLikeService.deleteByMemberAndCommentEntity(memberEntity, commentEntity);
-      commentService.decreaseLikeCount(commentId);
-    }
-    return responseService.getSingleResult("success");
+    commentService.updateLikeCount(memberId, commentId);
+    return ResponseEntity.ok().body(responseService.getSuccessResult());
   }
 
   @GetMapping(value = "/dislike")
-  public SingleResult<String> updateDislike(@RequestParam("commentId") Long commentId,
+  public ResponseEntity<CommonResult> updateDislike(@RequestParam("commentId") Long commentId,
       @RequestParam("memberId") Long memberId) {
-    MemberEntity memberEntity = memberService.findById(memberId);
-    CommentEntity commentEntity = commentService.findById(commentId);
-    if (memberHasCommentDislikeService.findById(memberEntity, commentEntity) == null) {
-      memberHasCommentDislikeService.saveWithMemberAndCommentEntity(memberEntity, commentEntity);
-      commentService.increaseDislikeCount(commentId);
-    } else {
-      memberHasCommentDislikeService.deleteByMemberAndCommentEntity(memberEntity, commentEntity);
-      commentService.decreaseDislikeCount(commentId);
-    }
-    return responseService.getSingleResult("success");
+    commentService.updateDislikeCount(memberId, commentId);
+    return ResponseEntity.ok().body(responseService.getSuccessResult());
   }
 }

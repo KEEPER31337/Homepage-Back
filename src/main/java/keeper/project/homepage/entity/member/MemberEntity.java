@@ -1,14 +1,12 @@
 package keeper.project.homepage.entity.member;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -20,6 +18,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import keeper.project.homepage.entity.ThumbnailEntity;
+import keeper.project.homepage.entity.posting.PostingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,6 +43,7 @@ public class MemberEntity implements UserDetails, Serializable {
   private Long id;
 
   @Column(name = "login_id", length = 80, nullable = false, unique = true)
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private String loginId;
 
   @Column(name = "email_address", length = 250, nullable = false, unique = true)
@@ -54,8 +54,9 @@ public class MemberEntity implements UserDetails, Serializable {
   private String password;
 
   @Column(name = "real_name", length = 40, nullable = false)
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private String realName;
-  
+
   @Column(name = "nick_name", length = 40, nullable = false)
   private String nickName;
 
@@ -63,6 +64,7 @@ public class MemberEntity implements UserDetails, Serializable {
   private Date birthday;
 
   @Column(name = "student_id", length = 45, nullable = false, unique = true)
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private String studentId;
 
   @CreationTimestamp
@@ -72,14 +74,12 @@ public class MemberEntity implements UserDetails, Serializable {
   @ManyToOne
   @JoinColumn(name = "member_type_id")
   @NotFound(action = NotFoundAction.IGNORE)
-  
   // DEFAULT 1
   private MemberTypeEntity memberType;
 
   @ManyToOne
   @JoinColumn(name = "member_rank_id")
   @NotFound(action = NotFoundAction.IGNORE)
-  
   // DEFAULT 1
   private MemberRankEntity memberRank;
 
@@ -91,26 +91,65 @@ public class MemberEntity implements UserDetails, Serializable {
 
   @OneToOne
   @JoinColumn(name = "thumbnail_id")
-  
   // DEFAULT 1
   private ThumbnailEntity thumbnail;
 
-  @ElementCollection(fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "follower")
   @Builder.Default
-  private List<String> roles = new ArrayList<>();
+  private List<FriendEntity> follower = new ArrayList<>();
+
+  @OneToMany(mappedBy = "followee")
+  @Builder.Default
+  private List<FriendEntity> followee = new ArrayList<>();
 
   public void changePassword(String newPassword) {
     this.password = newPassword;
   }
 
+  public void changeRealName(String newRealName) {
+    this.realName = newRealName;
+  }
+
+  public void changeNickName(String newNickName) {
+    this.nickName = newNickName;
+  }
+
+  public void changeStudentId(String newStudentId) {
+    this.studentId = newStudentId;
+  }
+
+  public void changeEmailAddress(String newEmailAddress) {
+    this.emailAddress = newEmailAddress;
+  }
+
+  public void changeThumbnail(ThumbnailEntity newThumbnail) {
+    this.thumbnail = newThumbnail;
+  }
+
+  public void changeMemberRank(MemberRankEntity memberRankEntity) {
+    this.memberRank = memberRankEntity;
+  }
+
+  public void changeMemberType(MemberTypeEntity memberTypeEntity) {
+    this.memberType = memberTypeEntity;
+  }
+
   @OneToMany(mappedBy = "memberEntity")
-  
   @Builder.Default
   private List<MemberHasMemberJobEntity> memberJobs = new ArrayList<>();
 
+  @OneToMany(targetEntity = PostingEntity.class, mappedBy = "memberId", fetch = FetchType.LAZY)
+  @Builder.Default
+  private List<PostingEntity> posting = new ArrayList<>();
+
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return this.roles.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+    List<SimpleGrantedAuthority> roles = new ArrayList<>();
+
+    for (MemberHasMemberJobEntity memberJob : this.getMemberJobs()) {
+      roles.add(new SimpleGrantedAuthority(memberJob.getMemberJobEntity().getName()));
+    }
+    return roles;
   }
 
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -147,5 +186,9 @@ public class MemberEntity implements UserDetails, Serializable {
   @Override
   public boolean isEnabled() {
     return true;
+  }
+
+  public void updatePoint(int point) {
+    this.point = point;
   }
 }

@@ -1,9 +1,6 @@
 package keeper.project.homepage.entity.member;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,4 +30,5 @@ public class MemberRankEntity implements Serializable {
   @JsonBackReference(value = "member-rank")
   @Builder.Default
   private List<MemberEntity> members = new ArrayList<>();
+
 }

@@ -16,6 +16,8 @@ import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
+import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.exception.CustomMemberNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SignInControllerTest extends ApiControllerTestSetUp {
 
   private final String loginId = "hyeonmomo";
-  private final String emailAddress = "gusah@naver.com";
+  private final String emailAddress = "test@k33p3r.com";
   private final String password = "keeper";
   private final String realName = "JeongHyeonMo";
   private final String nickName = "HyeonMoJeong";
@@ -43,15 +45,20 @@ public class SignInControllerTest extends ApiControllerTestSetUp {
     SimpleDateFormat stringToDate = new SimpleDateFormat("yyyymmdd");
     Date birthdayDate = stringToDate.parse(birthday);
 
-    memberRepository.save(MemberEntity.builder()
+    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
+    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
+        .memberJobEntity(memberJobEntity)
+        .build();
+    MemberEntity memberEntity = MemberEntity.builder()
         .loginId(loginId)
-        .emailAddress(emailAddress)
         .password(passwordEncoder.encode(password))
         .realName(realName)
         .nickName(nickName)
-        .birthday(birthdayDate)
+        .emailAddress(emailAddress)
         .studentId(studentId)
-        .roles(new ArrayList<String>(List.of("ROLE_USER"))).build());
+        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
+        .build();
+    memberRepository.save(memberEntity);
   }
 
   @Test
@@ -98,6 +105,65 @@ public class SignInControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(signInFailedCode))
         .andExpect(jsonPath("$.msg").exists());
+  }
+
+  @Test
+  @DisplayName("아이디 찾기 - 이메일로 유저의 아이디를 전송")
+  public void findId() throws Exception {
+    String signInFailedCode = messageSource.getMessage("SigninFailed.code", null,
+        LocaleContextHolder.getLocale());
+
+    String content = "{\n"
+        + "    \"emailAddress\": \"" + emailAddress + "\"\n"
+        + "}";
+    mockMvc.perform(post("/v1/signin/find-id")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(content))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").exists())
+        .andDo(document("find-id",
+            requestFields(
+                fieldWithPath("emailAddress").description("이메일 주소")
+            ),
+            responseFields(
+                fieldWithPath("success").description(
+                    "아이디 찾기 성공 시 true, 존재하지 않는 email일 경우 false 값을 보냅니다."),
+                fieldWithPath("code").description(
+                    "아이디 찾기 성공 시 0, 존재하지 않는 email일 경우 -1001 코드를 보냅니다."),
+                fieldWithPath("msg").description(
+                    "존재하지 않는 email일 경우 " + signInFailedCode)
+            )));
+  }
+
+  @Test
+  @DisplayName("비밀번호 찾기 - 이메일로 유저의 임시 비밀번호를 전송")
+  public void findPassword() throws Exception {
+    String content = "{\n"
+        + "    \"emailAddress\": \"" + emailAddress + "\"\n"
+        + "}";
+    mockMvc.perform(post("/v1/signin/find-password")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(content))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").exists())
+        .andDo(document("find-password",
+            requestFields(
+                fieldWithPath("emailAddress").description("이메일 주소")
+            ),
+            responseFields(
+                fieldWithPath("success").description(
+                    "비밀번호 찾기 성공 시 true, 존재하지 않는 email일 경우 false 값을 보냅니다."),
+                fieldWithPath("code").description(
+                    "비밀번호 찾기 성공 시 0, 존재하지 않는 email일 경우 -1001 코드를 보냅니다."),
+                fieldWithPath("msg").description(
+                    "존재하지 않는 email일 경우 " + "\"해당 이메일을 가진 유저가 존재하지 않습니다\"" + " 메시지를 반환합니다.")
+            )));
   }
 
   @Test

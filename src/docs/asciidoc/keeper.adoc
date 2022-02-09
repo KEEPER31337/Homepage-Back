@@ -15,6 +15,10 @@ endif::[]
 :sectlinks:
 // section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
 
+== *유틸리티*
+
+link:util.html[API 문서 보기]
+
 == *회원가입*
 
 link:signup.html[API 문서 보기]
@@ -34,3 +38,11 @@ link:posting.html[API 문서 보기]
 == *댓글*
 
 link:comment.html[API 문서 보기]
+
+== *회원 관리*
+
+link:member.html[API 문서 보기]
+
+== *출석*
+
+link:attendance.html[API 문서 보기]

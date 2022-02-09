@@ -31,6 +31,34 @@ include::{snippets}/sign-in/request-fields.adoc[]
 include::{snippets}/sign-in/http-response.adoc[]
 include::{snippets}/sign-in/response-fields.adoc[]
 
+== *아이디 찾기*
+
+NOTE: 성공 시 이메일로 유저의 아이디를 전송
+
+=== 요청
+
+include::{snippets}/find-id/http-request.adoc[]
+include::{snippets}/find-id/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/find-id/http-response.adoc[]
+include::{snippets}/find-id/response-fields.adoc[]
+
+== *비밀번호 찾기*
+
+NOTE: 성공 시 이메일로 유저의 임시 비밀번호를 전송
+
+=== 요청
+
+include::{snippets}/find-password/http-request.adoc[]
+include::{snippets}/find-password/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/find-password/http-response.adoc[]
+include::{snippets}/find-password/response-fields.adoc[]
+
 == *비밀번호 변경하기*
 
 === 요청

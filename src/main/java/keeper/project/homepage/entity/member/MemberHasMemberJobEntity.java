@@ -24,16 +24,17 @@ import lombok.Setter;
 @NoArgsConstructor          // 인자없는 생성자를 자동으로 생성합니다.
 @AllArgsConstructor         // 인자를 모두 갖춘 생성자를 자동으로 생성합니다.
 @Table(name = "member_has_member_job")
-@IdClass(MemberHasMemberJobPK.class)
 public class MemberHasMemberJobEntity implements Serializable {
 
-  @Id
+  @Id // pk
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
   @ManyToOne
   @JoinColumn(name = "member_id")
   @JsonBackReference
   private MemberEntity memberEntity;
 
-  @Id
   @ManyToOne
   @JoinColumn(name = "member_job_id")
   @JsonBackReference(value = "member-job-id")
