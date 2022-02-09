@@ -14,6 +14,7 @@ import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.service.ResponseService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -192,18 +193,20 @@ public class BookManageService {
    */
   public CommonResult doReturn(String title, String author, Long returnMemberId, Long quantity) {
 
-    if (!bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author, returnMemberId)
+    Long bookId = bookRepository.findByTitleAndAuthor(title, author).get().getId();  //왜 여기서 오류가 발생하는거지 다른 건 다 잘 작동 됐는데
+    System.out.println(bookId);
+    if (!bookBorrowRepository.findByBookIdAndMemberId(bookId, returnMemberId)
         .isPresent()) {
       throw new CustomBookNotFoundException("책이 존재하지 않습니다.");
     }
-    Long nowBorrowTotal = bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author,
+    Long nowBorrowTotal = bookBorrowRepository.findByBookIdAndMemberId(bookId,
         returnMemberId).get().getQuantity();
     if (nowBorrowTotal < quantity) {
       throw new CustomBookOverTheMaxException("수량 초과입니다.");
     }
     if (nowBorrowTotal == quantity) {
       bookBorrowRepository.delete(
-          bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author, returnMemberId)
+          bookBorrowRepository.findByBookIdAndMemberId(bookId, returnMemberId)
               .get());
     }
     returnBook(title, author, returnMemberId, quantity);
@@ -213,13 +216,14 @@ public class BookManageService {
   private void returnBook(String title, String author, Long returnMemberId, Long quantity) {
     BookEntity bookId = bookRepository.findByTitleAndAuthor(title, author).get();
     MemberEntity memberId = memberRepository.findById(returnMemberId).get();
+    Long borrowBookId = bookRepository.findByTitleAndAuthor(title, author).get().getId();
     String borrowDate = String.valueOf(
-        bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author, returnMemberId)
+        bookBorrowRepository.findByBookIdAndMemberId(borrowBookId, returnMemberId)
             .get().getBorrowDate());
     String expireDate = String.valueOf(
-        bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author, returnMemberId)
+        bookBorrowRepository.findByBookIdAndMemberId(borrowBookId, returnMemberId)
             .get().getExpireDate());
-    Long totalBorrow = bookBorrowRepository.findByTitleAndAuthorAndBorrowMemberId(title, author,
+    Long totalBorrow = bookBorrowRepository.findByBookIdAndMemberId(borrowBookId,
         returnMemberId).get().getQuantity();
 
     bookBorrowRepository.save(
