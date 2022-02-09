@@ -13,6 +13,7 @@ import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.service.member.MemberHasCommentLikeService;
 import keeper.project.homepage.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.jni.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -52,22 +53,22 @@ public class CommentService {
 
   @Transactional
   public CommentDto save(CommentDto commentDto, Long postId, Long memberId) {
-
     isNotEmptyContent(commentDto);
 
     PostingEntity postingEntity = postingService.getPostingById(postId);
     MemberEntity memberEntity = memberService.findById(memberId);
-    commentDto.setLikeCount(0);
-    commentDto.setDislikeCount(0);
-    commentDto.setRegisterTime(LocalDate.now());
-    commentDto.setUpdateTime(LocalDate.now());
-    if (commentDto.getParentId() == null) {
-      commentDto.setParentId(0L);
-    }
-    CommentEntity commentEntity = commentRepository.save(
-        commentDto.toEntity(postingEntity, memberEntity));
-    commentDto.setId(commentEntity.getId());
-//    commentDto.setPostingId(postId);
+    CommentEntity commentEntity = commentRepository.save(CommentEntity.builder()
+        .content(commentDto.getContent())
+        .registerTime(LocalDate.now())
+        .updateTime(LocalDate.now())
+        .ipAddress(commentDto.getIpAddress())
+        .likeCount(0)
+        .dislikeCount(0)
+        .parentId(commentDto.getParentId() == null ? 0L : commentDto.getParentId())
+        .memberId(memberEntity)
+        .postingId(postingEntity)
+        .build());
+    commentDto.initWithEntity(commentEntity);
     return commentDto;
   }
 
@@ -77,15 +78,8 @@ public class CommentService {
 
     List<CommentDto> dtoPage = new ArrayList<>();
     for (CommentEntity comment : entityPage.getContent()) {
-      CommentDto dto = CommentDto.builder()
-          .content(comment.getContent())
-          .registerTime(comment.getRegisterTime())
-          .updateTime(comment.getUpdateTime())
-          .ipAddress(comment.getIpAddress())
-          .likeCount(comment.getLikeCount())
-          .dislikeCount(comment.getDislikeCount())
-          .parentId(comment.getParentId())
-          .build();
+      CommentDto dto = CommentDto.builder().build();
+      dto.initWithEntity(comment);
       dtoPage.add(dto);
     }
 
@@ -97,16 +91,12 @@ public class CommentService {
     isValidMember(commentId, memberId);
     isNotEmptyContent(commentDto);
 
-    CommentEntity original = getComment(commentId);
-    commentDto.setId(commentId);
-    commentDto.setLikeCount(original.getLikeCount());
-    commentDto.setDislikeCount(original.getDislikeCount());
-    commentDto.setUpdateTime(LocalDate.now());
-    commentDto.setIpAddress(original.getIpAddress());
+    CommentEntity updated = getComment(commentId);
+    updated.changeContent(commentDto.getContent());
+    updated.changeUpdateTime(LocalDate.now());
+    commentRepository.save(updated);
 
-    commentRepository.save(
-        commentDto.toEntity(original.getPostingId(), original.getMemberId()));
-
+    commentDto.initWithEntity(updated);
     return commentDto;
   }
 
@@ -146,7 +136,15 @@ public class CommentService {
     }
   }
 
+  private void checkNotMaxValue(Integer num) {
+    if (num == Integer.MAX_VALUE) {
+      throw new RuntimeException("overflow 경고");
+    }
+  }
+
   private void increaseLikeCount(CommentEntity updated) {
+    checkNotMaxValue(updated.getLikeCount());
+
     updated.increaseLikeCount();
     commentRepository.save(updated);
   }
@@ -157,6 +155,8 @@ public class CommentService {
   }
 
   private void increaseDislikeCount(CommentEntity updated) {
+    checkNotMaxValue(updated.getDislikeCount());
+
     updated.increaseDislikeCount();
     commentRepository.save(updated);
   }

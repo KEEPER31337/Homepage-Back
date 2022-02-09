@@ -205,7 +205,7 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
 
   @Test
   @DisplayName("댓글 페이징")
-  public void findCommentByPostIdTest() throws Exception {
+  public void showCommentByPostIdTest() throws Exception {
     Long postId = postingEntity.getId();
     for (int i = 0; i < 15; i++) {
       commentRepository.save(CommentEntity.builder()

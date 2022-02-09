@@ -158,10 +158,8 @@ public class CommentServiceTest {
   @Test
   @DisplayName("댓글 생성")
   public void createTest() {
-    CommentDto commentDto = new CommentDto();
-    commentDto.setContent("댓글 내용");
-    commentDto.setIpAddress("111.111.111.111");
-
+    CommentDto commentDto = CommentDto.builder().content("댓글 내용").ipAddress("111.111.111.111")
+        .build();
     CommentDto createDto = commentService.save(commentDto, postingEntity.getId(),
         memberEntity.getId());
     Assertions.assertNotNull(createDto.getId());
@@ -181,9 +179,9 @@ public class CommentServiceTest {
   @Test
   @DisplayName("댓글 수정")
   public void updateTest() throws RuntimeException {
-    CommentDto commentDto = new CommentDto();
-    commentDto.setContent("수정한 댓글 내용");
-    commentDto.setIpAddress("111.111.111.111");
+    CommentDto commentDto = CommentDto.builder()
+        .content("수정한 댓글 내용")
+        .build();
 
     Long updateId = commentEntity.getId();
 
