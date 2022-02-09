@@ -11,12 +11,14 @@ import keeper.project.homepage.entity.member.MemberHasPostingDislikeEntity;
 import keeper.project.homepage.entity.member.MemberHasPostingLikeEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
+import keeper.project.homepage.exception.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.member.MemberHasPostingDislikeRepository;
 import keeper.project.homepage.repository.member.MemberHasPostingLikeRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.repository.ThumbnailRepository;
+import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -32,12 +34,13 @@ public class PostingService {
   private final ThumbnailRepository thumbnailRepository;
   private final MemberHasPostingLikeRepository memberHasPostingLikeRepository;
   private final MemberHasPostingDislikeRepository memberHasPostingDislikeRepository;
+  private final AuthService authService;
 
   public static final Integer isNotTempPosting = 0;
   public static final Integer isTempPosting = 1;
 
   public List<PostingEntity> findAll(Pageable pageable) {
-//    List<PostingEntity> postingEntities = postingRepository.findAll(pageable).getContent();
+
     List<PostingEntity> postingEntities = postingRepository.findAllByIsTemp(isNotTempPosting,
         pageable).getContent();
 
@@ -75,14 +78,13 @@ public class PostingService {
     Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
         Long.valueOf(dto.getCategoryId()));
     Optional<ThumbnailEntity> thumbnailEntity = thumbnailRepository.findById(dto.getThumbnailId());
-    Optional<MemberEntity> memberEntity = memberRepository.findById(
-        Long.valueOf(dto.getMemberId()));
+    MemberEntity memberEntity = getMemberEntityWithJWT();
     dto.setRegisterTime(new Date());
     dto.setUpdateTime(new Date());
-    PostingEntity postingEntity = dto.toEntity(categoryEntity.get(), memberEntity.get(),
+    PostingEntity postingEntity = dto.toEntity(categoryEntity.get(), memberEntity,
         thumbnailEntity.get());
 
-    memberEntity.get().getPosting().add(postingEntity);
+    memberEntity.getPosting().add(postingEntity);
     return postingRepository.save(postingEntity);
   }
 
@@ -170,10 +172,9 @@ public class PostingService {
   }
 
   @Transactional
-  public boolean isPostingLike(Long memberId, Long postingId,
-      String type) {
+  public boolean isPostingLike(Long postingId, String type) {
 
-    MemberEntity memberEntity = memberRepository.findById(memberId).get();
+    MemberEntity memberEntity = getMemberEntityWithJWT();
     PostingEntity postingEntity = postingRepository.findById(postingId).get();
     MemberHasPostingLikeEntity memberHasPostingLikeEntity = MemberHasPostingLikeEntity.builder()
         .memberId(memberEntity).postingId(postingEntity).build();
@@ -201,10 +202,9 @@ public class PostingService {
   }
 
   @Transactional
-  public boolean isPostingDislike(Long memberId, Long postingId,
-      String type) {
+  public boolean isPostingDislike(Long postingId, String type) {
 
-    MemberEntity memberEntity = memberRepository.findById(memberId).get();
+    MemberEntity memberEntity = getMemberEntityWithJWT();
     PostingEntity postingEntity = postingRepository.findById(postingId).get();
     MemberHasPostingDislikeEntity memberHasPostingDislikeEntity = MemberHasPostingDislikeEntity.builder()
         .memberId(memberEntity).postingId(postingEntity).build();
@@ -229,5 +229,14 @@ public class PostingService {
         return false;
       }
     }
+  }
+
+  private MemberEntity getMemberEntityWithJWT() {
+    Long memberId = authService.getMemberIdByJWT();
+    Optional<MemberEntity> member = memberRepository.findById(memberId);
+    if (member.isEmpty()) {
+      throw new CustomMemberNotFoundException();
+    }
+    return member.get();
   }
 }

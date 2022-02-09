@@ -62,7 +62,6 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   private MemberEntity memberEntity;
   private CategoryEntity categoryEntity;
   private PostingEntity postingGeneralTest;
-  private PostingEntity postingDeleteTest;
   private ThumbnailEntity thumbnailEntity;
   private FileEntity imageEntity;
   private ThumbnailEntity thumbnailEntity2;
@@ -417,7 +416,6 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
 
     params.add("title", "mvc제목");
     params.add("content", "mvc내용");
-    params.add("memberId", memberEntity.getId().toString());
     params.add("categoryId", categoryEntity.getId().toString());
     params.add("ipAddress", "192.111.222");
     params.add("allowComment", "0");
@@ -430,6 +428,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         multipart("/v1/post/new")
             .file(file)
             .file(thumbnail)
+            .header("Authorization", userToken)
             .contentType(MediaType.MULTIPART_FORM_DATA)
             .params(params)
             .with(request -> {
@@ -443,7 +442,6 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
             requestParameters(
                 parameterWithName("title").description("제목"),
                 parameterWithName("content").description("내용"),
-                parameterWithName("memberId").description("멤버 ID"),
                 parameterWithName("categoryId").description("게시판 종류 ID"),
                 parameterWithName("ipAddress").description("IP 주소"),
                 parameterWithName("allowComment").description("댓글 허용?"),
@@ -583,9 +581,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   public void likePosting() throws Exception {
 
     ResultActions result = mockMvc.perform(get("/v1/post/like")
-        .param("memberId", memberEntity.getId().toString())
         .param("postingId", postingGeneralTest.getId().toString())
         .param("type", "INC")
+        .header("Authorization", userToken)
         .contentType(MediaType.APPLICATION_JSON));
 
 //    result.andDo(print());
@@ -595,7 +593,6 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .andDo(document("post-like",
             requestParameters(
                 parameterWithName("type").description("타입 (INC : 좋아요 +, DEC : 좋아요 -)"),
-                parameterWithName("memberId").description("멤버 ID"),
                 parameterWithName("postingId").description("게시판 ID")
             )
         ));
@@ -604,9 +601,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   @Test
   public void dislikePosting() throws Exception {
     ResultActions result = mockMvc.perform(get("/v1/post/dislike")
-        .param("memberId", memberEntity.getId().toString())
         .param("postingId", postingGeneralTest.getId().toString())
         .param("type", "INC")
+        .header("Authorization", userToken)
         .contentType(MediaType.APPLICATION_JSON));
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
@@ -614,7 +611,6 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .andDo(document("post-dislike",
             requestParameters(
                 parameterWithName("type").description("타입 (INC : 싫어요 +, DEC : 싫어요 -"),
-                parameterWithName("memberId").description("멤버 ID"),
                 parameterWithName("postingId").description("게시판 ID")
             )
         ));

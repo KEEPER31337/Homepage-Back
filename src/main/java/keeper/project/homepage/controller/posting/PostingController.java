@@ -216,10 +216,10 @@ public class PostingController {
   }
 
   @GetMapping(value = "/like")
-  public ResponseEntity<String> likePosting(@RequestParam("memberId") Long memberId,
-      @RequestParam("postingId") Long postingId, @RequestParam("type") String type) {
+  public ResponseEntity<String> likePosting(@RequestParam("postingId") Long postingId,
+      @RequestParam("type") String type) {
 
-    boolean result = postingService.isPostingLike(memberId, postingId, type.toUpperCase(
+    boolean result = postingService.isPostingLike(postingId, type.toUpperCase(
         Locale.ROOT));
 
     return result ? new ResponseEntity<>("success",
@@ -227,10 +227,10 @@ public class PostingController {
   }
 
   @GetMapping(value = "/dislike")
-  public ResponseEntity<String> dislikePosting(@RequestParam("memberId") Long memberId,
-      @RequestParam("postingId") Long postingId, @RequestParam("type") String type) {
+  public ResponseEntity<String> dislikePosting(@RequestParam("postingId") Long postingId,
+      @RequestParam("type") String type) {
 
-    boolean result = postingService.isPostingDislike(memberId, postingId, type.toUpperCase(
+    boolean result = postingService.isPostingDislike(postingId, type.toUpperCase(
         Locale.ROOT));
 
     return result ? new ResponseEntity<>("success",
