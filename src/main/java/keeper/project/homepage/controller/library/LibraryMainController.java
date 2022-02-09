@@ -6,6 +6,7 @@ import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.service.library.LibraryMainService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +21,7 @@ public class LibraryMainController {
   private final LibraryMainService libraryMainService;
 
   @GetMapping(value = "/recentbooks")
-  public List<BookEntity> displayRecentBooks() {
+  public Page<BookEntity> displayRecentBooks() {
 
     return libraryMainService.displayTenBooks();
   }

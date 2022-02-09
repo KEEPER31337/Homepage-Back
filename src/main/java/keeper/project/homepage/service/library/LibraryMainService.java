@@ -17,16 +17,12 @@ public class LibraryMainService {
 
   private final BookRepository bookRepository;
 
-  public List<BookEntity> displayTenBooks(){
-    List<BookEntity> bookEntityList =new ArrayList<>();
+  public Page<BookEntity> displayTenBooks(){
 
     Sort sort = Sort.by("id").descending();
     Pageable pageable = PageRequest.of(0, 10, sort);
     Page<BookEntity> bookEntityPage = bookRepository.findAll(pageable);
 
-    for(BookEntity bookEntity : bookEntityPage.getContent()){
-      bookEntityList.add(bookEntity);
-    }
-    return bookEntityList;
+    return bookEntityPage;
   }
 }
