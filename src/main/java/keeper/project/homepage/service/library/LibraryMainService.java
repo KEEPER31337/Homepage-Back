@@ -32,10 +32,10 @@ public class LibraryMainService {
     return bookEntityList;
   }
 
-  public List<BookEntity> searchBooks(String keyword){
-    List<BookEntity> bookEntitiesTitle = bookRepository.findByTitleContaining(keyword);
-    List<BookEntity> bookEntitiesAuthor = bookRepository.findByAuthorContaining(keyword);
-    List<BookEntity> bookEntitiesInformation = bookRepository.findByInformationContaining(keyword);
+  public List<BookEntity> searchBooks(String keyword, Pageable pageable){
+    List<BookEntity> bookEntitiesTitle = bookRepository.findByTitleContaining(keyword, pageable);
+    List<BookEntity> bookEntitiesAuthor = bookRepository.findByAuthorContaining(keyword, pageable);
+    List<BookEntity> bookEntitiesInformation = bookRepository.findByInformationContaining(keyword, pageable);
 
     Set<BookEntity> bookEntitySet = new HashSet<>(bookEntitiesTitle);
     bookEntitySet.addAll(bookEntitiesAuthor);
