@@ -42,3 +42,15 @@ include::{snippets}/search-books/request-parameters.adoc[]
 
 include::{snippets}/search-books/http-response.adoc[]
 include::{snippets}/search-books/response-fields.adoc[]
+
+== *선택 도서 정보*
+
+=== 요청
+
+include::{snippets}/selected-book/http-request.adoc[]
+include::{snippets}/selected-book/request-parameters.adoc[]
+
+=== 응답
+
+include::{snippets}/selected-book/http-response.adoc[]
+include::{snippets}/selected-book/response-fields.adoc[]
