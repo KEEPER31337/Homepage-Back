@@ -36,6 +36,7 @@ public class MemberDto {
   private String rank;
   private String type;
   private List<String> jobs;
+//  private String thumbnail;
 
   public MemberEntity toEntity() {
     return MemberEntity.builder()
@@ -45,19 +46,6 @@ public class MemberDto {
         .nickName(nickName)
         .emailAddress(emailAddress)
         .studentId(studentId)
-        .build();
-  }
-
-  // FIXME 꼭 바꿔야댐 변수명 조짐
-  public static MemberDto initWithEntity2(MemberEntity memberEntity) {
-    return MemberDto.builder()
-        .id(memberEntity.getId())
-        .emailAddress(memberEntity.getEmailAddress())
-        .nickName(memberEntity.getNickName())
-        .birthday(memberEntity.getBirthday())
-        .registerDate(memberEntity.getRegisterDate())
-        .point(memberEntity.getPoint())
-        .level(memberEntity.getLevel())
         .build();
   }
 
@@ -74,6 +62,9 @@ public class MemberDto {
     this.registerDate = memberEntity.getRegisterDate();
     this.point = memberEntity.getPoint();
     this.level = memberEntity.getLevel();
+//    if (memberEntity.getThumbnail() != null) {
+//      this.thumbnail = memberEntity.getThumbnail().getPath();
+//    }
     if (memberEntity.getMemberRank() != null) {
       this.rank = memberEntity.getMemberRank().getName();
     }

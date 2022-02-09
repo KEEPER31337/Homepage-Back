@@ -202,8 +202,12 @@ public class MemberService {
         .orElseThrow(CustomMemberNotFoundException::new);
     List<FriendEntity> friendList = me.getFollower();
 
-    List<MemberDto> followerList = friendList.stream()
-        .map(friend -> MemberDto.initWithEntity2(friend.getFollower())).toList();
+    List<MemberDto> followerList = new ArrayList<>();
+    for (FriendEntity friend : friendList) {
+      MemberDto follower = MemberDto.builder().build();
+      follower.initWithEntity(friend.getFollower());
+      followerList.add(follower);
+    }
     return followerList;
   }
 
@@ -212,8 +216,12 @@ public class MemberService {
         .orElseThrow(CustomMemberNotFoundException::new);
     List<FriendEntity> friendList = me.getFollowee();
 
-    List<MemberDto> followeeList = friendList.stream()
-        .map(friend -> MemberDto.initWithEntity2(friend.getFollowee())).toList();
+    List<MemberDto> followeeList = new ArrayList<>();
+    for (FriendEntity friend : friendList) {
+      MemberDto followee = MemberDto.builder().build();
+      followee.initWithEntity(friend.getFollowee());
+      followeeList.add(followee);
+    }
     return followeeList;
   }
 
@@ -296,11 +304,9 @@ public class MemberService {
     MemberEntity memberEntity = memberRepository.findById(memberId)
         .orElseThrow(CustomMemberNotFoundException::new);
 
+    ThumbnailEntity prevThumbnail = null;
     if (memberEntity.getThumbnail() != null) {
-      ThumbnailEntity prevThumbnail = thumbnailService.findById(
-          memberEntity.getThumbnail().getId());
-      fileService.deleteById(prevThumbnail.getFile().getId());
-      thumbnailService.deleteById(prevThumbnail.getId());
+      prevThumbnail = thumbnailService.findById(memberEntity.getThumbnail().getId());
     }
 
     FileEntity fileEntity = fileService.saveOriginalImage(image, ipAddress);
@@ -310,6 +316,11 @@ public class MemberService {
     memberEntity.changeThumbnail(thumbnailEntity);
     MemberDto result = new MemberDto();
     result.initWithEntity(memberRepository.save(memberEntity));
+
+    if (prevThumbnail != null) {
+      thumbnailService.deleteById(prevThumbnail.getId());
+      fileService.deleteById(prevThumbnail.getFile().getId());
+    }
     return result;
   }
 
