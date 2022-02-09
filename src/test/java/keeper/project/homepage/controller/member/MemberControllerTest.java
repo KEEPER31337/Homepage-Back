@@ -105,8 +105,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         + "keeper_files";
     final String thumbnailDirectoryPath = System.getProperty("user.dir") + File.separator
         + "keeper_files" + File.separator + "thumbnail";
-    final String imageFilePath = System.getProperty("user.dir") + File.separator
-        + "keeper_files" + File.separator + "test_file.jpg";
+    final String befUpdateImage = keeperFilesDirectoryPath + File.separator + "bef.jpg";
+    final String befUpdateThumbnail = thumbnailDirectoryPath + File.separator + "thumb_bef.jpg";
+    final String aftUpdateImage = keeperFilesDirectoryPath + File.separator + "aft.jpg";
 
     File keeperFilesDir = new File(keeperFilesDirectoryPath);
     File thumbnailDir = new File(thumbnailDirectoryPath);
@@ -119,7 +120,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
       thumbnailDir.mkdir();
     }
 
-    createImageForTest(imageFilePath);
+    createImageForTest(befUpdateImage);
+    createImageForTest(befUpdateThumbnail);
+    createImageForTest(aftUpdateImage);
   }
 
   private static void createImageForTest(String filePath) {
@@ -130,15 +133,15 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
   @BeforeEach
   public void setUp() throws Exception {
     imageEntity = FileEntity.builder()
-        .fileName("image.jpg")
-        .filePath("keeper_files" + File.separator + "image.jpg")
+        .fileName("bef.jpg")
+        .filePath("keeper_files" + File.separator + "bef.jpg")
         .fileSize(0L)
         .ipAddress(ipAddress1)
         .build();
     fileRepository.save(imageEntity);
 
     thumbnailEntity = ThumbnailEntity.builder()
-        .path("keeper_files" + File.separator + "thumbnail" + File.separator + "t_image.jpg")
+        .path("keeper_files" + File.separator + "thumbnail" + File.separator + "thumb_bef.jpg")
         .file(imageEntity).build();
     thumbnailRepository.save(thumbnailEntity);
 
@@ -400,6 +403,34 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
             )));
   }
 
+
+  @Test
+  @DisplayName("나를 팔로우한 사람 조회하기")
+  public void showFollower() throws Exception {
+    // follow: admin(follower) -> member
+    MemberEntity memberEntity = memberRepository.findByLoginId(loginId).get();
+    MemberEntity memberAdmin = memberRepository.findByLoginId(adminLoginId).get();
+    memberService.follow(memberAdmin.getId(), loginId);
+
+    mockMvc.perform(get("/v1/member/follower")
+            .header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.list[0].nickName").value(adminNickName))
+        .andDo(document("friend-show-follower",
+            responseFields(
+                fieldWithPath("success").description(""),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description(""),
+                fieldWithPath("list[].id").description("아이디"),
+                fieldWithPath("list[].emailAddress").description("이메일 주소"),
+                fieldWithPath("list[].nickName").description("닉네임"),
+                fieldWithPath("list[].birthday").description("생일").type(Date.class).optional(),
+                fieldWithPath("list[].registerDate").description("가입 날짜"),
+                fieldWithPath("list[].point").description("포인트 점수"),
+                fieldWithPath("list[].level").description("레벨")
+            )));
+  }
 
   @Test
   @DisplayName("Admin 권한으로 회원 등급 변경하기")
@@ -688,86 +719,58 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.code").value(-1002));
   }
 
-  // FIXME:  Resolved [java.lang.RuntimeException: 썸네일 파일이 이미 존재하지 않습니다.] 에러가 발생합니다
-//  @Test
-//  @DisplayName("기본 권한으로 본인의 썸네일 변경하기")
-//  public void updateThumbnails() throws Exception {
-//    MockMultipartFile image = new MockMultipartFile("image", "test_file.jpg", "image/jpg",
-//        new FileInputStream(new File(
-//            System.getProperty("user.dir") + File.separator + "keeper_files" + File.separator
-//                + "test_file.jpg")));
-//
-//    String docMsg = "실패 문구 종류 : " + " +\n"
-//        + "* 썸네일 용 이미지는 image 타입이어야 합니다." + " +\n"
-//        + "* 이미지 파일을 BufferedImage로 읽어들일 수 없습니다." + " +\n"
-//        + "* 이미지 파일을 읽는 것을 실패했습니다." + " +\n"
-//        + "* 썸네일 용 파일은 이미지 파일이어야 합니다." + " +\n"
-//        + "* 이미지 파일을 BufferedImage로 읽어들일 수 없습니다." + " +\n"
-//        + "* 이미지 파일을 읽는 것을 실패했습니다." + " +\n"
-//        + "* 썸네일 이미지용 후처리를 실패했습니다.";
-//    mockMvc.perform(RestDocumentationRequestBuilders.fileUpload("/v1/member/update/thumbnail")
-//            .file(image)
-//            .param("ipAddress", "111.111.111.111")
-//            .contentType(MediaType.MULTIPART_FORM_DATA)
-//            .header("Authorization", userToken)
-//            .with(request -> {
-//              request.setMethod("PUT");
-//              return request;
-//            }))
-//        .andDo(print())
-//        .andExpect(status().isOk())
-//        .andDo(document("member-update-thumbnail",
-//            requestParameters(
-//                parameterWithName("ipAddress").description("회원의 IP 주소")
-//            ),
-////            requestParts(
-////                partWithName("image").description("썸네일 용 원본 이미지")
-////            ),
-//            responseFields(
-//                fieldWithPath("success").description("성공: true +\n실패: false"),
-//                fieldWithPath("code").description("실패 시: -9999"),
-//                fieldWithPath("msg").description(docMsg),
-//                fieldWithPath("data.id").description("아이디"),
-//                fieldWithPath("data.emailAddress").description("이메일 주소"),
-//                fieldWithPath("data.nickName").description("닉네임"),
-//                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
-//                fieldWithPath("data.registerDate").description("가입 날짜"),
-//                fieldWithPath("data.point").description("포인트 점수"),
-//                fieldWithPath("data.level").description("레벨"),
-//                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
-//                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
-//                fieldWithPath("data.jobs").description(
-//                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
-//            )));
-//  }
-
   @Test
-  @DisplayName("나를 팔로우한 사람 조회하기")
-  public void showFollower() throws Exception {
-    // follow: admin(follower) -> member
-    MemberEntity memberEntity = memberRepository.findByLoginId(loginId).get();
-    MemberEntity memberAdmin = memberRepository.findByLoginId(adminLoginId).get();
-    memberService.follow(memberAdmin.getId(), loginId);
+  @DisplayName("기본 권한으로 본인의 썸네일 변경하기")
+  public void updateThumbnails() throws Exception {
+    MockMultipartFile image = new MockMultipartFile("image", "aft.jpg", "image/jpg",
+        new FileInputStream(new File(
+            System.getProperty("user.dir") + File.separator + "keeper_files" + File.separator
+                + "aft.jpg")));
 
-    mockMvc.perform(get("/v1/member/follower")
-            .header("Authorization", userToken))
+    String docMsg = "실패 문구 종류 : " + " +\n"
+        + "* 썸네일 용 이미지는 image 타입이어야 합니다." + " +\n"
+        + "* 이미지 파일을 BufferedImage로 읽어들일 수 없습니다." + " +\n"
+        + "* 이미지 파일을 읽는 것을 실패했습니다." + " +\n"
+        + "* 썸네일 용 파일은 이미지 파일이어야 합니다." + " +\n"
+        + "* 이미지 파일을 BufferedImage로 읽어들일 수 없습니다." + " +\n"
+        + "* 이미지 파일을 읽는 것을 실패했습니다." + " +\n"
+        + "* 썸네일 이미지용 후처리를 실패했습니다.";
+    mockMvc.perform(RestDocumentationRequestBuilders.fileUpload("/v1/member/update/thumbnail")
+            .file(image)
+            .param("ipAddress", "111.111.111.111")
+            .contentType(MediaType.MULTIPART_FORM_DATA)
+            .header("Authorization", userToken)
+            .with(request -> {
+              request.setMethod("PUT");
+              return request;
+            }))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.list[0].nickName").value(adminNickName))
-        .andDo(document("friend-show-follower",
+        .andDo(document("member-update-thumbnail",
+            requestParameters(
+                parameterWithName("ipAddress").description("회원의 IP 주소")
+            ),
+//            requestParts(
+//                partWithName("image").description("썸네일 용 원본 이미지")
+//            ),
             responseFields(
-                fieldWithPath("success").description(""),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description(""),
-                fieldWithPath("list[].id").description("아이디"),
-                fieldWithPath("list[].emailAddress").description("이메일 주소"),
-                fieldWithPath("list[].nickName").description("닉네임"),
-                fieldWithPath("list[].birthday").description("생일").type(Date.class).optional(),
-                fieldWithPath("list[].registerDate").description("가입 날짜"),
-                fieldWithPath("list[].point").description("포인트 점수"),
-                fieldWithPath("list[].level").description("레벨")
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("실패 시: -9999"),
+                fieldWithPath("msg").description(docMsg),
+                fieldWithPath("data.id").description("아이디"),
+                fieldWithPath("data.emailAddress").description("이메일 주소"),
+                fieldWithPath("data.nickName").description("닉네임"),
+                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
+                fieldWithPath("data.registerDate").description("가입 날짜"),
+                fieldWithPath("data.point").description("포인트 점수"),
+                fieldWithPath("data.level").description("레벨"),
+                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
+                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
+                fieldWithPath("data.jobs").description(
+                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
             )));
   }
+
 
   @Test
   @DisplayName("기본 권한으로 학번 변경하기")
