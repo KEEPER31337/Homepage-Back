@@ -204,7 +204,7 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
             )));
   }
 
-  //-------------------------------도서 검색 기능-----------------------------------
+  //-------------------------------선택 도서 정보-----------------------------------
   @Test
   @DisplayName("선택 도서 정보")
   public void selectedBookInformation() throws Exception {
