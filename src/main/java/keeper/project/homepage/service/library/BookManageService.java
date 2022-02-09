@@ -133,7 +133,7 @@ public class BookManageService {
   /**
    * 날짜 형 변환
    */
-  private String transferFormat(Date date) {
+  public String transferFormat(Date date) {
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 
     String transferDate = format.format(date);

@@ -1,6 +1,7 @@
 package keeper.project.homepage.controller.library;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -10,12 +11,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.awt.print.Book;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.transaction.Transactional;
@@ -26,12 +26,14 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
-import keeper.project.homepage.repository.library.BookRepository;
+import keeper.project.homepage.service.library.BookManageService;
+import keeper.project.homepage.service.util.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.LinkedMultiValueMap;
@@ -79,6 +81,22 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   final private long epochTime = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
 
   private MemberEntity memberEntity;
+
+  @Autowired
+  private final AuthService authService;
+  @Autowired
+  private final BookManageService bookManageService;
+  @Autowired
+  private final BookBorrowRepository bookBorrowRepository;
+
+  @Autowired
+  public BookManageControllerTest(AuthService authService,
+      BookManageService bookManageService,
+      BookBorrowRepository bookBorrowRepository) {
+    this.authService = authService;
+    this.bookManageService = bookManageService;
+    this.bookBorrowRepository = bookBorrowRepository;
+  }
 
   @BeforeEach
   public void setUp() throws Exception {
@@ -153,6 +171,28 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     String resultString = result.getResponse().getContentAsString();
     JacksonJsonParser jsonParser = new JacksonJsonParser();
     userToken = jsonParser.parseMap(resultString).get("data").toString();
+
+    BookEntity bookId = bookRepository.findByTitleAndAuthor(bookTitle1, bookAuthor1).get();
+    MemberEntity memberId = memberRepository.findById(1L).get();
+    String borrowDate = bookManageService.transferFormat(new Date());
+    String expireDate = getExpireDate();
+
+    bookBorrowRepository.save(
+        BookBorrowEntity.builder()
+            .memberId(memberId)
+            .bookId(bookId)
+            .quantity(1L)
+            .borrowDate(java.sql.Date.valueOf(borrowDate))
+            .expireDate(java.sql.Date.valueOf(expireDate))
+            .build());
+  }
+
+  private String getExpireDate(){
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(new Date());
+    calendar.add(Calendar.DATE, -15);
+
+    return bookManageService.transferFormat(calendar.getTime());
   }
 
   //--------------------------도서 등록------------------------------------
@@ -419,5 +459,29 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-2))
         .andExpect(jsonPath("$.msg").exists());
+  }
+
+  //--------------------------연체 도서 표시------------------------------------
+  @Test
+  @DisplayName("연체 도서 표시")
+  public void sendOverdueBooks() throws Exception {
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+
+    mockMvc.perform(get("/v1/overduebooks").contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andDo(document("overdue-books",
+            requestParameters(
+                parameterWithName("page").optional().description("페이지 번호(default = 0)"),
+                parameterWithName("size").optional().description("한 페이지당 출력 수(default = 10)")
+            ),
+            responseFields(
+                fieldWithPath("id").description("대여정보 ID"),
+                fieldWithPath("memberId").description("대여자 ID"),
+                fieldWithPath("bookIdr").description("책 ID"),
+                fieldWithPath("quantity").description("대여 수량"),
+                fieldWithPath("borrowDate").description("대여일"),
+                fieldWithPath("ExpireDate").description("만기일")
+            )));
   }
 }
