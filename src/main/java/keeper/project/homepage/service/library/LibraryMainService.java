@@ -1,7 +1,9 @@
 package keeper.project.homepage.service.library;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.repository.library.BookRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,5 +30,19 @@ public class LibraryMainService {
       bookEntityList.add(bookEntity);
     }
     return bookEntityList;
+  }
+
+  public List<BookEntity> searchBooks(String keyword){
+    List<BookEntity> bookEntitiesTitle = bookRepository.findByTitleContaining(keyword);
+    List<BookEntity> bookEntitiesAuthor = bookRepository.findByAuthorContaining(keyword);
+    List<BookEntity> bookEntitiesInformation = bookRepository.findByInformationContaining(keyword);
+
+    Set<BookEntity> bookEntitySet = new HashSet<>(bookEntitiesTitle);
+    bookEntitySet.addAll(bookEntitiesAuthor);
+    bookEntitySet.addAll(bookEntitiesInformation);
+
+    List<BookEntity> bookEntities = new ArrayList<>(bookEntitySet);
+
+    return bookEntities;
   }
 }
