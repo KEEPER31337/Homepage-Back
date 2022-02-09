@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,7 +26,7 @@ public class LibraryMainController {
   private final LibraryMainService libraryMainService;
 
   @GetMapping(value = "/recentbooks")
-  public List<BookEntity> displayRecentBooks() {
+  public Page<BookEntity> displayRecentBooks() {
 
     return libraryMainService.displayTenBooks();
   }
