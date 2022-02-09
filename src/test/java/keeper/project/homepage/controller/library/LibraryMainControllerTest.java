@@ -58,7 +58,7 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
   final private String bookTitle3 = "일반물리학";
   final private String bookAuthor3 = "우웩1";
   final private String bookPicture3 = "우우웩1.png";
-  final private String bookInformation3 = "우웩우웩1";
+  final private String bookInformation3 = "파이썬이 잘 설명됨";
   final private Long bookQuantity3 = 2L;
   final private Long bookBorrow3 = 0L;
   final private Long bookEnable3 = bookQuantity3 - bookBorrow3;
@@ -153,13 +153,45 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
   //-------------------------------최근 추가 도서 표시-----------------------------------
   @Test
   @DisplayName("최근 도서 10권 표시")
-  public void displayRecentBooks() throws Exception{
+  public void displayRecentBooks() throws Exception {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
     mockMvc.perform(get("/v1/recentbooks").contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
         .andExpect(status().isOk())
         .andDo(document("display-recentbooks",
+            responseFields(
+                fieldWithPath("[].id").description("책 ID"),
+                fieldWithPath("[].title").description("책 제목"),
+                fieldWithPath("[].author").description("책 저자"),
+                fieldWithPath("[].information").description("책 정보"),
+                fieldWithPath("[].total").description("전체 수"),
+                fieldWithPath("[].borrow").description("대여 중인 수"),
+                fieldWithPath("[].enable").description("대여 가능한 수"),
+                fieldWithPath("[].registerDate").description("등록된 날짜")
+            )));
+  }
+
+  //-------------------------------도서 검색 기능-----------------------------------
+  @Test
+  @DisplayName("도서 검색")
+  public void searchBooks() throws Exception {
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("keyword", "파이썬");
+
+    mockMvc.perform(get("/v1/searchbooks")
+            .params(params)
+            .param("page", "0")
+            .param("size", "5")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andDo(document("search-books",
+            requestParameters(
+                parameterWithName("keyword").description("검색어"),
+                parameterWithName("page").optional().description("페이지 번호(default = 0)"),
+                parameterWithName("size").optional().description("한 페이지당 출력 수(default = 10)")
+            ),
             responseFields(
                 fieldWithPath("[].id").description("책 ID"),
                 fieldWithPath("[].title").description("책 제목"),
