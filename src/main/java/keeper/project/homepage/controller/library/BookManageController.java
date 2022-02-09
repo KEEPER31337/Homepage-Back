@@ -9,6 +9,7 @@ import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.lang.Nullable;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +29,7 @@ public class BookManageController {
   private final BookManageService bookManageService;
   private final AuthService authService;
 
+  @Secured({"ROLE_사서", "ROLE_회장"})
   @PostMapping(value = "/addbook")
   public CommonResult add(
       @RequestParam String title,
@@ -39,6 +41,7 @@ public class BookManageController {
 
   }
 
+  @Secured({"ROLE_사서", "ROLE_회장"})
   @PostMapping(value = "/deletebook")
   public CommonResult delete(@RequestParam String title, @RequestParam String author,
       @RequestParam Long quantity) {
@@ -47,6 +50,7 @@ public class BookManageController {
 
   }
 
+  @Secured({"ROLE_사서", "ROLE_회장"})
   @PostMapping(value = "/borrowbook")
   public CommonResult borrow(
       @RequestParam String title,
