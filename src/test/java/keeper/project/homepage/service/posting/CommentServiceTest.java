@@ -161,9 +161,9 @@ public class CommentServiceTest {
     CommentDto commentDto = new CommentDto();
     commentDto.setContent("댓글 내용");
     commentDto.setIpAddress("111.111.111.111");
-    commentDto.setMemberId(memberEntity.getId());
 
-    CommentDto createDto = commentService.save(commentDto, postingEntity.getId());
+    CommentDto createDto = commentService.save(commentDto, postingEntity.getId(),
+        memberEntity.getId());
     Assertions.assertNotNull(createDto.getId());
   }
 
@@ -184,28 +184,19 @@ public class CommentServiceTest {
     CommentDto commentDto = new CommentDto();
     commentDto.setContent("수정한 댓글 내용");
     commentDto.setIpAddress("111.111.111.111");
-    commentDto.setMemberId(memberEntity.getId());
 
     Long updateId = commentEntity.getId();
 
-    CommentDto updateDto = commentService.updateById(commentDto, updateId);
+    CommentDto updateDto = commentService.updateById(commentDto, updateId, memberEntity.getId());
     Assertions.assertNotNull(updateDto.getId());
     Assertions.assertEquals(updateDto.getContent(), "수정한 댓글 내용");
-  }
-
-  @Test
-  @DisplayName("댓글 조회")
-  public void findByIdTest() throws RuntimeException {
-    Long findId = commentEntity.getId();
-    CommentEntity findComment = commentService.findById(findId);
-    Assertions.assertNotNull(findComment);
   }
 
   @Test
   @DisplayName("댓글 삭제")
   public void deleteTest() throws RuntimeException {
     Long deleteId = commentEntity.getId();
-    commentService.deleteById(deleteId);
+    commentService.deleteById(deleteId, memberEntity.getId());
     Assertions.assertTrue(commentRepository.findById(deleteId).isEmpty());
   }
 

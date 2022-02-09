@@ -25,8 +25,8 @@ public class CommentDto {
   public Integer likeCount;
   public Integer dislikeCount;
   public Long parentId;
-  public Long memberId;
-  public Long postingId;
+  //  public Long memberId;
+//  public Long postingId;
 
   public CommentEntity toEntity(PostingEntity postingEntity, MemberEntity memberEntity) {
     return CommentEntity.builder()
