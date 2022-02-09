@@ -194,7 +194,6 @@ public class BookManageService {
   public CommonResult doReturn(String title, String author, Long returnMemberId, Long quantity) {
 
     Long bookId = bookRepository.findByTitleAndAuthor(title, author).get().getId();  //왜 여기서 오류가 발생하는거지 다른 건 다 잘 작동 됐는데
-    System.out.println(bookId);
     if (!bookBorrowRepository.findByBookIdAndMemberId(bookId, returnMemberId)
         .isPresent()) {
       throw new CustomBookNotFoundException("책이 존재하지 않습니다.");
