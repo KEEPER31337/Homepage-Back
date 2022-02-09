@@ -1,5 +1,7 @@
 package keeper.project.homepage.dto.member;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonInclude(Include.NON_NULL)
 public class MemberDto {
 
   private Long id;
@@ -27,6 +30,7 @@ public class MemberDto {
   private Date birthday;
   private String studentId;
   private Date registerDate;
+  private String followeeLoginId;
   private Integer point;
   private Integer level;
   private String rank;
@@ -44,6 +48,18 @@ public class MemberDto {
         .build();
   }
 
+  // FIXME 꼭 바꿔야댐 변수명 조짐
+  public static MemberDto initWithEntity2(MemberEntity memberEntity) {
+    return MemberDto.builder()
+        .emailAddress(memberEntity.getEmailAddress())
+        .nickName(memberEntity.getNickName())
+        .birthday(memberEntity.getBirthday())
+        .registerDate(memberEntity.getRegisterDate())
+        .point(memberEntity.getPoint())
+        .level(memberEntity.getLevel())
+        .build();
+  }
+
   public void initWithEntity(MemberEntity memberEntity) {
     // 민감한 정보 제외
     this.id = null; //memberEntity.getId();
@@ -51,6 +67,7 @@ public class MemberDto {
     this.password = null;//memberEntity.getPassword();
     this.realName = null;//memberEntity.getRealName();
     this.nickName = memberEntity.getNickName();
+    this.birthday = memberEntity.getBirthday();
     this.emailAddress = memberEntity.getEmailAddress();
     this.studentId = null;//memberEntity.getStudentId();
     this.registerDate = memberEntity.getRegisterDate();
@@ -69,4 +86,6 @@ public class MemberDto {
               this.jobs.add(job.getMemberJobEntity().getName()));
     }
   }
+
 }
+

@@ -3,48 +3,46 @@ package keeper.project.homepage.service.library;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.entity.library.BookBorrowEntity;
 import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.exception.CustomBookNotFoundException;
+import keeper.project.homepage.exception.CustomBookOverTheMaxException;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import keeper.project.homepage.service.ResponseService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class BookManageService {
 
   private final BookRepository bookRepository;
   private final BookBorrowRepository bookBorrowRepository;
   private final MemberRepository memberRepository;
   private static final Integer MAXIMUM_ALLOWD_BOOK_NUMBER = 4;
-
-  @Autowired
-  public BookManageService(BookRepository bookRepository,
-      MemberRepository memberRepository,
-      BookBorrowRepository bookBorrowRepository,
-      MemberRepository memberRepository1) {
-    this.bookRepository = bookRepository;
-    this.bookBorrowRepository = bookBorrowRepository;
-    this.memberRepository = memberRepository1;
-  }
+  private final ResponseService responseService;
 
   /**
    * 도서 최대 권수 체크
    */
-  public Long isCanAdd(String title, String author, Long quantity) {
+  public CommonResult doAdd(String title, String author, String information, Long quantity) {
 
     Long nowTotal = 0L;
     if (bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
       nowTotal = bookRepository.findByTitleAndAuthor(title, author).get().getTotal();
     }
+    Long total = quantity + nowTotal;
 
     if (quantity + nowTotal > MAXIMUM_ALLOWD_BOOK_NUMBER) {
-      return -1L;
+      throw new CustomBookOverTheMaxException("수량 초과입니다.");
     }
 
-    return nowTotal + quantity;
+    addBook(title, author, information, total);
+    return responseService.getSuccessResult();
   }
 
   /**
@@ -70,12 +68,22 @@ public class BookManageService {
   /**
    * 도서 삭제가 가능한지 체크
    */
-  public boolean isExist(String title, String author) {
+  public CommonResult doDelete(String title, String author, Long quantity) {
 
     if (!bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
-      return false;
+      throw new CustomBookNotFoundException("책이 존재하지 않습니다.");
     }
-    return true;
+    Long numOfBooks = bookRepository.findByTitleAndAuthor(title, author).get().getEnable();
+    Long numOfBorrow = bookRepository.findByTitleAndAuthor(title, author).get().getBorrow();
+    if (numOfBooks - quantity == 0 && numOfBorrow == 0) {
+      BookEntity bookEntity = bookRepository.findByTitleAndAuthor(title, author).get();
+      bookRepository.delete(bookEntity);
+    } else if (numOfBooks - quantity < 0) {
+      throw new CustomBookOverTheMaxException("수량 초과입니다.");
+    } else {
+      updateDeleteInformation(title, author, quantity);
+    }
+    return responseService.getSuccessResult();
   }
 
   /**
@@ -102,20 +110,21 @@ public class BookManageService {
   /**
    * 도서 대여 가능 여부 체크
    */
-  public Long isCanBorrow(String title, String author, Long quantity) {
+  public CommonResult doBorrow(String title, String author, Long borrowMemberId, Long quantity) {
 
     Long nowEnable = 0L;
     if (bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
       nowEnable = bookRepository.findByTitleAndAuthor(title, author).get().getEnable();
     } else {
-      return -2L;
+      throw new CustomBookNotFoundException("책이 존재하지 않습니다.");
     }
 
     if (quantity > nowEnable) {
-      return -1L;
+      throw new CustomBookOverTheMaxException("수량 초과입니다.");
     }
 
-    return quantity;
+    borrowBook(title, author, borrowMemberId, quantity);
+    return responseService.getSuccessResult();
   }
 
   /**
