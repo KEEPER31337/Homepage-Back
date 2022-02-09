@@ -66,5 +66,6 @@ logs
 ### env ###
 .env
 
-### sql init file for docker setting ###
-docker/config/*.sql
+### local environment test files ###
+docker/config
+docker/app.jar
