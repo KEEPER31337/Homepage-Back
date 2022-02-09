@@ -38,6 +38,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,11 +49,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping(value = "/v1")
 public class MemberController {
 
-  private final MemberRepository memberRepository;
   private final MemberService memberService;
   private final ResponseService responseService;
-  private final ThumbnailService thumbnailService;
-  private final FileService fileService;
   private final AuthService authService;
 
   @Secured("ROLE_회장") // 각 리소스별 권한 설정
@@ -82,7 +80,9 @@ public class MemberController {
 
   @Secured("ROLE_회원")
   @PutMapping(value = "/member/update/thumbnail")
-  public SingleResult<MemberDto> updateThumbnail(MultipartFile image, String ipAddress) {
+  public SingleResult<MemberDto> updateThumbnail(
+      @RequestParam("thumbnail") MultipartFile image,
+      @RequestParam("ipAddress") String ipAddress) {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
     Long id = authService.getMemberIdByJWT();
     MemberDto updated = memberService.updateThumbnails(id, image, ipAddress);

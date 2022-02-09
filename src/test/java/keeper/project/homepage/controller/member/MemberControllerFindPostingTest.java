@@ -9,13 +9,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
-import keeper.project.homepage.entity.FileEntity;
-import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
@@ -26,7 +23,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +41,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
   private MemberEntity memberEntity;
   private MemberEntity memberEntity2;
   private CategoryEntity categoryEntity;
-  private PostingEntity postingEntity;
+  private PostingEntity tempPosting;
 
   @BeforeEach
   public void setup() throws Exception {
@@ -97,15 +93,15 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
         .name("테스트 게시판").build();
     categoryRepository.save(categoryEntity);
 
-    postingEntity = PostingEntity.builder()
-        .title("test 게시판 제목")
-        .content("test 게시판 제목 내용")
+    tempPosting = PostingEntity.builder()
+        .title("test 임시글 제목")
+        .content("test 임시글 내용")
         .memberId(memberEntity2)
         .categoryId(categoryEntity)
         .ipAddress("192.11.222.333")
         .allowComment(0)
         .isNotice(0)
-        .isTemp(0)
+        .isTemp(1)
         .isSecret(1)
         .likeCount(0)
         .dislikeCount(0)
@@ -115,9 +111,9 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
         .updateTime(new Date())
         .password("asd")
         .build();
-    memberEntity.getPosting().add(postingEntity);
+    memberEntity.getPosting().add(tempPosting);
 
-    postingRepository.save(postingEntity);
+    postingRepository.save(tempPosting);
     for (Integer i = 0; i < 15; i++) {
       PostingEntity posting = postingRepository.save(PostingEntity.builder()
           .title("test 게시판 제목" + i.toString())
@@ -173,12 +169,12 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
             .param("page", "0")
             .param("size", "5"))
         .andDo(print())
-        .andExpect(jsonPath(isExistTitle, normalTitle).exists())
         .andExpect(jsonPath(isExistTitle, normalTitle + "0").exists())
         .andExpect(jsonPath(isExistTitle, normalTitle + "1").exists())
         .andExpect(jsonPath(isExistTitle, normalTitle + "2").exists())
         .andExpect(jsonPath(isExistTitle, normalTitle + "3").exists())
-        .andExpect(jsonPath(isExistTitle, normalTitle + "4").doesNotExist())
+        .andExpect(jsonPath(isExistTitle, normalTitle + "4").exists())
+        .andExpect(jsonPath(isExistTitle, normalTitle + "5").doesNotExist())
         .andExpect(status().isOk());
 
     mockMvc.perform(get("/v1/member/post")
@@ -186,8 +182,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
             .param("page", "3")
             .param("size", "5"))
         .andDo(print())
-        .andExpect(jsonPath(isExistTitle, normalTitle + "14").exists())
-        .andExpect(jsonPath(isExistTitle, normalTitle + "15").doesNotExist())
+        .andExpect(jsonPath("$.list").isEmpty())
         .andExpect(status().isOk());
   }
 
@@ -201,12 +196,12 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
             .param("page", "0")
             .param("size", "5"))
         .andDo(print())
+        .andExpect(jsonPath(isExistTitle, tempTitle).exists())
         .andExpect(jsonPath(isExistTitle, tempTitle + "0").exists())
         .andExpect(jsonPath(isExistTitle, tempTitle + "1").exists())
         .andExpect(jsonPath(isExistTitle, tempTitle + "2").exists())
         .andExpect(jsonPath(isExistTitle, tempTitle + "3").exists())
-        .andExpect(jsonPath(isExistTitle, tempTitle + "4").exists())
-        .andExpect(jsonPath(isExistTitle, tempTitle + "5").doesNotExist())
+        .andExpect(jsonPath(isExistTitle, tempTitle + "4").doesNotExist())
         .andExpect(status().isOk());
 
     mockMvc.perform(get("/v1/member/temp_post")
@@ -214,14 +209,15 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
             .param("page", "3")
             .param("size", "5"))
         .andDo(print())
-        .andExpect(jsonPath("$.list").isEmpty())
+        .andExpect(jsonPath(isExistTitle, tempTitle + "14").exists())
+        .andExpect(jsonPath(isExistTitle, tempTitle + "15").doesNotExist())
         .andExpect(status().isOk());
   }
 
   @Test
   @DisplayName("자신이 작성한 게시글 하나 조회하기")
   public void findPostingRedirect() throws Exception {
-    Long postId = postingEntity.getId();
+    Long postId = tempPosting.getId();
     mockMvc.perform(get("/v1/member/temp_post/{pid}", postId)
             .header("Authorization", userToken)
         )
@@ -230,25 +226,24 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
         .andExpect(status().is3xxRedirection());
   }
 
-  // FIXME @정채원!
-//  @Test
-//  @DisplayName("다른사람이 임시저장 글에 접근했을 때")
-//  public void findPostingBadAccess() throws Exception {
-//    // posting 조회 테스트지만 테스트용 객체들이 잘 만들어져 있어서 여기서 테스트했음
-//    Long postId = postingEntity.getId();
-//
-//    mockMvc.perform(get("/v1/post/{pid}", postId)
-//            .header("Authorization", userToken)
-//            .param("page", "0")
-//            .param("size", "5"))
-//        .andDo(print())
-//        .andExpect(status().is4xxClientError());
-//  }
+  @Test
+  @DisplayName("다른사람이 임시저장 글에 접근했을 때")
+  public void findPostingBadAccess() throws Exception {
+    // posting 조회 테스트지만 테스트용 객체들이 잘 만들어져 있어서 여기서 테스트했음
+    Long postId = tempPosting.getId();
+
+    mockMvc.perform(get("/v1/post/{pid}", postId)
+            .header("Authorization", userToken)
+            .param("page", "0")
+            .param("size", "5"))
+        .andDo(print())
+        .andExpect(status().is4xxClientError());
+  }
 
   @Test
   @DisplayName("자신이 작성한 게시글 수정하기")
   public void updatePostingRedirect() throws Exception {
-    Long postId = postingEntity.getId();
+    Long postId = tempPosting.getId();
     mockMvc.perform(put("/v1/member/post/{pid}", postId)
             .header("Authorization", userToken)
         )
@@ -260,7 +255,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
   @Test
   @DisplayName("자신이 작성한 게시글 삭제하기")
   public void deletePostingRedirect() throws Exception {
-    Long postId = postingEntity.getId();
+    Long postId = tempPosting.getId();
     mockMvc.perform(delete("/v1/member/post/{pid}", postId)
             .header("Authorization", userToken)
         )
