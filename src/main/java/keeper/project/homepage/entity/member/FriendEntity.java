@@ -35,4 +35,5 @@ public class FriendEntity {
   private MemberEntity followee;
   @Column
   private Date registerDate;
+
 }

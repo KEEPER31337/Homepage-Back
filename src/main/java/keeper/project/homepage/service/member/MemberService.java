@@ -6,30 +6,27 @@ import java.util.Optional;
 import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.dto.result.OtherMemberInfoResult;
 import keeper.project.homepage.entity.member.FriendEntity;
+import keeper.project.homepage.dto.request.PointTransferRequest;
+import keeper.project.homepage.dto.result.PointTransferResult;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.CustomMemberNotFoundException;
+import keeper.project.homepage.exception.CustomTransferPointLackException;
 import keeper.project.homepage.repository.member.FriendRepository;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import keeper.project.homepage.common.ImageCenterCrop;
 import keeper.project.homepage.dto.EmailAuthDto;
-import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.dto.member.MemberJobDto;
 import keeper.project.homepage.dto.member.MemberRankDto;
 import keeper.project.homepage.dto.member.MemberTypeDto;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.EmailAuthRedisEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.member.MemberRankEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
 import keeper.project.homepage.exception.CustomAuthenticationEntryPointException;
-import keeper.project.homepage.exception.CustomMemberNotFoundException;
-import keeper.project.homepage.exception.CustomSignUpFailedException;
 import keeper.project.homepage.repository.member.EmailAuthRedisRepository;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
@@ -42,13 +39,6 @@ import keeper.project.homepage.service.mail.MailService;
 import keeper.project.homepage.service.sign.DuplicateCheckService;
 import lombok.RequiredArgsConstructor;
 import keeper.project.homepage.dto.posting.PostingDto;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.posting.PostingEntity;
-import keeper.project.homepage.exception.CustomMemberNotFoundException;
-import keeper.project.homepage.repository.member.MemberRepository;
-import keeper.project.homepage.service.posting.PostingService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -361,5 +351,41 @@ public class MemberService {
         .orElseThrow(CustomMemberNotFoundException::new);
 
     return new OtherMemberInfoResult(memberEntity);
+  }
+
+  public PointTransferResult transferPoint(Long senderId,
+      PointTransferRequest pointTransferRequest) {
+    MemberEntity senderMember = memberRepository.findById(senderId)
+        .orElseThrow(CustomMemberNotFoundException::new);
+    MemberEntity receiverMember = memberRepository.findById(pointTransferRequest.getReceiverId())
+        .orElseThrow(CustomMemberNotFoundException::new);
+
+    if (senderMember.getPoint() < pointTransferRequest.getTransmissionPoint()) {
+      throw new CustomTransferPointLackException("잔여 포인트가 부족합니다.");
+    }
+
+    int senderRemainingPoint = updateSenderPoint(senderMember,
+        pointTransferRequest.getTransmissionPoint());
+    int receiverRemainingPoint = updateReceiverPoint(receiverMember,
+        pointTransferRequest.getTransmissionPoint());
+
+    return new PointTransferResult(senderId, pointTransferRequest, senderRemainingPoint,
+        receiverRemainingPoint);
+  }
+
+  public int updateSenderPoint(MemberEntity member, int point) {
+    int remainingPoint = member.getPoint();
+    member.updatePoint(remainingPoint - point);
+    memberRepository.save(member);
+
+    return member.getPoint();
+  }
+
+  public int updateReceiverPoint(MemberEntity member, int point) {
+    int remainingPoint = member.getPoint();
+    member.updatePoint(remainingPoint + point);
+    memberRepository.save(member);
+
+    return member.getPoint();
   }
 }

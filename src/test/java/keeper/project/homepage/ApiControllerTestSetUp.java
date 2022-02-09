@@ -69,7 +69,7 @@ public abstract class ApiControllerTestSetUp {
 
   @Autowired
   protected FriendRepository friendRepository;
-  
+
   @Autowired
   protected AttendanceRepository attendanceRepository;
 

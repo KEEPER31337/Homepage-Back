@@ -12,7 +12,6 @@ import static org.springframework.restdocs.request.RequestDocumentation.requestP
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -27,6 +26,9 @@ import keeper.project.homepage.entity.member.FriendEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
+import keeper.project.homepage.exception.CustomAboutFailedException;
+import keeper.project.homepage.exception.CustomMemberNotFoundException;
+import keeper.project.homepage.exception.CustomTransferPointLackException;
 import keeper.project.homepage.entity.member.MemberRankEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
 import keeper.project.homepage.exception.CustomAboutFailedException;
@@ -64,6 +66,7 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
   final private String nickName = "JeongHyeonMo";
   final private String emailAddress = "test@k33p3r.com";
   final private String studentId = "201724579";
+  final private int point = 100;
 
   final private String adminLoginId = "hyeonmoAdmin";
   final private String adminPassword = "keeper2";
@@ -72,6 +75,7 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
   final private String adminEmailAddress = "test2@k33p3r.com";
   final private String adminStudentId = "201724580";
   final private String adminPhoneNumber = "0100100101";
+  final private int adminPoint = 50;
 
   final private String ipAddress1 = "127.0.0.1";
 
@@ -147,6 +151,7 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         .nickName(nickName)
         .emailAddress(emailAddress)
         .studentId(studentId)
+        .point(point)
         .memberType(memberTypeEntity)
         .memberRank(memberRankEntity)
         .thumbnail(thumbnailEntity)
@@ -196,6 +201,7 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         .nickName(adminNickName)
         .emailAddress(adminEmailAddress)
         .studentId(adminStudentId)
+        .point(adminPoint)
         .memberType(memberTypeEntity)
         .memberRank(memberRankEntity)
         .thumbnail(thumbnailEntity)
@@ -839,6 +845,67 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         .andExpect(result -> assertTrue(
             result.getResolvedException() instanceof CustomMemberNotFoundException))
         .andExpect(jsonPath("$.success").value(false));
+  }
+
+  @Test
+  @DisplayName("포인트 선물하기 - 성공")
+  public void transferPoint() throws Exception {
+    MemberEntity receiver = memberRepository.findByLoginId("hyeonmoAdmin").orElseThrow(
+        CustomAboutFailedException::new);
+
+    String content = "{\n"
+        + "\"receiverId\":\"" + receiver.getId() + "\",\n"
+        + "\"transmissionPoint\":\"" + 20 + "\""
+        + "}";
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .put("/v1/member/update/point/transfer")
+            .header("Authorization", userToken)
+            .content(content)
+            .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.senderRemainingPoint").value(point-20))
+        .andExpect(jsonPath("$.data.receiverRemainingPoint").value(adminPoint+20));
+  }
+
+  @Test
+  @DisplayName("포인트 선물하기 - 실패(포인트 부족)")
+  public void transferPointFailByPointLack() throws Exception {
+    MemberEntity receiver = memberRepository.findByLoginId("hyeonmoAdmin").orElseThrow(
+        CustomAboutFailedException::new);
+
+    String content = "{\n"
+        + "\"receiverId\":\"" + receiver.getId() + "\",\n"
+        + "\"transmissionPoint\":\"" + 101 + "\""
+        + "}";
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .put("/v1/member/update/point/transfer")
+            .header("Authorization", userToken)
+            .content(content)
+            .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andDo(print())
+        .andExpect(result -> assertTrue(
+            result.getResolvedException() instanceof CustomTransferPointLackException));
+  }
+
+  @Test
+  @DisplayName("포인트 선물하기 - 실패(멤버 존재 X)")
+  public void transferPointFailByNullMember() throws Exception {
+    String content = "{\n"
+        + "\"receiverId\":\"" + 0 + "\",\n"
+        + "\"transmissionPoint\":\"" + 20 + "\""
+        + "}";
+
+    mockMvc.perform(MockMvcRequestBuilders
+            .put("/v1/member/update/point/transfer")
+            .header("Authorization", userToken)
+            .content(content)
+            .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andDo(print())
+        .andExpect(result -> assertTrue(
+            result.getResolvedException() instanceof CustomMemberNotFoundException));
   }
 
 }

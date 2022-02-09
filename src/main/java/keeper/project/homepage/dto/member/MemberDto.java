@@ -59,7 +59,7 @@ public class MemberDto {
         .level(memberEntity.getLevel())
         .build();
   }
-  
+
   public void initWithEntity(MemberEntity memberEntity) {
     // 민감한 정보 제외
     this.id = null; //memberEntity.getId();
@@ -86,4 +86,6 @@ public class MemberDto {
               this.jobs.add(job.getMemberJobEntity().getName()));
     }
   }
+
 }
+

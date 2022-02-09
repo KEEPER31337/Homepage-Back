@@ -8,16 +8,18 @@ import keeper.project.homepage.dto.member.MemberJobDto;
 import keeper.project.homepage.dto.member.MemberRankDto;
 import keeper.project.homepage.dto.member.MemberTypeDto;
 import keeper.project.homepage.dto.posting.PostingDto;
+import keeper.project.homepage.dto.request.PointTransferRequest;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.dto.result.OtherMemberInfoResult;
+import keeper.project.homepage.dto.result.PointTransferResult;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.ResponseService;
-import keeper.project.homepage.service.ThumbnailService;
 import keeper.project.homepage.service.member.MemberService;
+import keeper.project.homepage.service.ThumbnailService;
 import keeper.project.homepage.service.posting.PostingService;
 import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -47,8 +49,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class MemberController {
 
   private final MemberRepository memberRepository;
-  private final ResponseService responseService;
   private final MemberService memberService;
+  private final ResponseService responseService;
   private final ThumbnailService thumbnailService;
   private final FileService fileService;
   private final AuthService authService;
@@ -233,5 +235,16 @@ public class MemberController {
       @PathVariable("id") Long id
   ) {
     return responseService.getSuccessSingleResult(memberService.getOtherMemberInfo(id));
+
+  }
+
+  @Secured("ROLE_회원")
+  @PutMapping("/member/update/point/transfer")
+  public SingleResult<PointTransferResult> transferPoint(
+      @RequestBody PointTransferRequest pointTransferRequest
+  ) {
+    Long senderId = authService.getMemberIdByJWT();
+    return responseService.getSuccessSingleResult(
+        memberService.transferPoint(senderId, pointTransferRequest));
   }
 }
