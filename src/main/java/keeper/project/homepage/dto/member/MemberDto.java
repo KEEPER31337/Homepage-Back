@@ -51,6 +51,7 @@ public class MemberDto {
   // FIXME 꼭 바꿔야댐 변수명 조짐
   public static MemberDto initWithEntity2(MemberEntity memberEntity) {
     return MemberDto.builder()
+        .id(memberEntity.getId())
         .emailAddress(memberEntity.getEmailAddress())
         .nickName(memberEntity.getNickName())
         .birthday(memberEntity.getBirthday())
@@ -62,7 +63,7 @@ public class MemberDto {
 
   public void initWithEntity(MemberEntity memberEntity) {
     // 민감한 정보 제외
-    this.id = null; //memberEntity.getId();
+    this.id = memberEntity.getId();
     this.loginId = null;//memberEntity.getLoginId();
     this.password = null;//memberEntity.getPassword();
     this.realName = null;//memberEntity.getRealName();
