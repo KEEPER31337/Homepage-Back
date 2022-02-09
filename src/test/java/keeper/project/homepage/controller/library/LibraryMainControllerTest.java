@@ -203,4 +203,34 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("[].registerDate").description("등록된 날짜")
             )));
   }
+
+  //-------------------------------도서 검색 기능-----------------------------------
+  @Test
+  @DisplayName("선택 도서 정보")
+  public void selectedBookInformation() throws Exception {
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("title", bookTitle1);
+    params.add("author", bookAuthor1);
+
+    mockMvc.perform(get("/v1/selectedbook/information")
+            .params(params)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andDo(document("selected-book",
+            requestParameters(
+                parameterWithName("title").description("책 제목"),
+                parameterWithName("author").description("책 저자")
+            ),
+            responseFields(
+                fieldWithPath("id").description("책 ID"),
+                fieldWithPath("title").description("책 제목"),
+                fieldWithPath("author").description("책 저자"),
+                fieldWithPath("information").description("책 정보"),
+                fieldWithPath("total").description("전체 수"),
+                fieldWithPath("borrow").description("대여 중인 수"),
+                fieldWithPath("enable").description("대여 가능한 수"),
+                fieldWithPath("registerDate").description("등록된 날짜")
+            )));
+  }
 }
