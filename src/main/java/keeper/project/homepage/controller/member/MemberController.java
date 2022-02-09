@@ -1,6 +1,5 @@
 package keeper.project.homepage.controller.member;
 
-import keeper.project.homepage.dto.request.PointTransferRequest;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import keeper.project.homepage.dto.EmailAuthDto;
@@ -9,8 +8,10 @@ import keeper.project.homepage.dto.member.MemberJobDto;
 import keeper.project.homepage.dto.member.MemberRankDto;
 import keeper.project.homepage.dto.member.MemberTypeDto;
 import keeper.project.homepage.dto.posting.PostingDto;
+import keeper.project.homepage.dto.request.PointTransferRequest;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.ListResult;
+import keeper.project.homepage.dto.result.OtherMemberInfoResult;
 import keeper.project.homepage.dto.result.PointTransferResult;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -226,6 +227,15 @@ public class MemberController {
     Long id = authService.getMemberIdByJWT();
     List<MemberDto> followeeList = memberService.showFollowee(id);
     return responseService.getSuccessListResult(followeeList);
+  }
+
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/member/other/info/{id}")
+  public SingleResult<OtherMemberInfoResult> getOtherMemberInfo(
+      @PathVariable("id") Long id
+  ) {
+    return responseService.getSuccessSingleResult(memberService.getOtherMemberInfo(id));
+
   }
 
   @Secured("ROLE_회원")
