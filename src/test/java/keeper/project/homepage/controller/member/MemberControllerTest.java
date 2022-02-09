@@ -769,6 +769,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.jobs").description(
                     "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
             )));
+    Assertions.assertTrue(
+        memberEntity.getThumbnail().getPath().equals(
+            "keeper_files" + File.separator + "aft.jpg") == false);
   }
 
 

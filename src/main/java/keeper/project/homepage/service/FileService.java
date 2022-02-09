@@ -50,6 +50,8 @@ public class FileService {
       return null;
     }
     String fileName = multipartFile.getOriginalFilename();
+    String[] fileFormatSplitArray = fileName.split("\\.");
+    String fileFormat = fileFormatSplitArray[fileFormatSplitArray.length - 1];
     Timestamp timestamp = new Timestamp(System.nanoTime());
     fileName += timestamp.toString();
     fileName = encryptSHA256(fileName);
@@ -57,7 +59,7 @@ public class FileService {
     if (!new File(absDirPath).exists()) {
       new File(absDirPath).mkdir();
     }
-    String filePath = absDirPath + File.separator + fileName;
+    String filePath = absDirPath + File.separator + fileName + "." + fileFormat;
     File file = new File(filePath);
     try {
       multipartFile.transferTo(file);

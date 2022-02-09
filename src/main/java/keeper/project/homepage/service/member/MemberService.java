@@ -296,11 +296,9 @@ public class MemberService {
     MemberEntity memberEntity = memberRepository.findById(memberId)
         .orElseThrow(CustomMemberNotFoundException::new);
 
+    ThumbnailEntity prevThumbnail = null;
     if (memberEntity.getThumbnail() != null) {
-      ThumbnailEntity prevThumbnail = thumbnailService.findById(
-          memberEntity.getThumbnail().getId());
-      fileService.deleteById(prevThumbnail.getFile().getId());
-      thumbnailService.deleteById(prevThumbnail.getId());
+      prevThumbnail = thumbnailService.findById(memberEntity.getThumbnail().getId());
     }
 
     FileEntity fileEntity = fileService.saveOriginalImage(image, ipAddress);
@@ -310,6 +308,11 @@ public class MemberService {
     memberEntity.changeThumbnail(thumbnailEntity);
     MemberDto result = new MemberDto();
     result.initWithEntity(memberRepository.save(memberEntity));
+
+    if (prevThumbnail != null) {
+      thumbnailService.deleteById(prevThumbnail.getId());
+      fileService.deleteById(prevThumbnail.getFile().getId());
+    }
     return result;
   }
 
