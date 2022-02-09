@@ -1,8 +1,10 @@
 package keeper.project.homepage.service.library;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.entity.library.BookBorrowEntity;
 import keeper.project.homepage.entity.library.BookEntity;
@@ -14,6 +16,7 @@ import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.service.ResponseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -186,4 +189,26 @@ public class BookManageService {
 
     return transferFormat(calendar.getTime());
   }
+
+  /**
+   * 연체 도서 구하기
+   */
+  public List<BookBorrowEntity> sendOverdueBooks(Pageable pageable){
+
+    List<BookBorrowEntity> bookBorrowEntityList = new ArrayList<>();
+    List<BookBorrowEntity> bookBorrowEntities = bookBorrowRepository.findAll(pageable).getContent();
+
+    Date date = new Date();
+    Long timeInMilliSeconds = date.getTime();
+    java.sql.Date nowDate = new java.sql.Date(timeInMilliSeconds);
+
+    for(BookBorrowEntity bookBorrowEntity : bookBorrowEntities){
+      if(bookBorrowEntity.getExpireDate().before(nowDate)){
+        bookBorrowEntityList.add(bookBorrowEntity);
+      }
+    }
+
+    return bookBorrowEntityList;
+  }
+
 }
