@@ -19,23 +19,24 @@ public class LibraryMainService {
 
   private final BookRepository bookRepository;
 
-  public List<BookEntity> displayTenBooks(){
-    List<BookEntity> bookEntityList =new ArrayList<>();
+  public List<BookEntity> displayTenBooks() {
+    List<BookEntity> bookEntityList = new ArrayList<>();
 
     Sort sort = Sort.by("id").descending();
     Pageable pageable = PageRequest.of(0, 10, sort);
     Page<BookEntity> bookEntityPage = bookRepository.findAll(pageable);
 
-    for(BookEntity bookEntity : bookEntityPage.getContent()){
+    for (BookEntity bookEntity : bookEntityPage.getContent()) {
       bookEntityList.add(bookEntity);
     }
     return bookEntityList;
   }
 
-  public List<BookEntity> searchBooks(String keyword, Pageable pageable){
+  public List<BookEntity> searchBooks(String keyword, Pageable pageable) {
     List<BookEntity> bookEntitiesTitle = bookRepository.findByTitleContaining(keyword, pageable);
     List<BookEntity> bookEntitiesAuthor = bookRepository.findByAuthorContaining(keyword, pageable);
-    List<BookEntity> bookEntitiesInformation = bookRepository.findByInformationContaining(keyword, pageable);
+    List<BookEntity> bookEntitiesInformation = bookRepository.findByInformationContaining(keyword,
+        pageable);
 
     Set<BookEntity> bookEntitySet = new HashSet<>(bookEntitiesTitle);
     bookEntitySet.addAll(bookEntitiesAuthor);

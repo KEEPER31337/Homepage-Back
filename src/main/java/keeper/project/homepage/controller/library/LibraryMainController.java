@@ -34,7 +34,8 @@ public class LibraryMainController {
   public ResponseEntity<List<BookEntity>> searchBooks(@RequestParam String keyword,
       @PageableDefault(size = 10, sort = "id", direction = Direction.ASC) Pageable pageable) {
 
-    return ResponseEntity.status(HttpStatus.OK).body(libraryMainService.searchBooks(keyword, pageable));
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(libraryMainService.searchBooks(keyword, pageable));
   }
 
 }
