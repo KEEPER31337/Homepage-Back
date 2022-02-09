@@ -8,7 +8,9 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -380,7 +382,6 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
   public void showFollowee() throws Exception {
     // follow: member -> admin(followee)
     MemberEntity memberEntity = memberRepository.findByLoginId(loginId).get();
-    MemberEntity memberAdmin = memberRepository.findByLoginId(adminLoginId).get();
     memberService.follow(memberEntity.getId(), adminLoginId);
 
     mockMvc.perform(get("/v1/member/followee")
@@ -399,7 +400,11 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].birthday").description("생일").type(Date.class).optional(),
                 fieldWithPath("list[].registerDate").description("가입 날짜"),
                 fieldWithPath("list[].point").description("포인트 점수"),
-                fieldWithPath("list[].level").description("레벨")
+                fieldWithPath("list[].level").description("레벨"),
+                fieldWithPath("list[].rank").description("회원 등급: [null/우수회원/일반회원]"),
+                fieldWithPath("list[].type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
+                fieldWithPath("list[].jobs").description(
+                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
             )));
   }
 
@@ -408,7 +413,6 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
   @DisplayName("나를 팔로우한 사람 조회하기")
   public void showFollower() throws Exception {
     // follow: admin(follower) -> member
-    MemberEntity memberEntity = memberRepository.findByLoginId(loginId).get();
     MemberEntity memberAdmin = memberRepository.findByLoginId(adminLoginId).get();
     memberService.follow(memberAdmin.getId(), loginId);
 
@@ -428,7 +432,11 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].birthday").description("생일").type(Date.class).optional(),
                 fieldWithPath("list[].registerDate").description("가입 날짜"),
                 fieldWithPath("list[].point").description("포인트 점수"),
-                fieldWithPath("list[].level").description("레벨")
+                fieldWithPath("list[].level").description("레벨"),
+                fieldWithPath("list[].rank").description("회원 등급: [null/우수회원/일반회원]"),
+                fieldWithPath("list[].type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
+                fieldWithPath("list[].jobs").description(
+                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
             )));
   }
 
@@ -722,7 +730,7 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
   @Test
   @DisplayName("기본 권한으로 본인의 썸네일 변경하기")
   public void updateThumbnails() throws Exception {
-    MockMultipartFile image = new MockMultipartFile("image", "aft.jpg", "image/jpg",
+    MockMultipartFile image = new MockMultipartFile("thumbnail", "aft.jpg", "image/jpg",
         new FileInputStream(new File(
             System.getProperty("user.dir") + File.separator + "keeper_files" + File.separator
                 + "aft.jpg")));
@@ -737,8 +745,8 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         + "* 썸네일 이미지용 후처리를 실패했습니다.";
     mockMvc.perform(RestDocumentationRequestBuilders.fileUpload("/v1/member/update/thumbnail")
             .file(image)
-            .param("ipAddress", "111.111.111.111")
             .contentType(MediaType.MULTIPART_FORM_DATA)
+            .param("ipAddress", "111.111.111.111")
             .header("Authorization", userToken)
             .with(request -> {
               request.setMethod("PUT");
@@ -751,7 +759,7 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 parameterWithName("ipAddress").description("회원의 IP 주소")
             ),
 //            requestParts(
-//                partWithName("image").description("썸네일 용 원본 이미지")
+//                partWithName("thumbnail").description("썸네일 용 이미지 파일")
 //            ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
