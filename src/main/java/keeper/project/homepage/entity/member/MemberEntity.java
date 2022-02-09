@@ -188,4 +188,8 @@ public class MemberEntity implements UserDetails, Serializable {
   public boolean isEnabled() {
     return true;
   }
+
+  public void updatePoint(int point) {
+    this.point = point;
+  }
 }
