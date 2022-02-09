@@ -54,3 +54,15 @@ include::{snippets}/borrow-book/request-parameters.adoc[]
 
 include::{snippets}/borrow-book/http-response.adoc[]
 include::{snippets}/borrow-book/response-fields.adoc[]
+
+== *연체 도서 표시*
+
+=== 요청
+
+include::{snippets}/overdue-books/http-request.adoc[]
+include::{snippets}/overdue-books/request-parameters.adoc[]
+
+=== 응답
+
+include::{snippets}/overdue-books/http-response.adoc[]
+include::{snippets}/overdue-books/response-fields.adoc[]
