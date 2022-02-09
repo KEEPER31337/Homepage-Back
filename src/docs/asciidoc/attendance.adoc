@@ -77,7 +77,7 @@ NOTE: Bearer JWT 토큰이 필요합니다.
 
 ==== Request Parameters
 
-include::{snippets}/attend-get-my-date-list/request-fields.adoc[]
+include::{snippets}/attend-get-my-date-list/request-parameters.adoc[]
 
 NOTE: startDate가 null일 경우 처음부터 endDate까지 받아옵니다.
 
@@ -107,7 +107,7 @@ NOTE: Bearer JWT 토큰이 필요합니다.
 
 ==== Request Parameters
 
-include::{snippets}/attend-get-info/request-fields.adoc[]
+include::{snippets}/attend-get-info/request-parameters.adoc[]
 
 === 응답
 
@@ -131,7 +131,7 @@ NOTE: Bearer JWT 토큰이 필요합니다.
 
 ==== Request Parameters
 
-include::{snippets}/attend-get-all/request-fields.adoc[]
+include::{snippets}/attend-get-all/request-parameters.adoc[]
 
 === 응답
 

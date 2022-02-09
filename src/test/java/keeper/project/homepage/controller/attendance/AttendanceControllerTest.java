@@ -8,6 +8,8 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -183,23 +185,19 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
 
     LocalDate oneDayAgoParam = LocalDate.now().minusDays(1);
     LocalDate twoDaysAgoParam = LocalDate.now().minusDays(2);
-    AttendanceDto attendanceDto = AttendanceDto.builder()
-        .startDate(twoDaysAgoParam)
-        .endDate(oneDayAgoParam)
-        .build();
-    String content = objectMapper.writeValueAsString(attendanceDto);
     mockMvc.perform(MockMvcRequestBuilders
             .get("/v1/attend/date")
             .header("Authorization", userToken1)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(content))
+            .param("startDate", String.valueOf(twoDaysAgoParam))
+            .param("endDate", String.valueOf(oneDayAgoParam)))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(jsonPath("$.list.length()").value(1))
         .andDo(print())
         .andDo(document("attend-get-my-date-list",
-            requestFields(
-                fieldWithPath("startDate").description("시작 날짜").optional(),
-                fieldWithPath("endDate").description("종료 날짜(해당 날짜는 포함되지 않습니다)").optional()
+            requestParameters(
+                parameterWithName("startDate").description("시작 날짜(YYYY-MM-DD)").optional(),
+                parameterWithName("endDate").description("종료 날짜(해당 날짜는 포함되지 않습니다)").optional()
             ),
             responseFields(
                 fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
@@ -215,16 +213,11 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
 
     LocalDate nowParam = LocalDate.now();
     LocalDate twoDaysAgoParam = LocalDate.now().minusDays(2);
-    AttendanceDto attendanceDto = AttendanceDto.builder()
-        .startDate(nowParam)
-        .endDate(twoDaysAgoParam)
-        .build();
-    String content = objectMapper.writeValueAsString(attendanceDto);
     mockMvc.perform(MockMvcRequestBuilders
             .get("/v1/attend/date")
             .header("Authorization", userToken1)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(content))
+            .param("startDate", String.valueOf(nowParam))
+            .param("endDate", String.valueOf(twoDaysAgoParam)))
         .andExpect(MockMvcResultMatchers.status().is5xxServerError())
         .andDo(print());
   }
@@ -234,21 +227,16 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
   public void getMyAttendSuccess() throws Exception {
 
     LocalDate oneDayAgoParam = LocalDate.now().minusDays(1);
-    AttendanceDto attendanceDto = AttendanceDto.builder()
-        .date(oneDayAgoParam)
-        .build();
-    String content = objectMapper.writeValueAsString(attendanceDto);
     mockMvc.perform(MockMvcRequestBuilders
             .get("/v1/attend/info")
             .header("Authorization", userToken1)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(content))
+            .param("date", String.valueOf(oneDayAgoParam)))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(jsonPath("$.data").exists())
         .andDo(print())
         .andDo(document("attend-get-info",
-            requestFields(
-                fieldWithPath("date").description("정보를 가져올 날짜(YYYY-MM-DD)")
+            requestParameters(
+                parameterWithName("date").description("정보를 가져올 날짜(YYYY-MM-DD)")
             ),
             responseFields(
                 fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
@@ -266,15 +254,10 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
             )));
 
     LocalDate twoDaysAgoParam = LocalDate.now().minusDays(2);
-    AttendanceDto newAttendanceDto = AttendanceDto.builder()
-        .date(twoDaysAgoParam)
-        .build();
-    String newContent = objectMapper.writeValueAsString(newAttendanceDto);
     mockMvc.perform(MockMvcRequestBuilders
             .get("/v1/attend/info")
             .header("Authorization", userToken1)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(newContent))
+            .param("date", String.valueOf(twoDaysAgoParam)))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(jsonPath("$.data").exists())
         .andDo(print());
@@ -285,21 +268,16 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
   public void getAllAttendSuccess() throws Exception {
 
     LocalDate threeDaysAgoParam = LocalDate.now().minusDays(3);
-    AttendanceDto attendanceDto = AttendanceDto.builder()
-        .date(threeDaysAgoParam)
-        .build();
-    String content = objectMapper.writeValueAsString(attendanceDto);
     mockMvc.perform(MockMvcRequestBuilders
             .get("/v1/attend/all")
             .header("Authorization", userToken1)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(content))
+            .param("date", String.valueOf(threeDaysAgoParam)))
         .andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(jsonPath("$.list.length()").value(2))
         .andDo(print())
         .andDo(document("attend-get-all",
-            requestFields(
-                fieldWithPath("date").description("정보를 가져올 날짜(YYYY-MM-DD)")
+            requestParameters(
+                parameterWithName("date").description("정보를 가져올 날짜(YYYY-MM-DD)")
             ),
             responseFields(
                 fieldWithPath("success").description("에러 발생이 아니면 항상 true"),

@@ -97,9 +97,9 @@ public class AttendanceService {
     attendanceRepository.save(attendanceEntity);
   }
 
-  public List<String> getMyAttendanceDateList(AttendanceDto attendanceDto) {
+  public List<String> getMyAttendanceDateList(LocalDate startDate, LocalDate endDate) {
     List<AttendanceEntity> attendanceEntities = getAttendanceEntitiesInPeriodWithMemberId(
-        attendanceDto);
+        startDate, endDate);
 
     List<String> myAttendanceDateList = new ArrayList<>();
 
@@ -110,14 +110,12 @@ public class AttendanceService {
     return myAttendanceDateList;
   }
 
-  public AttendanceEntity getMyAttendance(AttendanceDto attendanceDto) {
+  public AttendanceEntity getMyAttendance(LocalDate date) {
 
-    return getMyAttendanceWithDate(attendanceDto);
+    return getMyAttendanceWithDate(date);
   }
 
-  public List<AttendanceEntity> getAllAttendance(AttendanceDto attendanceDto) {
-
-    LocalDate date = attendanceDto.getDate();
+  public List<AttendanceEntity> getAllAttendance(LocalDate date) {
     if (date == null) {
       throw new CustomAttendanceException("date를 입력하지 않았습니다.");
     }
@@ -140,11 +138,9 @@ public class AttendanceService {
   }
 
   private List<AttendanceEntity> getAttendanceEntitiesInPeriodWithMemberId(
-      AttendanceDto attendanceDto) {
-    LocalDate startDate =
-        attendanceDto.getStartDate() == null ? LocalDate.EPOCH : attendanceDto.getStartDate();
-    LocalDate endDate =
-        attendanceDto.getEndDate() == null ? LocalDate.now() : attendanceDto.getEndDate();
+      LocalDate startDate, LocalDate endDate) {
+    startDate = startDate == null ? LocalDate.EPOCH : startDate;
+    endDate = endDate == null ? LocalDate.now() : endDate;
 
     if (startDate.isAfter(endDate)) {
       throw new CustomAttendanceException("시작 날짜와 종료 날짜를 잘못 입력하였습니다.");
@@ -175,14 +171,13 @@ public class AttendanceService {
     return member.get();
   }
 
-  private AttendanceEntity getMyAttendanceWithDate(AttendanceDto attendanceDto) {
+  private AttendanceEntity getMyAttendanceWithDate(LocalDate date) {
 
-    MemberEntity member = getMemberEntityWithJWT();
-
-    LocalDate date = attendanceDto.getDate();
     if (date == null) {
       throw new CustomAttendanceException("date를 입력하지 않았습니다.");
     }
+    MemberEntity member = getMemberEntityWithJWT();
+
     LocalDate startDate = date.atStartOfDay().toLocalDate();
     LocalDate endDate = date.plusDays(1).atStartOfDay().toLocalDate();
 
