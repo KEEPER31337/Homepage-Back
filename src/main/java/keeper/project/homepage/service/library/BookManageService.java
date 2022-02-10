@@ -206,11 +206,11 @@ public class BookManageService {
     if (borrowEntity.isEmpty()) {
       throw new CustomBookNotFoundException("책이 존재하지 않습니다.");
     }
-    Long nowBorrowTotal = borrowEntity.get().getQuantity();
-    if (nowBorrowTotal < quantity) {
+    Long borrowedBook = borrowEntity.get().getQuantity();
+    if (borrowedBook < quantity) {
       throw new CustomBookOverTheMaxException("수량 초과입니다.");
     }
-    if (nowBorrowTotal == quantity) {
+    if (borrowedBook == quantity) {
       bookBorrowRepository.delete(borrowEntity.get());
     } else {
       returnBook(title, author, returnMemberId, quantity);
@@ -230,13 +230,13 @@ public class BookManageService {
         borrowEntity.getBorrowDate());
     String expireDate = String.valueOf(
         borrowEntity.getExpireDate());
-    Long totalBorrow = borrowEntity.getQuantity();
+    Long borrowedBook = borrowEntity.getQuantity();
 
     bookBorrowRepository.save(
         BookBorrowEntity.builder()
             .member(member)
             .book(book)
-            .quantity(totalBorrow - quantity)
+            .quantity(borrowedBook - quantity)
             .borrowDate(java.sql.Date.valueOf(borrowDate))
             .expireDate(java.sql.Date.valueOf(expireDate))
             .build());
