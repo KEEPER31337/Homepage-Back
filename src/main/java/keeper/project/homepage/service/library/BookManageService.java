@@ -148,7 +148,7 @@ public class BookManageService {
     BookEntity bookId = bookRepository.findByTitleAndAuthor(title, author).get();
     MemberEntity memberId = memberRepository.findById(borrowMemberId).get();
     String borrowDate = transferFormat(new Date());
-    String expireDate = getExpireDate();
+    String expireDate = getExpireDate(14);
 
     bookBorrowRepository.save(
         BookBorrowEntity.builder()
@@ -182,10 +182,10 @@ public class BookManageService {
   /**
    * 만료 날짜 구하기
    */
-  private String getExpireDate() {
+  private String getExpireDate(int date) {
     Calendar calendar = Calendar.getInstance();
     calendar.setTime(new Date());
-    calendar.add(Calendar.DATE, 14);
+    calendar.add(Calendar.DATE, date);
 
     return transferFormat(calendar.getTime());
   }
@@ -198,12 +198,10 @@ public class BookManageService {
     List<BookBorrowEntity> bookBorrowEntityList = new ArrayList<>();
     List<BookBorrowEntity> bookBorrowEntities = bookBorrowRepository.findAll(pageable).getContent();
 
-    Date date = new Date();
-    Long timeInMilliSeconds = date.getTime();
-    java.sql.Date nowDate = new java.sql.Date(timeInMilliSeconds);
+    java.sql.Date baseDate = java.sql.Date.valueOf(getExpireDate(3));
 
     for(BookBorrowEntity bookBorrowEntity : bookBorrowEntities){
-      if(bookBorrowEntity.getExpireDate().before(nowDate)){
+      if(bookBorrowEntity.getExpireDate().before(baseDate)){
         bookBorrowEntityList.add(bookBorrowEntity);
       }
     }
