@@ -10,7 +10,6 @@ import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.exception.file.CustomFileNotFoundException;
 import keeper.project.homepage.exception.file.CustomFileDeleteFailedException;
-import keeper.project.homepage.exception.file.CustomImageFormatException;
 import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
 import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.common.ImageProcessing;
@@ -60,7 +59,7 @@ public class ThumbnailService {
     if (multipartFile == null || multipartFile.isEmpty()) {
       fileName = this.defaultImageName;
     } else {
-      imageFormatChecking.isNormalImageFile(multipartFile);
+      imageFormatChecking.checkNormalImageFile(multipartFile);
 
       File thumbnailImage = fileService.saveFileInServer(multipartFile, this.relDirPath);
       Integer width = getThumbnailSize(sizeType.toLowerCase(Locale.ROOT))[0];

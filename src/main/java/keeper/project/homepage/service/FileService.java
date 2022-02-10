@@ -47,7 +47,7 @@ public class FileService {
   public byte[] getImage(Long fileId) throws IOException {
     FileEntity fileEntity = fileRepository.findById(fileId)
         .orElseThrow(CustomFileEntityNotFoundException::new);
-    imageFormatChecking.isImageFile(fileEntity.getFileName());
+    imageFormatChecking.checkImageFile(fileEntity.getFileName());
     String filePath = System.getProperty("user.dir") + File.separator + fileEntity.getFilePath();
     File file = new File(filePath);
     InputStream in = new FileInputStream(file);
@@ -93,8 +93,8 @@ public class FileService {
       File defaultFile = new File(fileRelDirPath + File.separator + defaultImageName);
       return saveFileEntity(defaultFile, fileRelDirPath, ipAddress, null);
     }
-    imageFormatChecking.isImageFile(multipartFile);
-    imageFormatChecking.isNormalImageFile(multipartFile);
+    imageFormatChecking.checkImageFile(multipartFile);
+    imageFormatChecking.checkNormalImageFile(multipartFile);
     File file = saveFileInServer(multipartFile, fileRelDirPath);
     return saveFileEntity(file, fileRelDirPath, ipAddress, null);
   }

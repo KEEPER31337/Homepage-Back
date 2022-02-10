@@ -14,7 +14,7 @@ public class ImageFormatChecking {
 
   private final String[] enableImageFormat = {"jpg", "jpeg", "png", "gif"};
 
-  public void isImageFile(MultipartFile multipartFile) {
+  public void checkImageFile(MultipartFile multipartFile) {
     String contentType = multipartFile.getContentType();
     boolean result = false;
     if (contentType.startsWith("image")) {
@@ -30,7 +30,7 @@ public class ImageFormatChecking {
     }
   }
 
-  public void isImageFile(String fileName) {
+  public void checkImageFile(String fileName) {
     String[] fileNameSplitArray = fileName.split("\\.");
     String fileFormat = fileNameSplitArray[fileNameSplitArray.length - 1];
     boolean result = false;
@@ -45,7 +45,7 @@ public class ImageFormatChecking {
     }
   }
 
-  public void isNormalImageFile(MultipartFile multipartFile) {
+  public void checkNormalImageFile(MultipartFile multipartFile) {
     BufferedImage bo_image;
     try {
       bo_image = ImageIO.read(multipartFile.getInputStream());
