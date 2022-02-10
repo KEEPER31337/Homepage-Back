@@ -195,18 +195,12 @@ public class BookManageService {
    */
   public List<BookBorrowEntity> sendOverdueBooks(Pageable pageable){
 
-    List<BookBorrowEntity> bookBorrowEntityList = new ArrayList<>();
-    List<BookBorrowEntity> bookBorrowEntities = bookBorrowRepository.findAll(pageable).getContent();
+    java.sql.Date startDate = java.sql.Date.valueOf(getExpireDate(-365));
+    java.sql.Date endDate = java.sql.Date.valueOf(getExpireDate(3));
 
-    java.sql.Date baseDate = java.sql.Date.valueOf(getExpireDate(3));
+    List<BookBorrowEntity> bookBorrowEntities = bookBorrowRepository.findAllByExpireDateBetween(pageable, startDate, endDate);
 
-    for(BookBorrowEntity bookBorrowEntity : bookBorrowEntities){
-      if(bookBorrowEntity.getExpireDate().before(baseDate)){
-        bookBorrowEntityList.add(bookBorrowEntity);
-      }
-    }
-
-    return bookBorrowEntityList;
+    return bookBorrowEntities;
   }
 
 }
