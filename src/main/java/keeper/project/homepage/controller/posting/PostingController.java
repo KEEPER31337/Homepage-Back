@@ -85,7 +85,7 @@ public class PostingController {
       PostingDto dto) {
 
     ThumbnailEntity thumbnailEntity = null;
-    FileEntity fileEntity = fileService.saveOriginalImage(thumbnail, dto.getIpAddress());
+    FileEntity fileEntity = fileService.saveOriginalThumbnail(thumbnail, dto.getIpAddress());
     thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
         thumbnail, fileEntity, "large");
 
@@ -122,13 +122,13 @@ public class PostingController {
   public ResponseEntity<List<FileEntity>> getAttachList(@PathVariable("pid") Long postingId) {
 
     return ResponseEntity.status(HttpStatus.OK)
-        .body(fileService.getFilesByPostingId(postingService.getPostingById(postingId)));
+        .body(fileService.findFileEntitiesByPostingId(postingService.getPostingById(postingId)));
   }
 
   @GetMapping(value = "/download/{fileId}")
   public ResponseEntity<Resource> downloadFile(@PathVariable("fileId") Long fileId)
       throws IOException {
-    FileEntity fileEntity = fileService.getFileById(fileId);
+    FileEntity fileEntity = fileService.findFileEntityById(fileId);
     Path path = Paths.get(fileEntity.getFilePath());
     Resource resource = new InputStreamResource(Files.newInputStream(path));
 
@@ -150,7 +150,7 @@ public class PostingController {
     ThumbnailEntity prevThumbnail = thumbnailService.findById(dto.getThumbnailId());
 
     ThumbnailEntity newThumbnail = null;
-    FileEntity fileEntity = fileService.saveOriginalImage(thumbnail, dto.getIpAddress());
+    FileEntity fileEntity = fileService.saveOriginalThumbnail(thumbnail, dto.getIpAddress());
     if (fileEntity == null) {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -173,7 +173,7 @@ public class PostingController {
     postingService.updateById(
         dto.toEntity(categoryEntity.get(), memberEntity.get(), newThumbnail),
         postingId);
-    List<FileEntity> fileEntities = fileService.getFilesByPostingId(
+    List<FileEntity> fileEntities = fileService.findFileEntitiesByPostingId(
         postingService.getPostingById(postingId));
     fileService.deleteFiles(fileEntities);
     fileService.saveFiles(files, dto.getIpAddress(), postingEntity);
@@ -191,7 +191,7 @@ public class PostingController {
     ThumbnailEntity deleteThumbnail = thumbnailService.findById(
         postingService.getPostingById(postingId).getThumbnailId().getId());
 
-    List<FileEntity> fileEntities = fileService.getFilesByPostingId(
+    List<FileEntity> fileEntities = fileService.findFileEntitiesByPostingId(
         postingService.getPostingById(postingId));
     fileService.deleteFiles(fileEntities);
     int result = postingService.deleteById(postingId);

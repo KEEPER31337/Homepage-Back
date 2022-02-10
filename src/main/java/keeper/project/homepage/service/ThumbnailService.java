@@ -9,6 +9,9 @@ import keeper.project.homepage.common.ImageFormatChecking;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.exception.file.CustomFileNotFoundException;
+import keeper.project.homepage.exception.file.CustomFileDeleteFailedException;
+import keeper.project.homepage.exception.file.CustomImageFormatException;
+import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
 import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.common.ImageProcessing;
 import lombok.RequiredArgsConstructor;
@@ -44,9 +47,7 @@ public class ThumbnailService {
   }
 
   public byte[] getThumbnail(Long thumbnailId) throws IOException {
-    ThumbnailEntity thumbnail = thumbnailRepository.findById(thumbnailId).orElseThrow(
-        () -> new CustomFileNotFoundException("썸네일 파일을 찾을 수 없습니다")
-    );
+    ThumbnailEntity thumbnail = findById(thumbnailId);
     String thumbnailPath = System.getProperty("user.dir") + File.separator + thumbnail.getPath();
     File file = new File(thumbnailPath);
     InputStream in = new FileInputStream(file);
@@ -59,55 +60,39 @@ public class ThumbnailService {
     if (multipartFile == null || multipartFile.isEmpty()) {
       fileName = this.defaultImageName;
     } else {
-      if (imageFormatChecking.isImageFile(multipartFile) == false) {
-        throw new RuntimeException("썸네일 용 파일은 이미지 파일이어야 합니다.");
-      }
-      try {
-        if (imageFormatChecking.isNormalImageFile(multipartFile) == false) {
-          throw new RuntimeException("이미지 파일을 BufferedImage로 읽어들일 수 없습니다.");
-        }
-      } catch (Exception e) {
-        e.printStackTrace();
-        throw new RuntimeException("이미지 파일을 읽는 것을 실패했습니다.");
-      }
+      imageFormatChecking.isNormalImageFile(multipartFile);
+
       File thumbnailImage = fileService.saveFileInServer(multipartFile, this.relDirPath);
-      try {
-        Integer width = getThumbnailSize(sizeType.toLowerCase(Locale.ROOT))[0];
-        Integer height = getThumbnailSize(sizeType.toLowerCase(Locale.ROOT))[1];
-        imageProcessing.imageProcessing(thumbnailImage, width, height, THUMBNAIL_FORMAT);
-      } catch (Exception e) {
-        e.printStackTrace();
-        throw new RuntimeException("썸네일 이미지용 후처리를 실패했습니다.");
-      }
+      Integer width = getThumbnailSize(sizeType.toLowerCase(Locale.ROOT))[0];
+      Integer height = getThumbnailSize(sizeType.toLowerCase(Locale.ROOT))[1];
+      imageProcessing.imageProcessing(thumbnailImage, width, height, THUMBNAIL_FORMAT);
       fileName = thumbnailImage.getName();
     }
     return thumbnailRepository.save(
-        ThumbnailEntity.builder().path(this.relDirPath + File.separator + fileName).file(fileEntity)
+        ThumbnailEntity.builder()
+            .path(this.relDirPath + File.separator + fileName)
+            .file(fileEntity)
             .build());
   }
 
   public ThumbnailEntity findById(Long findId) {
-    return thumbnailRepository.findById(findId).orElse(null);
+    return thumbnailRepository.findById(findId)
+        .orElseThrow(CustomThumbnailEntityNotFoundException::new);
   }
 
-  public boolean deleteById(Long deleteId) throws RuntimeException {
-    // issue : 각 예외사항에서 return 대신 custom exception으로 수정
+  public void deleteById(Long deleteId) {
     // original thumbnail file을 가지고 있으면 서버에 있는 이미지는 삭제 X
-    ThumbnailEntity deleted = thumbnailRepository.findById(deleteId).orElse(null);
-    if (deleted == null) {
-      return false;
-    }
+    ThumbnailEntity deleted = findById(deleteId);
     File thumbnailFile = new File(
         System.getProperty("user.dir") + File.separator + deleted.getPath());
     String thumbnailFileName = thumbnailFile.getName();
     if (thumbnailFileName.equals(defaultImageName) == false) {
       if (thumbnailFile.exists() == false) {
-        throw new RuntimeException("썸네일 파일이 이미 존재하지 않습니다.");
+        throw new CustomFileNotFoundException();
       } else if (thumbnailFile.delete() == false) {
-        throw new RuntimeException("썸네일 파일 삭제를 실패하였습니다.");
+        throw new CustomFileDeleteFailedException();
       }
     }
     thumbnailRepository.deleteById(deleteId);
-    return true;
   }
 }

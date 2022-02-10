@@ -8,6 +8,10 @@ import keeper.project.homepage.dto.posting.CommentDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.exception.CustomAuthenticationEntryPointException;
+import keeper.project.homepage.exception.CustomNumberOverflowException;
+import keeper.project.homepage.exception.posting.CustomCommentEmptyFieldException;
+import keeper.project.homepage.exception.posting.CustomCommentNotFoundException;
 import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.service.member.MemberHasCommentLikeService;
@@ -33,21 +37,19 @@ public class CommentService {
 
   private CommentEntity getComment(Long commentId) {
     return commentRepository.findById(commentId)
-        .orElseThrow(() -> new RuntimeException("존재하지 않는 댓글입니다."));
+        .orElseThrow(CustomCommentNotFoundException::new);
   }
 
   private void isValidMember(Long commentId, Long memberId) {
     CommentEntity comment = getComment(commentId);
     if (comment.getMemberId().getId().equals(memberId) == false) {
-      throw new RuntimeException(
-          "작성한 회원 : " + comment.getMemberId().getId().toString()
-              + ", 요청한 회원 : " + memberId.toString() + ", 해당 댓글에 대한 동작을 수행할 권한이 없습니다.");
+      throw new CustomAuthenticationEntryPointException();
     }
   }
 
   private void isNotEmptyContent(CommentDto commentDto) {
     if (commentDto.getContent().isEmpty()) {
-      throw new RuntimeException("댓글의 내용이 비어있습니다.");
+      throw new CustomCommentEmptyFieldException("댓글의 내용이 비어있습니다.");
     }
   }
 
@@ -103,11 +105,7 @@ public class CommentService {
   @Transactional
   public void deleteById(Long id, Long memberId) {
     isValidMember(id, memberId);
-
     commentRepository.deleteById(id);
-    if (commentRepository.findById(id).isPresent()) {
-      throw new RuntimeException("댓글 삭제를 실패했습니다.");
-    }
   }
 
   @Transactional
@@ -138,7 +136,7 @@ public class CommentService {
 
   private void checkNotMaxValue(Integer num) {
     if (num == Integer.MAX_VALUE) {
-      throw new RuntimeException("overflow 경고");
+      throw new CustomNumberOverflowException();
     }
   }
 

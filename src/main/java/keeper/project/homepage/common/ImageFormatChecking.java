@@ -4,6 +4,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import keeper.project.homepage.exception.file.CustomImageFormatException;
+import keeper.project.homepage.exception.file.CustomImageIOException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -12,37 +14,47 @@ public class ImageFormatChecking {
 
   private final String[] enableImageFormat = {"jpg", "jpeg", "png", "gif"};
 
-  public boolean isImageFile(MultipartFile multipartFile) {
+  public void isImageFile(MultipartFile multipartFile) {
     String contentType = multipartFile.getContentType();
+    boolean result = false;
     if (contentType.startsWith("image")) {
       for (String format : enableImageFormat) {
         if (contentType.endsWith(format)) {
-          return true;
+          result = true;
+          break;
         }
       }
     }
-    return false;
+    if (!result) {
+      throw new CustomImageFormatException();
+    }
   }
 
-  public boolean isImageFile(String fileName) {
+  public void isImageFile(String fileName) {
     String[] fileNameSplitArray = fileName.split("\\.");
     String fileFormat = fileNameSplitArray[fileNameSplitArray.length - 1];
+    boolean result = false;
     for (String format : enableImageFormat) {
       if (fileFormat.equals(format)) {
-        return true;
+        result = true;
+        break;
       }
     }
-    return false;
+    if (!result) {
+      throw new CustomImageFormatException();
+    }
   }
 
-  public boolean isNormalImageFile(MultipartFile multipartFile) throws IOException {
-    if (isImageFile(multipartFile) == false) {
-      return false;
+  public void isNormalImageFile(MultipartFile multipartFile) {
+    BufferedImage bo_image;
+    try {
+      bo_image = ImageIO.read(multipartFile.getInputStream());
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new CustomImageIOException();
     }
-    BufferedImage bo_image = ImageIO.read(multipartFile.getInputStream());
     if (bo_image == null) {
-      return false;
+      throw new CustomImageFormatException();
     }
-    return true;
   }
 }

@@ -22,7 +22,7 @@ import keeper.project.homepage.dto.attendance.AttendancePointDto;
 import keeper.project.homepage.entity.attendance.AttendanceEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.CustomAttendanceException;
-import keeper.project.homepage.exception.CustomMemberNotFoundException;
+import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.attendance.AttendanceRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.service.util.AuthService;

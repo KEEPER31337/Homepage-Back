@@ -14,8 +14,10 @@ import keeper.project.homepage.dto.FileDto;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.file.CustomFileNotFoundException;
+import keeper.project.homepage.exception.file.CustomFileDeleteFailedException;
+import keeper.project.homepage.exception.file.CustomFileEntityNotFoundException;
+import keeper.project.homepage.exception.file.CustomFileTransferFailedException;
 import keeper.project.homepage.repository.FileRepository;
-import keeper.project.homepage.repository.ThumbnailRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
@@ -27,17 +29,25 @@ import reactor.util.annotation.Nullable;
 @Service
 public class FileService {
 
+  public static final String fileRelDirPath = "keeper_files"; // {user.dir}/keeper_files/
+
   private final FileRepository fileRepository;
   private final String defaultImageName = "default.jpg";
   private final ImageFormatChecking imageFormatChecking;
 
+  private String encodeFileName(String fileName) {
+    String[] fileFormatSplitArray = fileName.split("\\.");
+    String fileFormat = fileFormatSplitArray[fileFormatSplitArray.length - 1];
+    Timestamp timestamp = new Timestamp(System.nanoTime());
+    fileName += timestamp.toString();
+    fileName = encryptSHA256(fileName) + fileFormat;
+    return fileName;
+  }
+
   public byte[] getImage(Long fileId) throws IOException {
-    FileEntity fileEntity = fileRepository.findById(fileId).orElseThrow(
-        () -> new CustomFileNotFoundException("이미지 파일을 찾을 수 없습니다.")
-    );
-    if (!imageFormatChecking.isImageFile(fileEntity.getFileName())) {
-      throw new CustomFileNotFoundException("이미지 파일이 아닙니다.");
-    }
+    FileEntity fileEntity = fileRepository.findById(fileId)
+        .orElseThrow(CustomFileEntityNotFoundException::new);
+    imageFormatChecking.isImageFile(fileEntity.getFileName());
     String filePath = System.getProperty("user.dir") + File.separator + fileEntity.getFilePath();
     File file = new File(filePath);
     InputStream in = new FileInputStream(file);
@@ -50,26 +60,21 @@ public class FileService {
       return null;
     }
     String fileName = multipartFile.getOriginalFilename();
-    String[] fileFormatSplitArray = fileName.split("\\.");
-    String fileFormat = fileFormatSplitArray[fileFormatSplitArray.length - 1];
-    Timestamp timestamp = new Timestamp(System.nanoTime());
-    fileName += timestamp.toString();
-    fileName = encryptSHA256(fileName);
+    fileName = encodeFileName(fileName);
     String absDirPath = System.getProperty("user.dir") + File.separator + relDirPath;
     if (!new File(absDirPath).exists()) {
       new File(absDirPath).mkdir();
     }
-    String filePath = absDirPath + File.separator + fileName + "." + fileFormat;
+    String filePath = absDirPath + File.separator + fileName;
     File file = new File(filePath);
     try {
       multipartFile.transferTo(file);
     } catch (Exception e) {
       e.printStackTrace();
-      throw new RuntimeException("파일을 서버에 저장하는 것을 실패하였습니다.");
+      throw new CustomFileTransferFailedException();
     }
     return file;
   }
-
 
   public FileEntity saveFileEntity(File file, String relDirPath, String ipAddress,
       @Nullable PostingEntity postingEntity) {
@@ -83,24 +88,15 @@ public class FileService {
     return fileRepository.save(fileDto.toEntity(postingEntity));
   }
 
-  public FileEntity saveOriginalImage(MultipartFile multipartFile, String ipAddress) {
+  public FileEntity saveOriginalThumbnail(MultipartFile multipartFile, String ipAddress) {
     if (multipartFile == null || multipartFile.isEmpty()) {
-      File defaultFile = new File("keeper_files" + File.separator + defaultImageName);
-      return saveFileEntity(defaultFile, "keeper_files", ipAddress, null);
+      File defaultFile = new File(fileRelDirPath + File.separator + defaultImageName);
+      return saveFileEntity(defaultFile, fileRelDirPath, ipAddress, null);
     }
-    if (imageFormatChecking.isImageFile(multipartFile) == false) {
-      throw new RuntimeException("썸네일 용 이미지는 image 타입이어야 합니다.");
-    }
-    try {
-      if (imageFormatChecking.isNormalImageFile(multipartFile) == false) {
-        throw new RuntimeException("이미지 파일을 BufferedImage로 읽어들일 수 없습니다.");
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw new RuntimeException("이미지 파일을 읽는 것을 실패했습니다.");
-    }
-    File file = saveFileInServer(multipartFile, "keeper_files");
-    return saveFileEntity(file, "keeper_files", ipAddress, null);
+    imageFormatChecking.isImageFile(multipartFile);
+    imageFormatChecking.isNormalImageFile(multipartFile);
+    File file = saveFileInServer(multipartFile, fileRelDirPath);
+    return saveFileEntity(file, fileRelDirPath, ipAddress, null);
   }
 
   @Transactional
@@ -111,19 +107,18 @@ public class FileService {
     }
 
     for (MultipartFile multipartFile : multipartFiles) {
-      File file = saveFileInServer(multipartFile, "keeper_files");
-      saveFileEntity(file, "keeper_files", ipAddress, postingEntity);
+      File file = saveFileInServer(multipartFile, fileRelDirPath);
+      saveFileEntity(file, fileRelDirPath, ipAddress, postingEntity);
     }
   }
 
   @Transactional
-  public FileEntity getFileById(Long id) {
-    return fileRepository.findById(id).get();
+  public FileEntity findFileEntityById(Long id) {
+    return fileRepository.findById(id).orElseThrow(CustomFileEntityNotFoundException::new);
   }
 
   @Transactional
-  public List<FileEntity> getFilesByPostingId(PostingEntity postingEntity) {
-
+  public List<FileEntity> findFileEntitiesByPostingId(PostingEntity postingEntity) {
     return fileRepository.findAllByPostingId(postingEntity);
   }
 
@@ -137,6 +132,29 @@ public class FileService {
     } catch (Exception e) {
       e.printStackTrace();
     }
+  }
+
+  public void deleteFileEntityById(Long deleteId) {
+    fileRepository.findById(deleteId).orElseThrow(CustomFileEntityNotFoundException::new);
+    fileRepository.deleteById(deleteId);
+  }
+
+  public boolean deleteOriginalThumbnailById(Long deleteId) {
+    FileEntity deleted = fileRepository.findById(deleteId)
+        .orElseThrow(CustomFileEntityNotFoundException::new);
+    File originalImageFile = new File(
+        System.getProperty("user.dir") + File.separator + deleted.getFilePath());
+    String originalImageFileName = originalImageFile.getName();
+    if (originalImageFileName.equals(defaultImageName) == false) {
+      if (originalImageFile.exists() == false) {
+        throw new CustomFileNotFoundException();
+      }
+      if (originalImageFile.delete() == false) {
+        throw new CustomFileDeleteFailedException();
+      }
+    }
+    deleteFileEntityById(deleteId);
+    return true;
   }
 
   public String encryptSHA256(String str) {
@@ -157,32 +175,4 @@ public class FileService {
     return sha;
   }
 
-  public boolean deleteById(Long deleteId) {
-    if (!fileRepository.findById(deleteId).isPresent()) {
-      return false;
-    }
-    fileRepository.deleteById(deleteId);
-    return true;
-  }
-
-  public boolean deleteOriginalImageById(Long deleteId) throws RuntimeException {
-    // issue : 각 예외사항에서 return 대신 custom exception으로 수정
-    // original image file을 가지고 있으면 서버에 있는 이미지는 삭제 X
-    FileEntity deleted = fileRepository.findById(deleteId).orElse(null);
-    if (deleted == null) {
-      return false;
-    }
-    File originalImageFile = new File(
-        System.getProperty("user.dir") + File.separator + deleted.getFilePath());
-    String originalImageFileName = originalImageFile.getName();
-    if (originalImageFileName.equals(defaultImageName) == false) {
-      if (originalImageFile.exists() == false) {
-        throw new RuntimeException("썸네일 원본 이미지가 이미 존재하지 않습니다.");
-      } else if (originalImageFile.delete() == false) {
-        throw new RuntimeException("썸네일 원본 이미지 삭제를 실패하였습니다.");
-      }
-    }
-    fileRepository.deleteById(deleteId);
-    return true;
-  }
 }
