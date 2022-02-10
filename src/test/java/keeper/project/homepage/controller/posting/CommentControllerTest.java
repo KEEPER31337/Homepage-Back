@@ -199,7 +199,7 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
             .accept(MediaType.APPLICATION_JSON_VALUE)
         )
         .andDo(print())
-        .andExpect(MockMvcResultMatchers.status().is5xxServerError())
+        .andExpect(MockMvcResultMatchers.status().is4xxClientError())
         .andDo(document("comment-create-fail"));
   }
 
@@ -325,7 +325,7 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
             .content(updateContent)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andDo(print())
-        .andExpect(status().is5xxServerError())
+        .andExpect(status().is4xxClientError())
         .andDo(document("comment-update-fail"));
   }
 

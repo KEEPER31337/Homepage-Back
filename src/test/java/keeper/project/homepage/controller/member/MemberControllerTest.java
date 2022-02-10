@@ -697,9 +697,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
             .content(content)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andDo(print())
-        .andExpect(status().is5xxServerError())
+        .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(-9999));
+        .andExpect(jsonPath("$.code").value(-22));
   }
 
   @Test
@@ -836,9 +836,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
             .content(content)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andDo(print())
-        .andExpect(status().is5xxServerError())
+        .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(-9999));
+        .andExpect(jsonPath("$.code").value(-22));
   }
 
   @Test
