@@ -49,7 +49,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   final private String bookInformation1 = "파이썬의 기본이 잘 정리된 책이다.";
   final private Long bookQuantity1 = 3L;
   final private Long bookBorrow1 = 0L;
-  final private Long bookEnable1 = bookQuantity1-bookBorrow1;
+  final private Long bookEnable1 = bookQuantity1 - bookBorrow1;
   final private String bookRegisterDate1 = "20220116";
 
   final private String bookTitle2 = "일반물리학";
