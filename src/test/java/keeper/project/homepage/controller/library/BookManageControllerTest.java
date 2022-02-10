@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -46,7 +47,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   final private String bookAuthor1 = "박응용";
   final private String bookPicture1 = "JumpToPython.png";
   final private String bookInformation1 = "파이썬의 기본이 잘 정리된 책이다.";
-  final private Long bookQuantity1 = 2L;
+  final private Long bookQuantity1 = 3L;
   final private Long bookBorrow1 = 0L;
   final private Long bookEnable1 = bookQuantity1-bookBorrow1;
   final private String bookRegisterDate1 = "20220116";
@@ -154,14 +155,32 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     JacksonJsonParser jsonParser = new JacksonJsonParser();
     userToken = jsonParser.parseMap(resultString).get("data").toString();
 
-    borrowBook();
+    BookEntity bookId = bookRepository.findByTitleAndAuthor(bookTitle1, bookAuthor1).get();
+    MemberEntity memberId = memberRepository.findByLoginId(loginId).get();
+
+    bookBorrowRepository.save(
+        BookBorrowEntity.builder()
+            .member(memberId)
+            .book(bookId)
+            .quantity(2L)
+            .borrowDate(java.sql.Date.valueOf(getDate(-15)))
+            .expireDate(java.sql.Date.valueOf(getDate(-1)))
+            .build());
+  }
+
+  private String getDate(int date) {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(new Date());
+    calendar.add(Calendar.DATE, date);
+
+    return bookManageService.transferFormat(calendar.getTime());
   }
 
   //--------------------------도서 등록------------------------------------
   @Test
   @DisplayName("책 등록 성공(기존 책)")
   public void addBook() throws Exception {
-    Long bookQuantity1 = 2L;
+    Long bookQuantity1 = 1L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1);
     params.add("author", bookAuthor1);
@@ -293,7 +312,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   @Test
   @DisplayName("책 삭제 성공(전체 삭제)")
   public void deleteBookMax() throws Exception {
-    Long bookQuantity3 = 2L;
+    Long bookQuantity3 = 3L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1);
     params.add("author", bookAuthor1);
@@ -425,8 +444,8 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
 
   //--------------------------도서 대여------------------------------------
   @Test
-  @DisplayName("책 반납 성공")
-  public void returnBook() throws Exception {
+  @DisplayName("책 반납 성공(전부 반납)")
+  public void returnBookAll() throws Exception {
     Long returnQuantity = 1L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1);
@@ -455,12 +474,29 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   }
 
   @Test
+  @DisplayName("책 반납 성공(일부 반납)")
+  public void returnBookPart() throws Exception {
+    Long returnQuantity = 1L;
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("title", bookTitle1);
+    params.add("author", bookAuthor1);
+    params.add("quantity", String.valueOf(returnQuantity));
+
+    mockMvc.perform(post("/v1/returnbook").params(params).header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").exists());
+  }
+
+  @Test
   @DisplayName("책 반납 실패(수량 초과)")
   public void returnBookFailedOverMax() throws Exception {
     Long borrowQuantity = 3L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("title", bookTitle2);
-    params.add("author", bookAuthor2);
+    params.add("title", bookTitle1);
+    params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(borrowQuantity));
 
     mockMvc.perform(post("/v1/returnbook").params(params).header("Authorization", userToken))
@@ -476,7 +512,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   public void returnBookFailedNotExist() throws Exception {
     Long borrowQuantity = 1L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("title", bookTitle2 + epochTime);
+    params.add("title", bookTitle2);
     params.add("author", bookAuthor2);
     params.add("quantity", String.valueOf(borrowQuantity));
 
