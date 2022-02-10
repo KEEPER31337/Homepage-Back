@@ -5,6 +5,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -173,24 +174,22 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     userToken = jsonParser.parseMap(resultString).get("data").toString();
 
     BookEntity bookId = bookRepository.findByTitleAndAuthor(bookTitle1, bookAuthor1).get();
-    MemberEntity memberId = memberRepository.findById(1L).get();
-    String borrowDate = bookManageService.transferFormat(new Date());
-    String expireDate = getExpireDate();
+    MemberEntity memberId = memberRepository.findByLoginId(loginId).get();
 
     bookBorrowRepository.save(
         BookBorrowEntity.builder()
             .memberId(memberId)
             .bookId(bookId)
             .quantity(1L)
-            .borrowDate(java.sql.Date.valueOf(borrowDate))
-            .expireDate(java.sql.Date.valueOf(expireDate))
+            .borrowDate(java.sql.Date.valueOf(getDate(-15)))
+            .expireDate(java.sql.Date.valueOf(getDate(-1)))
             .build());
   }
 
-  private String getExpireDate(){
+  private String getDate(int date) {
     Calendar calendar = Calendar.getInstance();
     calendar.setTime(new Date());
-    calendar.add(Calendar.DATE, -15);
+    calendar.add(Calendar.DATE, date);
 
     return bookManageService.transferFormat(calendar.getTime());
   }
@@ -476,12 +475,12 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
                 parameterWithName("size").optional().description("한 페이지당 출력 수(default = 10)")
             ),
             responseFields(
-                fieldWithPath("id").description("대여정보 ID"),
-                fieldWithPath("memberId").description("대여자 ID"),
-                fieldWithPath("bookIdr").description("책 ID"),
-                fieldWithPath("quantity").description("대여 수량"),
-                fieldWithPath("borrowDate").description("대여일"),
-                fieldWithPath("ExpireDate").description("만기일")
+                fieldWithPath("[].id").description("대여정보 ID"),
+                subsectionWithPath("[].memberId").description("대여자 ID"),
+                subsectionWithPath("[].bookId").description("책 ID"),
+                fieldWithPath("[].quantity").description("대여 수량"),
+                fieldWithPath("[].borrowDate").description("대여일"),
+                fieldWithPath("[].expireDate").description("만기일")
             )));
   }
 }
