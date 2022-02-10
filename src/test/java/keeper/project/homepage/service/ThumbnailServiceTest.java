@@ -49,6 +49,9 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
   @Autowired
   private ThumbnailService thumbnailService;
 
+  @Autowired
+  private FileService fileService;
+
   // test 시 "{작업경로}/keeper_files/"에 jpg 이미지 파일을 넣어야 함.
   private final String originalFilePath =
       System.getProperty("user.dir") + File.separator + "keeper_files" + File.separator
@@ -268,10 +271,15 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
   public void deleteTest() {
     String thumbnailPath =
         System.getProperty("user.dir") + File.separator + thumbnailEntity.getPath();
+    String originalThumbnailPath =
+        System.getProperty("user.dir") + File.separator + thumbnailEntity.getFile().getFilePath();
     thumbnailService.deleteById(thumbnailEntity.getId());
+    fileService.deleteOriginalThumbnailById(thumbnailEntity.getFile().getId());
 
     Assertions.assertTrue(thumbnailRepository.findById(thumbnailEntity.getId()).isEmpty());
+    Assertions.assertTrue(fileRepository.findById(thumbnailEntity.getFile().getId()).isEmpty());
     Assertions.assertFalse(new File(thumbnailPath).exists());
+    Assertions.assertFalse(new File(originalThumbnailPath).exists());
   }
 
   @Test
@@ -279,9 +287,16 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
   public void deleteDefaultTest() {
     String thumbnailPath =
         System.getProperty("user.dir") + File.separator + defaultThumbnailEntity.getPath();
+    String originalThumbnailPath =
+        System.getProperty("user.dir") + File.separator + defaultThumbnailEntity.getFile()
+            .getFilePath();
     thumbnailService.deleteById(defaultThumbnailEntity.getId());
+    fileService.deleteOriginalThumbnailById(defaultThumbnailEntity.getFile().getId());
 
     Assertions.assertTrue(thumbnailRepository.findById(defaultThumbnailEntity.getId()).isEmpty());
+    Assertions.assertTrue(
+        fileRepository.findById(defaultThumbnailEntity.getFile().getId()).isEmpty());
     Assertions.assertTrue(new File(thumbnailPath).exists());
+    Assertions.assertTrue(new File(originalThumbnailPath).exists());
   }
 }

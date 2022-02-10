@@ -179,7 +179,7 @@ public class PostingController {
     fileService.saveFiles(files, dto.getIpAddress(), postingEntity);
 
     thumbnailService.deleteById(prevThumbnail.getId());
-    fileService.deleteById(prevThumbnail.getFile().getId());
+    fileService.deleteOriginalThumbnailById(prevThumbnail.getFile().getId());
 
     return postingEntity.getId() != null ? new ResponseEntity<>("success", HttpStatus.OK) :
         new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -196,7 +196,7 @@ public class PostingController {
     fileService.deleteFiles(fileEntities);
     int result = postingService.deleteById(postingId);
 
-    fileService.deleteById(deleteThumbnail.getFile().getId());
+    fileService.deleteOriginalThumbnailById(deleteThumbnail.getFile().getId());
     thumbnailService.deleteById(deleteThumbnail.getId());
 
     return result == 1 ? new ResponseEntity<>("success",
