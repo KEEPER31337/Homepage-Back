@@ -51,5 +51,9 @@ public class BookEntity {
   @Column(name = "register_date", nullable = false)
   @Temporal(TemporalType.TIMESTAMP)
   private Date registerDate;
+  @OneToOne(targetEntity = ThumbnailEntity.class, fetch = FetchType.LAZY)
+  @JoinColumn(name = "thumbnail_id")
+  @JsonIgnore
+  private ThumbnailEntity thumbnailId;
 
 }
