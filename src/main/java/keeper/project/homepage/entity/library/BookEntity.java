@@ -1,14 +1,22 @@
 package keeper.project.homepage.entity.library;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import keeper.project.homepage.entity.ThumbnailEntity;
+import keeper.project.homepage.entity.posting.CategoryEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,6 +39,9 @@ public class BookEntity {
   private String author;
   @Column(name = "information")
   private String information;
+  @ManyToOne(targetEntity = BookDepartmentEntity.class, fetch = FetchType.LAZY)
+  @JoinColumn(name = "department")
+  private BookDepartmentEntity department;
   @Column(name = "total", nullable = false)
   private Long total;
   @Column(name = "borrow", nullable = false)
