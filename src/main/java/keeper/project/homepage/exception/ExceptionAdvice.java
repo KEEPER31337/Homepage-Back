@@ -5,6 +5,8 @@ import keeper.project.homepage.exception.member.CustomMemberDuplicateException;
 import keeper.project.homepage.exception.member.CustomMemberEmptyFieldException;
 import keeper.project.homepage.exception.member.CustomMemberInfoNotFoundException;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
+import keeper.project.homepage.exception.posting.CustomCommentEmptyFieldException;
+import keeper.project.homepage.exception.posting.CustomCommentNotFoundException;
 import keeper.project.homepage.service.ResponseService;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -161,4 +163,30 @@ public class ExceptionAdvice {
         getMessage("memberDuplicate.msg"));
   }
 
+  @ExceptionHandler(CustomCommentNotFoundException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected CommonResult commentNotFoundException(HttpServletRequest request,
+      CustomCommentNotFoundException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(Integer.parseInt(getMessage("commentNotFound.code")),
+        getMessage("commentNotFound.msg"));
+  }
+
+  @ExceptionHandler(CustomCommentEmptyFieldException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult commentEmptyFieldException(HttpServletRequest request,
+      CustomCommentEmptyFieldException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(Integer.parseInt(getMessage("commentEmptyField.code")),
+        getMessage("commentEmptyField.msg"));
+  }
+
+  @ExceptionHandler(CustomNumberOverflowException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected CommonResult numberOverflowException(HttpServletRequest request,
+      CustomNumberOverflowException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(Integer.parseInt(getMessage("numberOverflow.code")),
+        getMessage("numberOverflow.msg"));
+  }
 }

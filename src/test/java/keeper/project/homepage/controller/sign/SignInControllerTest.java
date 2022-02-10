@@ -18,14 +18,13 @@ import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
-import keeper.project.homepage.exception.CustomMemberNotFoundException;
+import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.MediaType;
-import org.springframework.restdocs.RestDocumentationContextProvider;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
