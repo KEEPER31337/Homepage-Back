@@ -1,6 +1,10 @@
 package keeper.project.homepage.exception;
 
 import keeper.project.homepage.dto.result.CommonResult;
+import keeper.project.homepage.exception.member.CustomMemberDuplicateException;
+import keeper.project.homepage.exception.member.CustomMemberEmptyFieldException;
+import keeper.project.homepage.exception.member.CustomMemberInfoNotFoundException;
+import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.service.ResponseService;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -130,4 +134,31 @@ public class ExceptionAdvice {
     return responseService.getFailResult(Integer.parseInt(getMessage("bookOverTheMax.code")),
         getMessage("bookOverTheMax.msg"));
   }
+  @ExceptionHandler(CustomMemberEmptyFieldException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult memberEmptyFieldException(HttpServletRequest request,
+      CustomMemberEmptyFieldException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(Integer.parseInt(getMessage("memberEmptyField.code")),
+        getMessage("memberEmptyField.msg"));
+  }
+
+  @ExceptionHandler(CustomMemberInfoNotFoundException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected CommonResult CustomMemberInfoNotFoundException(HttpServletRequest request,
+      CustomMemberInfoNotFoundException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(Integer.parseInt(getMessage("memberInfoNotFound.code")),
+        getMessage("memberInfoNotFound.msg"));
+  }
+
+  @ExceptionHandler(CustomMemberDuplicateException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult CustomMemberDuplicateException(HttpServletRequest request,
+      CustomMemberDuplicateException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(Integer.parseInt(getMessage("memberDuplicate.code")),
+        getMessage("memberDuplicate.msg"));
+  }
+
 }

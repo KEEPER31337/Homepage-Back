@@ -1,4 +1,4 @@
-package keeper.project.homepage.exception;
+package keeper.project.homepage.exception.member;
 
 public class CustomMemberNotFoundException extends RuntimeException {
   public CustomMemberNotFoundException(String msg, Throwable t) {
