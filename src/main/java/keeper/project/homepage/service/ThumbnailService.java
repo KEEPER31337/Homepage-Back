@@ -8,7 +8,7 @@ import java.util.Locale;
 import keeper.project.homepage.common.ImageFormatChecking;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
-import keeper.project.homepage.exception.CustomFileNotFoundException;
+import keeper.project.homepage.exception.file.CustomFileNotFoundException;
 import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.common.ImageProcessing;
 import lombok.RequiredArgsConstructor;

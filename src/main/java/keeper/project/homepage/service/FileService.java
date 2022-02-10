@@ -13,7 +13,7 @@ import keeper.project.homepage.common.ImageFormatChecking;
 import keeper.project.homepage.dto.FileDto;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
-import keeper.project.homepage.exception.CustomFileNotFoundException;
+import keeper.project.homepage.exception.file.CustomFileNotFoundException;
 import keeper.project.homepage.repository.FileRepository;
 import keeper.project.homepage.repository.ThumbnailRepository;
 import lombok.RequiredArgsConstructor;

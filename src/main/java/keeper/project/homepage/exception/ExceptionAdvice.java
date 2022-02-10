@@ -1,6 +1,13 @@
 package keeper.project.homepage.exception;
 
 import keeper.project.homepage.dto.result.CommonResult;
+import keeper.project.homepage.exception.file.CustomFileDeleteFailedException;
+import keeper.project.homepage.exception.file.CustomFileEntityNotFoundException;
+import keeper.project.homepage.exception.file.CustomFileNotFoundException;
+import keeper.project.homepage.exception.file.CustomFileTransferFailedException;
+import keeper.project.homepage.exception.file.CustomImageFormatException;
+import keeper.project.homepage.exception.file.CustomImageIOException;
+import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
 import keeper.project.homepage.exception.member.CustomMemberDuplicateException;
 import keeper.project.homepage.exception.member.CustomMemberEmptyFieldException;
 import keeper.project.homepage.exception.member.CustomMemberInfoNotFoundException;
@@ -97,7 +104,7 @@ public class ExceptionAdvice {
 
   @ExceptionHandler(CustomFileNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  public CommonResult signUpFailedException(HttpServletRequest request,
+  public CommonResult fileNotFoundException(HttpServletRequest request,
       CustomFileNotFoundException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("fileNotFound.code")),
         e.getMessage() == null ? getMessage("fileNotFound.msg") : e.getMessage());
@@ -136,6 +143,63 @@ public class ExceptionAdvice {
     return responseService.getFailResult(Integer.parseInt(getMessage("bookOverTheMax.code")),
         getMessage("bookOverTheMax.msg"));
   }
+
+  @ExceptionHandler(CustomFileDeleteFailedException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected CommonResult fileDeleteFailedException(HttpServletRequest request,
+      CustomFileDeleteFailedException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(Integer.parseInt(getMessage("fileDeleteFailed.code")),
+        getMessage("fileDeleteFailed.msg"));
+  }
+
+  @ExceptionHandler(CustomFileTransferFailedException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected CommonResult fileTransferFailedException(HttpServletRequest request,
+      CustomFileTransferFailedException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(Integer.parseInt(getMessage("fileTransferFailed.code")),
+        getMessage("fileTransferFailed.msg"));
+  }
+
+  @ExceptionHandler(CustomFileEntityNotFoundException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected CommonResult fileEntityNotFoundException(HttpServletRequest request,
+      CustomFileEntityNotFoundException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(
+        Integer.parseInt(getMessage("fileEntityNotFoundFailed.code")),
+        getMessage("fileEntityNotFoundFailed.msg"));
+  }
+
+  @ExceptionHandler(CustomThumbnailEntityNotFoundException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected CommonResult CustomThumbnailEntityNotFoundException(HttpServletRequest request,
+      CustomThumbnailEntityNotFoundException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(
+        Integer.parseInt(getMessage("thumbnailEntityNotFoundFailed.code")),
+        getMessage("thumbnailEntityNotFoundFailed.msg"));
+  }
+
+  @ExceptionHandler(CustomImageFormatException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected CommonResult imageFormatException(HttpServletRequest request,
+      CustomImageFormatException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(Integer.parseInt(getMessage("imageFormat.code")),
+        getMessage("imageFormat.msg"));
+  }
+
+  @ExceptionHandler(CustomImageIOException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected CommonResult imageIOException(HttpServletRequest request,
+      CustomImageIOException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(Integer.parseInt(getMessage("imageIO.code")),
+        getMessage("imageIO.msg"));
+  }
+
   @ExceptionHandler(CustomMemberEmptyFieldException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult memberEmptyFieldException(HttpServletRequest request,
