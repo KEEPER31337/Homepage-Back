@@ -46,3 +46,7 @@ link:member.html[API 문서 보기]
 == *출석*
 
 link:attendance.html[API 문서 보기]
+
+== *도서관*
+
+link:librarymain.html[API 문서 보기]
