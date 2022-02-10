@@ -25,7 +25,7 @@ public class BookBorrowDto {
 
   public BookBorrowEntity toEntity(BookEntity bookEntity, MemberEntity memberEntity) {
 
-    return BookBorrowEntity.builder().memberId(memberEntity).bookId(bookEntity).quantity(quantity)
+    return BookBorrowEntity.builder().member(memberEntity).book(bookEntity).quantity(quantity)
         .borrowDate(borrowDate).expireDate(expireDate).build();
   }
 
