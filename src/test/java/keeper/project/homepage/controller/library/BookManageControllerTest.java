@@ -49,7 +49,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   final private String bookAuthor1 = "박응용";
   final private String bookPicture1 = "JumpToPython.png";
   final private String bookInformation1 = "파이썬의 기본이 잘 정리된 책이다.";
-  final private Long bookQuantity1 = 2L;
+  final private Long bookQuantity1 = 3L;
   final private Long bookBorrow1 = 0L;
   final private Long bookEnable1 = bookQuantity1;
   final private String bookRegisterDate1 = "20220116";
@@ -82,22 +82,6 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   final private long epochTime = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
 
   private MemberEntity memberEntity;
-
-  @Autowired
-  private final AuthService authService;
-  @Autowired
-  private final BookManageService bookManageService;
-  @Autowired
-  private final BookBorrowRepository bookBorrowRepository;
-
-  @Autowired
-  public BookManageControllerTest(AuthService authService,
-      BookManageService bookManageService,
-      BookBorrowRepository bookBorrowRepository) {
-    this.authService = authService;
-    this.bookManageService = bookManageService;
-    this.bookBorrowRepository = bookBorrowRepository;
-  }
 
   @BeforeEach
   public void setUp() throws Exception {
@@ -181,8 +165,17 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
             .memberId(memberId)
             .bookId(bookId)
             .quantity(1L)
-            .borrowDate(java.sql.Date.valueOf(getDate(-15)))
-            .expireDate(java.sql.Date.valueOf(getDate(-1)))
+            .borrowDate(java.sql.Date.valueOf(getDate(-17)))
+            .expireDate(java.sql.Date.valueOf(getDate(-3)))
+            .build());
+
+    bookBorrowRepository.save(
+        BookBorrowEntity.builder()
+            .memberId(memberId)
+            .bookId(bookId)
+            .quantity(1L)
+            .borrowDate(java.sql.Date.valueOf(getDate(-8)))
+            .expireDate(java.sql.Date.valueOf(getDate(1)))
             .build());
   }
 
@@ -462,7 +455,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
 
   //--------------------------연체 도서 표시------------------------------------
   @Test
-  @DisplayName("연체 도서 표시")
+  @DisplayName("연체 도서 표시(연체, 3일전)")
   public void sendOverdueBooks() throws Exception {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
