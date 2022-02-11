@@ -6,6 +6,9 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import keeper.project.homepage.repository.etc.StaticWriteContentRepository;
+import keeper.project.homepage.repository.etc.StaticWriteSubtitleImageRepository;
+import keeper.project.homepage.repository.etc.StaticWriteTitleRepository;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.attendance.AttendanceRepository;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
@@ -87,6 +90,15 @@ public abstract class ApiControllerTestSetUp {
 
   @Autowired
   protected MemberTypeRepository memberTypeRepository;
+
+  @Autowired
+  protected StaticWriteTitleRepository staticWriteTitleRepository;
+
+  @Autowired
+  protected StaticWriteSubtitleImageRepository staticWriteSubtitleImageRepository;
+
+  @Autowired
+  protected StaticWriteContentRepository staticWriteContentRepository;
 
   /********* Service Start ********/
   @Autowired
