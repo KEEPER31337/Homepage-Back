@@ -37,11 +37,11 @@ public class BookBorrowEntity {
   @ManyToOne(targetEntity = MemberEntity.class, fetch = FetchType.LAZY)
   // 한명의 유저는 여러개의 책 대여 가능이므로 1 : N 관계
   @JoinColumn(name = "member_id") // foreign key 매핑
-  private MemberEntity memberId;
+  private MemberEntity member;
   @ManyToOne(targetEntity = BookEntity.class, fetch = FetchType.LAZY)
   //책 한 권이 여러 유저에게 대여 될 수 있으므로 1:N
   @JoinColumn(name = "book_id")
-  private BookEntity bookId;
+  private BookEntity book;
   @Column(name = "quantity", nullable = false)
   private Long quantity;
   @Column(name = "borrow_date", nullable = false)

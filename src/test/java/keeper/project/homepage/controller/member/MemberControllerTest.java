@@ -14,6 +14,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.common.FileConversion;
 import keeper.project.homepage.dto.EmailAuthDto;
+import keeper.project.homepage.dto.result.SingleResult;
+import keeper.project.homepage.dto.sign.SignInDto;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.FriendEntity;
@@ -82,21 +86,6 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
   private MemberEntity memberEntity;
   private ThumbnailEntity thumbnailEntity;
   private FileEntity imageEntity;
-
-  @Autowired
-  private MemberService memberService;
-
-  @Autowired
-  private MemberRankRepository memberRankRepository;
-
-  @Autowired
-  private MemberTypeRepository memberTypeRepository;
-
-  @Autowired
-  private MemberHasMemberJobRepository memberHasMemberJobRepository;
-
-  @Autowired
-  private MemberJobRepository memberJobRepository;
 
   @BeforeAll
   public static void createFile() {
@@ -190,8 +179,10 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         .andReturn();
 
     String resultString = result.getResponse().getContentAsString();
-    JacksonJsonParser jsonParser = new JacksonJsonParser();
-    userToken = jsonParser.parseMap(resultString).get("data").toString();
+    ObjectMapper mapper = new ObjectMapper();
+    SingleResult<SignInDto> sign = mapper.readValue(resultString, new TypeReference<>() {
+    });
+    userToken = sign.getData().getToken();
 
     MemberJobEntity memberAdminJobEntity = memberJobRepository.findByName("ROLE_회장").get();
     MemberHasMemberJobEntity hasMemberAdminJobEntity = MemberHasMemberJobEntity.builder()
@@ -228,9 +219,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         .andReturn();
 
     String adminResultString = adminResult.getResponse().getContentAsString();
-    JacksonJsonParser jsonParser2 = new JacksonJsonParser();
-    adminToken =
-        jsonParser2.parseMap(adminResultString).get("data").toString();
+    SingleResult<SignInDto> adminSign = mapper.readValue(adminResultString, new TypeReference<>() {
+    });
+    adminToken = adminSign.getData().getToken();
   }
 
   @Test

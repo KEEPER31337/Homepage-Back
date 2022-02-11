@@ -10,15 +10,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
+import keeper.project.homepage.dto.result.SingleResult;
+import keeper.project.homepage.dto.sign.SignInDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
-import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
+import keeper.project.homepage.entity.member.MemberRankEntity;
+import keeper.project.homepage.entity.member.MemberTypeEntity;
+import keeper.project.homepage.exception.CustomMemberNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,6 +51,8 @@ public class SignInControllerTest extends ApiControllerTestSetUp {
     Date birthdayDate = stringToDate.parse(birthday);
 
     MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
+    MemberTypeEntity memberTypeEntity = memberTypeRepository.findByName("정회원").get();
+    MemberRankEntity memberRankEntity = memberRankRepository.findByName("일반회원").get();
     MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
         .memberJobEntity(memberJobEntity)
         .build();
@@ -56,6 +64,8 @@ public class SignInControllerTest extends ApiControllerTestSetUp {
         .emailAddress(emailAddress)
         .studentId(studentId)
         .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
+        .memberType(memberTypeEntity)
+        .memberRank(memberRankEntity)
         .build();
     memberRepository.save(memberEntity);
   }
@@ -84,7 +94,21 @@ public class SignInControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("success").description("로그인 실패 시 false 값을 보냅니다."),
                 fieldWithPath("code").description("로그인 실패 시 -1001 코드를 보냅니다."),
                 fieldWithPath("msg").description("상태 메시지를 보냅니다."),
-                fieldWithPath("data").description("로그인 성공 시 JWT 토큰을 담아서 보냅니다.").optional())));
+                fieldWithPath("data.token").description("로그인 성공 시 JWT 토큰을 담아서 보냅니다."),
+                fieldWithPath("data.member.id").description("아이디"),
+                fieldWithPath("data.member.emailAddress").description("이메일 주소"),
+                fieldWithPath("data.member.nickName").description("닉네임"),
+                fieldWithPath("data.member.birthday").description("생일").type(Date.class).optional(),
+                fieldWithPath("data.member.registerDate").description("가입 날짜"),
+                fieldWithPath("data.member.point").description("포인트 점수"),
+                fieldWithPath("data.member.level").description("레벨"),
+                fieldWithPath("data.member.rank").description("회원 등급: [null/우수회원/일반회원]").optional(),
+                fieldWithPath("data.member.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]")
+                    .optional(),
+                fieldWithPath("data.member.jobs").description(
+                        "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
+                    .optional()
+            )));
   }
 
   @Test
@@ -186,8 +210,10 @@ public class SignInControllerTest extends ApiControllerTestSetUp {
         .andReturn();
 
     String resultString = result.getResponse().getContentAsString();
-    JacksonJsonParser jsonParser = new JacksonJsonParser();
-    String userToken = jsonParser.parseMap(resultString).get("data").toString();
+    ObjectMapper mapper = new ObjectMapper();
+    SingleResult<SignInDto> sign = mapper.readValue(resultString, new TypeReference<>() {
+    });
+    String userToken = sign.getData().getToken();
     /* ==== 로그인 후 토큰 생성 End ==== */
 
     MemberEntity PrevMemberEntity = memberRepository.findByLoginId(loginId)
@@ -243,8 +269,10 @@ public class SignInControllerTest extends ApiControllerTestSetUp {
         .andReturn();
 
     String resultString = result.getResponse().getContentAsString();
-    JacksonJsonParser jsonParser = new JacksonJsonParser();
-    String userToken = jsonParser.parseMap(resultString).get("data").toString();
+    ObjectMapper mapper = new ObjectMapper();
+    SingleResult<SignInDto> sign = mapper.readValue(resultString, new TypeReference<>() {
+    });
+    String userToken = sign.getData().getToken();
     /* ==== 로그인 후 토큰 생성 End ==== */
 
     String signInFailedCode = messageSource.getMessage("SigninFailed.code", null,

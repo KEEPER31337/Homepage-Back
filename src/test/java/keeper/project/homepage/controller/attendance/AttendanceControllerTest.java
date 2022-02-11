@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.sql.Timestamp;
@@ -25,6 +26,8 @@ import java.util.List;
 import java.util.Random;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.dto.attendance.AttendanceDto;
+import keeper.project.homepage.dto.result.SingleResult;
+import keeper.project.homepage.dto.sign.SignInDto;
 import keeper.project.homepage.entity.attendance.AttendanceEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
@@ -351,8 +354,10 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
         .andReturn();
 
     String resultString = result.getResponse().getContentAsString();
-    JacksonJsonParser jsonParser = new JacksonJsonParser();
-    return jsonParser.parseMap(resultString).get("data").toString();
+    ObjectMapper mapper = new ObjectMapper();
+    SingleResult<SignInDto> sign = mapper.readValue(resultString, new TypeReference<>() {
+    });
+    return sign.getData().getToken();
   }
 
   private MemberEntity generateTestMember() {

@@ -16,6 +16,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -23,6 +25,8 @@ import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.common.FileConversion;
+import keeper.project.homepage.dto.result.SingleResult;
+import keeper.project.homepage.dto.sign.SignInDto;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.posting.CategoryEntity;
@@ -170,8 +174,10 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .andReturn();
 
     String resultString = result.getResponse().getContentAsString();
-    JacksonJsonParser jsonParser = new JacksonJsonParser();
-    userToken = jsonParser.parseMap(resultString).get("data").toString();
+    ObjectMapper mapper = new ObjectMapper();
+    SingleResult<SignInDto> sign = mapper.readValue(resultString, new TypeReference<>() {
+    });
+    userToken = sign.getData().getToken();
 
     categoryEntity = CategoryEntity.builder()
         .name("테스트 게시판").build();
@@ -475,7 +481,6 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
 
     params.add("title", "mvc제목");
     params.add("content", "mvc내용");
-    params.add("memberId", memberEntity.getId().toString());
     params.add("categoryId", categoryEntity.getId().toString());
     params.add("ipAddress", "192.111.222");
     params.add("allowComment", "0");
@@ -488,6 +493,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         multipart("/v1/post/new")
             .file(file)
             .file(thumbnail)
+            .header("Authorization", userToken)
             .contentType(MediaType.MULTIPART_FORM_DATA)
             .params(params)
             .with(request -> {
@@ -501,7 +507,6 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
             requestParameters(
                 parameterWithName("title").description("제목"),
                 parameterWithName("content").description("내용"),
-                parameterWithName("memberId").description("멤버 ID"),
                 parameterWithName("categoryId").description("게시판 종류 ID"),
                 parameterWithName("ipAddress").description("IP 주소"),
                 parameterWithName("allowComment").description("댓글 허용?"),
@@ -528,7 +533,6 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         new FileInputStream(userDirectory + File.separator + modifyAftTestImage));
     params.add("title", "수정 mvc제목");
     params.add("content", "수정 mvc내용");
-    params.add("memberId", memberEntity.getId().toString());
     params.add("categoryId", categoryEntity.getId().toString());
     params.add("thumbnailId", modifyThumbnail.getId().toString());
     params.add("ipAddress", "192.111.222");
@@ -544,6 +548,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
             .file(file)
             .file(thumbnail)
             .contentType(MediaType.MULTIPART_FORM_DATA)
+            .header("Authorization", userToken)
             .params(params)
             .with(request -> {
               request.setMethod("PUT");
@@ -561,7 +566,6 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
             requestParameters(
                 parameterWithName("title").description("제목"),
                 parameterWithName("content").description("내용"),
-                parameterWithName("memberId").description("멤버 ID"),
                 parameterWithName("categoryId").description("게시판 종류 ID"),
                 parameterWithName("thumbnailId").description("썸네일 ID"),
                 parameterWithName("ipAddress").description("IP 주소"),
@@ -580,13 +584,13 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         ));
   }
 
-  // FIXME: 이상하게 단일 JUnit test를 돌리면 성공하는데, 전체 test를 돌리면 에러가 납니다
   @Test
   public void deletePosting() throws Exception {
     ResultActions result = mockMvc.perform(
         RestDocumentationRequestBuilders.delete("/v1/post/{pid}",
-            postingDeleteTest.getId().toString()));
-
+                postingGeneralTest.getId().toString())
+            .header("Authorization", userToken));
+    
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
         .andDo(document("post-delete",
@@ -643,9 +647,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   public void likePosting() throws Exception {
 
     ResultActions result = mockMvc.perform(get("/v1/post/like")
-        .param("memberId", memberEntity.getId().toString())
         .param("postingId", postingGeneralTest.getId().toString())
         .param("type", "INC")
+        .header("Authorization", userToken)
         .contentType(MediaType.APPLICATION_JSON));
 
 //    result.andDo(print());
@@ -655,7 +659,6 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .andDo(document("post-like",
             requestParameters(
                 parameterWithName("type").description("타입 (INC : 좋아요 +, DEC : 좋아요 -)"),
-                parameterWithName("memberId").description("멤버 ID"),
                 parameterWithName("postingId").description("게시판 ID")
             )
         ));
@@ -664,9 +667,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   @Test
   public void dislikePosting() throws Exception {
     ResultActions result = mockMvc.perform(get("/v1/post/dislike")
-        .param("memberId", memberEntity.getId().toString())
         .param("postingId", postingGeneralTest.getId().toString())
         .param("type", "INC")
+        .header("Authorization", userToken)
         .contentType(MediaType.APPLICATION_JSON));
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
@@ -674,7 +677,6 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .andDo(document("post-dislike",
             requestParameters(
                 parameterWithName("type").description("타입 (INC : 싫어요 +, DEC : 싫어요 -"),
-                parameterWithName("memberId").description("멤버 ID"),
                 parameterWithName("postingId").description("게시판 ID")
             )
         ));

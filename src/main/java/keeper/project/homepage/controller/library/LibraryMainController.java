@@ -2,7 +2,6 @@ package keeper.project.homepage.controller.library;
 
 import java.util.List;
 import keeper.project.homepage.entity.library.BookEntity;
-import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.service.library.LibraryMainService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -26,9 +25,10 @@ public class LibraryMainController {
   private final LibraryMainService libraryMainService;
 
   @GetMapping(value = "/recentbooks")
-  public Page<BookEntity> displayRecentBooks() {
+  public ResponseEntity<List<BookEntity>> displayRecentBooks(
+      @PageableDefault(size = 10, sort = "registerDate", direction = Direction.DESC) Pageable pageable) {
 
-    return libraryMainService.displayTenBooks();
+    return ResponseEntity.status(HttpStatus.OK).body(libraryMainService.displayTenBooks(pageable));
   }
 
   @GetMapping(value = "/searchbooks")
@@ -39,4 +39,9 @@ public class LibraryMainController {
         .body(libraryMainService.searchBooks(keyword, pageable));
   }
 
+  @GetMapping(value = "/selectedbook/information")
+  public BookEntity sendBookInformation(@RequestParam String title, @RequestParam String author) {
+
+    return libraryMainService.selectedBook(title, author);
+  }
 }

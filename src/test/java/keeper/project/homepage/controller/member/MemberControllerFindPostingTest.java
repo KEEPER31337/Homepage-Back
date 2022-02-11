@@ -9,10 +9,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
+import keeper.project.homepage.dto.result.SingleResult;
+import keeper.project.homepage.dto.sign.SignInDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
@@ -86,8 +90,10 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
         .andReturn();
 
     String resultString = result.getResponse().getContentAsString();
-    JacksonJsonParser jsonParser = new JacksonJsonParser();
-    userToken = jsonParser.parseMap(resultString).get("data").toString();
+    ObjectMapper mapper = new ObjectMapper();
+    SingleResult<SignInDto> sign = mapper.readValue(resultString, new TypeReference<>() {
+    });
+    userToken = sign.getData().getToken();
 
     categoryEntity = CategoryEntity.builder()
         .name("테스트 게시판").build();

@@ -42,7 +42,7 @@ public class ThumbnailEntity implements Serializable {
   private MemberEntity memberEntity;
 
   @OneToOne(mappedBy = "thumbnail")
-  @JsonBackReference
+  @JsonBackReference(value = "staticWriteSubtitleImage")
   private StaticWriteSubtitleImageEntity staticWriteSubtitleImage;
 
   public void updatePath(String path) {

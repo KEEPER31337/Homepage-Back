@@ -7,6 +7,8 @@ import java.util.Random;
 import javax.transaction.Transactional;
 import keeper.project.homepage.config.security.JwtTokenProvider;
 import keeper.project.homepage.dto.EmailAuthDto;
+import keeper.project.homepage.dto.member.MemberDto;
+import keeper.project.homepage.dto.sign.SignInDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.exception.CustomLoginIdSigninFailedException;
@@ -90,6 +92,13 @@ public class SignInService {
         .orElseThrow(CustomLoginIdSigninFailedException::new);
     memberEntity.changePassword(passwordEncoder.encode(newPassword));
     memberRepository.save(memberEntity);
+  }
+
+  public SignInDto createSignInDto(String token, MemberEntity member)
+  {
+    MemberDto memberDto = new MemberDto();
+    memberDto.initWithEntity(member);
+    return new SignInDto(token, memberDto);
   }
 
   private boolean passwordMatches(String password, String hashedPassword) {
