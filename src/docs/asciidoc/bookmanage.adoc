@@ -54,3 +54,15 @@ include::{snippets}/borrow-book/request-parameters.adoc[]
 
 include::{snippets}/borrow-book/http-response.adoc[]
 include::{snippets}/borrow-book/response-fields.adoc[]
+
+== *도서반납*
+
+=== 요청
+
+include::{snippets}/return-book/http-request.adoc[]
+include::{snippets}/return-book/request-parameters.adoc[]
+
+=== 응답
+
+include::{snippets}/return-book/http-response.adoc[]
+include::{snippets}/return-book/response-fields.adoc[]
