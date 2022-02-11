@@ -112,7 +112,7 @@ public class PostingController {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
       }
       postingEntity.increaseVisitCount();
-      postingService.updateById(postingEntity, postingId);
+      postingService.updateInfoById(postingEntity, postingId);
     }
 
     return ResponseEntity.status(HttpStatus.OK).body(postingEntity);
@@ -160,19 +160,7 @@ public class PostingController {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
-        Long.valueOf(dto.getCategoryId()));
-    Optional<MemberEntity> memberEntity = memberRepository.findById(
-        Long.valueOf(dto.getMemberId()));
-    PostingEntity postingEntity = postingService.getPostingById(postingId);
-    dto.setUpdateTime(new Date());
-    dto.setCommentCount(postingEntity.getCommentCount());
-    dto.setLikeCount(postingEntity.getLikeCount());
-    dto.setDislikeCount(postingEntity.getDislikeCount());
-    dto.setVisitCount(postingEntity.getVisitCount());
-    postingService.updateById(
-        dto.toEntity(categoryEntity.get(), memberEntity.get(), newThumbnail),
-        postingId);
+    PostingEntity postingEntity = postingService.updateById(dto, postingId);
     List<FileEntity> fileEntities = fileService.getFilesByPostingId(
         postingService.getPostingById(postingId));
     fileService.deleteFiles(fileEntities);
@@ -216,10 +204,10 @@ public class PostingController {
   }
 
   @GetMapping(value = "/like")
-  public ResponseEntity<String> likePosting(@RequestParam("memberId") Long memberId,
-      @RequestParam("postingId") Long postingId, @RequestParam("type") String type) {
+  public ResponseEntity<String> likePosting(@RequestParam("postingId") Long postingId,
+      @RequestParam("type") String type) {
 
-    boolean result = postingService.isPostingLike(memberId, postingId, type.toUpperCase(
+    boolean result = postingService.isPostingLike(postingId, type.toUpperCase(
         Locale.ROOT));
 
     return result ? new ResponseEntity<>("success",
@@ -227,10 +215,10 @@ public class PostingController {
   }
 
   @GetMapping(value = "/dislike")
-  public ResponseEntity<String> dislikePosting(@RequestParam("memberId") Long memberId,
-      @RequestParam("postingId") Long postingId, @RequestParam("type") String type) {
+  public ResponseEntity<String> dislikePosting(@RequestParam("postingId") Long postingId,
+      @RequestParam("type") String type) {
 
-    boolean result = postingService.isPostingDislike(memberId, postingId, type.toUpperCase(
+    boolean result = postingService.isPostingDislike(postingId, type.toUpperCase(
         Locale.ROOT));
 
     return result ? new ResponseEntity<>("success",
