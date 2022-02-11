@@ -13,7 +13,7 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.CustomAboutFailedException;
 import keeper.project.homepage.exception.CustomBookNotFoundException;
 import keeper.project.homepage.exception.CustomBookOverTheMaxException;
-import keeper.project.homepage.exception.CustomMemberNotFoundException;
+import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
@@ -197,12 +197,13 @@ public class BookManageService {
   /**
    * 연체 도서 구하기
    */
-  public List<BookBorrowEntity> sendOverdueBooks(Pageable pageable){
+  public List<BookBorrowEntity> sendOverdueBooks(Pageable pageable) {
 
     java.sql.Date startDate = java.sql.Date.valueOf(getExpireDate(-365));
     java.sql.Date endDate = java.sql.Date.valueOf(getExpireDate(3));
 
-    List<BookBorrowEntity> bookBorrowEntities = bookBorrowRepository.findAllByExpireDateBetween(pageable, startDate, endDate);
+    List<BookBorrowEntity> bookBorrowEntities = bookBorrowRepository.findAllByExpireDateBetween(
+        pageable, startDate, endDate);
 
     return bookBorrowEntities;
   }

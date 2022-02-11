@@ -11,7 +11,7 @@ import keeper.project.homepage.entity.member.MemberHasPostingDislikeEntity;
 import keeper.project.homepage.entity.member.MemberHasPostingLikeEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
-import keeper.project.homepage.exception.CustomMemberNotFoundException;
+import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.member.MemberHasPostingDislikeRepository;
 import keeper.project.homepage.repository.member.MemberHasPostingLikeRepository;
@@ -123,7 +123,7 @@ public class PostingService {
   }
 
   @Transactional
-  public PostingEntity updateInfoById(PostingEntity postingEntity, Long postingId){
+  public PostingEntity updateInfoById(PostingEntity postingEntity, Long postingId) {
     PostingEntity tempEntity = postingRepository.findById(postingId).get();
 
     tempEntity.updateInfo(postingEntity.getTitle(), postingEntity.getContent(),

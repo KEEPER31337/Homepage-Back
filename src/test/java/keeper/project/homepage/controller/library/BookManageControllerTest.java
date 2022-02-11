@@ -91,7 +91,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
 
   @BeforeEach
   public void setUp() throws Exception {
-    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
+    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회장").get();
     MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
         .memberJobEntity(memberJobEntity)
         .build();
@@ -160,8 +160,6 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .andReturn();
 
     String resultString = result.getResponse().getContentAsString();
-    JacksonJsonParser jsonParser = new JacksonJsonParser();
-    userToken = jsonParser.parseMap(resultString).get("data").toString();
     ObjectMapper mapper = new ObjectMapper();
     SingleResult<SignInDto> sign = mapper.readValue(resultString, new TypeReference<>() {
     });
@@ -172,8 +170,8 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
 
     bookBorrowRepository.save(
         BookBorrowEntity.builder()
-            .memberId(memberId)
-            .bookId(bookId)
+            .member(memberId)
+            .book(bookId)
             .quantity(1L)
             .borrowDate(java.sql.Date.valueOf(getDate(-17)))
             .expireDate(java.sql.Date.valueOf(getDate(-3)))
@@ -181,8 +179,8 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
 
     bookBorrowRepository.save(
         BookBorrowEntity.builder()
-            .memberId(memberId)
-            .bookId(bookId)
+            .member(memberId)
+            .book(bookId)
             .quantity(1L)
             .borrowDate(java.sql.Date.valueOf(getDate(-8)))
             .expireDate(java.sql.Date.valueOf(getDate(1)))
@@ -462,7 +460,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.code").value(-2))
         .andExpect(jsonPath("$.msg").exists());
   }
-  
+
   //--------------------------도서 대여------------------------------------
   @Test
   @DisplayName("책 반납 성공(전부 반납)")
@@ -544,7 +542,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.code").value(-2))
         .andExpect(jsonPath("$.msg").exists());
   }
-  
+
   //--------------------------연체 도서 표시------------------------------------
   @Test
   @DisplayName("연체 도서 표시(연체, 3일전)")

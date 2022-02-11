@@ -170,7 +170,7 @@ public class PostingController {
     dto.setLikeCount(postingEntity.getLikeCount());
     dto.setDislikeCount(postingEntity.getDislikeCount());
     dto.setVisitCount(postingEntity.getVisitCount());
-    postingService.updateById(
+    postingService.updateInfoById(
         dto.toEntity(categoryEntity.get(), memberEntity.get(), newThumbnail),
         postingId);
     List<FileEntity> fileEntities = fileService.findFileEntitiesByPostingId(
