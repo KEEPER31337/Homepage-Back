@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import keeper.project.homepage.dto.library.BookDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.entity.library.BookBorrowEntity;
 import keeper.project.homepage.entity.library.BookEntity;
@@ -17,11 +18,13 @@ import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
+import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -32,11 +35,17 @@ public class BookManageService {
   private final MemberRepository memberRepository;
   private static final Integer MAXIMUM_ALLOWD_BOOK_NUMBER = 4;
   private final ResponseService responseService;
+  private final FileService fileService;
 
   /**
    * 도서 최대 권수 체크
    */
-  public CommonResult doAdd(String title, String author, String information, Long quantity) {
+  public CommonResult doAdd(BookDto bookDto, MultipartFile thumbnail, String ip) {
+
+    String title = bookDto.getTitle();
+    String author = bookDto.getAuthor();
+    String information = bookDto.getInformation();
+    Long quantity = bookDto.getQuantity();
 
     Long nowTotal = 0L;
     if (bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
@@ -48,19 +57,20 @@ public class BookManageService {
       throw new CustomBookOverTheMaxException("수량 초과입니다.");
     }
 
-    addBook(title, author, information, total);
+    BookEntity bookEntity = addBook(title, author, information, total);
+    fileService.saveFileInServer(thumbnail, ip);
     return responseService.getSuccessResult();
   }
 
   /**
    * 도서 추가
    */
-  public void addBook(String title, String author, String information, Long total) {
+  public BookEntity addBook(String title, String author, String information, Long total) {
     Long borrowState = 0L;
     if (bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
       borrowState = bookRepository.findByTitleAndAuthor(title, author).get().getBorrow();
     }
-    bookRepository.save(
+    return bookRepository.save(
         BookEntity.builder()
             .title(title)
             .author(author)
