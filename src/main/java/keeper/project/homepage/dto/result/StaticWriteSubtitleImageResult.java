@@ -31,6 +31,7 @@ public class StaticWriteSubtitleImageResult {
     this.subtitle = staticWriteSubtitleImageEntity.getSubtitle();
     this.staticWriteTitleId = staticWriteSubtitleImageEntity.getStaticWriteTitle().getId();
     this.thumbnail = staticWriteSubtitleImageEntity.getThumbnail();
+    this.displayOrder = staticWriteSubtitleImageEntity.getDisplayOrder();
     if(staticWriteSubtitleImageEntity.getStaticWriteContents() != null) {
       this.staticWriteContentResults = staticWriteSubtitleImageEntity.getStaticWriteContents().stream()
           .map(StaticWriteContentResult::new).collect(
