@@ -16,6 +16,7 @@ import keeper.project.homepage.exception.CustomAboutFailedException;
 import keeper.project.homepage.exception.CustomBookNotFoundException;
 import keeper.project.homepage.exception.CustomBookOverTheMaxException;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
+import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
@@ -27,6 +28,7 @@ import org.springframework.data.domain.Pageable;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.util.annotation.Nullable;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +41,7 @@ public class BookManageService {
   private final ResponseService responseService;
   private final FileService fileService;
   private final ThumbnailService thumbnailService;
+  private final ThumbnailRepository thumbnailRepository;
 
   /**
    * 도서 최대 권수 체크
@@ -62,15 +65,17 @@ public class BookManageService {
     if (quantity + nowTotal > MAXIMUM_ALLOWD_BOOK_NUMBER) {
       throw new CustomBookOverTheMaxException("수량 초과입니다.");
     }
-    addBook(title, author, information, total);
     fileService.saveFileInServer(thumbnail, ip);
+
+    Long thumbnailId = bookDto.getThumbnailId();
+    addBook(title, author, information, total, thumbnailId);
     return responseService.getSuccessResult();
   }
 
   /**
    * 도서 추가
    */
-  public void addBook(String title, String author, String information, Long total) {
+  public void addBook(String title, String author, String information, Long total, Long thumbnailId) {
     Long borrowState = 0L;
     if (bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
       borrowState = bookRepository.findByTitleAndAuthor(title, author).get().getBorrow();
@@ -84,6 +89,7 @@ public class BookManageService {
             .borrow(borrowState)
             .enable(total)
             .registerDate(new Date())
+            .thumbnailId(thumbnailRepository.getById(thumbnailId))
             .build());
   }
 
