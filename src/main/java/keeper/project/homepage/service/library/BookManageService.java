@@ -217,18 +217,21 @@ public class BookManageService {
         .orElseThrow(() -> new CustomBookNotFoundException("책이 존재하지 않습니다."));
 
     MemberEntity member = memberRepository.findById(returnMemberId).get();
-    Optional<BookBorrowEntity> borrowEntity = bookBorrowRepository.findByBookAndMember(book,
+    List<BookBorrowEntity> borrowEntity = bookBorrowRepository.findByBookAndMemberOrderByBorrowDateAsc(
+        book,
         member);
 
     if (borrowEntity.isEmpty()) {
       throw new CustomBookNotFoundException("책이 존재하지 않습니다.");
     }
-    Long borrowedBook = borrowEntity.get().getQuantity();
+
+    Long borrowedBook = borrowEntity.get(0).getQuantity();
+
     if (borrowedBook < quantity) {
       throw new CustomBookOverTheMaxException("수량 초과입니다.");
     }
     if (borrowedBook == quantity) {
-      bookBorrowRepository.delete(borrowEntity.get());
+      bookBorrowRepository.delete(borrowEntity.get(0));
     } else {
       returnBook(title, author, returnMemberId, quantity);
     }
