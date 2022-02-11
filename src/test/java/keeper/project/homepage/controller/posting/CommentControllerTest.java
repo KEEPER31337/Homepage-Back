@@ -1,6 +1,8 @@
 package keeper.project.homepage.controller.posting;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -26,11 +28,14 @@ import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,13 +61,15 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
   private CommentEntity commentEntity;
   private MemberEntity memberEntity;
 
+  private String userToken;
+
   @BeforeEach
   public void setUp() throws Exception {
     MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
     MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
         .memberJobEntity(memberJobEntity)
         .build();
-    memberEntity = MemberEntity.builder()
+    memberEntity = memberRepository.save(MemberEntity.builder()
         .loginId(loginId)
         .password(passwordEncoder.encode(password))
         .realName(realName)
@@ -70,8 +77,26 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
         .emailAddress(emailAddress)
         .studentId(studentId)
         .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
-        .build();
-    memberRepository.save(memberEntity);
+        .build());
+
+    String content = "{\n"
+        + "    \"loginId\": \"" + loginId + "\",\n"
+        + "    \"password\": \"" + password + "\"\n"
+        + "}";
+    MvcResult result = mockMvc.perform(post("/v1/signin")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(content))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").exists())
+        .andExpect(jsonPath("$.data").exists())
+        .andReturn();
+
+    String resultString = result.getResponse().getContentAsString();
+    JacksonJsonParser jsonParser = new JacksonJsonParser();
+    userToken = jsonParser.parseMap(resultString).get("data").toString();
 
     CategoryEntity categoryEntity = categoryRepository.save(
         CategoryEntity.builder().name("test category").build());
@@ -124,22 +149,21 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
   @DisplayName("댓글 생성")
   public void commentCreateTest() throws Exception {
     Long commentParentId = parentComment.getId();
-    Long memberId = memberEntity.getId();
     Long postId = postingEntity.getId();
     String content = "{\n"
         + "    \"content\": \"SDFASFASG\",\n"
         + "    \"ipAddress\": \"672.523.937.636\",\n"
-        + "    \"parentId\": \n" + commentParentId + ",\n"
-        + "    \"memberId\": " + memberId + "\n"
+        + "    \"parentId\": \n" + commentParentId + "\n"
         + "}";
 
-    mockMvc.perform(RestDocumentationRequestBuilders.post("/v1/comment/{postId}", postId)
+    mockMvc.perform(post("/v1/comment/{postId}", postId)
+            .header("Authorization", userToken)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(content)
             .accept(MediaType.APPLICATION_JSON_VALUE)
         )
         .andDo(print())
-        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(status().isOk())
         .andDo(document("comment-create",
             pathParameters(
                 parameterWithName("postId").description("댓글을 추가할 게시글의 id")
@@ -148,8 +172,7 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("content").description("댓글 내용"),
                 fieldWithPath("ipAddress").description("댓글 작성자의 ip address"),
                 fieldWithPath("parentId").optional()
-                    .description("모댓글: 입력 없음(db에는 0으로 설정), 대댓글: 부모 댓글의 id"),
-                fieldWithPath("memberId").description("댓글 작성자의 member id")
+                    .description("모댓글: 입력 없음(db에는 0으로 설정), 대댓글: 부모 댓글의 id")
             ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
@@ -162,16 +185,15 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
   @DisplayName("댓글 생성 실패 - content가 비어있는 경우")
   public void commentCreateFailTest() throws Exception {
     Long commentParentId = parentComment.getId();
-    Long memberId = memberEntity.getId();
     Long postId = postingEntity.getId();
     String content = "{\n"
         + "    \"content\": \"\",\n"
         + "    \"ipAddress\": \"672.523.937.636\",\n"
-        + "    \"parentId\": \n" + commentParentId + ",\n"
-        + "    \"memberId\": " + memberId + "\n"
+        + "    \"parentId\": \n" + commentParentId + "\n"
         + "}";
 
     mockMvc.perform(RestDocumentationRequestBuilders.post("/v1/comment/{postId}", postId)
+            .header("Authorization", userToken)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(content)
             .accept(MediaType.APPLICATION_JSON_VALUE)
@@ -183,7 +205,7 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
 
   @Test
   @DisplayName("댓글 페이징")
-  public void findCommentByPostIdTest() throws Exception {
+  public void showCommentByPostIdTest() throws Exception {
     Long postId = postingEntity.getId();
     for (int i = 0; i < 15; i++) {
       commentRepository.save(CommentEntity.builder()
@@ -226,9 +248,10 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].ipAddress").description("댓글 작성자의 ip address"),
                 fieldWithPath("list[].likeCount").description("좋아요 개수"),
                 fieldWithPath("list[].dislikeCount").description("싫어요 개수"),
-                fieldWithPath("list[].parentId").description("대댓글인 경우, 부모 댓글의 id"),
-                fieldWithPath("list[].memberId").description("댓글 작성자의 member id"),
-                fieldWithPath("list[].postingId").description("댓글이 작성된 게시글의 id"))
+                fieldWithPath("list[].parentId").description("대댓글인 경우, 부모 댓글의 id")
+            )
+//                fieldWithPath("list[].memberId").description("댓글 작성자의 member id"),
+//                fieldWithPath("list[].postingId").description("댓글이 작성된 게시글의 id"))
         ));
   }
 
@@ -236,7 +259,8 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
   @DisplayName("댓글 삭제 - 성공")
   public void commentDeleteTest() throws Exception {
     Long commentId = commentEntity.getId();
-    mockMvc.perform(RestDocumentationRequestBuilders.delete("/v1/comment/{commentId}", commentId))
+    mockMvc.perform(RestDocumentationRequestBuilders.delete("/v1/comment/{commentId}", commentId)
+            .header("Authorization", userToken))
         .andExpect(status().isOk())
         .andDo(print())
         .andDo(document("comment-delete",
@@ -254,23 +278,13 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
   }
 
   @Test
-  @DisplayName("댓글 삭제 - 이미 존재하지 않는 댓글")
-  public void commentDeleteFailTest() throws Exception {
-    Long commentId = commentEntity.getId();
-    commentRepository.deleteById(commentId);
-    mockMvc.perform(RestDocumentationRequestBuilders.delete("/v1/comment/{commentId}", commentId))
-        .andExpect(status().is4xxClientError())
-        .andDo(print())
-        .andDo(document("comment-delete-fail"));
-  }
-
-  @Test
   @DisplayName("댓글 수정")
   public void commentUpdateTest() throws Exception {
     Long updateId = commentEntity.getId();
     String updateString = "수정한 내용!";
     String updateContent = String.format("{\"content\": \"%s\"}", updateString);
-    mockMvc.perform(RestDocumentationRequestBuilders.put("/v1/comment/{commentId}", updateId)
+    mockMvc.perform(put("/v1/comment/{commentId}", updateId)
+            .header("Authorization", userToken)
             .content(updateContent)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andDo(print())
@@ -295,9 +309,9 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.ipAddress").description("수정한 댓글 작성자의 ipAdress"),
                 fieldWithPath("data.likeCount").ignored(),
                 fieldWithPath("data.dislikeCount").ignored(),
-                fieldWithPath("data.parentId").ignored(),
-                fieldWithPath("data.memberId").ignored(),
-                fieldWithPath("data.postingId").ignored()
+                fieldWithPath("data.parentId").ignored()
+//                fieldWithPath("data.memberId").ignored(),
+//                fieldWithPath("data.postingId").ignored()
             )));
   }
 
@@ -306,7 +320,8 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
   public void commentUpdateFailTest() throws Exception {
     Long updateId = commentEntity.getId();
     String updateContent = "{\"content\": \"\"}";
-    mockMvc.perform(RestDocumentationRequestBuilders.put("/v1/comment/{commentId}", updateId)
+    mockMvc.perform(put("/v1/comment/{commentId}", updateId)
+            .header("Authorization", userToken)
             .content(updateContent)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andDo(print())
@@ -321,6 +336,7 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
     Integer befLikeCount = commentEntity.getLikeCount();
     // 좋아요 추가
     mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/comment/like")
+            .header("Authorization", userToken)
             .param("commentId", commentEntity.getId().toString())
             .param("memberId", memberEntity.getId().toString()))
         .andDo(print())
@@ -341,6 +357,7 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
 
     // 좋아요 취소
     mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/comment/like")
+            .header("Authorization", userToken)
             .param("commentId", commentEntity.getId().toString())
             .param("memberId", memberEntity.getId().toString()))
         .andDo(print())
@@ -357,6 +374,7 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
     Integer befDislikeCount = commentEntity.getDislikeCount();
     // 싫어요 추가
     mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/comment/dislike")
+            .header("Authorization", userToken)
             .param("commentId", commentEntity.getId().toString())
             .param("memberId", memberEntity.getId().toString()))
         .andDo(print())
@@ -377,6 +395,7 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
 
     // 싫어요 취소
     mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/comment/dislike")
+            .header("Authorization", userToken)
             .param("commentId", commentEntity.getId().toString())
             .param("memberId", memberEntity.getId().toString()))
         .andDo(print())

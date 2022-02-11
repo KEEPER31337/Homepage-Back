@@ -8,7 +8,6 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -34,12 +33,10 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.exception.CustomAboutFailedException;
-import keeper.project.homepage.exception.CustomMemberNotFoundException;
+import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.exception.CustomTransferPointLackException;
 import keeper.project.homepage.entity.member.MemberRankEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
-import keeper.project.homepage.exception.CustomAboutFailedException;
-import keeper.project.homepage.exception.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberRankRepository;
@@ -691,9 +688,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
             .content(content)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andDo(print())
-        .andExpect(status().is5xxServerError())
+        .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(-9999));
+        .andExpect(jsonPath("$.code").value(-22));
   }
 
   @Test
@@ -830,9 +827,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
             .content(content)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andDo(print())
-        .andExpect(status().is5xxServerError())
+        .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(-9999));
+        .andExpect(jsonPath("$.code").value(-22));
   }
 
   @Test

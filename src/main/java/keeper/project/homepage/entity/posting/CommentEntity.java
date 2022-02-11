@@ -2,6 +2,7 @@ package keeper.project.homepage.entity.posting;
 
 import com.sun.istack.NotNull;
 import java.time.LocalDate;
+import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -64,36 +65,26 @@ public class CommentEntity {
   private PostingEntity postingId;
 
   public void increaseLikeCount() {
-    Assert.isTrue(this.likeCount < Integer.MAX_VALUE, "like_count value will be overflow.");
     this.likeCount += 1;
   }
 
   public void decreaseLikeCount() {
-    Assert.isTrue(this.likeCount > 0, "like_count mush be bigger than zero");
     this.likeCount -= 1;
   }
 
   public void increaseDislikeCount() {
-    Assert.isTrue(this.dislikeCount < Integer.MAX_VALUE, "dislike_count value will be overflow.");
     this.dislikeCount += 1;
   }
 
   public void decreaseDislikeCount() {
-    Assert.isTrue(this.dislikeCount > 0, "dislike_count mush be bigger than zero");
     this.dislikeCount -= 1;
   }
 
-  public void changeProperties(CommentEntity commentEntity) {
-    Assert.hasText(commentEntity.content, "content must not be empty");
-    Assert.notNull(commentEntity.updateTime, "update_time must not be empty");
-    Assert.hasText(commentEntity.ipAddress, "ip_address must not be empty");
-    Assert.notNull(commentEntity.likeCount, "like_count must not be empty");
-    Assert.notNull(commentEntity.dislikeCount, "dislike_count must not be empty");
+  public void changeContent(String content) {
+    this.content = content;
+  }
 
-    this.content = commentEntity.content;
-    this.updateTime = commentEntity.updateTime;
-    this.ipAddress = commentEntity.ipAddress;
-    this.likeCount = commentEntity.likeCount;
-    this.dislikeCount = commentEntity.dislikeCount;
+  public void changeUpdateTime(LocalDate updateTime) {
+    this.updateTime = updateTime;
   }
 }

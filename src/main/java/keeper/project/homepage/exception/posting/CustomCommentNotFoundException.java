@@ -1,4 +1,4 @@
-package keeper.project.homepage.exception;
+package keeper.project.homepage.exception.posting;
 
 public class CustomCommentNotFoundException extends RuntimeException {
   public CustomCommentNotFoundException(String msg, Throwable t) {

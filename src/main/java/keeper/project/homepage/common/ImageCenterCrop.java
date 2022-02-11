@@ -5,12 +5,18 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import keeper.project.homepage.exception.file.CustomImageIOException;
 
 public class ImageCenterCrop implements ImageProcessing {
 
-  public void imageProcessing(File imageFile, int width, int height, String fileFormat)
-      throws IOException {
-    BufferedImage bo_image = ImageIO.read(imageFile);
+  public void imageProcessing(File imageFile, int width, int height, String fileFormat) {
+    BufferedImage bo_image;
+    try {
+      bo_image = ImageIO.read(imageFile);
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new CustomImageIOException();
+    }
     BufferedImage bt_image = new BufferedImage(width, height,
         BufferedImage.TYPE_3BYTE_BGR);
 
@@ -32,7 +38,11 @@ public class ImageCenterCrop implements ImageProcessing {
     Graphics2D graphic = bt_image.createGraphics();
     graphic.drawImage(bo_image, 0, 0, width, height,
         srcSrcx, srcSrcy, srcDestx, srcDesty, null);
-    ImageIO.write(bt_image, fileFormat, imageFile);
+    try {
+      ImageIO.write(bt_image, fileFormat, imageFile);
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new CustomImageIOException();
+    }
   }
-
 }

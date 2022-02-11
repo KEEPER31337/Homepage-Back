@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -25,14 +24,15 @@ public class CommentDto {
   public Integer likeCount;
   public Integer dislikeCount;
   public Long parentId;
-  public Long memberId;
-  public Long postingId;
 
-  public CommentEntity toEntity(PostingEntity postingEntity, MemberEntity memberEntity) {
-    return CommentEntity.builder()
-        .id(this.id).content(this.content).registerTime(this.registerTime)
-        .updateTime(this.updateTime).ipAddress(this.ipAddress).likeCount(this.likeCount)
-        .dislikeCount(this.dislikeCount).parentId(this.parentId).memberId(memberEntity)
-        .postingId(postingEntity).build();
+  public void initWithEntity(CommentEntity commentEntity) {
+    this.id = commentEntity.getId();
+    this.content = commentEntity.getContent();
+    this.registerTime = commentEntity.getRegisterTime();
+    this.updateTime = commentEntity.getUpdateTime();
+    this.ipAddress = commentEntity.getIpAddress();
+    this.likeCount = commentEntity.getLikeCount();
+    this.dislikeCount = commentEntity.getDislikeCount();
+    this.parentId = commentEntity.getParentId();
   }
 }

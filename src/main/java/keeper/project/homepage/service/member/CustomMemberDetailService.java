@@ -1,7 +1,6 @@
 package keeper.project.homepage.service.member;
 
-import keeper.project.homepage.exception.CustomMemberNotFoundException;
-import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
+import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
