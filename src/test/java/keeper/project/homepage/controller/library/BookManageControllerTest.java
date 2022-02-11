@@ -524,8 +524,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.msg").exists());
   }
 
-/* FIXME
-  //--------------------------도서 대여------------------------------------
+  //--------------------------도서 반납------------------------------------
   @Test
   @DisplayName("책 반납 성공(전부 반납)")
   public void returnBookAll() throws Exception {
@@ -557,8 +556,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
                     "책 반납 실패가 수량 초과 일 때 수량 초과 메시지를, 없는 책일 때 책이 없다는 메시지를 발생시킵니다.")
             )));
   }
- */
-/* FIXME
+
   @Test
   @DisplayName("책 반납 성공(일부 반납)")
   public void returnBookPart() throws Exception {
@@ -577,8 +575,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.code").value(0))
         .andExpect(jsonPath("$.msg").exists());
   }
- */
-/* FIXME
+
   @Test
   @DisplayName("책 반납 실패(수량 초과)")
   public void returnBookFailedOverMax() throws Exception {
@@ -597,8 +594,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.code").value(-1))
         .andExpect(jsonPath("$.msg").exists());
   }
- */
-/* FIXME
+
   @Test
   @DisplayName("책 반납 실패(없는 책)")
   public void returnBookFailedNotExist() throws Exception {
@@ -617,7 +613,6 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.code").value(-2))
         .andExpect(jsonPath("$.msg").exists());
   }
- */
 
   //--------------------------연체 도서 표시------------------------------------
   @Test
