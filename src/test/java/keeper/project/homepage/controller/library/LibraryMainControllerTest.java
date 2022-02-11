@@ -5,6 +5,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -160,6 +161,10 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
         .andDo(print())
         .andExpect(status().isOk())
         .andDo(document("display-recentbooks",
+            requestParameters(
+                parameterWithName("page").optional().description("페이지 번호(default = 0)"),
+                parameterWithName("size").optional().description("한 페이지당 출력 수(default = 10)")
+            ),
             responseFields(
                 fieldWithPath("[].id").description("책 ID"),
                 fieldWithPath("[].title").description("책 제목"),
