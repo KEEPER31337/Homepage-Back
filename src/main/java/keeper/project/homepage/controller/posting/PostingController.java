@@ -160,19 +160,7 @@ public class PostingController {
       return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
-        Long.valueOf(dto.getCategoryId()));
-    Optional<MemberEntity> memberEntity = memberRepository.findById(
-        Long.valueOf(dto.getMemberId()));
-    PostingEntity postingEntity = postingService.getPostingById(postingId);
-    dto.setUpdateTime(new Date());
-    dto.setCommentCount(postingEntity.getCommentCount());
-    dto.setLikeCount(postingEntity.getLikeCount());
-    dto.setDislikeCount(postingEntity.getDislikeCount());
-    dto.setVisitCount(postingEntity.getVisitCount());
-    postingService.updateInfoById(
-        dto.toEntity(categoryEntity.get(), memberEntity.get(), newThumbnail),
-        postingId);
+    PostingEntity postingEntity = postingService.updateById(dto, postingId);
     List<FileEntity> fileEntities = fileService.findFileEntitiesByPostingId(
         postingService.getPostingById(postingId));
     fileService.deleteFiles(fileEntities);
