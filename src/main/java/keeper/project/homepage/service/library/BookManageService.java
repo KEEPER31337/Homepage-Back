@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.dto.library.BookDto;
 import keeper.project.homepage.dto.result.CommonResult;
+import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.library.BookBorrowEntity;
 import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -20,6 +21,7 @@ import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.ResponseService;
+import keeper.project.homepage.service.ThumbnailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import lombok.extern.log4j.Log4j2;
@@ -36,6 +38,7 @@ public class BookManageService {
   private static final Integer MAXIMUM_ALLOWD_BOOK_NUMBER = 4;
   private final ResponseService responseService;
   private final FileService fileService;
+  private final ThumbnailService thumbnailService;
 
   /**
    * 도서 최대 권수 체크
@@ -47,6 +50,9 @@ public class BookManageService {
     String information = bookDto.getInformation();
     Long quantity = bookDto.getQuantity();
 
+    if (information == null) {
+      information = "도서 정보입니다.";
+    }
     Long nowTotal = 0L;
     if (bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
       nowTotal = bookRepository.findByTitleAndAuthor(title, author).get().getTotal();
@@ -56,8 +62,7 @@ public class BookManageService {
     if (quantity + nowTotal > MAXIMUM_ALLOWD_BOOK_NUMBER) {
       throw new CustomBookOverTheMaxException("수량 초과입니다.");
     }
-
-    BookEntity bookEntity = addBook(title, author, information, total);
+    addBook(title, author, information, total);
     fileService.saveFileInServer(thumbnail, ip);
     return responseService.getSuccessResult();
   }
@@ -65,12 +70,12 @@ public class BookManageService {
   /**
    * 도서 추가
    */
-  public BookEntity addBook(String title, String author, String information, Long total) {
+  public void addBook(String title, String author, String information, Long total) {
     Long borrowState = 0L;
     if (bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
       borrowState = bookRepository.findByTitleAndAuthor(title, author).get().getBorrow();
     }
-    return bookRepository.save(
+    bookRepository.save(
         BookEntity.builder()
             .title(title)
             .author(author)
