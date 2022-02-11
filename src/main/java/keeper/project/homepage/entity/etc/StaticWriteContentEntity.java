@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import keeper.project.homepage.dto.etc.StaticWriteContentDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,4 +37,11 @@ public class StaticWriteContentEntity {
   @JoinColumn(name = "static_write_subtitle_image_id", nullable = false)
   @JsonBackReference
   private StaticWriteSubtitleImageEntity staticWriteSubtitleImage;
+
+  public void updateInfo(StaticWriteContentDto staticWriteContentDto,
+      StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity) {
+    this.content = staticWriteContentDto.getContent();
+    this.displayOrder = staticWriteContentDto.getDisplayOrder();
+    this.staticWriteSubtitleImage = staticWriteSubtitleImageEntity;
+  }
 }
