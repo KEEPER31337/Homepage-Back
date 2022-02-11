@@ -327,31 +327,34 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
-        .andExpect(jsonPath("$.[?(@.title == \"%s\")]", "test 게시판 제목").exists())
-        .andExpect(jsonPath("$.[?(@.title == \"%s\")]", "test 게시판 제목2").exists())
-        .andExpect(jsonPath("$.[?(@.title == \"%s\")]", "임시 게시글 제목").doesNotExist())
+        .andExpect(jsonPath("$.list[?(@.title == \"%s\")]", "test 게시판 제목").exists())
+        .andExpect(jsonPath("$.list[?(@.title == \"%s\")]", "test 게시판 제목2").exists())
+        .andExpect(jsonPath("$.list[?(@.title == \"%s\")]", "임시 게시글 제목").doesNotExist())
         .andDo(document("post-getLatest",
             requestParameters(
                 parameterWithName("page").optional().description("페이지 번호(default = 0)"),
                 parameterWithName("size").optional().description("한 페이지당 출력 수(default = 10)")
             ),
             responseFields(
-                fieldWithPath("[].id").description("게시물 ID"),
-                fieldWithPath("[].title").description("게시물 제목"),
-                fieldWithPath("[].content").description("게시물 내용"),
-                fieldWithPath("[].writer").optional().description("작성자 (비밀 게시글일 경우 익명)"),
-                fieldWithPath("[].visitCount").description("조회 수"),
-                fieldWithPath("[].likeCount").description("좋아요 수"),
-                fieldWithPath("[].dislikeCount").description("싫어요 수"),
-                fieldWithPath("[].commentCount").description("댓글 수"),
-                fieldWithPath("[].registerTime").description("작성 시간"),
-                fieldWithPath("[].updateTime").description("수정 시간"),
-                fieldWithPath("[].ipAddress").description("IP 주소"),
-                fieldWithPath("[].allowComment").description("댓글 허용?"),
-                fieldWithPath("[].isNotice").description("공지글?"),
-                fieldWithPath("[].isSecret").description("비밀글?"),
-                fieldWithPath("[].isTemp").description("임시저장?"),
-                fieldWithPath("[].password").description("비밀번호")
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("성공 : 0, 실패 시: -9999"),
+                fieldWithPath("list[].id").description("게시물 ID"),
+                fieldWithPath("list[].title").description("게시물 제목"),
+                fieldWithPath("list[].content").description("게시물 내용"),
+                fieldWithPath("list[].writer").optional().description("작성자 (비밀 게시글일 경우 익명)"),
+                fieldWithPath("list[].visitCount").description("조회 수"),
+                fieldWithPath("list[].likeCount").description("좋아요 수"),
+                fieldWithPath("list[].dislikeCount").description("싫어요 수"),
+                fieldWithPath("list[].commentCount").description("댓글 수"),
+                fieldWithPath("list[].registerTime").description("작성 시간"),
+                fieldWithPath("list[].updateTime").description("수정 시간"),
+                fieldWithPath("list[].ipAddress").description("IP 주소"),
+                fieldWithPath("list[].allowComment").description("댓글 허용?"),
+                fieldWithPath("list[].isNotice").description("공지글?"),
+                fieldWithPath("list[].isSecret").description("비밀글?"),
+                fieldWithPath("list[].isTemp").description("임시저장?"),
+                fieldWithPath("list[].password").description("비밀번호")
             )
         ));
   }
@@ -367,9 +370,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
-        .andExpect(jsonPath("$.[?(@.title == \"%s\")]", "test 게시판 제목").exists())
-        .andExpect(jsonPath("$.[?(@.title == \"%s\")]", "test 게시판 제목2").exists())
-        .andExpect(jsonPath("$.[?(@.title == \"%s\")]", "임시 게시글 제목").doesNotExist())
+        .andExpect(jsonPath("$.list[?(@.title == \"%s\")]", "test 게시판 제목").exists())
+        .andExpect(jsonPath("$.list[?(@.title == \"%s\")]", "test 게시판 제목2").exists())
+        .andExpect(jsonPath("$.list[?(@.title == \"%s\")]", "임시 게시글 제목").doesNotExist())
         .andDo(document("post-getList",
             requestParameters(
                 parameterWithName("category").description("게시판 종류 ID"),
@@ -377,22 +380,25 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 parameterWithName("size").optional().description("한 페이지당 출력 수(default = 10)")
             ),
             responseFields(
-                fieldWithPath("[].id").description("게시물 ID"),
-                fieldWithPath("[].title").description("게시물 제목"),
-                fieldWithPath("[].content").description("게시물 내용"),
-                fieldWithPath("[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
-                fieldWithPath("[].visitCount").description("조회 수"),
-                fieldWithPath("[].likeCount").description("좋아요 수"),
-                fieldWithPath("[].dislikeCount").description("싫어요 수"),
-                fieldWithPath("[].commentCount").description("댓글 수"),
-                fieldWithPath("[].registerTime").description("작성 시간"),
-                fieldWithPath("[].updateTime").description("수정 시간"),
-                fieldWithPath("[].ipAddress").description("IP 주소"),
-                fieldWithPath("[].allowComment").description("댓글 허용?"),
-                fieldWithPath("[].isNotice").description("공지글?"),
-                fieldWithPath("[].isSecret").description("비밀글?"),
-                fieldWithPath("[].isTemp").description("임시저장?"),
-                fieldWithPath("[].password").description("비밀번호")
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("성공 : 0, 실패 시: -9999"),
+                fieldWithPath("list[].id").description("게시물 ID"),
+                fieldWithPath("list[].title").description("게시물 제목"),
+                fieldWithPath("list[].content").description("게시물 내용"),
+                fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
+                fieldWithPath("list[].visitCount").description("조회 수"),
+                fieldWithPath("list[].likeCount").description("좋아요 수"),
+                fieldWithPath("list[].dislikeCount").description("싫어요 수"),
+                fieldWithPath("list[].commentCount").description("댓글 수"),
+                fieldWithPath("list[].registerTime").description("작성 시간"),
+                fieldWithPath("list[].updateTime").description("수정 시간"),
+                fieldWithPath("list[].ipAddress").description("IP 주소"),
+                fieldWithPath("list[].allowComment").description("댓글 허용?"),
+                fieldWithPath("list[].isNotice").description("공지글?"),
+                fieldWithPath("list[].isSecret").description("비밀글?"),
+                fieldWithPath("list[].isTemp").description("임시저장?"),
+                fieldWithPath("list[].password").description("비밀번호")
             )
         ));
   }
@@ -410,22 +416,25 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 parameterWithName("pid").description("게시물 ID")
             ),
             responseFields(
-                fieldWithPath("id").description("게시물 ID"),
-                fieldWithPath("title").description("게시물 제목"),
-                fieldWithPath("content").description("게시물 내용"),
-                fieldWithPath("writer").description("작성자  (비밀 게시글일 경우 익명)"),
-                fieldWithPath("visitCount").description("조회 수"),
-                fieldWithPath("likeCount").description("좋아요 수"),
-                fieldWithPath("dislikeCount").description("싫어요 수"),
-                fieldWithPath("commentCount").description("댓글 수"),
-                fieldWithPath("registerTime").description("작성 시간"),
-                fieldWithPath("updateTime").description("수정 시간"),
-                fieldWithPath("ipAddress").description("IP 주소"),
-                fieldWithPath("allowComment").description("댓글 허용?"),
-                fieldWithPath("isNotice").description("공지글?"),
-                fieldWithPath("isSecret").description("비밀글?"),
-                fieldWithPath("isTemp").description("임시저장?"),
-                fieldWithPath("password").description("비밀번호")
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("성공 : 0, 실패 시: -9999"),
+                fieldWithPath("data.id").description("게시물 ID"),
+                fieldWithPath("data.title").description("게시물 제목"),
+                fieldWithPath("data.content").description("게시물 내용"),
+                fieldWithPath("data.writer").description("작성자  (비밀 게시글일 경우 익명)"),
+                fieldWithPath("data.visitCount").description("조회 수"),
+                fieldWithPath("data.likeCount").description("좋아요 수"),
+                fieldWithPath("data.dislikeCount").description("싫어요 수"),
+                fieldWithPath("data.commentCount").description("댓글 수"),
+                fieldWithPath("data.registerTime").description("작성 시간"),
+                fieldWithPath("data.updateTime").description("수정 시간"),
+                fieldWithPath("data.ipAddress").description("IP 주소"),
+                fieldWithPath("data.allowComment").description("댓글 허용?"),
+                fieldWithPath("data.isNotice").description("공지글?"),
+                fieldWithPath("data.isSecret").description("비밀글?"),
+                fieldWithPath("data.isTemp").description("임시저장?"),
+                fieldWithPath("data.password").description("비밀번호")
             )
         ));
   }
@@ -445,13 +454,16 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 parameterWithName("pid").description("게시물 ID")
             ),
             responseFields(
-                fieldWithPath("[].id").description("첨부파일 ID"),
-                fieldWithPath("[].fileName").description("첨부파일 이름"),
-                fieldWithPath("[].filePath").description("첨부파일 경로(상대경로)"),
-                fieldWithPath("[].fileSize").description("첨부파일 크기"),
-                fieldWithPath("[].uploadTime").description("업로드 시간"),
-                fieldWithPath("[].ipAddress").description("IP 주소"),
-                fieldWithPath("[].thumbnail").description("썸네일 정보")
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("성공 : 0, 실패 시: -9999"),
+                fieldWithPath("list[].id").description("첨부파일 ID"),
+                fieldWithPath("list[].fileName").description("첨부파일 이름"),
+                fieldWithPath("list[].filePath").description("첨부파일 경로(상대경로)"),
+                fieldWithPath("list[].fileSize").description("첨부파일 크기"),
+                fieldWithPath("list[].uploadTime").description("업로드 시간"),
+                fieldWithPath("list[].ipAddress").description("IP 주소"),
+                fieldWithPath("list[].thumbnail").description("썸네일 정보")
             )
         ));
   }
@@ -520,6 +532,11 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 partWithName("file").description("첨부 파일들 (form-data 에서 file= parameter 부분)"),
                 partWithName("thumbnail").description(
                     "썸네일 용 이미지 (form-data 에서 thumbnail= parameter 부분)")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("성공 : 0, 실패 시: -9999")
             )
         ));
   }
@@ -582,6 +599,11 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 partWithName("file").description("첨부 파일들 (form-data 에서 file= parameter 부분)"),
                 partWithName("thumbnail").description(
                     "썸네일 용 이미지 (form-data 에서 thumbnail= parameter 부분)")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("성공 : 0, 실패 시: -9999")
             )
         ));
   }
@@ -598,6 +620,11 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .andDo(document("post-delete",
             pathParameters(
                 parameterWithName("pid").description("게시물 ID")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("성공 : 0, 실패 시: -9999")
             )
         ));
   }
@@ -624,22 +651,25 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 parameterWithName("size").optional().description("한 페이지당 출력 수(default = 10)")
             ),
             responseFields(
-                fieldWithPath("[].id").description("게시물 ID"),
-                fieldWithPath("[].title").description("게시물 제목"),
-                fieldWithPath("[].content").description("게시물 내용"),
-                fieldWithPath("[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
-                fieldWithPath("[].visitCount").description("조회 수"),
-                fieldWithPath("[].likeCount").description("좋아요 수"),
-                fieldWithPath("[].dislikeCount").description("싫어요 수"),
-                fieldWithPath("[].commentCount").description("댓글 수"),
-                fieldWithPath("[].registerTime").description("작성 시간"),
-                fieldWithPath("[].updateTime").description("수정 시간"),
-                fieldWithPath("[].ipAddress").description("IP 주소"),
-                fieldWithPath("[].allowComment").description("댓글 허용?"),
-                fieldWithPath("[].isNotice").description("공지글?"),
-                fieldWithPath("[].isSecret").description("비밀글?"),
-                fieldWithPath("[].isTemp").description("임시저장?"),
-                fieldWithPath("[].password").description("비밀번호")
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("성공 : 0, 실패 시: -9999"),
+                fieldWithPath("list[].id").description("게시물 ID"),
+                fieldWithPath("list[].title").description("게시물 제목"),
+                fieldWithPath("list[].content").description("게시물 내용"),
+                fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
+                fieldWithPath("list[].visitCount").description("조회 수"),
+                fieldWithPath("list[].likeCount").description("좋아요 수"),
+                fieldWithPath("list[].dislikeCount").description("싫어요 수"),
+                fieldWithPath("list[].commentCount").description("댓글 수"),
+                fieldWithPath("list[].registerTime").description("작성 시간"),
+                fieldWithPath("list[].updateTime").description("수정 시간"),
+                fieldWithPath("list[].ipAddress").description("IP 주소"),
+                fieldWithPath("list[].allowComment").description("댓글 허용?"),
+                fieldWithPath("list[].isNotice").description("공지글?"),
+                fieldWithPath("list[].isSecret").description("비밀글?"),
+                fieldWithPath("list[].isTemp").description("임시저장?"),
+                fieldWithPath("list[].password").description("비밀번호")
             )
         ));
   }
@@ -662,6 +692,11 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
             requestParameters(
                 parameterWithName("type").description("타입 (INC : 좋아요 +, DEC : 좋아요 -)"),
                 parameterWithName("postingId").description("게시판 ID")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("성공 : 0, 실패 시: -9999")
             )
         ));
   }
@@ -680,6 +715,11 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
             requestParameters(
                 parameterWithName("type").description("타입 (INC : 싫어요 +, DEC : 싫어요 -"),
                 parameterWithName("postingId").description("게시판 ID")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("성공 : 0, 실패 시: -9999")
             )
         ));
   }
