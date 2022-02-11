@@ -1,4 +1,4 @@
-FROM gradle:7.3.2-jdk17
+FROM openjdk:17
 
 COPY ../app.jar /app.jar
 

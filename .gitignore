@@ -69,3 +69,5 @@ logs
 ### local environment test files ###
 docker/config
 docker/app.jar
+docker/ESSENTIAL
+docker/ESSENTIAL.zip
