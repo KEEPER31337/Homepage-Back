@@ -8,13 +8,14 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -23,6 +24,8 @@ import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.common.FileConversion;
 import keeper.project.homepage.dto.EmailAuthDto;
+import keeper.project.homepage.dto.result.SingleResult;
+import keeper.project.homepage.dto.sign.SignInDto;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.FriendEntity;
@@ -30,12 +33,10 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.exception.CustomAboutFailedException;
-import keeper.project.homepage.exception.CustomMemberNotFoundException;
+import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.exception.CustomTransferPointLackException;
 import keeper.project.homepage.entity.member.MemberRankEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
-import keeper.project.homepage.exception.CustomAboutFailedException;
-import keeper.project.homepage.exception.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberRankRepository;
@@ -85,21 +86,6 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
   private MemberEntity memberEntity;
   private ThumbnailEntity thumbnailEntity;
   private FileEntity imageEntity;
-
-  @Autowired
-  private MemberService memberService;
-
-  @Autowired
-  private MemberRankRepository memberRankRepository;
-
-  @Autowired
-  private MemberTypeRepository memberTypeRepository;
-
-  @Autowired
-  private MemberHasMemberJobRepository memberHasMemberJobRepository;
-
-  @Autowired
-  private MemberJobRepository memberJobRepository;
 
   @BeforeAll
   public static void createFile() {
@@ -193,8 +179,10 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         .andReturn();
 
     String resultString = result.getResponse().getContentAsString();
-    JacksonJsonParser jsonParser = new JacksonJsonParser();
-    userToken = jsonParser.parseMap(resultString).get("data").toString();
+    ObjectMapper mapper = new ObjectMapper();
+    SingleResult<SignInDto> sign = mapper.readValue(resultString, new TypeReference<>() {
+    });
+    userToken = sign.getData().getToken();
 
     MemberJobEntity memberAdminJobEntity = memberJobRepository.findByName("ROLE_회장").get();
     MemberHasMemberJobEntity hasMemberAdminJobEntity = MemberHasMemberJobEntity.builder()
@@ -231,9 +219,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         .andReturn();
 
     String adminResultString = adminResult.getResponse().getContentAsString();
-    JacksonJsonParser jsonParser2 = new JacksonJsonParser();
-    adminToken =
-        jsonParser2.parseMap(adminResultString).get("data").toString();
+    SingleResult<SignInDto> adminSign = mapper.readValue(adminResultString, new TypeReference<>() {
+    });
+    adminToken = adminSign.getData().getToken();
   }
 
   @Test
@@ -700,9 +688,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
             .content(content)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andDo(print())
-        .andExpect(status().is5xxServerError())
+        .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(-9999));
+        .andExpect(jsonPath("$.code").value(-22));
   }
 
   @Test
@@ -839,9 +827,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
             .content(content)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
         .andDo(print())
-        .andExpect(status().is5xxServerError())
+        .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(-9999));
+        .andExpect(jsonPath("$.code").value(-22));
   }
 
   @Test

@@ -9,7 +9,10 @@ import keeper.project.homepage.entity.member.FriendEntity;
 import keeper.project.homepage.dto.request.PointTransferRequest;
 import keeper.project.homepage.dto.result.PointTransferResult;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.exception.CustomMemberNotFoundException;
+import keeper.project.homepage.exception.member.CustomMemberDuplicateException;
+import keeper.project.homepage.exception.member.CustomMemberEmptyFieldException;
+import keeper.project.homepage.exception.member.CustomMemberInfoNotFoundException;
+import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.exception.CustomTransferPointLackException;
 import keeper.project.homepage.repository.member.FriendRepository;
 import java.util.ArrayList;
@@ -65,8 +68,27 @@ public class MemberService {
   private final DuplicateCheckService duplicateCheckService;
 
 
-  public MemberEntity findById(Long id) throws RuntimeException {
+  public MemberEntity findById(Long id) {
     return memberRepository.findById(id).orElseThrow(CustomMemberNotFoundException::new);
+  }
+
+  public MemberEntity findByLoginId(String loginId) {
+    return memberRepository.findByLoginId(loginId).orElseThrow(CustomMemberNotFoundException::new);
+  }
+
+  private MemberRankEntity findRankByRankName(String name) {
+    return memberRankRepository.findByName(name).orElseThrow(
+        () -> new CustomMemberInfoNotFoundException(name + "인 MemberRankEntity가 존재하지 않습니다."));
+  }
+
+  private MemberTypeEntity findTypeByTypeName(String name) {
+    return memberTypeRepository.findByName(name).orElseThrow(
+        () -> new CustomMemberInfoNotFoundException(name + "인 MemberTypeEntity가 존재하지 않습니다."));
+  }
+
+  private MemberJobEntity findJobByJobName(String name) {
+    return memberJobRepository.findByName(name).orElseThrow(
+        () -> new CustomMemberInfoNotFoundException(name + "인 MemberJobEntity가 존재하지 않습니다."));
   }
 
   public List<MemberEntity> findAll() {
@@ -75,21 +97,16 @@ public class MemberService {
 
   public MemberDto updateMemberRank(MemberRankDto rankDto, String loginId) {
     if (rankDto.getName().isBlank()) {
-      throw new RuntimeException("변경할 등급을 입력해주세요.");
+      throw new CustomMemberEmptyFieldException("변경할 등급의 이름이 비어있습니다.");
     }
 
-    MemberEntity updateEntity = memberRepository.findByLoginId(loginId)
-        .orElseThrow(CustomMemberNotFoundException::new);
+    MemberEntity updateEntity = findByLoginId(loginId);
     MemberRankEntity prevRank = updateEntity.getMemberRank();
     if (prevRank != null) {
       prevRank.getMembers().remove(updateEntity);
     }
 
-    MemberRankEntity updateRank = memberRankRepository.findByName(rankDto.getName())
-        .orElse(null);
-    if (updateRank == null) { // 나중에 custom exception 으로 변경
-      throw new RuntimeException(rankDto.getName() + "인 member rank가 존재하지 않습니다.");
-    }
+    MemberRankEntity updateRank = findRankByRankName(rankDto.getName());
     updateRank.getMembers().add(updateEntity);
     updateEntity.changeMemberRank(updateRank);
     MemberDto result = new MemberDto();
@@ -99,21 +116,16 @@ public class MemberService {
 
   public MemberDto updateMemberType(MemberTypeDto typeDto, String loginId) {
     if (typeDto.getName().isBlank()) {
-      throw new RuntimeException("변경할 타입을 입력해주세요.");
+      throw new CustomMemberEmptyFieldException("변경할 타입의 이름이 비어있습니다.");
     }
 
-    MemberEntity updateEntity = memberRepository.findByLoginId(loginId)
-        .orElseThrow(CustomMemberNotFoundException::new);
+    MemberEntity updateEntity = findByLoginId(loginId);
     MemberTypeEntity prevType = updateEntity.getMemberType();
     if (prevType != null) {
       prevType.getMembers().remove(updateEntity);
     }
 
-    MemberTypeEntity updateType = memberTypeRepository.findByName(typeDto.getName())
-        .orElse(null);
-    if (updateType == null) { // 나중에 custom exception 으로 변경
-      throw new RuntimeException(typeDto.getName() + "인 member type이 존재하지 않습니다.");
-    }
+    MemberTypeEntity updateType = findTypeByTypeName(typeDto.getName());
     updateType.getMembers().add(updateEntity);
     updateEntity.changeMemberType(updateType);
     MemberDto result = new MemberDto();
@@ -121,7 +133,7 @@ public class MemberService {
     return result;
   }
 
-  private MemberEntity removeMemberJob(MemberHasMemberJobEntity mj, MemberEntity member) {
+  private MemberEntity deleteMemberJob(MemberHasMemberJobEntity mj, MemberEntity member) {
     memberHasMemberJobRepository.delete(mj);
     mj.getMemberJobEntity().getMembers().remove(mj);
     member.getMemberJobs().remove(mj);
@@ -129,10 +141,7 @@ public class MemberService {
   }
 
   private MemberEntity addMemberJob(String jobName, MemberEntity member) {
-    MemberJobEntity newJob = memberJobRepository.findByName(jobName).orElse(null);
-    if (newJob == null) { // 나중에 custom exception 으로 변경
-      throw new RuntimeException(jobName + "인 member job이 존재하지 않습니다.");
-    }
+    MemberJobEntity newJob = findJobByJobName(jobName);
 
     MemberHasMemberJobEntity newMJ = memberHasMemberJobRepository.save(
         MemberHasMemberJobEntity.builder().memberEntity(member)
@@ -144,17 +153,15 @@ public class MemberService {
 
   public MemberDto updateMemberJobs(MemberJobDto jobDto, String loginId) {
     if (jobDto.getNames().isEmpty()) {
-      throw new RuntimeException("변경할 타입을 입력해주세요.");
+      throw new CustomMemberEmptyFieldException("변경할 직책의 이름이 비어있습니다.");
     }
 
-    MemberEntity updateMember = memberRepository.findByLoginId(loginId)
-        .orElseThrow(CustomMemberNotFoundException::new);
-
+    MemberEntity updateMember = findByLoginId(loginId);
     List<MemberHasMemberJobEntity> prevMJList = memberHasMemberJobRepository.findAllByMemberEntity_Id(
         updateMember.getId());
     if (!prevMJList.isEmpty()) {
       for (MemberHasMemberJobEntity prevMJ : prevMJList) {
-        updateMember = removeMemberJob(prevMJ, updateMember);
+        updateMember = deleteMemberJob(prevMJ, updateMember);
       }
     }
 
@@ -167,12 +174,8 @@ public class MemberService {
   }
 
   public void follow(Long myId, String followLoginId) {
-    MemberEntity me = memberRepository.findById(myId)
-        .orElseThrow(() -> new CustomMemberNotFoundException(
-            myId.toString() + "인 id를 가진 member를 찾지 못했습니다."));
-    MemberEntity followee = memberRepository.findByLoginId(followLoginId)
-        .orElseThrow(() -> new CustomMemberNotFoundException(
-            followLoginId + "인 login id를 가진 member를 찾지 못했습니다."));
+    MemberEntity me = findById(myId);
+    MemberEntity followee = findByLoginId(followLoginId);
 
     FriendEntity friend = FriendEntity.builder()
         .follower(me)
@@ -186,10 +189,8 @@ public class MemberService {
   }
 
   public void unfollow(Long myId, String followLoginId) {
-    MemberEntity me = memberRepository.findById(myId)
-        .orElseThrow(CustomMemberNotFoundException::new);
-    MemberEntity followee = memberRepository.findByLoginId(followLoginId)
-        .orElseThrow(CustomMemberNotFoundException::new);
+    MemberEntity me = findById(myId);
+    MemberEntity followee = findByLoginId(followLoginId);
 
     FriendEntity friend = friendRepository.findByFolloweeAndFollower(followee, me);
     me.getFollowee().remove(friend);
@@ -198,8 +199,7 @@ public class MemberService {
   }
 
   public List<MemberDto> showFollower(Long myId) {
-    MemberEntity me = memberRepository.findById(myId)
-        .orElseThrow(CustomMemberNotFoundException::new);
+    MemberEntity me = findById(myId);
     List<FriendEntity> friendList = me.getFollower();
 
     List<MemberDto> followerList = new ArrayList<>();
@@ -212,8 +212,7 @@ public class MemberService {
   }
 
   public List<MemberDto> showFollowee(Long myId) {
-    MemberEntity me = memberRepository.findById(myId)
-        .orElseThrow(CustomMemberNotFoundException::new);
+    MemberEntity me = findById(myId);
     List<FriendEntity> friendList = me.getFollowee();
 
     List<MemberDto> followeeList = new ArrayList<>();
@@ -230,10 +229,10 @@ public class MemberService {
     MemberEntity updateEntity = memberRepository.findById(memberId)
         .orElseThrow(CustomMemberNotFoundException::new);
     if (memberDto.getRealName().isBlank()) {
-      throw new RuntimeException("변경할 이름을 입력해주세요.");
+      throw new CustomMemberEmptyFieldException("변경할 이름의 내용이 비어있습니다.");
     }
     if (memberDto.getNickName().isBlank()) {
-      throw new RuntimeException("변경할 닉네임을 입력해주세요.");
+      throw new CustomMemberEmptyFieldException("변경할 닉네임의 내용이 비어있습니다.");
     }
     updateEntity.changeRealName(memberDto.getRealName());
     updateEntity.changeNickName(memberDto.getNickName());
@@ -245,10 +244,10 @@ public class MemberService {
     MemberEntity updateEntity = memberRepository.findById(memberId)
         .orElseThrow(CustomMemberNotFoundException::new);
     if (memberDto.getStudentId().isBlank()) {
-      throw new RuntimeException("변경할 학번을 입력해주세요.");
+      throw new CustomMemberEmptyFieldException("변경할 학번의 내용이 비어있습니다.");
     }
     if (duplicateCheckService.checkStudentIdDuplicate(memberDto.getStudentId())) {
-      throw new RuntimeException("이미 사용중인 학번입니다.");
+      throw new CustomMemberDuplicateException("이미 사용중인 학번입니다.");
     }
     updateEntity.changeStudentId(memberDto.getStudentId());
     memberDto.initWithEntity(memberRepository.save(updateEntity));
@@ -276,10 +275,10 @@ public class MemberService {
 
   public MemberDto updateEmailAddress(MemberDto memberDto, Long memberId) throws RuntimeException {
     if (memberDto.getEmailAddress().isBlank()) {
-      throw new RuntimeException("변경할 이메일을 입력해주세요.");
+      throw new CustomMemberEmptyFieldException("변경할 이메일의 내용이 비어있습니다.");
     }
     if (duplicateCheckService.checkEmailAddressDuplicate(memberDto.getEmailAddress())) {
-      throw new RuntimeException("이미 사용중인 이메일 입니다.");
+      throw new CustomMemberDuplicateException("이미 사용중인 이메일 입니다.");
     }
     String memberEmail = memberDto.getEmailAddress();
     String authCode = memberDto.getAuthCode();
@@ -309,7 +308,7 @@ public class MemberService {
       prevThumbnail = thumbnailService.findById(memberEntity.getThumbnail().getId());
     }
 
-    FileEntity fileEntity = fileService.saveOriginalImage(image, ipAddress);
+    FileEntity fileEntity = fileService.saveOriginalThumbnail(image, ipAddress);
     ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
         image, fileEntity, "small");
 
@@ -319,7 +318,7 @@ public class MemberService {
 
     if (prevThumbnail != null) {
       thumbnailService.deleteById(prevThumbnail.getId());
-      fileService.deleteById(prevThumbnail.getFile().getId());
+      fileService.deleteOriginalThumbnailById(prevThumbnail.getFile().getId());
     }
     return result;
   }

@@ -12,7 +12,6 @@ import keeper.project.homepage.entity.member.MemberHasCommentEntityPK;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
-import keeper.project.homepage.exception.CustomCommentNotFoundException;
 import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.member.MemberHasCommentDislikeRepository;
@@ -21,8 +20,6 @@ import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.repository.posting.PostingRepository;
 import lombok.extern.log4j.Log4j2;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -30,7 +27,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -158,12 +154,10 @@ public class CommentServiceTest {
   @Test
   @DisplayName("댓글 생성")
   public void createTest() {
-    CommentDto commentDto = new CommentDto();
-    commentDto.setContent("댓글 내용");
-    commentDto.setIpAddress("111.111.111.111");
-    commentDto.setMemberId(memberEntity.getId());
-
-    CommentDto createDto = commentService.save(commentDto, postingEntity.getId());
+    CommentDto commentDto = CommentDto.builder().content("댓글 내용").ipAddress("111.111.111.111")
+        .build();
+    CommentDto createDto = commentService.save(commentDto, postingEntity.getId(),
+        memberEntity.getId());
     Assertions.assertNotNull(createDto.getId());
   }
 
@@ -181,31 +175,22 @@ public class CommentServiceTest {
   @Test
   @DisplayName("댓글 수정")
   public void updateTest() throws RuntimeException {
-    CommentDto commentDto = new CommentDto();
-    commentDto.setContent("수정한 댓글 내용");
-    commentDto.setIpAddress("111.111.111.111");
-    commentDto.setMemberId(memberEntity.getId());
+    CommentDto commentDto = CommentDto.builder()
+        .content("수정한 댓글 내용")
+        .build();
 
     Long updateId = commentEntity.getId();
 
-    CommentDto updateDto = commentService.updateById(commentDto, updateId);
+    CommentDto updateDto = commentService.updateById(commentDto, updateId, memberEntity.getId());
     Assertions.assertNotNull(updateDto.getId());
     Assertions.assertEquals(updateDto.getContent(), "수정한 댓글 내용");
-  }
-
-  @Test
-  @DisplayName("댓글 조회")
-  public void findByIdTest() throws RuntimeException {
-    Long findId = commentEntity.getId();
-    CommentEntity findComment = commentService.findById(findId);
-    Assertions.assertNotNull(findComment);
   }
 
   @Test
   @DisplayName("댓글 삭제")
   public void deleteTest() throws RuntimeException {
     Long deleteId = commentEntity.getId();
-    commentService.deleteById(deleteId);
+    commentService.deleteById(deleteId, memberEntity.getId());
     Assertions.assertTrue(commentRepository.findById(deleteId).isEmpty());
   }
 

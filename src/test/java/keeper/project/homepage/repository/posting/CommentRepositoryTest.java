@@ -167,11 +167,7 @@ public class CommentRepositoryTest {
 
     LOGGER.info("수정 전 content : " + commentSelect.get().getContent());
     CommentEntity original = commentSelect.get();
-    CommentEntity temp = CommentEntity.builder()
-        .content("MMMoDDDiFFFy").likeCount(original.getLikeCount())
-        .dislikeCount(original.getDislikeCount()).updateTime(LocalDate.now())
-        .ipAddress(original.getIpAddress()).build();
-    original.changeProperties(temp);
+    original.changeContent("MMMoDDDiFFFy");
     commentRepository.save(original);
     LOGGER.info("수정 후 content : " + commentRepository.findById(updateId).get().getContent());
 

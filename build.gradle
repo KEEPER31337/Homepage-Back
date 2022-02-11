@@ -74,6 +74,13 @@ asciidoctor.doFirst {
     delete file("src/main/resources/static/docs")
 }
 
+bootJar {
+    dependsOn asciidoctor
+    from ("${asciidoctor.outputDir}") {
+        into "static/docs"
+    }
+}
+
 task copyDocument(type: Copy) {
     dependsOn asciidoctor
     from file("$buildDir/docs/asciidoc")

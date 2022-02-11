@@ -5,5 +5,5 @@ import java.io.IOException;
 
 public interface ImageProcessing {
 
-  void imageProcessing(File image, int width, int height, String fileFormat) throws IOException;
+  void imageProcessing(File image, int width, int height, String fileFormat);
 }
