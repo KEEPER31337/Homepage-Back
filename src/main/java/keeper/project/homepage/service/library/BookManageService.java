@@ -1,8 +1,10 @@
 package keeper.project.homepage.service.library;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.entity.library.BookBorrowEntity;
@@ -17,6 +19,7 @@ import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.service.ResponseService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
@@ -149,7 +152,7 @@ public class BookManageService {
     BookEntity bookId = bookRepository.findByTitleAndAuthor(title, author).get();
     MemberEntity memberId = memberRepository.findById(borrowMemberId).get();
     String borrowDate = transferFormat(new Date());
-    String expireDate = getExpireDate();
+    String expireDate = getExpireDate(14);
 
     bookBorrowRepository.save(
         BookBorrowEntity.builder()
@@ -183,12 +186,25 @@ public class BookManageService {
   /**
    * 만료 날짜 구하기
    */
-  private String getExpireDate() {
+  private String getExpireDate(int date) {
     Calendar calendar = Calendar.getInstance();
     calendar.setTime(new Date());
-    calendar.add(Calendar.DATE, 14);
+    calendar.add(Calendar.DATE, date);
 
     return transferFormat(calendar.getTime());
+  }
+
+  /**
+   * 연체 도서 구하기
+   */
+  public List<BookBorrowEntity> sendOverdueBooks(Pageable pageable){
+
+    java.sql.Date startDate = java.sql.Date.valueOf(getExpireDate(-365));
+    java.sql.Date endDate = java.sql.Date.valueOf(getExpireDate(3));
+
+    List<BookBorrowEntity> bookBorrowEntities = bookBorrowRepository.findAllByExpireDateBetween(pageable, startDate, endDate);
+
+    return bookBorrowEntities;
   }
 
   /**

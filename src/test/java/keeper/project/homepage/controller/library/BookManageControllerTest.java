@@ -1,9 +1,11 @@
 package keeper.project.homepage.controller.library;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -31,12 +33,14 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
-import keeper.project.homepage.repository.library.BookRepository;
+import keeper.project.homepage.service.library.BookManageService;
+import keeper.project.homepage.service.util.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JacksonJsonParser;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.LinkedMultiValueMap;
@@ -156,6 +160,8 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .andReturn();
 
     String resultString = result.getResponse().getContentAsString();
+    JacksonJsonParser jsonParser = new JacksonJsonParser();
+    userToken = jsonParser.parseMap(resultString).get("data").toString();
     ObjectMapper mapper = new ObjectMapper();
     SingleResult<SignInDto> sign = mapper.readValue(resultString, new TypeReference<>() {
     });
@@ -166,11 +172,20 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
 
     bookBorrowRepository.save(
         BookBorrowEntity.builder()
-            .member(memberId)
-            .book(bookId)
-            .quantity(2L)
-            .borrowDate(java.sql.Date.valueOf(getDate(-15)))
-            .expireDate(java.sql.Date.valueOf(getDate(-1)))
+            .memberId(memberId)
+            .bookId(bookId)
+            .quantity(1L)
+            .borrowDate(java.sql.Date.valueOf(getDate(-17)))
+            .expireDate(java.sql.Date.valueOf(getDate(-3)))
+            .build());
+
+    bookBorrowRepository.save(
+        BookBorrowEntity.builder()
+            .memberId(memberId)
+            .bookId(bookId)
+            .quantity(1L)
+            .borrowDate(java.sql.Date.valueOf(getDate(-8)))
+            .expireDate(java.sql.Date.valueOf(getDate(1)))
             .build());
   }
 
@@ -447,7 +462,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.code").value(-2))
         .andExpect(jsonPath("$.msg").exists());
   }
-
+  
   //--------------------------도서 대여------------------------------------
   @Test
   @DisplayName("책 반납 성공(전부 반납)")
@@ -528,5 +543,29 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-2))
         .andExpect(jsonPath("$.msg").exists());
+  }
+  
+  //--------------------------연체 도서 표시------------------------------------
+  @Test
+  @DisplayName("연체 도서 표시(연체, 3일전)")
+  public void sendOverdueBooks() throws Exception {
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+
+    mockMvc.perform(get("/v1/overduebooks").contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andDo(document("overdue-books",
+            requestParameters(
+                parameterWithName("page").optional().description("페이지 번호(default = 0)"),
+                parameterWithName("size").optional().description("한 페이지당 출력 수(default = 10)")
+            ),
+            responseFields(
+                fieldWithPath("[].id").description("대여정보 ID"),
+                subsectionWithPath("[].memberId").description("대여자 ID"),
+                subsectionWithPath("[].bookId").description("책 ID"),
+                fieldWithPath("[].quantity").description("대여 수량"),
+                fieldWithPath("[].borrowDate").description("대여일"),
+                fieldWithPath("[].expireDate").description("만기일")
+            )));
   }
 }
