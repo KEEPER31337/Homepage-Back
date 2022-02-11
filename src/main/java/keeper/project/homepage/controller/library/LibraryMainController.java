@@ -25,9 +25,10 @@ public class LibraryMainController {
   private final LibraryMainService libraryMainService;
 
   @GetMapping(value = "/recentbooks")
-  public Page<BookEntity> displayRecentBooks() {
+  public ResponseEntity<List<BookEntity>> displayRecentBooks(
+      @PageableDefault(size = 10, sort = "registerDate", direction = Direction.DESC) Pageable pageable) {
 
-    return libraryMainService.displayTenBooks();
+    return ResponseEntity.status(HttpStatus.OK).body(libraryMainService.displayTenBooks(pageable));
   }
 
   @GetMapping(value = "/searchbooks")
@@ -39,7 +40,7 @@ public class LibraryMainController {
   }
 
   @GetMapping(value = "/selectedbook/information")
-  public BookEntity sendBookInformation(@RequestParam String title, @RequestParam String author){
+  public BookEntity sendBookInformation(@RequestParam String title, @RequestParam String author) {
 
     return libraryMainService.selectedBook(title, author);
   }

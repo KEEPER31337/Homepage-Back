@@ -5,18 +5,22 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.entity.library.BookBorrowEntity;
 import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.exception.CustomAboutFailedException;
 import keeper.project.homepage.exception.CustomBookNotFoundException;
 import keeper.project.homepage.exception.CustomBookOverTheMaxException;
+import keeper.project.homepage.exception.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -152,8 +156,8 @@ public class BookManageService {
 
     bookBorrowRepository.save(
         BookBorrowEntity.builder()
-            .memberId(memberId)
-            .bookId(bookId)
+            .member(memberId)
+            .book(bookId)
             .quantity(quantity)
             .borrowDate(java.sql.Date.valueOf(borrowDate))
             .expireDate(java.sql.Date.valueOf(expireDate))
@@ -203,4 +207,73 @@ public class BookManageService {
     return bookBorrowEntities;
   }
 
+  /**
+   * 반납 기능 구현
+   */
+  public CommonResult doReturn(String title, String author, Long returnMemberId, Long quantity) {
+
+    BookEntity book = bookRepository.findByTitleAndAuthor(title, author)
+        .orElseThrow(() -> new CustomBookNotFoundException("책이 존재하지 않습니다."));
+
+    MemberEntity member = memberRepository.findById(returnMemberId).get();
+    Optional<BookBorrowEntity> borrowEntity = bookBorrowRepository.findByBookAndMember(book,
+        member);
+
+    if (borrowEntity.isEmpty()) {
+      throw new CustomBookNotFoundException("책이 존재하지 않습니다.");
+    }
+    Long borrowedBook = borrowEntity.get().getQuantity();
+    if (borrowedBook < quantity) {
+      throw new CustomBookOverTheMaxException("수량 초과입니다.");
+    }
+    if (borrowedBook == quantity) {
+      bookBorrowRepository.delete(borrowEntity.get());
+    } else {
+      returnBook(title, author, returnMemberId, quantity);
+    }
+    return responseService.getSuccessResult();
+  }
+
+  private void returnBook(String title, String author, Long returnMemberId, Long quantity) {
+    BookEntity book = bookRepository.findByTitleAndAuthor(title, author)
+        .orElseThrow(() -> new CustomBookNotFoundException("책이 존재하지 않습니다."));
+    MemberEntity member = memberRepository.findById(returnMemberId).orElseThrow(
+        CustomMemberNotFoundException::new);
+
+    BookBorrowEntity borrowEntity = bookBorrowRepository.findByBookAndMember(book,
+        member).orElseThrow(() -> new CustomBookNotFoundException("책이 존재하지 않습니다."));
+    String borrowDate = String.valueOf(
+        borrowEntity.getBorrowDate());
+    String expireDate = String.valueOf(
+        borrowEntity.getExpireDate());
+    Long borrowedBook = borrowEntity.getQuantity();
+
+    bookBorrowRepository.save(
+        BookBorrowEntity.builder()
+            .member(member)
+            .book(book)
+            .quantity(borrowedBook - quantity)
+            .borrowDate(java.sql.Date.valueOf(borrowDate))
+            .expireDate(java.sql.Date.valueOf(expireDate))
+            .build());
+
+    BookEntity nowBookEntity = bookRepository.findByTitleAndAuthor(title, author).get();
+    String infromation = nowBookEntity.getInformation();
+    Long total = nowBookEntity.getTotal();
+    Long borrow = nowBookEntity.getBorrow() - quantity;
+    Long enable = nowBookEntity.getEnable() + quantity;
+    Date registerDate = nowBookEntity.getRegisterDate();
+
+    bookRepository.save(
+        BookEntity.builder()
+            .title(title)
+            .author(author)
+            .information(infromation)
+            .total(total)
+            .borrow(borrow)
+            .enable(enable)
+            .registerDate(registerDate)
+            .build()
+    );
+  }
 }

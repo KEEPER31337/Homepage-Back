@@ -4,6 +4,7 @@ import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.EmailAuthDto;
 import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.dto.result.SingleResult;
+import keeper.project.homepage.dto.sign.SignInDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.service.ResponseService;
 import keeper.project.homepage.service.sign.SignInService;
@@ -25,13 +26,14 @@ public class SignInController {
   private final SignInService signInService;
 
   @PostMapping(value = "")
-  public SingleResult<String> signIn(
+  public SingleResult<SignInDto> signIn(
       @RequestBody MemberDto memberDto) {
 
     MemberEntity memberEntity = signInService.login(memberDto.getLoginId(),
         memberDto.getPassword());
     String token = signInService.createJwtToken(memberEntity);
-    return responseService.getSuccessSingleResult(token);
+    SignInDto result = signInService.createSignInDto(token, memberEntity);
+    return responseService.getSuccessSingleResult(result);
   }
 
   @PostMapping(value = "/find-id")

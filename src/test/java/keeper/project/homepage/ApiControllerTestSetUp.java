@@ -5,12 +5,16 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.mo
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.attendance.AttendanceRepository;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.member.FriendRepository;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
+import keeper.project.homepage.repository.member.MemberRankRepository;
+import keeper.project.homepage.repository.member.MemberTypeRepository;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.repository.FileRepository;
@@ -77,6 +81,12 @@ public abstract class ApiControllerTestSetUp {
 
   @Autowired
   protected AttendanceRepository attendanceRepository;
+
+  @Autowired
+  protected MemberRankRepository memberRankRepository;
+
+  @Autowired
+  protected MemberTypeRepository memberTypeRepository;
 
   /********* Service Start ********/
   @Autowired
