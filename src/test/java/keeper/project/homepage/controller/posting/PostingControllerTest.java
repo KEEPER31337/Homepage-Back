@@ -319,7 +319,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   public void findAllPosting() throws Exception {
 
     ResultActions result = mockMvc.perform(
-        get("/v1/post/latest")                 // (2)
+        get("/v1/post/latest")
             .param("page", "0")
             .param("size", "10")
             .contentType(MediaType.APPLICATION_JSON));
@@ -429,7 +429,15 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.isNotice").description("공지글?"),
                 fieldWithPath("data.isSecret").description("비밀글?"),
                 fieldWithPath("data.isTemp").description("임시저장?"),
-                fieldWithPath("data.password").description("비밀번호").optional()
+                fieldWithPath("data.password").description("비밀번호").optional(),
+                fieldWithPath("files[].id").description("첨부파일 ID").optional(),
+                fieldWithPath("files[].fileName").description("첨부파일 이름").optional(),
+                fieldWithPath("files[].filePath").description("첨부파일 경로").optional(),
+                fieldWithPath("files[].fileSize").description("첨부파일 크기").optional(),
+                fieldWithPath("files[].uploadTime").description("업로드 시간").optional(),
+                fieldWithPath("files[].ipAddress").description("IP 주소").optional(),
+                fieldWithPath("thumbnail.id").description("썸네일 ID").optional(),
+                fieldWithPath("thumbnail.path").description("썸네일 경로(상대경로)").optional()
             )
         ));
   }
@@ -456,8 +464,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].filePath").description("첨부파일 경로(상대경로)"),
                 fieldWithPath("list[].fileSize").description("첨부파일 크기"),
                 fieldWithPath("list[].uploadTime").description("업로드 시간"),
-                fieldWithPath("list[].ipAddress").description("IP 주소"),
-                fieldWithPath("list[].thumbnail").description("썸네일 정보")
+                fieldWithPath("list[].ipAddress").description("IP 주소")
             )
         ));
   }

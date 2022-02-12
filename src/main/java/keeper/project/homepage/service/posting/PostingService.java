@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.dto.posting.PostingDto;
+import keeper.project.homepage.dto.result.PostingResult;
+import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasPostingDislikeEntity;
@@ -99,6 +101,27 @@ public class PostingService {
     }
 
     return postingEntity;
+  }
+
+  public PostingResult getSuccessPostingResult(PostingEntity postingEntity,
+      List<FileEntity> fileEntities, ThumbnailEntity thumbnailEntity) {
+
+    PostingResult postingResult = new PostingResult(postingEntity, fileEntities, thumbnailEntity);
+    postingResult.setSuccess(true);
+    postingResult.setCode(0);
+    postingResult.setMsg("성공하였습니다.");
+
+    return postingResult;
+  }
+
+  public PostingResult getFailPostingResult() {
+
+    PostingResult postingResult = new PostingResult(null, null, null);
+    postingResult.setSuccess(false);
+    postingResult.setCode(-1);
+    postingResult.setMsg("실패하였습니다.");
+
+    return postingResult;
   }
 
   @Transactional
