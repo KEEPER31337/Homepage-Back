@@ -117,7 +117,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
         .updateTime(new Date())
         .password("asd")
         .build();
-    memberEntity.getPosting().add(tempPosting);
+    memberEntity2.getPosting().add(tempPosting);
 
     postingRepository.save(tempPosting);
     for (Integer i = 0; i < 15; i++) {
@@ -232,7 +232,6 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
         .andExpect(status().is3xxRedirection());
   }
 
-  /* FIXME 정채원 고태영
   @Test
   @DisplayName("다른사람이 임시저장 글에 접근했을 때")
   public void findPostingBadAccess() throws Exception {
@@ -244,9 +243,12 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
             .param("page", "0")
             .param("size", "5"))
         .andDo(print())
-        .andExpect(status().is4xxClientError());
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(-1))
+        .andExpect(jsonPath("$.msg").value("임시저장 게시물입니다."))
+        .andExpect(jsonPath("$.data").isEmpty())
+        .andExpect(status().isOk());
   }
-  */
 
   @Test
   @DisplayName("자신이 작성한 게시글 수정하기")
