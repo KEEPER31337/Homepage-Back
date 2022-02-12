@@ -19,29 +19,29 @@ endif::[]
 
 link:keeper.html[API 목록으로 돌아가기]
 
-== *내 이름 변경*
+== *프로필 정보 변경*
 
 === 요청
 
 ==== Request
 
-include::{snippets}/member-update-names/http-request.adoc[]
+include::{snippets}/member-update-profile/http-request.adoc[]
 
 ==== Request Fields
 
-include::{snippets}/member-update-names/request-fields.adoc[]
+include::{snippets}/member-update-profile/request-fields.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/member-update-names/http-response.adoc[]
+include::{snippets}/member-update-profile/http-response.adoc[]
 
 ==== Response Fields
 
-include::{snippets}/member-update-names/response-fields.adoc[]
+include::{snippets}/member-update-profile/response-fields.adoc[]
 
-== *내 썸네일 변경*
+== *썸네일 변경*
 
 === 요청
 
@@ -53,6 +53,10 @@ include::{snippets}/member-update-thumbnail/http-request.adoc[]
 
 include::{snippets}/member-update-thumbnail/request-parameters.adoc[]
 
+==== Request Parts
+
+include::{snippets}/member-update-thumbnail/request-parts.adoc[]
+
 === 응답
 
 ==== Response
@@ -63,7 +67,7 @@ include::{snippets}/member-update-thumbnail/http-response.adoc[]
 
 include::{snippets}/member-update-thumbnail/response-fields.adoc[]
 
-== *내 이메일 주소 변경*
+== *이메일 주소 변경*
 
 === 요청
 
@@ -84,28 +88,6 @@ include::{snippets}/member-update-email/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/member-update-email/response-fields.adoc[]
-
-== *내 학번 변경*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/member-update-studentid/http-request.adoc[]
-
-==== Request Fields
-
-include::{snippets}/member-update-studentid/request-fields.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/member-update-studentid/http-response.adoc[]
-
-==== Response Fields
-
-include::{snippets}/member-update-studentid/response-fields.adoc[]
 
 == *회원 직책 변경*
 

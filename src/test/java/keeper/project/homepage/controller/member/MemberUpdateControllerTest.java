@@ -8,7 +8,9 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -33,12 +35,14 @@ import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.member.MemberRankEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
+import keeper.project.homepage.exception.ExceptionAdvice;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
@@ -77,6 +81,9 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
   private MemberEntity memberEntity;
   private ThumbnailEntity thumbnailEntity;
   private FileEntity imageEntity;
+
+  @Autowired
+  private ExceptionAdvice exceptionAdvice;
 
   @BeforeAll
   public static void createFile() {
@@ -229,10 +236,10 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
         fieldWithPath("data.registerDate").description("가입 날짜"),
         fieldWithPath("data.point").description("포인트 점수"),
         fieldWithPath("data.level").description("레벨"),
-        fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
-        fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
+        fieldWithPath("data.rank").description("회원 등급: null, 우수회원, 일반회원]"),
+        fieldWithPath("data.type").description("회원 상태: null, 비회원, 정회원, 휴면회원, 졸업회원, 탈퇴]"),
         fieldWithPath("data.jobs").description(
-            "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]"))
+            "동아리 직책: null, ROLE_회장, ROLE_부회장, ROLE_대외부장, ROLE_학술부장, ROLE_전산관리자, ROLE_서기, ROLE_총무, ROLE_사서"))
     );
     if (addDescriptors.length > 0) {
       commonFields.addAll(Arrays.asList(addDescriptors));
@@ -247,9 +254,12 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
         + "\"memberLoginId\" : \"" + loginId + "\",\n"
         + "\"name\" : \"우수회원\"\n"
         + "}";
-    String docMsg = "실패 문구 종류: " + " +\n"
-        + "* 변경할 등급을 입력해주세요." + " +\n"
-        + "* xxx인 member rank가 존재하지 않습니다.";
+    String docMsg = "변경할 rank의 입력 데이터가 비어있거나, 입력한 rank가 존재하지 않는다면 실패합니다.";
+    String docCode =
+        "입력 데이터가 비어있는 경우: " + exceptionAdvice.getMessage("memberEmptyField.code") + " +\n"
+            + "존재하지 않는 회원인 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+            + "입력한 rank가 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberInfoNotFound.code")
+            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/member/update/rank")
             .header("Authorization", adminToken)
@@ -263,9 +273,9 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
         .andDo(document("member-update-rank",
             requestFields(
                 fieldWithPath("memberLoginId").description("변경할 회원의 로그인 아이디"),
-                fieldWithPath("name").description("변경할 등급명")
+                fieldWithPath("name").description("변경할 회원 등급명")
             ),
-            generateMemberCommonResponseField("성공: true +\n실패: false", "실패 시: -9999", docMsg)
+            generateMemberCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
         ));
     ;
 
@@ -281,9 +291,12 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
         + "\"memberLoginId\" : \"" + loginId + "\",\n"
         + "\"name\" : \"탈퇴\"\n"
         + "}";
-    String docMsg = "실패 문구 종류: " + " +\n"
-        + "* 변경할 유형을 입력해주세요." + " +\n"
-        + "* xxx인 member type이 존재하지 않습니다.";
+    String docMsg = "변경할 type의 입력 데이터가 비어있거나, 입력한 type이 존재하지 않는다면 실패합니다.";
+    String docCode =
+        "입력 데이터가 비어있는 경우: " + exceptionAdvice.getMessage("memberEmptyField.code") + " +\n"
+            + "존재하지 않는 회원인 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+            + "입력한 type이 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberInfoNotFound.code")
+            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/member/update/type")
             .header("Authorization", adminToken)
@@ -297,9 +310,9 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
         .andDo(document("member-update-type",
             requestFields(
                 fieldWithPath("memberLoginId").description("변경할 회원의 로그인 아이디"),
-                fieldWithPath("name").description("변경할 유형")
+                fieldWithPath("name").description("변경할 회원 유형")
             ),
-            generateMemberCommonResponseField("성공: true +\n실패: false", "실패 시: -9999", docMsg)
+            generateMemberCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
         ));
 
     MemberEntity member = memberRepository.findByLoginId(loginId).get();
@@ -316,8 +329,12 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
         + "\"names\" : [\"ROLE_사서\",\"ROLE_총무\"]\n"
         + "}";
 
-    String docMsg = "실패 문구 종류: " + " +\n"
-        + "* 존재하지 않는 회원입니다.";
+    String docMsg = "변경할 job의 입력 데이터가 비어있거나, 입력한 job이 존재하지 않는다면 실패합니다.";
+    String docCode =
+        "입력 데이터가 비어있는 경우: " + exceptionAdvice.getMessage("memberEmptyField.code") + " +\n"
+            + "존재하지 않는 회원인 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+            + "입력한 job이 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberInfoNotFound.code")
+            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/member/update/job")
             .header("Authorization", adminToken)
@@ -334,7 +351,7 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("memberLoginId").description("변경할 회원의 로그인 아이디"),
                 fieldWithPath("names").description("변경할 직책명 리스트")
             ),
-            generateMemberCommonResponseField("성공: true +\n실패: false", "실패 시: -9999", docMsg)
+            generateMemberCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
         ));
 
     MemberEntity member = memberRepository.findByLoginId(loginId).get();
@@ -358,8 +375,12 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
         + "\"studentId\":\"" + newStudentId + "\""
         + "}";
 
-    String docMsg = "실패 문구 종류: " + " +\n"
-        + "* 알 수 없는 오류가 발생하였습니다";
+    String docMsg = "프로필에는 이름, 닉네임, 학번 요소가 포함되어 있습니다. +\n"
+        + "변경할 요소의 입력 데이터가 비어있거나, 입력한 학번이 중복된다면 실패합니다.";
+    String docCode =
+        "입력 데이터가 비어있는 경우: " + exceptionAdvice.getMessage("memberEmptyField.code") + " +\n"
+            + "존재하지 않는 회원인 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/member/update/profile")
             .header("Authorization", userToken)
@@ -376,7 +397,7 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("nickName").description("변경할 닉네임"),
                 fieldWithPath("studentId").description("변경할 학번")
             ),
-            generateMemberCommonResponseField("성공: true +\n실패: false", "실패 시: -9999", docMsg)
+            generateMemberCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
         ));
     assertTrue(memberEntity.getRealName().equals("Changed"));
     assertTrue(memberEntity.getStudentId().equals(newStudentId));
@@ -413,10 +434,15 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
         + "    \"authCode\": \"" + emailAuthDtoForSend.getAuthCode() + "\""
         + "}";
 
-    String docMsg = "실패 문구 종류: " + " +\n"
-        + "알 수 없는 오류가 발생하였습니다" + " +\n"
-        + "이메일 인증 코드가 만료되었습니다." + " +\n"
-        + "이메일 인증 코드가 일치하지 않습니다.";
+    String docMsg = "변경할 이메일 주소의 입력 데이터가 비어있는 경우, 이메일 주소가 중복되는 경우, "
+        + "이메일 인증 코드가 만료된 경우, 이메일 인증 코드가 일치하지 않는 경우 실패합니다.";
+    String docCode =
+        "입력 데이터가 비어있는 경우: " + exceptionAdvice.getMessage("memberEmptyField.code") + " +\n"
+            + "존재하지 않는 회원인 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+            + "이메일 주소가 중복되는 경우: " + exceptionAdvice.getMessage("memberDuplicate.code") + " +\n"
+            + "이메일 인증 코드가 민료되었거나 일치하지 않는 경우: " + exceptionAdvice.getMessage(
+            "entryPointException.code") + " +\n"
+            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/member/update/email")
             .header("Authorization", userToken)
@@ -431,8 +457,7 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("emailAddress").description("이메일 주소"),
                 fieldWithPath("authCode").description("이메일 인증 코드")
             ),
-            generateMemberCommonResponseField("성공: true +\n실패: false",
-                "실패 시: +\n* 인증 실패: -1002 +\n* 그 외: -9999", docMsg,
+            generateMemberCommonResponseField("성공: true +\n실패: false", docCode, docMsg,
                 fieldWithPath("data.authCode").description("이메일 인증 코드"))
         ));
   }
@@ -455,7 +480,7 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
         .andDo(print())
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(-22));
+        .andExpect(jsonPath("$.code").value(exceptionAdvice.getMessage("memberDuplicate.code")));
   }
 
   @Test
@@ -477,7 +502,8 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
         .andDo(print())
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(-1002));
+        .andExpect(
+            jsonPath("$.code").value(exceptionAdvice.getMessage("entryPointException.code")));
   }
 
   @Test
@@ -488,14 +514,22 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
             System.getProperty("user.dir") + File.separator + "keeper_files" + File.separator
                 + "aft.jpg")));
 
-    String docMsg = "실패 문구 종류 : " + " +\n"
-        + "* 썸네일 용 이미지는 image 타입이어야 합니다." + " +\n"
-        + "* 이미지 파일을 BufferedImage로 읽어들일 수 없습니다." + " +\n"
-        + "* 이미지 파일을 읽는 것을 실패했습니다." + " +\n"
-        + "* 썸네일 용 파일은 이미지 파일이어야 합니다." + " +\n"
-        + "* 이미지 파일을 BufferedImage로 읽어들일 수 없습니다." + " +\n"
-        + "* 이미지 파일을 읽는 것을 실패했습니다." + " +\n"
-        + "* 썸네일 이미지용 후처리를 실패했습니다.";
+    String docMsg = "첨부 파일이 비어있을 경우, 기본 썸네일 이미지가 설정됩니다. +\n"
+        + "다음과 같은 상황에 실패합니다. +\n"
+        + "* 첨부한 파일이 이미지 파일이 아닌 경우" + " +\n"
+        + "* 포맷은 이미지 파일이나, 내용이 정상적인 이미지 파일이 아닌 경우" + " +\n"
+        + "* 서버 내부 문제로 이미지 파일을 읽는 것을 실패하는 경우" + " +\n";
+    // @formatter:off
+    String docCode =
+        "기존 파일이 서버에 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+            + "기존 파일을 삭제하는 데 실패한 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+            + "새 파일을 저장하는 데 실패한 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+            + "DB에 파일 레코드가 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+            + "DB에 썸네일 레코드가 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+            + "이미지 파일 형식이 잘못된 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+            + "이미지 파일을 읽고 쓰는 것에 실패한 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+    // @formatter:on
     mockMvc.perform(RestDocumentationRequestBuilders.fileUpload("/v1/member/update/thumbnail")
             .file(image)
             .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -511,10 +545,10 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
             requestParameters(
                 parameterWithName("ipAddress").description("회원의 IP 주소")
             ),
-//            requestParts(
-//                partWithName("thumbnail").description("썸네일 용 이미지 파일")
-//            ),
-            generateMemberCommonResponseField("성공: true +\n실패: false", "실패 시: -9999", docMsg)
+            requestParts(
+                partWithName("thumbnail").description("썸네일 용 이미지 파일")
+            ),
+            generateMemberCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
         ));
     Assertions.assertTrue(
         memberEntity.getThumbnail().getPath().equals(
