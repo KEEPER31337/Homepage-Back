@@ -217,35 +217,39 @@ public class BookManageService {
         .orElseThrow(() -> new CustomBookNotFoundException("책이 존재하지 않습니다."));
 
     MemberEntity member = memberRepository.findById(returnMemberId).get();
-    List<BookBorrowEntity> borrowEntity = bookBorrowRepository.findByBookAndMemberOrderByBorrowDateAsc(
+    List<BookBorrowEntity> borrowEntities = bookBorrowRepository.findByBookAndMemberOrderByBorrowDateAsc(
         book,
         member);
 
-    if (borrowEntity.isEmpty()) {
+    if (borrowEntities.isEmpty()) {
       throw new CustomBookNotFoundException("책이 존재하지 않습니다.");
     }
 
-    Long borrowedBook = borrowEntity.get(0).getQuantity();
+    Long borrowedBook = 0L;
+    for (BookBorrowEntity bookBorrow : borrowEntities) {
+      borrowedBook += bookBorrow.getQuantity();
+    }
 
     if (borrowedBook < quantity) {
       throw new CustomBookOverTheMaxException("수량 초과입니다.");
     }
-    if (borrowedBook == quantity) {
-      bookBorrowRepository.delete(borrowEntity.get(0));
+    if (borrowedBook == quantity && borrowEntities.size() == 1) {
+      bookBorrowRepository.delete(borrowEntities.get(0));
     } else {
-      returnBook(title, author, returnMemberId, quantity);
+      returnBook(title, author, returnMemberId, quantity, borrowEntities);
     }
     return responseService.getSuccessResult();
   }
 
-  private void returnBook(String title, String author, Long returnMemberId, Long quantity) {
+  private void returnBook(String title, String author, Long returnMemberId, Long quantity,
+      List<BookBorrowEntity> borrowEntities) {
+
     BookEntity book = bookRepository.findByTitleAndAuthor(title, author)
         .orElseThrow(() -> new CustomBookNotFoundException("책이 존재하지 않습니다."));
     MemberEntity member = memberRepository.findById(returnMemberId).orElseThrow(
         CustomMemberNotFoundException::new);
+    BookBorrowEntity borrowEntity = borrowEntities.get(0);
 
-    BookBorrowEntity borrowEntity = bookBorrowRepository.findByBookAndMember(book,
-        member).orElseThrow(() -> new CustomBookNotFoundException("책이 존재하지 않습니다."));
     String borrowDate = String.valueOf(
         borrowEntity.getBorrowDate());
     String expireDate = String.valueOf(
