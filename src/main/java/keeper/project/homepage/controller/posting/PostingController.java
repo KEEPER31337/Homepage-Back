@@ -106,7 +106,7 @@ public class PostingController {
     // 본인이 아닌경우
     if (visitMemberId != postingEntity.getMemberId().getId()) {
       if (postingEntity.getIsTemp() == PostingService.isTempPosting) {
-        return responseService.getFailSingleResult(postingEntity, -1, "임시저장 게시물입니다.");
+        return responseService.getFailSingleResult(null, -1, "임시저장 게시물입니다.");
       }
       postingEntity.increaseVisitCount();
       postingService.updateInfoById(postingEntity, postingId);
