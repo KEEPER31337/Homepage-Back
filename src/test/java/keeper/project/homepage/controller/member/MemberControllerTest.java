@@ -28,6 +28,7 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.exception.CustomAboutFailedException;
+import keeper.project.homepage.exception.ExceptionAdvice;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.exception.CustomTransferPointLackException;
 import keeper.project.homepage.entity.member.MemberRankEntity;
@@ -38,6 +39,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -45,7 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @Log4j2
-public class MemberControllerTest extends ApiControllerTestSetUp {
+public class MemberControllerTest extends MemberControllerTestSetup {
 
   private String userToken;
   private String adminToken;
@@ -217,7 +219,7 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
             .header("Authorization", "XXXXXXXXXX"))
         .andDo(print())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(-1003));
+        .andExpect(jsonPath("$.code").value(exceptionAdvice.getMessage("accessDenied.code")));
   }
 
   @Test
@@ -246,7 +248,7 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(-1003));
+        .andExpect(jsonPath("$.code").value(exceptionAdvice.getMessage("accessDenied.code")));
   }
 
   @Test
@@ -291,6 +293,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
     String content = "{"
         + "\"followeeLoginId\" : \"" + adminLoginId + "\""
         + "}";
+    String docMsg = "팔로우할 회원이 존재하지 않는다면 실패합니다.";
+    String docCode = "회원이 존재하지 않을 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+        + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders.post("/v1/member/follow")
             .header("Authorization", userToken)
             .content(content)
@@ -301,11 +306,8 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
             requestFields(
                 fieldWithPath("followeeLoginId").description("팔로우할 회원의 로그인 아이디")
             ),
-            responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("실패 시: -9999")
-            )));
+            generateCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
+        ));
 
     MemberEntity memberEntity = memberRepository.findByLoginId(loginId).get();
     MemberEntity memberAdmin = memberRepository.findByLoginId(adminLoginId).get();
@@ -330,6 +332,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
     FriendEntity followee = followeeList.get(followeeList.size() - 1);
 
     // unfollow
+    String docMsg = "언팔로우할 회원이 존재하지 않는다면 실패합니다.";
+    String docCode = "회원이 존재하지 않을 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+        + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders.delete("/v1/member/unfollow")
             .header("Authorization", userToken)
             .content(content)
@@ -340,11 +345,8 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
             requestFields(
                 fieldWithPath("followeeLoginId").description("팔로우한 회원의 로그인 아이디")
             ),
-            responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("실패 시: -9999")
-            )));
+            generateCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
+        ));
 
     assertTrue(friendRepository.findById(followee.getId()).isEmpty());
     Assertions.assertFalse(memberEntity.getFollowee().contains(followee));
@@ -358,28 +360,16 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
     MemberEntity memberEntity = memberRepository.findByLoginId(loginId).get();
     memberService.follow(memberEntity.getId(), adminLoginId);
 
+    String docMsg = "";
+    String docCode = "에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(get("/v1/member/followee")
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.list[0].nickName").value(adminNickName))
-        .andDo(document("friend-show-followee",
-            responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("실패 시: -9999"),
-                fieldWithPath("list[].id").description("아이디"),
-                fieldWithPath("list[].emailAddress").description("이메일 주소"),
-                fieldWithPath("list[].nickName").description("닉네임"),
-                fieldWithPath("list[].birthday").description("생일").type(Date.class).optional(),
-                fieldWithPath("list[].registerDate").description("가입 날짜"),
-                fieldWithPath("list[].point").description("포인트 점수"),
-                fieldWithPath("list[].level").description("레벨"),
-                fieldWithPath("list[].rank").description("회원 등급: [null/우수회원/일반회원]"),
-                fieldWithPath("list[].type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
-                fieldWithPath("list[].jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
-            )));
+        .andDo(document("member-show-followee",
+            generateMemberListCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
+        ));
   }
 
 
@@ -390,28 +380,16 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
     MemberEntity memberAdmin = memberRepository.findByLoginId(adminLoginId).get();
     memberService.follow(memberAdmin.getId(), loginId);
 
+    String docMsg = "";
+    String docCode = "에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(get("/v1/member/follower")
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.list[0].nickName").value(adminNickName))
-        .andDo(document("friend-show-follower",
-            responseFields(
-                fieldWithPath("success").description(""),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description(""),
-                fieldWithPath("list[].id").description("아이디"),
-                fieldWithPath("list[].emailAddress").description("이메일 주소"),
-                fieldWithPath("list[].nickName").description("닉네임"),
-                fieldWithPath("list[].birthday").description("생일").type(Date.class).optional(),
-                fieldWithPath("list[].registerDate").description("가입 날짜"),
-                fieldWithPath("list[].point").description("포인트 점수"),
-                fieldWithPath("list[].level").description("레벨"),
-                fieldWithPath("list[].rank").description("회원 등급: [null/우수회원/일반회원]"),
-                fieldWithPath("list[].type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
-                fieldWithPath("list[].jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
-            )));
+        .andDo(document("member-show-follower",
+            generateMemberListCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
+        ));
   }
 
   @Test

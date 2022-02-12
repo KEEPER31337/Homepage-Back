@@ -152,7 +152,7 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @GetMapping(value = "/member/temp_post/{pid}")
+  @GetMapping(value = "/member/post/{pid}")
   public void findPosting(@PathVariable("pid") Long postingId, HttpServletResponse response) {
     String uri = "/v1/post/" + postingId;
     try {
