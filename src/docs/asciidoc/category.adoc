@@ -78,3 +78,85 @@ include::{snippets}/categories-getByName/response-body.adoc[]
 ==== Response Fields
 
 include::{snippets}/categories-getByName/response-fields.adoc[]
+
+== *카테고리 생성*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/category-create/http-request.adoc[]
+
+==== Request Body
+
+include::{snippets}/categories-create/request-body.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/categories-create/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/categories-create/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/categories-create/response-fields.adoc[]
+
+== *카테고리 수정*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/category-modify/http-request.adoc[]
+
+==== Request Body
+
+include::{snippets}/categories-modify/request-body.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/categories-modify/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/categories-modify/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/categories-modify/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/categories-modify/response-fields.adoc[]
+
+== *카테고리 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/category-delete/http-request.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/categories-delete/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/categories-delete/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/categories-delete/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/categories-delete/response-fields.adoc[]
