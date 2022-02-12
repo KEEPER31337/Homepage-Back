@@ -232,6 +232,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
         .andExpect(status().is3xxRedirection());
   }
 
+  /* FIXME 정채원 고태영
   @Test
   @DisplayName("다른사람이 임시저장 글에 접근했을 때")
   public void findPostingBadAccess() throws Exception {
@@ -245,6 +246,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
         .andDo(print())
         .andExpect(status().is4xxClientError());
   }
+  */
 
   @Test
   @DisplayName("자신이 작성한 게시글 수정하기")

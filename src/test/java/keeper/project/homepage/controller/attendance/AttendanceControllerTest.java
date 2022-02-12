@@ -93,7 +93,7 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
     String content = objectMapper.writeValueAsString(attendanceDto);
 
     ResultActions result = mockMvc.perform(
-        MockMvcRequestBuilders.post("/v1/attend/check")
+        MockMvcRequestBuilders.post("/v1/attend/")
             .header("Authorization", userToken1)
             .contentType(MediaType.APPLICATION_JSON).content(content));
 
@@ -103,6 +103,11 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
             requestFields(
                 fieldWithPath("ipAddress").description("IP 주소"),
                 fieldWithPath("greetings").optional().description("인삿말")
+            ),
+            responseFields(
+                fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
+                fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
+                fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다")
             )));
 
     List<AttendanceEntity> attendanceEntities = attendanceRepository.findAllByMemberId(
@@ -123,7 +128,7 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
     String content = objectMapper.writeValueAsString(attendanceDto);
 
     ResultActions result = mockMvc.perform(
-        MockMvcRequestBuilders.post("/v1/attend/check")
+        MockMvcRequestBuilders.post("/v1/attend/")
             .header("Authorization", userToken1)
             .contentType(MediaType.APPLICATION_JSON).content(content));
 
@@ -308,16 +313,18 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
         .andDo(print())
         .andDo(document("attend-get-point-info",
             responseFields(
-
-                fieldWithPath("FIRST_PLACE_POINT").description("1등 추가 포인트"),
-                fieldWithPath("SECOND_PLACE_POINT").description("2등 추가 포인트"),
-                fieldWithPath("THIRD_PLACE_POINT").description("3등 추가 포인트"),
-                fieldWithPath("WEEK_ATTENDANCE").description("주 개근 일 수"),
-                fieldWithPath("MONTH_ATTENDANCE").description("월 개근 일 수"),
-                fieldWithPath("YEAR_ATTENDANCE").description("연 개근 일 수"),
-                fieldWithPath("WEEK_ATTENDANCE_POINT").description("주 개근 추가 포인트"),
-                fieldWithPath("MONTH_ATTENDANCE_POINT").description("월 개근 추가 포인트"),
-                fieldWithPath("YEAR_ATTENDANCE_POINT").description("연 개근 추가 포인트")
+                fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
+                fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
+                fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
+                fieldWithPath("data.FIRST_PLACE_POINT").description("1등 추가 포인트"),
+                fieldWithPath("data.SECOND_PLACE_POINT").description("2등 추가 포인트"),
+                fieldWithPath("data.THIRD_PLACE_POINT").description("3등 추가 포인트"),
+                fieldWithPath("data.WEEK_ATTENDANCE").description("주 개근 일 수"),
+                fieldWithPath("data.MONTH_ATTENDANCE").description("월 개근 일 수"),
+                fieldWithPath("data.YEAR_ATTENDANCE").description("연 개근 일 수"),
+                fieldWithPath("data.WEEK_ATTENDANCE_POINT").description("주 개근 추가 포인트"),
+                fieldWithPath("data.MONTH_ATTENDANCE_POINT").description("월 개근 추가 포인트"),
+                fieldWithPath("data.YEAR_ATTENDANCE_POINT").description("연 개근 추가 포인트")
             )));
   }
 
@@ -333,7 +340,8 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
             .time(time)
             .memberId(memberEntity)
             .rank(3)
-            .randomPoint(random.nextInt(100, 1001)).build());
+            .randomPoint((int) (Math.random() * 900 + 100))
+            .build());
   }
 
   private String generateTestMemberJWT(MemberEntity member) throws Exception {
