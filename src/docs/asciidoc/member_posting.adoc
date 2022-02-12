@@ -65,7 +65,7 @@ include::{snippets}/member-show-all-temp-post/response-fields.adoc[]
 
 == *작성한 게시글 하나 조회하기*
 
-*link:posting.html#_게시글_확인[/v1/post/{pid}]로 리다이렉트 합니다.*
+NOTE: link:posting.html#_게시글_확인[/v1/post/{pid}]로 리다이렉트 합니다.
 
 === 요청
 
@@ -85,11 +85,11 @@ include::{snippets}/member-show-post/http-response.adoc[]
 
 == *작성한 게시글 수정하기*
 
+NOTE: link:posting.html#_게시글_수정[/v1/post/{pid}]로 리다이렉트 합니다.
+
 === 요청
 
 ==== Request
-
-*link:posting.html#_게시글_수정[/v1/post/{pid}]로 리다이렉트 합니다.*
 
 include::{snippets}/member-update-post/http-request.adoc[]
 
@@ -105,11 +105,11 @@ include::{snippets}/member-update-post/http-response.adoc[]
 
 == *작성한 게시글 삭제하기*
 
+NOTE: link:posting.html#_게시글_삭제[/v1/post/{pid}]로 리다이렉트 합니다.
+
 === 요청
 
 ==== Request
-
-*link:posting.html#_게시글_삭제[/v1/post/{pid}]로 리다이렉트 합니다.*
 
 include::{snippets}/member-delete-post/http-request.adoc[]
 

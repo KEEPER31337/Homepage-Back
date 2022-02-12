@@ -1,5 +1,6 @@
 package keeper.project.homepage.controller.member;
 
+import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -170,22 +171,14 @@ public class MemberControllerFindPostingTest extends MemberControllerTestSetup {
   @Test
   @DisplayName("자신이 작성한 게시글 조회하기")
   public void findAllPostingById() throws Exception {
-    String isExistTitle = "$.list[?(@.title == '%s')]";
-    String normalTitle = "test 게시판 제목";
-
     String docMsg = "실패할 경우 알 수 없는 오류가 발생하였습니다 문구가 뜹니다.";
     String docCode = "에러가 발생할 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(get("/v1/member/post")
             .header("Authorization", userToken)
             .param("page", "0")
-            .param("size", "5"))
+            .param("size", "10"))
         .andDo(print())
-        .andExpect(jsonPath(isExistTitle, normalTitle + "0").exists())
-        .andExpect(jsonPath(isExistTitle, normalTitle + "1").exists())
-        .andExpect(jsonPath(isExistTitle, normalTitle + "2").exists())
-        .andExpect(jsonPath(isExistTitle, normalTitle + "3").exists())
-        .andExpect(jsonPath(isExistTitle, normalTitle + "4").exists())
-        .andExpect(jsonPath(isExistTitle, normalTitle + "5").doesNotExist())
+        .andExpect(jsonPath("$.list.length()", lessThanOrEqualTo(10)))
         .andExpect(status().isOk())
         .andDo(document("member-show-all-post",
             requestParameters(
@@ -194,35 +187,19 @@ public class MemberControllerFindPostingTest extends MemberControllerTestSetup {
             ),
             generatePostingListResponseField("", docCode, docMsg)
         ));
-
-    mockMvc.perform(get("/v1/member/post")
-            .header("Authorization", userToken)
-            .param("page", "3")
-            .param("size", "5"))
-        .andDo(print())
-        .andExpect(jsonPath("$.list").isEmpty())
-        .andExpect(status().isOk());
   }
 
   @Test
   @DisplayName("자신이 임시저장한 게시글 조회하기")
   public void findAllTempPostingById() throws Exception {
-    String isExistTitle = "$.list[?(@.title == '%s')]";
-    String tempTitle = "test 임시글 제목";
-
     String docMsg = "실패할 경우 알 수 없는 오류가 발생하였습니다 문구가 뜹니다.";
     String docCode = "에러가 발생할 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(get("/v1/member/temp_post")
             .header("Authorization", userToken)
             .param("page", "0")
-            .param("size", "5"))
+            .param("size", "10"))
         .andDo(print())
-        .andExpect(jsonPath(isExistTitle, tempTitle + "0").exists())
-        .andExpect(jsonPath(isExistTitle, tempTitle + "1").exists())
-        .andExpect(jsonPath(isExistTitle, tempTitle + "2").exists())
-        .andExpect(jsonPath(isExistTitle, tempTitle + "3").exists())
-        .andExpect(jsonPath(isExistTitle, tempTitle + "4").exists())
-        .andExpect(jsonPath(isExistTitle, tempTitle + "5").doesNotExist())
+        .andExpect(jsonPath("$.list.length()", lessThanOrEqualTo(10)))
         .andExpect(status().isOk())
         .andDo(document("member-show-all-temp-post",
             requestParameters(
@@ -231,14 +208,6 @@ public class MemberControllerFindPostingTest extends MemberControllerTestSetup {
             ),
             generatePostingListResponseField("", docCode, docMsg)
         ));
-
-    mockMvc.perform(get("/v1/member/temp_post")
-            .header("Authorization", userToken)
-            .param("page", "3")
-            .param("size", "5"))
-        .andDo(print())
-        .andExpect(jsonPath("$.list").isEmpty())
-        .andExpect(status().isOk());
   }
 
   @Test
