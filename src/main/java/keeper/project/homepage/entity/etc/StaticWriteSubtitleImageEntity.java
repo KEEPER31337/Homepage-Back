@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import keeper.project.homepage.dto.etc.StaticWriteSubtitleImageDto;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,7 +35,7 @@ public class StaticWriteSubtitleImageEntity {
   @Column(length = 250)
   private String subtitle;
 
-  @Column(name = "display_order")
+  @Column(name = "display_order", nullable = false)
   private Integer displayOrder;
 
   @ManyToOne
@@ -47,4 +48,12 @@ public class StaticWriteSubtitleImageEntity {
 
   @OneToMany(mappedBy = "staticWriteSubtitleImage", fetch = FetchType.EAGER)
   private List<StaticWriteContentEntity> staticWriteContents = new ArrayList<>();
+
+  public void updateInfo(StaticWriteSubtitleImageDto staticWriteSubtitleImageDto,
+      StaticWriteTitleEntity staticWriteTitleEntity, ThumbnailEntity thumbnailEntity) {
+    this.subtitle = staticWriteSubtitleImageDto.getSubtitle();
+    this.displayOrder = staticWriteSubtitleImageDto.getDisplayOrder();
+    this.staticWriteTitle = staticWriteTitleEntity;
+    this.thumbnail = thumbnailEntity;
+  }
 }
