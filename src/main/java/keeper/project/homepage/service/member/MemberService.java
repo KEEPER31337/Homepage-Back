@@ -1,5 +1,6 @@
 package keeper.project.homepage.service.member;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -9,6 +10,9 @@ import keeper.project.homepage.entity.member.FriendEntity;
 import keeper.project.homepage.dto.request.PointTransferRequest;
 import keeper.project.homepage.dto.result.PointTransferResult;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.member.MemberHasCommentDislikeEntity;
+import keeper.project.homepage.entity.member.MemberHasCommentLikeEntity;
+import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.exception.member.CustomMemberDuplicateException;
 import keeper.project.homepage.exception.member.CustomMemberEmptyFieldException;
 import keeper.project.homepage.exception.member.CustomMemberInfoNotFoundException;
@@ -31,14 +35,18 @@ import keeper.project.homepage.entity.member.MemberRankEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
 import keeper.project.homepage.exception.CustomAuthenticationEntryPointException;
 import keeper.project.homepage.repository.member.EmailAuthRedisRepository;
+import keeper.project.homepage.repository.member.MemberHasCommentDislikeRepository;
+import keeper.project.homepage.repository.member.MemberHasCommentLikeRepository;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberRankRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.member.MemberTypeRepository;
+import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.ThumbnailService;
 import keeper.project.homepage.service.mail.MailService;
+import keeper.project.homepage.service.posting.CommentService;
 import keeper.project.homepage.service.sign.DuplicateCheckService;
 import lombok.RequiredArgsConstructor;
 import keeper.project.homepage.dto.posting.PostingDto;
@@ -61,6 +69,9 @@ public class MemberService {
   private final MemberTypeRepository memberTypeRepository;
   private final MemberJobRepository memberJobRepository;
   private final MemberHasMemberJobRepository memberHasMemberJobRepository;
+  private final CommentRepository commentRepository;
+  private final MemberHasCommentLikeRepository memberHasCommentLikeRepository;
+  private final MemberHasCommentDislikeRepository memberHasCommentDislikeRepository;
 
   private final ThumbnailService thumbnailService;
   private final FileService fileService;
@@ -144,8 +155,10 @@ public class MemberService {
     MemberJobEntity newJob = findJobByJobName(jobName);
 
     MemberHasMemberJobEntity newMJ = memberHasMemberJobRepository.save(
-        MemberHasMemberJobEntity.builder().memberEntity(member)
-            .memberJobEntity(newJob).build());
+        MemberHasMemberJobEntity.builder()
+            .memberEntity(member)
+            .memberJobEntity(newJob)
+            .build());
     newJob.getMembers().add(newMJ);
     member.getMemberJobs().add(newMJ);
     return member;
@@ -180,7 +193,7 @@ public class MemberService {
     FriendEntity friend = FriendEntity.builder()
         .follower(me)
         .followee(followee)
-        .registerDate(new Date())
+        .registerDate(LocalDate.now())
         .build();
     friendRepository.save(friend);
 
@@ -397,5 +410,46 @@ public class MemberService {
     memberRepository.save(member);
 
     return member.getPoint();
+  }
+
+  public void deleteMember(MemberEntity member) {
+    memberRepository.delete(member);
+  }
+
+  public void decreaseCommentsLike(MemberEntity member) {
+    List<MemberHasCommentLikeEntity> likes = memberHasCommentLikeRepository.findByMemberHasCommentEntityPK_MemberEntity(
+        member);
+    List<CommentEntity> updateComments = new ArrayList<>();
+    for (MemberHasCommentLikeEntity like : likes) {
+      CommentEntity comment = like.getMemberHasCommentEntityPK().getCommentEntity();
+      comment.decreaseLikeCount();
+      updateComments.add(comment);
+      memberHasCommentLikeRepository.deleteById(like.getMemberHasCommentEntityPK());
+    }
+    commentRepository.saveAll(updateComments);
+  }
+
+  public void decreaseCommentsDisLike(MemberEntity member) {
+    List<MemberHasCommentDislikeEntity> likes = memberHasCommentDislikeRepository.findByMemberHasCommentEntityPK_MemberEntity(
+        member);
+    List<CommentEntity> updateComments = new ArrayList<>();
+    for (MemberHasCommentDislikeEntity like : likes) {
+      CommentEntity comment = like.getMemberHasCommentEntityPK().getCommentEntity();
+      comment.decreaseLikeCount();
+      updateComments.add(comment);
+      memberHasCommentDislikeRepository.deleteById(like.getMemberHasCommentEntityPK());
+    }
+    commentRepository.saveAll(updateComments);
+  }
+
+  public void deleteAccount(Long memberId) {
+    // 비밀번호 인증
+    // 동아리 물품, 책 미납한 기록 있으면 불가능
+
+    MemberEntity deleted = findById(memberId);
+    decreaseCommentsLike(deleted);
+    decreaseCommentsDisLike(deleted);
+    // 멤버 job, 친구,
+    deleteMember(deleted);
   }
 }
