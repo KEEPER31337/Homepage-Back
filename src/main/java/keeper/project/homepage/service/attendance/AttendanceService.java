@@ -37,7 +37,7 @@ public class AttendanceService {
   private final MemberRepository memberRepository;
   private final AuthService authService;
 
-  public boolean save(AttendanceDto attendanceDto) {
+  public void save(AttendanceDto attendanceDto) {
 
     if (isAlreadyAttendance()) {
       throw new CustomAttendanceException("이미 출석을 완료했습니다.");
@@ -63,7 +63,6 @@ public class AttendanceService {
       point += YEAR_ATTENDANCE_POINT;
     }
 
-    Random random = new Random();
     MemberEntity memberEntity = getMemberEntityWithJWT();
     attendanceRepository.save(
         AttendanceEntity.builder()
@@ -73,11 +72,9 @@ public class AttendanceService {
             .ipAddress(attendanceDto.getIpAddress())
             .time(now)
             .memberId(memberEntity)
-            .randomPoint(random.nextInt(100, 1001))
+            .randomPoint((int) (Math.random() * 900 + 100))
             .rank(rank)
             .build());
-
-    return true;
   }
 
   private int getMyTodayRank(Date now) {

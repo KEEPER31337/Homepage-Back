@@ -1,6 +1,7 @@
 package keeper.project.homepage.dto.etc;
 
 import javax.persistence.Column;
+import keeper.project.homepage.entity.etc.StaticWriteContentEntity;
 import keeper.project.homepage.entity.etc.StaticWriteSubtitleImageEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +17,17 @@ import lombok.Setter;
 public class StaticWriteContentDto {
 
   private String content;
+  private Long staticWriteSubtitleImageId;
   private Integer displayOrder;
-  private StaticWriteSubtitleImageEntity staticWriteSubtitleImage;
+
+  public StaticWriteContentEntity toEntity(
+      StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity) {
+
+    return StaticWriteContentEntity.builder()
+        .content(content)
+        .staticWriteSubtitleImage(staticWriteSubtitleImageEntity)
+        .displayOrder(displayOrder)
+        .build();
+  }
+
 }
