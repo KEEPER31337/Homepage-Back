@@ -344,7 +344,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시: -9999"),
+                fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
                 fieldWithPath("list[].id").description("게시물 ID"),
                 fieldWithPath("list[].title").description("게시물 제목"),
                 fieldWithPath("list[].content").description("게시물 내용"),
@@ -385,7 +385,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시: -9999"),
+                fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
                 fieldWithPath("list[].id").description("게시물 ID"),
                 fieldWithPath("list[].title").description("게시물 제목"),
                 fieldWithPath("list[].content").description("게시물 내용"),
@@ -423,7 +423,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시: -9999"),
+                fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
                 fieldWithPath("data.id").description("게시물 ID"),
                 fieldWithPath("data.title").description("게시물 제목"),
                 fieldWithPath("data.content").description("게시물 내용"),
@@ -471,7 +471,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시: -9999"),
+                fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
                 fieldWithPath("data.id").description("게시물 ID"),
                 fieldWithPath("data.title").description("게시물 제목"),
                 fieldWithPath("data.content").description("게시물 내용"),
@@ -516,7 +516,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시: -9999"),
+                fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
                 fieldWithPath("list[].id").description("첨부파일 ID"),
                 fieldWithPath("list[].fileName").description("첨부파일 이름"),
                 fieldWithPath("list[].filePath").description("첨부파일 경로(상대경로)"),
@@ -595,7 +595,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시: -9999")
+                fieldWithPath("code").description("성공 : 0, 실패 시 : -1")
             )
         ));
   }
@@ -662,7 +662,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시: -9999")
+                fieldWithPath("code").description("성공 : 0, 실패 시 : -1")
             )
         ));
   }
@@ -683,7 +683,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시: -9999")
+                fieldWithPath("code").description("성공 : 0, 실패 시 : -1")
             )
         ));
   }
@@ -712,7 +712,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시: -9999"),
+                fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
                 fieldWithPath("list[].id").description("게시물 ID"),
                 fieldWithPath("list[].title").description("게시물 제목"),
                 fieldWithPath("list[].content").description("게시물 내용"),
@@ -754,7 +754,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시: -9999")
+                fieldWithPath("code").description("성공 : 0, 실패 시 : -1")
             )
         ));
   }
@@ -777,7 +777,30 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시: -9999")
+                fieldWithPath("code").description("성공 : 0, 실패 시 : -1")
+            )
+        ));
+  }
+
+  @Test
+  public void checkMemberLikedAndDisliked() throws Exception {
+    ResultActions result = mockMvc.perform(get("/v1/post/check")
+        .param("postingId", postingGeneralTest.getId().toString())
+        .header("Authorization", userToken)
+        .contentType(MediaType.APPLICATION_JSON));
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(print())
+        .andDo(document("post-check",
+            requestParameters(
+                parameterWithName("postingId").description("게시판 ID")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
+                fieldWithPath("liked").description("좋아요 여부"),
+                fieldWithPath("disliked").description("좋아요 여부")
             )
         ));
   }

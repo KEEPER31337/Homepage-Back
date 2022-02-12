@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 import keeper.project.homepage.dto.posting.PostingDto;
 import keeper.project.homepage.dto.result.CommonResult;
+import keeper.project.homepage.dto.result.LikeAndDislikeResult;
 import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.dto.result.PostingResult;
 import keeper.project.homepage.dto.result.SingleResult;
@@ -230,5 +231,12 @@ public class PostingController {
         Locale.ROOT));
 
     return result ? responseService.getSuccessResult() : responseService.getFailResult();
+  }
+
+  @GetMapping(value = "/check")
+  public LikeAndDislikeResult checkMemberLikedAndDisliked(
+      @RequestParam("postingId") Long postingId) {
+
+    return postingService.checkLikeAndDisLike(postingId);
   }
 }
