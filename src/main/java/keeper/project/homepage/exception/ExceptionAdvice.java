@@ -12,8 +12,11 @@ import keeper.project.homepage.exception.member.CustomMemberDuplicateException;
 import keeper.project.homepage.exception.member.CustomMemberEmptyFieldException;
 import keeper.project.homepage.exception.member.CustomMemberInfoNotFoundException;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
+import keeper.project.homepage.exception.posting.CustomAccessRootCategoryException;
+import keeper.project.homepage.exception.posting.CustomCategoryNotFoundException;
 import keeper.project.homepage.exception.posting.CustomCommentEmptyFieldException;
 import keeper.project.homepage.exception.posting.CustomCommentNotFoundException;
+import keeper.project.homepage.exception.posting.CustomParentCategoryNotFoundException;
 import keeper.project.homepage.service.ResponseService;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -252,5 +255,29 @@ public class ExceptionAdvice {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(Integer.parseInt(getMessage("numberOverflow.code")),
         getMessage("numberOverflow.msg"));
+  }
+
+  @ExceptionHandler(CustomCategoryNotFoundException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected  CommonResult categoryNotFoundException(HttpServletRequest request,
+      CustomCategoryNotFoundException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("categoryNotFound.code")),
+        getMessage("categoryNotFound.msg"));
+  }
+
+  @ExceptionHandler(CustomParentCategoryNotFoundException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected  CommonResult parentCategoryNotFoundException(HttpServletRequest request,
+      CustomParentCategoryNotFoundException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("parentCategoryNotFound.code")),
+        getMessage("parentCategoryNotFound.msg"));
+  }
+
+  @ExceptionHandler(CustomAccessRootCategoryException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected  CommonResult accessRootCategoryException(HttpServletRequest request,
+      CustomAccessRootCategoryException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("accessRootCategory.code")),
+        getMessage("accessRootCategory.msg"));
   }
 }
