@@ -4,19 +4,17 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 import keeper.project.homepage.dto.posting.PostingDto;
+import keeper.project.homepage.dto.result.CommonResult;
+import keeper.project.homepage.dto.result.ListResult;
+import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
-import keeper.project.homepage.repository.member.MemberRepository;
-import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.service.FileService;
+import keeper.project.homepage.service.ResponseService;
 import keeper.project.homepage.service.ThumbnailService;
 import keeper.project.homepage.common.ImageCenterCrop;
 import keeper.project.homepage.service.posting.PostingService;
@@ -50,8 +48,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class PostingController {
 
   private final PostingService postingService;
-  private final MemberRepository memberRepository;
-  private final CategoryRepository categoryRepository;
+  private final ResponseService responseService;
   private final FileService fileService;
   private final ThumbnailService thumbnailService;
   private final AuthService authService;
@@ -60,26 +57,26 @@ public class PostingController {
    * page default 0, size default 10
    */
   @GetMapping(value = "/latest")
-  public ResponseEntity<List<PostingEntity>> findAllPosting(
+  public ListResult<PostingEntity> findAllPosting(
       @PageableDefault(size = 10, sort = "registerTime", direction = Direction.DESC)
           Pageable pageable) {
 
-    return ResponseEntity.status(HttpStatus.OK).body(postingService.findAll(pageable));
+    return responseService.getSuccessListResult(postingService.findAll(pageable));
   }
 
   @GetMapping(value = "/lists")
-  public ResponseEntity<List<PostingEntity>> findAllPostingByCategoryId(
+  public ListResult<PostingEntity> findAllPostingByCategoryId(
       @RequestParam("category") Long categoryId,
       @PageableDefault(size = 10, sort = "registerTime", direction = Direction.DESC)
           Pageable pageable) {
 
-    return ResponseEntity.status(HttpStatus.OK).body(postingService.findAllByCategoryId(categoryId,
+    return responseService.getSuccessListResult(postingService.findAllByCategoryId(categoryId,
         pageable));
   }
 
   @PostMapping(value = "/new", consumes = "multipart/form-data", produces = {
-      MediaType.TEXT_PLAIN_VALUE})
-  public ResponseEntity<String> createPosting(
+      MediaType.APPLICATION_JSON_VALUE})
+  public CommonResult createPosting(
       @RequestParam(value = "file", required = false) List<MultipartFile> files,
       @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
       PostingDto dto) {
@@ -90,41 +87,42 @@ public class PostingController {
         thumbnail, fileEntity, "large");
 
     if (thumbnailEntity == null) {
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+      return responseService.getFailResult();
     }
 
     dto.setThumbnailId(thumbnailEntity.getId());
     PostingEntity postingEntity = postingService.save(dto);
     fileService.saveFiles(files, dto.getIpAddress(), postingEntity);
 
-    return postingEntity.getId() != null ? new ResponseEntity<>("success", HttpStatus.OK)
-        : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    return postingEntity.getId() != null ? responseService.getSuccessResult()
+        : responseService.getFailResult();
   }
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/{pid}")
-  public ResponseEntity<PostingEntity> getPosting(@PathVariable("pid") Long postingId) {
+  public SingleResult<PostingEntity> getPosting(@PathVariable("pid") Long postingId) {
     PostingEntity postingEntity = postingService.getPostingById(postingId);
     Long visitMemberId = authService.getMemberIdByJWT();
+    // 본인이 아닌경우
     if (visitMemberId != postingEntity.getMemberId().getId()) {
-      // 본인이 아닌 경우
       if (postingEntity.getIsTemp() == PostingService.isTempPosting) {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        return responseService.getFailSingleResult(postingEntity, -1, "임시저장 게시물입니다.");
       }
       postingEntity.increaseVisitCount();
       postingService.updateInfoById(postingEntity, postingId);
     }
 
-    return ResponseEntity.status(HttpStatus.OK).body(postingEntity);
+    return responseService.getSuccessSingleResult(postingEntity);
   }
 
   @GetMapping(value = "/attach/{pid}")
-  public ResponseEntity<List<FileEntity>> getAttachList(@PathVariable("pid") Long postingId) {
+  public ListResult<FileEntity> getAttachList(@PathVariable("pid") Long postingId) {
 
-    return ResponseEntity.status(HttpStatus.OK)
-        .body(fileService.findFileEntitiesByPostingId(postingService.getPostingById(postingId)));
+    return responseService.getSuccessListResult(
+        fileService.findFileEntitiesByPostingId(postingService.getPostingById(postingId)));
   }
 
+  // 다운로드는 ResponseEntity를 사용하는것이 더 용이하여 그대로 두었습니다.
   @GetMapping(value = "/download/{fileId}")
   public ResponseEntity<Resource> downloadFile(@PathVariable("fileId") Long fileId)
       throws IOException {
@@ -141,8 +139,8 @@ public class PostingController {
 
   @RequestMapping(method = {RequestMethod.PUT,
       RequestMethod.PATCH}, value = "/{pid}", consumes = "multipart/form-data", produces = {
-      MediaType.TEXT_PLAIN_VALUE})
-  public ResponseEntity<String> modifyPosting(
+      MediaType.APPLICATION_JSON_VALUE})
+  public CommonResult modifyPosting(
       @RequestParam(value = "file", required = false) List<MultipartFile> files,
       @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
       PostingDto dto, @PathVariable("pid") Long postingId) {
@@ -152,12 +150,12 @@ public class PostingController {
     ThumbnailEntity newThumbnail = null;
     FileEntity fileEntity = fileService.saveOriginalThumbnail(thumbnail, dto.getIpAddress());
     if (fileEntity == null) {
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+      return responseService.getFailResult();
     }
     newThumbnail = thumbnailService.saveThumbnail(new ImageCenterCrop(),
         thumbnail, fileEntity, "large");
     if (newThumbnail == null) {
-      return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+      return responseService.getFailResult();
     }
 
     PostingEntity postingEntity = postingService.updateById(dto, postingId);
@@ -169,12 +167,12 @@ public class PostingController {
     thumbnailService.deleteById(prevThumbnail.getId());
     fileService.deleteOriginalThumbnailById(prevThumbnail.getFile().getId());
 
-    return postingEntity.getId() != null ? new ResponseEntity<>("success", HttpStatus.OK) :
-        new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    return postingEntity.getId() != null ? responseService.getSuccessResult() :
+        responseService.getFailResult();
   }
 
-  @DeleteMapping(value = "/{pid}", produces = {MediaType.TEXT_PLAIN_VALUE})
-  public ResponseEntity<String> removePosting(@PathVariable("pid") Long postingId) {
+  @DeleteMapping(value = "/{pid}", produces = {MediaType.APPLICATION_JSON_VALUE})
+  public CommonResult removePosting(@PathVariable("pid") Long postingId) {
 
     ThumbnailEntity deleteThumbnail = thumbnailService.findById(
         postingService.getPostingById(postingId).getThumbnailId().getId());
@@ -187,12 +185,11 @@ public class PostingController {
     fileService.deleteOriginalThumbnailById(deleteThumbnail.getFile().getId());
     thumbnailService.deleteById(deleteThumbnail.getId());
 
-    return result == 1 ? new ResponseEntity<>("success",
-        HttpStatus.OK) : new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    return result == 1 ? responseService.getSuccessResult() : responseService.getFailResult();
   }
 
   @GetMapping(value = "/search")
-  public ResponseEntity<List<PostingEntity>> searchPosting(@RequestParam("type") String type,
+  public ListResult<PostingEntity> searchPosting(@RequestParam("type") String type,
       @RequestParam("keyword") String keyword, @RequestParam("category") Long categoryId,
       @PageableDefault(size = 10, sort = "registerTime", direction = Direction.DESC)
           Pageable pageable) {
@@ -200,28 +197,26 @@ public class PostingController {
     List<PostingEntity> postingEntities = postingService.searchPosting(type, keyword,
         categoryId, pageable);
 
-    return ResponseEntity.status(HttpStatus.OK).body(postingEntities);
+    return responseService.getSuccessListResult(postingEntities);
   }
 
   @GetMapping(value = "/like")
-  public ResponseEntity<String> likePosting(@RequestParam("postingId") Long postingId,
+  public CommonResult likePosting(@RequestParam("postingId") Long postingId,
       @RequestParam("type") String type) {
 
     boolean result = postingService.isPostingLike(postingId, type.toUpperCase(
         Locale.ROOT));
 
-    return result ? new ResponseEntity<>("success",
-        HttpStatus.OK) : new ResponseEntity<>("fail", HttpStatus.OK);
+    return result ? responseService.getSuccessResult() : responseService.getFailResult();
   }
 
   @GetMapping(value = "/dislike")
-  public ResponseEntity<String> dislikePosting(@RequestParam("postingId") Long postingId,
+  public CommonResult dislikePosting(@RequestParam("postingId") Long postingId,
       @RequestParam("type") String type) {
 
     boolean result = postingService.isPostingDislike(postingId, type.toUpperCase(
         Locale.ROOT));
 
-    return result ? new ResponseEntity<>("success",
-        HttpStatus.OK) : new ResponseEntity<>("fail", HttpStatus.OK);
+    return result ? responseService.getSuccessResult() : responseService.getFailResult();
   }
 }
