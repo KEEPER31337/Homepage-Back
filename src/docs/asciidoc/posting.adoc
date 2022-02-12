@@ -69,6 +69,34 @@ include::{snippets}/post-getOne/http-response.adoc[]
 
 include::{snippets}/post-getOne/response-fields.adoc[]
 
+== 게시글 확인(비밀글)
+
+=== 요청
+
+WARNING: 비밀번호를 Request Parameter에 넣어야 합니다.
+
+==== Request
+
+include::{snippets}/post-getOneWithSecret/http-request.adoc[]
+
+==== Request Path Parameters
+
+include::{snippets}/post-getOneWithSecret/path-parameters.adoc[]
+
+==== Request Parameters
+
+include::{snippets}/post-getOneWithSecret/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/post-getOneWithSecret/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/post-getOneWithSecret/response-fields.adoc[]
+
 == 첨부파일 확인
 
 === 요청

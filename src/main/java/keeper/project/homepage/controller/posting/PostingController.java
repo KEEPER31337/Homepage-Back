@@ -102,13 +102,20 @@ public class PostingController {
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/{pid}")
-  public PostingResult getPosting(@PathVariable("pid") Long postingId) {
+  public PostingResult getPosting(@PathVariable("pid") Long postingId,
+      @RequestParam(value = "password", required = false) String password) {
+
     PostingEntity postingEntity = postingService.getPostingById(postingId);
     Long visitMemberId = authService.getMemberIdByJWT();
-    // 본인이 아닌경우
+
+    if (postingEntity.getIsSecret() == 1) {
+      if (!(postingEntity.getPassword().equals(password))) {
+        return postingService.getFailPostingResult("비밀번호가 일치하지 않습니다.");
+      }
+    }
     if (visitMemberId != postingEntity.getMemberId().getId()) {
       if (postingEntity.getIsTemp() == PostingService.isTempPosting) {
-        return postingService.getFailPostingResult();
+        return postingService.getFailPostingResult("임시저장 게시물입니다.");
       }
       postingEntity.increaseVisitCount();
       postingService.updateInfoById(postingEntity, postingId);

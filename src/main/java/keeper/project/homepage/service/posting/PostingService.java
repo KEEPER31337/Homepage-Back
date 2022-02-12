@@ -52,7 +52,12 @@ public class PostingService {
       } else {
         postingEntity.setWriter(postingEntity.getMemberId().getNickName());
       }
+
+      if (postingEntity.getIsSecret() == 1) {
+        postingEntity.makeSecret();
+      }
     }
+
     return postingEntities;
   }
 
@@ -62,13 +67,15 @@ public class PostingService {
     List<PostingEntity> postingEntities = postingRepository.findAllByCategoryIdAndIsTemp(
         categoryEntity.get(), isNotTempPosting, pageable);
 
-    if (categoryEntity.get().getName().equals("비밀게시판")) {
-      for (PostingEntity postingEntity : postingEntities) {
+    for (PostingEntity postingEntity : postingEntities) {
+      if (categoryEntity.get().getName().equals("비밀게시판")) {
         postingEntity.setWriter("익명");
-      }
-    } else {
-      for (PostingEntity postingEntity : postingEntities) {
+      } else {
         postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+      }
+
+      if (postingEntity.getIsSecret() == 1) {
+        postingEntity.makeSecret();
       }
     }
 
@@ -114,12 +121,12 @@ public class PostingService {
     return postingResult;
   }
 
-  public PostingResult getFailPostingResult() {
+  public PostingResult getFailPostingResult(String msg) {
 
     PostingResult postingResult = new PostingResult(null, null, null);
     postingResult.setSuccess(false);
     postingResult.setCode(-1);
-    postingResult.setMsg("실패하였습니다.");
+    postingResult.setMsg(msg);
 
     return postingResult;
   }
@@ -214,6 +221,10 @@ public class PostingService {
         postingEntity.setWriter("익명");
       } else {
         postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+      }
+
+      if (postingEntity.getIsSecret() == 1) {
+        postingEntity.makeSecret();
       }
     }
 
