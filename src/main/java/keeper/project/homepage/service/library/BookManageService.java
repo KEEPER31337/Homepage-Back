@@ -1,18 +1,16 @@
 package keeper.project.homepage.service.library;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.entity.library.BookBorrowEntity;
 import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.exception.CustomAboutFailedException;
-import keeper.project.homepage.exception.CustomBookNotFoundException;
-import keeper.project.homepage.exception.CustomBookOverTheMaxException;
+import keeper.project.homepage.exception.library.CustomBookBorrowNotFoundException;
+import keeper.project.homepage.exception.library.CustomBookNotFoundException;
+import keeper.project.homepage.exception.library.CustomBookOverTheMaxException;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.library.BookRepository;
@@ -20,7 +18,6 @@ import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -222,7 +219,7 @@ public class BookManageService {
         member);
 
     if (borrowEntities.isEmpty()) {
-      throw new CustomBookNotFoundException("책이 존재하지 않습니다.");
+      throw new CustomBookBorrowNotFoundException("대출 내역이 존재하지 않습니다.");
     }
 
     Long borrowedBook = 0L;
