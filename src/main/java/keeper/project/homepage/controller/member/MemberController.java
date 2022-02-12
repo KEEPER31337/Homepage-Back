@@ -247,4 +247,15 @@ public class MemberController {
     return responseService.getSuccessSingleResult(
         memberService.transferPoint(senderId, pointTransferRequest));
   }
+
+  @Secured("ROLE_회원")
+  @DeleteMapping("/member/delete")
+  public CommonResult deleteMember() {
+    Long id = authService.getMemberIdByJWT();
+
+    memberService.deleteAccount(id);
+
+    // 탈퇴 후 로그아웃 (세션 초기화)
+    return responseService.getSuccessResult();
+  }
 }
