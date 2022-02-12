@@ -600,7 +600,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   public void returnBookFailedNotExist() throws Exception {
     Long borrowQuantity = 1L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("title", bookTitle2);
+    params.add("title", bookTitle2 + epochTime);
     params.add("author", bookAuthor2);
     params.add("quantity", String.valueOf(borrowQuantity));
 
@@ -611,6 +611,25 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-2))
+        .andExpect(jsonPath("$.msg").exists());
+  }
+
+  @Test
+  @DisplayName("책 반납 실패(대출 안 한 책)")
+  public void returnBookFailedNotBorrowExist() throws Exception {
+    Long borrowQuantity = 1L;
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("title", bookTitle2);
+    params.add("author", bookAuthor2);
+    params.add("quantity", String.valueOf(borrowQuantity));
+
+    mockMvc.perform(post("/v1/returnbook")
+            .params(params)
+            .header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().is5xxServerError())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(-3))
         .andExpect(jsonPath("$.msg").exists());
   }
 
