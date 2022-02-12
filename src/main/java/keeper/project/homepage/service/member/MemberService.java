@@ -3,6 +3,7 @@ package keeper.project.homepage.service.member;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.dto.result.OtherMemberInfoResult;
 import keeper.project.homepage.entity.member.FriendEntity;
@@ -361,6 +362,10 @@ public class MemberService {
         .orElseThrow(CustomMemberNotFoundException::new);
 
     return new OtherMemberInfoResult(memberEntity);
+  }
+
+  public List<OtherMemberInfoResult> getAllGeneralMemberInfo() {
+    return memberRepository.findAll().stream().map(OtherMemberInfoResult::new).collect(Collectors.toList());
   }
 
   public PointTransferResult transferPoint(Long senderId,
