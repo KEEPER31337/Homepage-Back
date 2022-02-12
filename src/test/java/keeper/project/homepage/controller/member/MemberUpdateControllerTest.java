@@ -18,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
@@ -32,9 +33,6 @@ import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.member.MemberRankEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
-import keeper.project.homepage.exception.CustomAboutFailedException;
-import keeper.project.homepage.exception.CustomTransferPointLackException;
-import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -44,6 +42,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -215,6 +215,31 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
     adminToken = adminSign.getData().getToken();
   }
 
+  public ResponseFieldsSnippet generateMemberCommonResponseField(
+      String success, String code, String msg, FieldDescriptor... addDescriptors) {
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(Arrays.asList(
+        fieldWithPath("success").description(success),
+        fieldWithPath("code").description(code),
+        fieldWithPath("msg").description(msg),
+        fieldWithPath("data.id").description("아이디"),
+        fieldWithPath("data.emailAddress").description("이메일 주소"),
+        fieldWithPath("data.nickName").description("닉네임"),
+        fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
+        fieldWithPath("data.registerDate").description("가입 날짜"),
+        fieldWithPath("data.point").description("포인트 점수"),
+        fieldWithPath("data.level").description("레벨"),
+        fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
+        fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
+        fieldWithPath("data.jobs").description(
+            "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]"))
+    );
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
+    }
+    return responseFields(commonFields);
+  }
+
   @Test
   @DisplayName("Admin 권한으로 회원 등급 변경하기")
   public void updateRank() throws Exception {
@@ -240,22 +265,8 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("memberLoginId").description("변경할 회원의 로그인 아이디"),
                 fieldWithPath("name").description("변경할 등급명")
             ),
-            responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("실패 시: -9999"),
-                fieldWithPath("msg").description(docMsg),
-                fieldWithPath("data.id").description("아이디"),
-                fieldWithPath("data.emailAddress").description("이메일 주소"),
-                fieldWithPath("data.nickName").description("닉네임"),
-                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
-                fieldWithPath("data.registerDate").description("가입 날짜"),
-                fieldWithPath("data.point").description("포인트 점수"),
-                fieldWithPath("data.level").description("레벨"),
-                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
-                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
-                fieldWithPath("data.jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
-            )));
+            generateMemberCommonResponseField("성공: true +\n실패: false", "실패 시: -9999", docMsg)
+        ));
     ;
 
     MemberEntity member = memberRepository.findByLoginId(loginId).get();
@@ -288,22 +299,8 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("memberLoginId").description("변경할 회원의 로그인 아이디"),
                 fieldWithPath("name").description("변경할 유형")
             ),
-            responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("실패 시: -9999"),
-                fieldWithPath("msg").description(docMsg),
-                fieldWithPath("data.id").description("아이디"),
-                fieldWithPath("data.emailAddress").description("이메일 주소"),
-                fieldWithPath("data.nickName").description("닉네임"),
-                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
-                fieldWithPath("data.registerDate").description("가입 날짜"),
-                fieldWithPath("data.point").description("포인트 점수"),
-                fieldWithPath("data.level").description("레벨"),
-                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
-                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
-                fieldWithPath("data.jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
-            )));
+            generateMemberCommonResponseField("성공: true +\n실패: false", "실패 시: -9999", docMsg)
+        ));
 
     MemberEntity member = memberRepository.findByLoginId(loginId).get();
     assertTrue(
@@ -337,22 +334,8 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("memberLoginId").description("변경할 회원의 로그인 아이디"),
                 fieldWithPath("names").description("변경할 직책명 리스트")
             ),
-            responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("실패 시: -1000"),
-                fieldWithPath("msg").description(docMsg),
-                fieldWithPath("data.id").description("아이디"),
-                fieldWithPath("data.emailAddress").description("이메일 주소"),
-                fieldWithPath("data.nickName").description("닉네임"),
-                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
-                fieldWithPath("data.registerDate").description("가입 날짜"),
-                fieldWithPath("data.point").description("포인트 점수"),
-                fieldWithPath("data.level").description("레벨"),
-                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
-                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
-                fieldWithPath("data.jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
-            )));
+            generateMemberCommonResponseField("성공: true +\n실패: false", "실패 시: -9999", docMsg)
+        ));
 
     MemberEntity member = memberRepository.findByLoginId(loginId).get();
     MemberJobEntity job1 = memberJobRepository.findByName("ROLE_사서").get();
@@ -393,22 +376,8 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("nickName").description("변경할 닉네임"),
                 fieldWithPath("studentId").description("변경할 학번")
             ),
-            responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("실패 시: -9999"),
-                fieldWithPath("msg").description(docMsg),
-                fieldWithPath("data.id").description("아이디"),
-                fieldWithPath("data.emailAddress").description("이메일 주소"),
-                fieldWithPath("data.nickName").description("닉네임"),
-                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
-                fieldWithPath("data.registerDate").description("가입 날짜"),
-                fieldWithPath("data.point").description("포인트 점수"),
-                fieldWithPath("data.level").description("레벨"),
-                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
-                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
-                fieldWithPath("data.jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
-            )));
+            generateMemberCommonResponseField("성공: true +\n실패: false", "실패 시: -9999", docMsg)
+        ));
     assertTrue(memberEntity.getRealName().equals("Changed"));
     assertTrue(memberEntity.getStudentId().equals(newStudentId));
   }
@@ -462,25 +431,10 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("emailAddress").description("이메일 주소"),
                 fieldWithPath("authCode").description("이메일 인증 코드")
             ),
-            responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("실패 시: " + " +\n"
-                    + "* 인증 실패: -1002" + " +\n"
-                    + "* 그 외: -9999"),
-                fieldWithPath("msg").description(docMsg),
-                fieldWithPath("data.id").description("아이디"),
-                fieldWithPath("data.emailAddress").description("이메일 주소"),
-                fieldWithPath("data.nickName").description("닉네임"),
-                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
-                fieldWithPath("data.registerDate").description("가입 날짜"),
-                fieldWithPath("data.point").description("포인트 점수"),
-                fieldWithPath("data.level").description("레벨"),
-                fieldWithPath("data.authCode").description("인증 코드"),
-                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
-                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
-                fieldWithPath("data.jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
-            )));
+            generateMemberCommonResponseField("성공: true +\n실패: false",
+                "실패 시: +\n* 인증 실패: -1002 +\n* 그 외: -9999", docMsg,
+                fieldWithPath("data.authCode").description("이메일 인증 코드"))
+        ));
   }
 
   @Test
@@ -560,22 +514,8 @@ public class MemberUpdateControllerTest extends ApiControllerTestSetUp {
 //            requestParts(
 //                partWithName("thumbnail").description("썸네일 용 이미지 파일")
 //            ),
-            responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("실패 시: -9999"),
-                fieldWithPath("msg").description(docMsg),
-                fieldWithPath("data.id").description("아이디"),
-                fieldWithPath("data.emailAddress").description("이메일 주소"),
-                fieldWithPath("data.nickName").description("닉네임"),
-                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
-                fieldWithPath("data.registerDate").description("가입 날짜"),
-                fieldWithPath("data.point").description("포인트 점수"),
-                fieldWithPath("data.level").description("레벨"),
-                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
-                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
-                fieldWithPath("data.jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
-            )));
+            generateMemberCommonResponseField("성공: true +\n실패: false", "실패 시: -9999", docMsg)
+        ));
     Assertions.assertTrue(
         memberEntity.getThumbnail().getPath().equals(
             "keeper_files" + File.separator + "aft.jpg") == false);
