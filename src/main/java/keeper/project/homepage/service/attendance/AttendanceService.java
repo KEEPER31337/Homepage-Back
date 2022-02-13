@@ -154,7 +154,8 @@ public class AttendanceService {
         .findTopByMemberIdOrderByIdDesc(memberEntity);
 
     if (attendanceEntity.isEmpty()) {
-      throw new CustomAttendanceException("출석을 하지 않았습니다.");
+//      throw new CustomAttendanceException("출석을 하지 않았습니다.");
+      return null;
     }
     return attendanceEntity.get();
   }
@@ -189,6 +190,9 @@ public class AttendanceService {
 
   private int getContinousDay(Date now) {
     AttendanceEntity recentAttendanceEntity = getMostRecentlyAttendance();
+    if (recentAttendanceEntity == null) {
+      return 0;
+    }
 
     int continousDay = 0;
     if (isBeforeDay(recentAttendanceEntity.getTime(), now)) {
@@ -199,6 +203,10 @@ public class AttendanceService {
 
   private boolean isAlreadyAttendance() {
     AttendanceEntity recentAttendanceEntity = getMostRecentlyAttendance();
+    if (recentAttendanceEntity == null) {
+      return false;
+    }
+    
     return isToday(recentAttendanceEntity.getTime());
   }
 }
