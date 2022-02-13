@@ -650,12 +650,16 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
                 parameterWithName("size").optional().description("한 페이지당 출력 수(default = 10)")
             ),
             responseFields(
-                fieldWithPath("[].id").description("대여정보 ID"),
+                fieldWithPath("success").description("연체 도서 전달 시 true, 실패 시 false 값을 보냅니다."),
+                fieldWithPath("code").description(
+                    "연체 도서 전달 성공 시 0, 실패 시 -11 코드를 보냅니다."),
+                fieldWithPath("msg").description(
+                    "연체 도서 전달 실패 시 연체 도서가 없다는 메시지를 전달합니다.")
+            ).andWithPrefix("list.", fieldWithPath("[].id").description("대여정보 ID"),
                 subsectionWithPath("[].member").description("대여자 ID"),
                 subsectionWithPath("[].book").description("책 ID"),
                 fieldWithPath("[].quantity").description("대여 수량"),
                 fieldWithPath("[].borrowDate").description("대여일"),
-                fieldWithPath("[].expireDate").description("만기일")
-            )));
+                fieldWithPath("[].expireDate").description("만기일"))));
   }
 }
