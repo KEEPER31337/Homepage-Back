@@ -48,18 +48,25 @@ public class PostingService {
         pageable).getContent();
 
     for (PostingEntity postingEntity : postingEntities) {
-      if (postingEntity.getCategoryId().getName().equals("비밀게시판")) {
-        postingEntity.setWriter("익명");
-      } else {
-        postingEntity.setWriter(postingEntity.getMemberId().getNickName());
-      }
-
+      setWriterInfo(postingEntity);
       if (postingEntity.getIsSecret() == 1) {
         postingEntity.makeSecret();
       }
     }
 
     return postingEntities;
+  }
+
+  private void setWriterInfo(PostingEntity postingEntity) {
+    if (postingEntity.getCategoryId().getName().equals("비밀게시판")) {
+      postingEntity.setWriter("익명");
+    } else {
+      postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+      postingEntity.setWriterId(postingEntity.getMemberId().getId());
+      if (postingEntity.getMemberId().getThumbnail() != null) {
+        postingEntity.setWriterThumbnailId(postingEntity.getMemberId().getThumbnail().getId());
+      }
+    }
   }
 
   public List<PostingEntity> findAllByCategoryId(Long categoryId, Pageable pageable) {
@@ -69,12 +76,7 @@ public class PostingService {
         categoryEntity.get(), isNotTempPosting, pageable);
 
     for (PostingEntity postingEntity : postingEntities) {
-      if (categoryEntity.get().getName().equals("비밀게시판")) {
-        postingEntity.setWriter("익명");
-      } else {
-        postingEntity.setWriter(postingEntity.getMemberId().getNickName());
-      }
-
+      setWriterInfo(postingEntity);
       if (postingEntity.getIsSecret() == 1) {
         postingEntity.makeSecret();
       }
@@ -102,11 +104,7 @@ public class PostingService {
   public PostingEntity getPostingById(Long pid) {
 
     PostingEntity postingEntity = postingRepository.findById(pid).get();
-    if (postingEntity.getCategoryId().getName().equals("비밀게시판")) {
-      postingEntity.setWriter("익명");
-    } else {
-      postingEntity.setWriter(postingEntity.getMemberId().getNickName());
-    }
+    setWriterInfo(postingEntity);
 
     return postingEntity;
   }
@@ -218,12 +216,7 @@ public class PostingService {
     }
 
     for (PostingEntity postingEntity : postingEntities) {
-      if (categoryEntity.getName().equals("비밀게시판")) {
-        postingEntity.setWriter("익명");
-      } else {
-        postingEntity.setWriter(postingEntity.getMemberId().getNickName());
-      }
-
+      setWriterInfo(postingEntity);
       if (postingEntity.getIsSecret() == 1) {
         postingEntity.makeSecret();
       }

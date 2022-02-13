@@ -392,7 +392,8 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].rank").description("회원 등급: [null/우수회원/일반회원]"),
                 fieldWithPath("list[].type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
                 fieldWithPath("list[].jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
+                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]"),
+                fieldWithPath("list[].thumbnailId").description("썸네일 Id").optional()
             )));
   }
 
@@ -424,7 +425,8 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].rank").description("회원 등급: [null/우수회원/일반회원]"),
                 fieldWithPath("list[].type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
                 fieldWithPath("list[].jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
+                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]"),
+                fieldWithPath("list[].thumbnailId").description("썸네일 Id").optional()
             )));
   }
 
@@ -467,7 +469,8 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
                 fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
                 fieldWithPath("data.jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
+                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]"),
+                fieldWithPath("data.thumbnailId").description("썸네일 Id").optional()
             )));
     ;
 
@@ -515,7 +518,8 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
                 fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
                 fieldWithPath("data.jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
+                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]"),
+                fieldWithPath("data.thumbnailId").description("썸네일 Id").optional()
             )));
 
     MemberEntity member = memberRepository.findByLoginId(loginId).get();
@@ -564,7 +568,8 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
                 fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
                 fieldWithPath("data.jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
+                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]"),
+                fieldWithPath("data.thumbnailId").description("썸네일 Id").optional()
             )));
 
     MemberEntity member = memberRepository.findByLoginId(loginId).get();
@@ -617,7 +622,8 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
                 fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
                 fieldWithPath("data.jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
+                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]"),
+                fieldWithPath("data.thumbnailId").description("썸네일 Id").optional()
             )));
     assertTrue(memberEntity.getRealName().equals("Changed"));
   }
@@ -668,7 +674,8 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
                 fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
                 fieldWithPath("data.jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
+                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]"),
+                fieldWithPath("data.thumbnailId").description("썸네일 Id").optional()
             )));
   }
 
@@ -763,7 +770,8 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
                 fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
                 fieldWithPath("data.jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
+                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]"),
+                fieldWithPath("data.thumbnailId").description("썸네일 Id").optional()
             )));
     Assertions.assertTrue(
         memberEntity.getThumbnail().getPath().equals(
@@ -809,7 +817,8 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
                 fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
                 fieldWithPath("data.jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
+                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]"),
+                fieldWithPath("data.thumbnailId").description("썸네일 Id").optional()
             )));
     assertTrue(memberEntity.getStudentId().equals("123456789"));
   }

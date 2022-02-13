@@ -2,7 +2,6 @@ package keeper.project.homepage.entity.posting;
 
 import com.sun.istack.NotNull;
 import java.time.LocalDate;
-import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -18,7 +17,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.util.Assert;
 
 @Entity
 @Getter
@@ -58,7 +56,7 @@ public class CommentEntity {
   @JoinColumn(name = "member_id")
   @NotNull
 //  @Column
-  private MemberEntity memberId;
+  private MemberEntity member;
   @ManyToOne(targetEntity = PostingEntity.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "posting_id")
   @NotNull
