@@ -14,6 +14,4 @@ import lombok.Setter;
 public class PostingResult extends CommonResult {
 
   private PostingEntity data;
-  private List<FileEntity> files;
-  private ThumbnailEntity thumbnail;
 }

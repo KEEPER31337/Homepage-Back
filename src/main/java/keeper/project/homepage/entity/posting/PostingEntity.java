@@ -16,6 +16,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
+import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.member.MemberHasPostingDislikeEntity;
 import keeper.project.homepage.entity.member.MemberHasPostingLikeEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
@@ -92,6 +93,10 @@ public class PostingEntity {
   @Builder.Default
   private List<MemberHasPostingLikeEntity> memberHasPostingLikeEntities = new ArrayList<>();
 
+  @OneToMany(mappedBy = "postingId")
+  @Builder.Default
+  private List<FileEntity> files = new ArrayList<>();
+
   @OneToMany(cascade = CascadeType.ALL, targetEntity = MemberHasPostingDislikeEntity.class, mappedBy = "postingId", orphanRemoval = true, fetch = FetchType.LAZY)
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   @Builder.Default
@@ -152,7 +157,7 @@ public class PostingEntity {
   public void setWriterThumbnailId(Long writerThumbnailId) {
     this.writerThumbnailId = writerThumbnailId;
   }
-    
+
   public void makeSecret() {
     this.title = "비밀 게시글입니다.";
     this.content = "비밀 게시글입니다.";

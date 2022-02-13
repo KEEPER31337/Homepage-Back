@@ -109,10 +109,9 @@ public class PostingService {
     return postingEntity;
   }
 
-  public PostingResult getSuccessPostingResult(PostingEntity postingEntity,
-      List<FileEntity> fileEntities, ThumbnailEntity thumbnailEntity) {
+  public PostingResult getSuccessPostingResult(PostingEntity postingEntity) {
 
-    PostingResult postingResult = new PostingResult(postingEntity, fileEntities, thumbnailEntity);
+    PostingResult postingResult = new PostingResult(postingEntity);
     postingResult.setSuccess(true);
     postingResult.setCode(0);
     postingResult.setMsg("성공하였습니다.");
@@ -122,7 +121,7 @@ public class PostingService {
 
   public PostingResult getFailPostingResult(String msg) {
 
-    PostingResult postingResult = new PostingResult(null, null, null);
+    PostingResult postingResult = new PostingResult(null);
     postingResult.setSuccess(false);
     postingResult.setCode(-1);
     postingResult.setMsg(msg);

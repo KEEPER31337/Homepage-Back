@@ -305,14 +305,16 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .build());
     memberEntity.getPosting().add(postingTempTest);
 
-    fileRepository.save(FileEntity.builder()
+    FileEntity generalTestFile = FileEntity.builder()
         .postingId(postingGeneralTest)
         .fileName("test file")
         .filePath("test/file.txt")
         .fileSize(12345L)
         .uploadTime(new Date())
         .ipAddress(postingGeneralTest.getIpAddress())
-        .build());
+        .build();
+    fileRepository.save(generalTestFile);
+    postingGeneralTest.getFiles().add(generalTestFile);
 
     fileRepository.save(FileEntity.builder()
         .postingId(postingModifyTest)
@@ -363,8 +365,10 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].isNotice").description("공지글?"),
                 fieldWithPath("list[].isSecret").description("비밀글?"),
                 fieldWithPath("list[].isTemp").description("임시저장?"),
-                subsectionWithPath("list[].thumbnail").description("게시글 썸네일 (.id가 담겨져 나갑니다)")
-                    .optional()
+                subsectionWithPath("list[].files").description(
+                        "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
+                    .optional(),
+                subsectionWithPath("list[].thumbnail").description("게시글 썸네일 (.id)").optional()
             )
         ));
   }
@@ -409,8 +413,10 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].isNotice").description("공지글?"),
                 fieldWithPath("list[].isSecret").description("비밀글?"),
                 fieldWithPath("list[].isTemp").description("임시저장?"),
-                subsectionWithPath("list[].thumbnail").description("게시글 썸네일 (.id가 담겨져 나갑니다)")
-                    .optional()
+                subsectionWithPath("list[].files").description(
+                        "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
+                    .optional(),
+                subsectionWithPath("list[].thumbnail").description("게시글 썸네일 (.id)").optional()
             )
         ));
   }
@@ -438,6 +444,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.title").description("게시물 제목"),
                 fieldWithPath("data.content").description("게시물 내용"),
                 fieldWithPath("data.writer").description("작성자  (비밀 게시글일 경우 익명)"),
+                fieldWithPath("data.writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
+                fieldWithPath("data.writerThumbnailId").optional()
+                    .description("작성자 (비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
                 fieldWithPath("data.visitCount").description("조회 수"),
                 fieldWithPath("data.likeCount").description("좋아요 수"),
                 fieldWithPath("data.dislikeCount").description("싫어요 수"),
@@ -449,15 +458,10 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.isNotice").description("공지글?"),
                 fieldWithPath("data.isSecret").description("비밀글?"),
                 fieldWithPath("data.isTemp").description("임시저장?"),
-                subsectionWithPath("files").description("첨부파일 정보"),
-                fieldWithPath("files[].id").description("첨부파일 ID").optional(),
-                fieldWithPath("files[].fileName").description("첨부파일 이름").optional(),
-                fieldWithPath("files[].filePath").description("첨부파일 경로").optional(),
-                fieldWithPath("files[].fileSize").description("첨부파일 크기").optional(),
-                fieldWithPath("files[].uploadTime").description("업로드 시간").optional(),
-                fieldWithPath("files[].ipAddress").description("IP 주소").optional(),
-                fieldWithPath("thumbnail.id").description("썸네일 ID").optional(),
-                fieldWithPath("thumbnail.path").description("썸네일 경로(상대경로)").optional()
+                subsectionWithPath("data.files").description(
+                        "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
+                    .optional(),
+                subsectionWithPath("data.thumbnail").description("게시글 썸네일 (.id)").optional()
             )
         ));
   }
@@ -500,18 +504,10 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.isNotice").description("공지글?"),
                 fieldWithPath("data.isSecret").description("비밀글?"),
                 fieldWithPath("data.isTemp").description("임시저장?"),
-                fieldWithPath("data.password").description("비밀번호").optional(),
-                subsectionWithPath("data.thumbnail").description("게시글 썸네일 (.id가 담겨져 나갑니다)")
-                    .optional()
-                subsectionWithPath("files").description("첨부파일 정보"),
-                fieldWithPath("files[].id").description("첨부파일 ID").optional(),
-                fieldWithPath("files[].fileName").description("첨부파일 이름").optional(),
-                fieldWithPath("files[].filePath").description("첨부파일 경로").optional(),
-                fieldWithPath("files[].fileSize").description("첨부파일 크기").optional(),
-                fieldWithPath("files[].uploadTime").description("업로드 시간").optional(),
-                fieldWithPath("files[].ipAddress").description("IP 주소").optional(),
-                fieldWithPath("thumbnail.id").description("썸네일 ID").optional(),
-                fieldWithPath("thumbnail.path").description("썸네일 경로(상대경로)").optional()
+                subsectionWithPath("data.files").description(
+                        "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
+                    .optional(),
+                subsectionWithPath("data.thumbnail").description("게시글 썸네일 (.id)").optional()
             )
         ));
   }
@@ -667,8 +663,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 parameterWithName("isNotice").description("공지글?"),
                 parameterWithName("isSecret").description("비밀글?"),
                 parameterWithName("isTemp").description("임시저장?"),
-                parameterWithName("password").optional().description("비밀번호").optional(),
-                parameterWithName("isTemp").description("임시저장?")
+                parameterWithName("password").optional().description("비밀번호").optional()
             ),
             requestParts(
                 partWithName("file").description("첨부 파일들 (form-data 에서 file= parameter 부분)"),
@@ -747,8 +742,10 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].isNotice").description("공지글?"),
                 fieldWithPath("list[].isSecret").description("비밀글?"),
                 fieldWithPath("list[].isTemp").description("임시저장?"),
-                subsectionWithPath("list[].thumbnail").description("게시글 썸네일 (.id가 담겨져 나갑니다)")
-                    .optional()
+                subsectionWithPath("list[].files").description(
+                        "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
+                    .optional(),
+                subsectionWithPath("list[].thumbnail").description("게시글 썸네일 (.id)").optional()
             )
         ));
   }

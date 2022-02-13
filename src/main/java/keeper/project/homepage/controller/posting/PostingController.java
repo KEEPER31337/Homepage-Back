@@ -120,11 +120,8 @@ public class PostingController {
       postingEntity.increaseVisitCount();
       postingService.updateInfoById(postingEntity, postingId);
     }
-
-    List<FileEntity> fileEntities = fileService.findFileEntitiesByPostingId(postingEntity);
-    ThumbnailEntity thumbnailEntity = postingEntity.getThumbnailId();
-
-    return postingService.getSuccessPostingResult(postingEntity, fileEntities, thumbnailEntity);
+    
+    return postingService.getSuccessPostingResult(postingEntity);
   }
 
   @GetMapping(value = "/attach/{pid}")
