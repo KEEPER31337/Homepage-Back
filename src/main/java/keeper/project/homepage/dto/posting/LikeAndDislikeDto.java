@@ -1,5 +1,6 @@
-package keeper.project.homepage.dto.result;
+package keeper.project.homepage.dto.posting;
 
+import keeper.project.homepage.dto.result.CommonResult;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class LikeAndDislikeResult extends CommonResult {
+public class LikeAndDislikeDto {
 
   private boolean isLiked;
   private boolean isDisliked;

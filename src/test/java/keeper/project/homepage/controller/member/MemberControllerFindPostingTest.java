@@ -242,8 +242,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestSetUp {
 
     mockMvc.perform(get("/v1/post/{pid}", postId)
             .header("Authorization", userToken)
-            .param("page", "0")
-            .param("size", "5"))
+            .param("password", "asd"))
         .andDo(print())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-1))
