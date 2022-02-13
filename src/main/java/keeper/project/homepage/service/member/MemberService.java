@@ -502,6 +502,12 @@ public class MemberService {
     }
   }
 
+  public void deleteThumbnail(MemberEntity member) {
+    ThumbnailEntity deleteThumbnail = thumbnailService.findById(member.getThumbnail().getId());
+    fileService.deleteOriginalThumbnailById(deleteThumbnail.getFile().getId());
+    thumbnailService.deleteById(deleteThumbnail.getId());
+  }
+
   public void deleteAccount(Long memberId) {
     // 비밀번호 인증
     // 동아리 물품, 책 미납한 기록 있으면 불가능
@@ -511,12 +517,13 @@ public class MemberService {
     decreaseCommentsDislike(deleted);
     decreasePostingsLike(deleted);
     decreasePostingsDislike(deleted);
+    deleteThumbnail(deleted);
 
     MemberEntity virtualMember = findById(VIRTUAL_MEMBER_ID);
     commentChangeToVirtualMember(virtualMember, deleted);
     postingChangeToVirtualMember(virtualMember, deleted);
 
-    // 멤버 job, 친구,
+    // TODO : attendance 삭제, point_log 삭제
     deleteMember(deleted);
   }
 }
