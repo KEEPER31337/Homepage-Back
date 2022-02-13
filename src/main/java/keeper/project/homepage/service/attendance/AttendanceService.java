@@ -182,7 +182,7 @@ public class AttendanceService {
         member, java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
 
     if (attendanceEntities.size() != 1) {
-      throw new CustomAttendanceException("출석 저장에 문제가 생겼습니다");
+      throw new CustomAttendanceException("해당 날짜에 출석하지 않았습니다.");
     }
     return attendanceEntities.get(0);
   }
