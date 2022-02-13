@@ -4,6 +4,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -227,7 +228,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .content("test 게시판 제목 내용")
         .memberId(memberEntity)
         .categoryId(categoryEntity)
-        .thumbnailId(generalThumbnail)
+        .thumbnail(generalThumbnail)
         .ipAddress("192.11.222.333")
         .allowComment(0)
         .isNotice(0)
@@ -248,7 +249,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .content("test 게시판 수정용 내용")
         .memberId(memberEntity)
         .categoryId(categoryEntity)
-        .thumbnailId(modifyThumbnail)
+        .thumbnail(modifyThumbnail)
         .ipAddress("192.11.223")
         .allowComment(0)
         .isNotice(0)
@@ -269,7 +270,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .content("test 게시판 제목 내용2")
         .memberId(memberEntity)
         .categoryId(categoryEntity)
-        .thumbnailId(deleteThumbnail)
+        .thumbnail(deleteThumbnail)
         .ipAddress("192.11.223")
         .allowComment(0)
         .isNotice(0)
@@ -290,7 +291,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .content("임시 게시글 내용")
         .memberId(memberEntity)
         .categoryId(categoryEntity)
-        .thumbnailId(deleteThumbnail)
+        .thumbnail(deleteThumbnail)
         .ipAddress("192.11.223")
         .allowComment(0)
         .isNotice(0)
@@ -343,6 +344,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].title").description("게시물 제목"),
                 fieldWithPath("list[].content").description("게시물 내용"),
                 fieldWithPath("list[].writer").optional().description("작성자 (비밀 게시글일 경우 익명)"),
+                fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
+                fieldWithPath("list[].writerThumbnailId").optional()
+                    .description("작성자 (비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
                 fieldWithPath("list[].visitCount").description("조회 수"),
                 fieldWithPath("list[].likeCount").description("좋아요 수"),
                 fieldWithPath("list[].dislikeCount").description("싫어요 수"),
@@ -354,7 +358,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].isNotice").description("공지글?"),
                 fieldWithPath("list[].isSecret").description("비밀글?"),
                 fieldWithPath("list[].isTemp").description("임시저장?"),
-                fieldWithPath("list[].password").description("비밀번호").optional()
+                fieldWithPath("list[].password").description("비밀번호").optional(),
+                subsectionWithPath("list[].thumbnail").description("게시글 썸네일 (.id가 담겨져 나갑니다)")
+                    .optional()
             )
         ));
   }
@@ -387,6 +393,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].title").description("게시물 제목"),
                 fieldWithPath("list[].content").description("게시물 내용"),
                 fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
+                fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
+                fieldWithPath("list[].writerThumbnailId").optional()
+                    .description("작성자 (비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
                 fieldWithPath("list[].visitCount").description("조회 수"),
                 fieldWithPath("list[].likeCount").description("좋아요 수"),
                 fieldWithPath("list[].dislikeCount").description("싫어요 수"),
@@ -398,7 +407,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].isNotice").description("공지글?"),
                 fieldWithPath("list[].isSecret").description("비밀글?"),
                 fieldWithPath("list[].isTemp").description("임시저장?"),
-                fieldWithPath("list[].password").description("비밀번호").optional()
+                fieldWithPath("list[].password").description("비밀번호").optional(),
+                subsectionWithPath("list[].thumbnail").description("게시글 썸네일 (.id가 담겨져 나갑니다)")
+                    .optional()
             )
         ));
   }
@@ -423,6 +434,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.title").description("게시물 제목"),
                 fieldWithPath("data.content").description("게시물 내용"),
                 fieldWithPath("data.writer").description("작성자  (비밀 게시글일 경우 익명)"),
+                fieldWithPath("data.writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
+                fieldWithPath("data.writerThumbnailId").optional()
+                    .description("작성자 (비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
                 fieldWithPath("data.visitCount").description("조회 수"),
                 fieldWithPath("data.likeCount").description("좋아요 수"),
                 fieldWithPath("data.dislikeCount").description("싫어요 수"),
@@ -434,7 +448,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.isNotice").description("공지글?"),
                 fieldWithPath("data.isSecret").description("비밀글?"),
                 fieldWithPath("data.isTemp").description("임시저장?"),
-                fieldWithPath("data.password").description("비밀번호").optional()
+                fieldWithPath("data.password").description("비밀번호").optional(),
+                subsectionWithPath("data.thumbnail").description("게시글 썸네일 (.id가 담겨져 나갑니다)")
+                    .optional()
             )
         ));
   }
@@ -658,6 +674,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].title").description("게시물 제목"),
                 fieldWithPath("list[].content").description("게시물 내용"),
                 fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
+                fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
+                fieldWithPath("list[].writerThumbnailId").optional()
+                    .description("작성자 (비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
                 fieldWithPath("list[].visitCount").description("조회 수"),
                 fieldWithPath("list[].likeCount").description("좋아요 수"),
                 fieldWithPath("list[].dislikeCount").description("싫어요 수"),
@@ -669,7 +688,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].isNotice").description("공지글?"),
                 fieldWithPath("list[].isSecret").description("비밀글?"),
                 fieldWithPath("list[].isTemp").description("임시저장?"),
-                fieldWithPath("list[].password").description("비밀번호").optional()
+                fieldWithPath("list[].password").description("비밀번호").optional(),
+                subsectionWithPath("list[].thumbnail").description("게시글 썸네일 (.id가 담겨져 나갑니다)")
+                    .optional()
             )
         ));
   }

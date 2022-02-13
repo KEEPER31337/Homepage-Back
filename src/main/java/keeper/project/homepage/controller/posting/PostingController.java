@@ -175,7 +175,7 @@ public class PostingController {
   public CommonResult removePosting(@PathVariable("pid") Long postingId) {
 
     ThumbnailEntity deleteThumbnail = thumbnailService.findById(
-        postingService.getPostingById(postingId).getThumbnailId().getId());
+        postingService.getPostingById(postingId).getThumbnail().getId());
 
     List<FileEntity> fileEntities = fileService.findFileEntitiesByPostingId(
         postingService.getPostingById(postingId));
