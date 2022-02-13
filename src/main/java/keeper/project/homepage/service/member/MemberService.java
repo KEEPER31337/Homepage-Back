@@ -1,7 +1,6 @@
 package keeper.project.homepage.service.member;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.dto.member.MemberDto;
@@ -419,27 +418,41 @@ public class MemberService {
   public void decreaseCommentsLike(MemberEntity member) {
     List<MemberHasCommentLikeEntity> likes = memberHasCommentLikeRepository.findByMemberHasCommentEntityPK_MemberEntity(
         member);
-    List<CommentEntity> updateComments = new ArrayList<>();
+    List<CommentEntity> updateAll = new ArrayList<>();
     for (MemberHasCommentLikeEntity like : likes) {
       CommentEntity comment = like.getMemberHasCommentEntityPK().getCommentEntity();
       comment.decreaseLikeCount();
-      updateComments.add(comment);
+      updateAll.add(comment);
       memberHasCommentLikeRepository.deleteById(like.getMemberHasCommentEntityPK());
     }
-    commentRepository.saveAll(updateComments);
+    commentRepository.saveAll(updateAll);
+    // save vs saveAll 성능 차이 : https://sas-study.tistory.com/388
   }
 
-  public void decreaseCommentsDisLike(MemberEntity member) {
-    List<MemberHasCommentDislikeEntity> likes = memberHasCommentDislikeRepository.findByMemberHasCommentEntityPK_MemberEntity(
+  public void decreaseCommentsDislike(MemberEntity member) {
+    List<MemberHasCommentDislikeEntity> dislikes = memberHasCommentDislikeRepository.findByMemberHasCommentEntityPK_MemberEntity(
         member);
-    List<CommentEntity> updateComments = new ArrayList<>();
-    for (MemberHasCommentDislikeEntity like : likes) {
-      CommentEntity comment = like.getMemberHasCommentEntityPK().getCommentEntity();
-      comment.decreaseLikeCount();
-      updateComments.add(comment);
-      memberHasCommentDislikeRepository.deleteById(like.getMemberHasCommentEntityPK());
+    List<CommentEntity> updateAll = new ArrayList<>();
+    for (MemberHasCommentDislikeEntity dislike : dislikes) {
+      CommentEntity comment = dislike.getMemberHasCommentEntityPK().getCommentEntity();
+      comment.decreaseDislikeCount();
+      updateAll.add(comment);
+      memberHasCommentDislikeRepository.deleteById(dislike.getMemberHasCommentEntityPK());
     }
-    commentRepository.saveAll(updateComments);
+    commentRepository.saveAll(updateAll);
+  }
+
+  public void commentChangeToVirtualMember(MemberEntity virtual, MemberEntity deleted) {
+    List<CommentEntity> changedComments = commentRepository.findAllByMemberId(deleted);
+    List<CommentEntity> updateAll = new ArrayList<>();
+    for (CommentEntity comment : changedComments) {
+      comment.changeMemberId(virtual);
+      updateAll.add(comment);
+    }
+    commentRepository.saveAll(updateAll);
+  }
+
+    }
   }
 
   public void deleteAccount(Long memberId) {
@@ -448,7 +461,8 @@ public class MemberService {
 
     MemberEntity deleted = findById(memberId);
     decreaseCommentsLike(deleted);
-    decreaseCommentsDisLike(deleted);
+    decreaseCommentsDislike(deleted);
+
     // 멤버 job, 친구,
     deleteMember(deleted);
   }
