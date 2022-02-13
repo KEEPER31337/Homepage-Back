@@ -47,5 +47,6 @@ public class FileEntity {
   private PostingEntity postingId;
 
   @OneToOne(mappedBy = "file")
+  @JsonIgnore
   private ThumbnailEntity thumbnail;
 }

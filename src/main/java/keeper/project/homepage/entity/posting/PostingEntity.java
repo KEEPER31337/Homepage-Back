@@ -76,6 +76,7 @@ public class PostingEntity {
   @Column
   private Integer isSecret;
   @Column
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private String password;
   @Column
   private Integer isTemp;
@@ -150,5 +151,10 @@ public class PostingEntity {
 
   public void setWriterThumbnailId(Long writerThumbnailId) {
     this.writerThumbnailId = writerThumbnailId;
+  }
+    
+  public void makeSecret() {
+    this.title = "비밀 게시글입니다.";
+    this.content = "비밀 게시글입니다.";
   }
 }
