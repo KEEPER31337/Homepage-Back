@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.dto.posting.PostingDto;
-import keeper.project.homepage.dto.result.LikeAndDislikeResult;
+import keeper.project.homepage.dto.posting.LikeAndDislikeDto;
 import keeper.project.homepage.dto.result.PostingResult;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.posting.CategoryEntity;
@@ -293,7 +293,7 @@ public class PostingService {
   }
 
   @Transactional
-  public LikeAndDislikeResult checkLikeAndDisLike(Long postingId) {
+  public LikeAndDislikeDto checkLikeAndDisLike(Long postingId) {
 
     MemberEntity memberEntity = getMemberEntityWithJWT();
     PostingEntity postingEntity = postingRepository.findById(postingId).get();
@@ -316,13 +316,9 @@ public class PostingService {
     } else {
       checked.add(false);
     }
+    LikeAndDislikeDto likeAndDislikeDto = new LikeAndDislikeDto(checked.get(0), checked.get(1));
 
-    LikeAndDislikeResult likeAndDislikeResult = new LikeAndDislikeResult(checked.get(0), checked.get(1));
-    likeAndDislikeResult.setCode(0);
-    likeAndDislikeResult.setMsg("성공하였습니다.");
-    likeAndDislikeResult.setSuccess(true);
-
-    return likeAndDislikeResult;
+    return likeAndDislikeDto;
   }
 
   private MemberEntity getMemberEntityWithJWT() {

@@ -6,10 +6,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
+import keeper.project.homepage.dto.posting.LikeAndDislikeDto;
 import keeper.project.homepage.dto.posting.PostingDto;
 import keeper.project.homepage.dto.result.CommonResult;
-import keeper.project.homepage.dto.result.LikeAndDislikeResult;
 import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.dto.result.PostingResult;
 import keeper.project.homepage.dto.result.SingleResult;
@@ -234,9 +233,9 @@ public class PostingController {
   }
 
   @GetMapping(value = "/check")
-  public LikeAndDislikeResult checkMemberLikedAndDisliked(
+  public SingleResult<LikeAndDislikeDto> checkMemberLikedAndDisliked(
       @RequestParam("postingId") Long postingId) {
 
-    return postingService.checkLikeAndDisLike(postingId);
+    return responseService.getSuccessSingleResult(postingService.checkLikeAndDisLike(postingId));
   }
 }

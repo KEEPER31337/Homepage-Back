@@ -799,8 +799,8 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("msg").description(""),
                 fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
-                fieldWithPath("liked").description("좋아요 여부"),
-                fieldWithPath("disliked").description("좋아요 여부")
+                fieldWithPath("data.disliked").description("싫어요 했을시 true, 아니면 false"),
+                fieldWithPath("data.liked").description("좋어요 했을시 true, 아니면 false")
             )
         ));
   }
