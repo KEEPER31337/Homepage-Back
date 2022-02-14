@@ -18,4 +18,6 @@ public interface BookBorrowRepository extends JpaRepository<BookBorrowEntity, Lo
   Optional<BookBorrowEntity> findByBookAndMember(BookEntity book, MemberEntity returnMember);
 
   List<BookBorrowEntity> findByBookAndMemberOrderByBorrowDateAsc(BookEntity book, MemberEntity member);
+
+  List<BookBorrowEntity> findByMember(MemberEntity memberEntity);
 }

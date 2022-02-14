@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.dto.result.OtherMemberInfoResult;
+import keeper.project.homepage.entity.attendance.AttendanceEntity;
+import keeper.project.homepage.entity.library.BookBorrowEntity;
 import keeper.project.homepage.entity.member.FriendEntity;
 import keeper.project.homepage.dto.request.PointTransferRequest;
 import keeper.project.homepage.dto.result.PointTransferResult;
@@ -15,11 +17,14 @@ import keeper.project.homepage.entity.member.MemberHasPostingDislikeEntity;
 import keeper.project.homepage.entity.member.MemberHasPostingLikeEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.exception.member.CustomAccountDeleteFailedException;
 import keeper.project.homepage.exception.member.CustomMemberDuplicateException;
 import keeper.project.homepage.exception.member.CustomMemberEmptyFieldException;
 import keeper.project.homepage.exception.member.CustomMemberInfoNotFoundException;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.exception.CustomTransferPointLackException;
+import keeper.project.homepage.repository.attendance.AttendanceRepository;
+import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.member.FriendRepository;
 import java.util.ArrayList;
 import java.util.Random;
@@ -81,6 +86,8 @@ public class MemberService {
   private final PostingRepository postingRepository;
   private final MemberHasPostingLikeRepository memberHasPostingLikeRepository;
   private final MemberHasPostingDislikeRepository memberHasPostingDislikeRepository;
+  private final AttendanceRepository attendanceRepository;
+  private final BookBorrowRepository bookBorrowRepository;
 
   private final ThumbnailService thumbnailService;
   private final FileService fileService;
@@ -503,19 +510,39 @@ public class MemberService {
   public void deleteAccount(Long memberId) {
     // 비밀번호 인증
     // 동아리 물품, 책 미납한 기록 있으면 불가능
+  public void deleteAttendance(MemberEntity member) {
+    List<AttendanceEntity> attendances = attendanceRepository.findAllByMemberId(member);
+    attendanceRepository.deleteAll(attendances);
+  }
+
+  public void checkRemainBorrowInfo(MemberEntity member) {
+    List<BookBorrowEntity> bookBorrow = bookBorrowRepository.findByMember(member);
+    boolean remainBorrowInfo = false;
+    if (bookBorrow.isEmpty() == false) {
+      remainBorrowInfo = true;
+    }
+    // TODO : equipment_borrow_info 추가하기
+    if (remainBorrowInfo) {
+      throw new CustomAccountDeleteFailedException("미납한 대여 기록이 남아있어 회원 탈퇴에 실패했습니다.");
+    }
+  }
+
 
     MemberEntity deleted = findById(memberId);
+    // 동아리 물품, 책 미납한 기록 있으면 불가능
+    checkRemainBorrowInfo(deleted);
     decreaseCommentsLike(deleted);
     decreaseCommentsDislike(deleted);
     decreasePostingsLike(deleted);
     decreasePostingsDislike(deleted);
     deleteThumbnail(deleted);
+    deleteAttendance(deleted);
+    // TODO : point_log 삭제 추가
 
     MemberEntity virtualMember = findById(VIRTUAL_MEMBER_ID);
     commentChangeToVirtualMember(virtualMember, deleted);
     postingChangeToVirtualMember(virtualMember, deleted);
 
-    // TODO : attendance 삭제, point_log 삭제
     deleteMember(deleted);
   }
 }
