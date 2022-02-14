@@ -14,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import keeper.project.homepage.dto.posting.CategoryDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,4 +44,8 @@ public class CategoryEntity {
   @OneToMany(mappedBy = "parentId")
   private List<CategoryEntity> children = new ArrayList<>();
 
+  public void updateInfo(CategoryDto categoryDto) {
+    this.name = categoryDto.getName();
+    this.parentId = categoryDto.getParentId();
+  }
 }
