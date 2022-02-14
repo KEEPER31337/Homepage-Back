@@ -48,7 +48,7 @@ public class PostingDto {
         .registerTime(registerTime).updateTime(updateTime).ipAddress(ipAddress)
         .allowComment(allowComment).isNotice(isNotice).isSecret(isSecret).isTemp(isTemp)
         .password(password).categoryId(categoryEntity).memberId(memberEntity)
-        .thumbnailId(thumbnailEntity).build();
+        .thumbnail(thumbnailEntity).build();
   }
 
   public static PostingDto create(PostingEntity postingEntity) {

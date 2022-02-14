@@ -132,7 +132,7 @@ public class CommentServiceTest {
         .likeCount(likeCount)
         .dislikeCount(dislikeCount)
         .parentId(0L)
-        .memberId(memberEntity)
+        .member(memberEntity)
         .postingId(postingEntity)
         .build());
 
@@ -144,7 +144,7 @@ public class CommentServiceTest {
         .likeCount(likeCount)
         .dislikeCount(dislikeCount)
         .parentId(parentComment.getId())
-        .memberId(memberEntity)
+        .member(memberEntity)
         .postingId(postingEntity)
         .build());
 

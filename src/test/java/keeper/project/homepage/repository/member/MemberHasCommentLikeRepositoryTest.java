@@ -2,7 +2,6 @@ package keeper.project.homepage.repository.member;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -14,8 +13,6 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasCommentEntityPK;
 import keeper.project.homepage.entity.member.MemberHasCommentLikeEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
-import keeper.project.homepage.repository.member.MemberHasCommentLikeRepository;
-import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.repository.posting.PostingRepository;
@@ -125,7 +122,7 @@ public class MemberHasCommentLikeRepositoryTest {
         .likeCount(likeCount)
         .dislikeCount(dislikeCount)
         .parentId(0L)
-        .memberId(memberEntity)
+        .member(memberEntity)
         .postingId(posting)
         .build());
 
@@ -137,7 +134,7 @@ public class MemberHasCommentLikeRepositoryTest {
         .likeCount(likeCount)
         .dislikeCount(dislikeCount)
         .parentId(parentComment.getId())
-        .memberId(memberEntity)
+        .member(memberEntity)
         .postingId(posting)
         .build());
 

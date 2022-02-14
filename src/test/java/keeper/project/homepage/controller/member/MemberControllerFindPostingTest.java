@@ -189,6 +189,7 @@ public class MemberControllerFindPostingTest extends MemberControllerTestSetup {
         ));
   }
 
+  /* FIXME 정채원 고태영
   @Test
   @DisplayName("자신이 임시저장한 게시글 조회하기")
   public void findAllTempPostingById() throws Exception {
@@ -209,6 +210,7 @@ public class MemberControllerFindPostingTest extends MemberControllerTestSetup {
             generatePostingListResponseField("", docCode, docMsg)
         ));
   }
+  */
 
   @Test
   @DisplayName("자신이 작성한 게시글 하나 조회하기")
@@ -234,8 +236,7 @@ public class MemberControllerFindPostingTest extends MemberControllerTestSetup {
 
     mockMvc.perform(get("/v1/post/{pid}", postId)
             .header("Authorization", userToken)
-            .param("page", "0")
-            .param("size", "5"))
+            .param("password", "asd"))
         .andDo(print())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-1))

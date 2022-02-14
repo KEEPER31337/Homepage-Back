@@ -32,6 +32,7 @@ public class MemberControllerTestSetup extends ApiControllerTestSetUp {
         fieldWithPath("data.registerDate").description("가입 날짜"),
         fieldWithPath("data.point").description("포인트 점수"),
         fieldWithPath("data.level").description("레벨"),
+        fieldWithPath("data.thumbnailId").description("회원의 썸네일 이미지 아이디"),
         fieldWithPath("data.rank").description("회원 등급: null, 우수회원, 일반회원"),
         fieldWithPath("data.type").description("회원 상태: null, 비회원, 정회원, 휴면회원, 졸업회원, 탈퇴"),
         fieldWithPath("data.jobs").description(
@@ -57,6 +58,7 @@ public class MemberControllerTestSetup extends ApiControllerTestSetUp {
         fieldWithPath("list[].registerDate").description("가입 날짜"),
         fieldWithPath("list[].point").description("포인트 점수"),
         fieldWithPath("list[].level").description("레벨"),
+        fieldWithPath("list[].thumbnailId").description("회원의 썸네일 이미지 아이디"),
         fieldWithPath("list[].rank").description("회원 등급: null, 우수회원, 일반회원"),
         fieldWithPath("list[].type").description("회원 상태: null, 비회원, 정회원, 휴면회원, 졸업회원, 탈퇴"),
         fieldWithPath("list[].jobs").description(
