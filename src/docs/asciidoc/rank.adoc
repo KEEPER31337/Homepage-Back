@@ -15,42 +15,28 @@ endif::[]
 :sectlinks:
 // section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
 
-== *유틸리티*
+== API 목록
 
-link:util.html[API 문서 보기]
+link:keeper.html[API 목록으로 돌아가기]
 
-== *회원가입*
+== 게시글 생성
 
-link:signup.html[API 문서 보기]
+=== 요청
 
-== *로그인*
+==== Request
 
-link:signin.html[API 문서 보기]
+include::{snippets}/rank-list/http-request.adoc[]
 
-== *도서관리*
+==== Request Parameters
 
-link:bookmanage.html[API 문서 보기]
+include::{snippets}/rank-list/request-parameters.adoc[]
 
-== *게시판*
+=== 응답
 
-link:posting.html[API 문서 보기]
+==== Response Body
 
-== *댓글*
+include::{snippets}/rank-list/response-body.adoc[]
 
-link:comment.html[API 문서 보기]
+==== Response Fields
 
-== *회원 관리*
-
-link:member.html[API 문서 보기]
-
-== *출석*
-
-link:attendance.html[API 문서 보기]
-
-== *도서관*
-
-link:librarymain.html[API 문서 보기]
-
-== *랭킹*
-
-link:rank.html[API 문서 보기]
+include::{snippets}/rank-list/response-fields.adoc[]
