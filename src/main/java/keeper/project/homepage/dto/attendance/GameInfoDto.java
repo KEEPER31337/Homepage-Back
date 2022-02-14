@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GameInfoDto {
 
+  public static final Integer DICE_BET_MAX = 1000;
   public static final Integer ROULETTE_FEE = 100;
   public static final List<Integer> ROULETTE_LIST = List.of(0, 50, 50, 100, 100, 500, 100, 500, 500,
       1000, 500, 1000, 500,

@@ -185,6 +185,7 @@ public class GameControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
                 fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
                 fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
+                fieldWithPath("data.DICE_BET_MAX").description("주사위 게임 최대 베팅 금액"),
                 fieldWithPath("data.ROULETTE_FEE").description("룰렛 참가 비용"),
                 fieldWithPath("data.ROULETTE_LIST").description("룰렛 당첨액 뽑히는 리스트"),
                 fieldWithPath("data.LOTTO_FEE").description("로또 참가 비용"),

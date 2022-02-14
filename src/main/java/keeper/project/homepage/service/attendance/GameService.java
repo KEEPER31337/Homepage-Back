@@ -36,7 +36,11 @@ public class GameService {
   }
 
   @Transactional
-  public void playDiceGame(Integer bettingPoint) {
+  public boolean playDiceGame(Integer bettingPoint) {
+
+    if (bettingPoint > DICE_BET_MAX) {
+      return false;
+    }
 
     MemberEntity memberEntity = getMemberEntityWithJWT();
     GameEntity gameEntity = getOrResetGameEntity();
@@ -45,9 +49,14 @@ public class GameService {
     gameRepository.save(gameEntity);
     memberEntity.updatePoint(memberEntity.getPoint() - bettingPoint);
     memberRepository.save(memberEntity);
+    return true;
   }
 
-  public void saveDiceGame(Integer result, Integer bettingPoint) {
+  public boolean saveDiceGame(Integer result, Integer bettingPoint) {
+
+    if (bettingPoint > DICE_BET_MAX) {
+      return false;
+    }
 
     MemberEntity memberEntity = getMemberEntityWithJWT();
     int updatePoint = 0;
@@ -58,6 +67,7 @@ public class GameService {
     }
     memberEntity.updatePoint(memberEntity.getPoint() + updatePoint);
     memberRepository.save(memberEntity);
+    return true;
   }
 
   @Transactional
@@ -86,6 +96,7 @@ public class GameService {
   }
 
   public int getRandomPoint(int start, int end) {
+    // 마지막 범위 1000~5000은 둘다 닫힌구간이기에 필요한 계산식
     if (end == 5000) {
       end += 1000;
     }

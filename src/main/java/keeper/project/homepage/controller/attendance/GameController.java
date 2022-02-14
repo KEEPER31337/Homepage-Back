@@ -34,8 +34,8 @@ public class GameController {
   @GetMapping(value = "/dice/play")
   public CommonResult playDice(@RequestParam("bet") Integer bettingPoint) {
 
-    gameService.playDiceGame(bettingPoint);
-    return responseService.getSuccessResult();
+    boolean ret = gameService.playDiceGame(bettingPoint);
+    return ret ? responseService.getSuccessResult() : responseService.getFailResult(-1, "베팅 금액이 1000을 초과하였습니다.");
   }
 
   @Secured("ROLE_회원")
@@ -43,8 +43,8 @@ public class GameController {
   public CommonResult saveResult(@RequestParam("result") Integer result,
       @RequestParam("bet") Integer bettingPoint) {
 
-    gameService.saveDiceGame(result, bettingPoint);
-    return responseService.getSuccessResult();
+    boolean ret = gameService.saveDiceGame(result, bettingPoint);
+    return ret ? responseService.getSuccessResult() : responseService.getFailResult(-1, "베팅 금액이 1000을 초과하였습니다.");
   }
 
   @Secured("ROLE_회원")
