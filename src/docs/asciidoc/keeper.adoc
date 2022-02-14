@@ -50,3 +50,7 @@ link:attendance.html[API 문서 보기]
 == *도서관*
 
 link:librarymain.html[API 문서 보기]
+
+== *게임*
+
+link:game.html[API 문서 보기]

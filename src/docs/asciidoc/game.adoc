@@ -1,0 +1,244 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+// 자동으로 생성된 snippet 설정하는 부분
+
+= KEEPER API 문서
+:icons: font
+// NOTE, TIP, WARNING, CAUTION, IMPORTANT 같은 경고구들 아이콘화 해줌
+:source-highlighter: highlight.js
+// source code 블럭에서 사용되는 highlighter 설정, 4개 정도 있던데 차이를 아직 잘 모르겠음.
+:toc: left
+// table of contents(toc) 왼쪽정렬하여 생성
+:toclevels: 3
+// default : 2 (==,  ===) 까지 toc에 보여줌.
+:sectlinks:
+// section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
+
+== API 목록
+
+link:keeper.html[API 목록으로 돌아가기]
+
+== 하루 주사위 게임 한 횟수
+
+=== 요청
+
+==== Request
+
+include::{snippets}/game-diceInfo/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/game-diceInfo/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/game-diceInfo/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/game-diceInfo/response-fields.adoc[]
+
+== 하루 주사위 게임 한 횟수 증가
+
+=== 요청
+
+==== Request
+
+include::{snippets}/game-dicePlay/http-request.adoc[]
+
+==== Request Parameters
+
+include::{snippets}/game-dicePlay/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/game-dicePlay/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/game-dicePlay/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/game-dicePlay/response-fields.adoc[]
+
+== 주사위 집계
+
+=== 요청
+
+==== Request
+
+include::{snippets}/game-diceSave/http-request.adoc[]
+
+==== Request Parameters
+
+include::{snippets}/game-diceSave/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/game-diceSave/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/game-diceSave/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/game-diceSave/response-fields.adoc[]
+
+== 주사위 게임 횟수 제한
+
+=== 요청
+
+==== Request
+
+include::{snippets}/game-diceValid/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/game-diceValid/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/game-diceValid/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/game-diceValid/response-fields.adoc[]
+
+== 룰렛
+
+=== 요청
+
+==== Request
+
+include::{snippets}/game-roulettePlay/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/game-roulettePlay/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/game-roulettePlay/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/game-roulettePlay/response-fields.adoc[]
+
+== 룰렛 게임 횟수 제한
+
+=== 요청
+
+==== Request
+
+include::{snippets}/game-rouletteValid/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/game-rouletteValid/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/game-rouletteValid/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/game-rouletteValid/response-fields.adoc[]
+
+== 하루 로또한 횟수
+
+=== 요청
+
+==== Request
+
+include::{snippets}/game-lottoInfo/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/game-lottoInfo/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/game-lottoInfo/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/game-lottoInfo/response-fields.adoc[]
+
+== 로또 게임 결과
+
+=== 요청
+
+==== Request
+
+include::{snippets}/game-lottoPlay/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/game-lottoPlay/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/game-lottoPlay/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/game-lottoPlay/response-fields.adoc[]
+
+== 로또 게임 횟수 제한
+
+=== 요청
+
+==== Request
+
+include::{snippets}/game-lottoValid/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/game-lottoValid/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/game-lottoValid/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/game-lottoValid/response-fields.adoc[]
+
+== 게임 정보 불러오기
+
+=== 요청
+
+==== Request
+
+include::{snippets}/game-getInfo/http-request.adoc[]
+
+=== 응답
+
+==== Response Body
+
+include::{snippets}/game-getInfo/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/game-getInfo/response-fields.adoc[]
