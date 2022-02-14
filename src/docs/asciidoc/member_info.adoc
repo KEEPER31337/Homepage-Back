@@ -100,3 +100,25 @@ include::{snippets}/friend-show-follower/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/friend-show-follower/response-fields.adoc[]
+
+== *회원 탈퇴*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/member-delete/http-request.adoc[]
+
+==== Request Parameters
+
+include::{snippets}/member-delete/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/member-delete/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/member-delete/response-fields.adoc[]

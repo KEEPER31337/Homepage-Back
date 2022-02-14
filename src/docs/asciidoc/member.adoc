@@ -19,8 +19,8 @@ endif::[]
 
 link:keeper.html[API 목록으로 돌아가기]
 
-link:member_info.html[회원 정보 조회 API]
-
 link:member_update.html[회원 정보 수정 API]
 
 link:member_posting.html[작성한 게시글 관리 API]
+
+link:member_info.html[회원 정보 조회 및 기타 API]
