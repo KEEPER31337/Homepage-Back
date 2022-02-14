@@ -58,6 +58,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class MemberServiceTestSetup {
 
+  // repository
   @Autowired
   public MemberRepository memberRepository;
 
@@ -65,13 +66,7 @@ public class MemberServiceTestSetup {
   public MemberJobRepository memberJobRepository;
 
   @Autowired
-  public MemberService memberService;
-
-  @Autowired
   public MemberHasMemberJobRepository memberHasMemberJobRepository;
-
-  @Autowired
-  public PasswordEncoder passwordEncoder;
 
   @Autowired
   public FriendRepository friendRepository;
@@ -93,12 +88,6 @@ public class MemberServiceTestSetup {
 
   @Autowired
   public CategoryRepository categoryRepository;
-
-  @Autowired
-  public CommentService commentService;
-
-  @Autowired
-  public PostingService postingService;
 
   @Autowired
   public MemberHasCommentLikeRepository memberHasCommentLikeRepository;
@@ -123,6 +112,23 @@ public class MemberServiceTestSetup {
 
   @Autowired
   public BookBorrowRepository bookBorrowRepository;
+
+  // service
+  @Autowired
+  public MemberService memberService;
+
+  @Autowired
+  public MemberDeleteService memberDeleteService;
+
+  @Autowired
+  public CommentService commentService;
+
+  @Autowired
+  public PostingService postingService;
+
+  // etc
+  @Autowired
+  public PasswordEncoder passwordEncoder;
 
   public MemberEntity virtualMember;
   public MemberEntity deletedMember;

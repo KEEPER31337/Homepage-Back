@@ -16,6 +16,7 @@ import keeper.project.homepage.dto.result.PointTransferResult;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.service.ResponseService;
+import keeper.project.homepage.service.member.MemberDeleteService;
 import keeper.project.homepage.service.member.MemberService;
 import keeper.project.homepage.service.posting.PostingService;
 import keeper.project.homepage.service.util.AuthService;
@@ -47,6 +48,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class MemberController {
 
   private final MemberService memberService;
+  private final MemberDeleteService memberDeleteService;
   private final ResponseService responseService;
   private final AuthService authService;
 
@@ -241,7 +243,7 @@ public class MemberController {
   public CommonResult deleteMember(@RequestParam("password") String password) {
     Long id = authService.getMemberIdByJWT();
 
-    memberService.deleteAccount(id, password);
+    memberDeleteService.deleteAccount(id, password);
 
     // 탈퇴 후 로그아웃 (세션 초기화)
     return responseService.getSuccessResult();

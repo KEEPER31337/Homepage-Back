@@ -56,7 +56,7 @@ public class MemberServiceTest extends MemberServiceTestSetup {
     // 삭제 전 연관관계 확인
     Assertions.assertTrue(deletedMember.getMemberJobs().contains(hasMemberJobEntity));
 
-    memberService.deleteMember(deletedMember);
+    memberDeleteService.deleteMember(deletedMember);
 
     // CascadeType.REMOVE - 삭제 후 하위 레코드까지 삭제 됐는지 확인
     Assertions.assertTrue(memberRepository.findById(deletedMember.getId()).isEmpty());
@@ -74,7 +74,7 @@ public class MemberServiceTest extends MemberServiceTestSetup {
     Assertions.assertTrue(follower.getFollowee().contains(follow));
 
     Integer befFolloweeCnt = follower.getFollowee().size();
-    memberService.deleteMember(followee);
+    memberDeleteService.deleteMember(followee);
 
     // CascadeType.REMOVE - 삭제 후 하위 레코드까지 삭제 됐는지 확인
     Assertions.assertTrue(memberRepository.findById(followee.getId()).isEmpty());
@@ -90,7 +90,7 @@ public class MemberServiceTest extends MemberServiceTestSetup {
   public void rankAndTypeRemoveTest() {
     generateRankAndTypeRemoveTestcase();
 
-    memberService.deleteMember(deletedMember);
+    memberDeleteService.deleteMember(deletedMember);
 
     Assertions.assertFalse(rank.getMembers().contains(deletedMember));
     Assertions.assertFalse(type.getMembers().contains(deletedMember));
@@ -102,8 +102,8 @@ public class MemberServiceTest extends MemberServiceTestSetup {
     generateCommentLikeRemoveTestcase();
     int likeCount = commentLikeTest.getLikeCount();
 
-    memberService.decreaseCommentsLike(deletedMember);
-    memberService.deleteMember(deletedMember);
+    memberDeleteService.decreaseCommentsLike(deletedMember);
+    memberDeleteService.deleteMember(deletedMember);
 
     Assertions.assertTrue(
         memberHasCommentLikeRepository.findById(mhcLike.getMemberHasCommentEntityPK())
@@ -118,8 +118,8 @@ public class MemberServiceTest extends MemberServiceTestSetup {
     generateCommentDislikeRemoveTestcase();
     int dislikeCount = commentDislikeTest.getDislikeCount();
 
-    memberService.decreaseCommentsDislike(deletedMember);
-    memberService.deleteMember(deletedMember);
+    memberDeleteService.decreaseCommentsDislike(deletedMember);
+    memberDeleteService.deleteMember(deletedMember);
 
     Assertions.assertTrue(
         memberHasCommentDislikeRepository.findById(
@@ -133,8 +133,8 @@ public class MemberServiceTest extends MemberServiceTestSetup {
   public void commentChangeToVirtualMemberTest() {
     generateCommentChangeToVirtualMemberTestcase();
 
-    memberService.commentChangeToVirtualMember(virtualMember, deletedMember);
-    memberService.deleteMember(deletedMember);
+    memberDeleteService.commentChangeToVirtualMember(virtualMember, deletedMember);
+    memberDeleteService.deleteMember(deletedMember);
 
     Assertions.assertTrue(updatedComment.getMember().equals(virtualMember));
   }
@@ -144,8 +144,8 @@ public class MemberServiceTest extends MemberServiceTestSetup {
   public void postingChangeToVirtualMemberTest() {
     generatePostingChangeToVirtualMemberTestcase();
 
-    memberService.postingChangeToVirtualMember(virtualMember, deletedMember);
-    memberService.deleteMember(deletedMember);
+    memberDeleteService.postingChangeToVirtualMember(virtualMember, deletedMember);
+    memberDeleteService.deleteMember(deletedMember);
 
     for (PostingEntity post : virtualTestPosts) {
       Assertions.assertTrue(post.getMemberId().equals(virtualMember));
@@ -157,8 +157,8 @@ public class MemberServiceTest extends MemberServiceTestSetup {
   public void tempPostingRemovedTest() {
     generateTempPostingRemovedTestcase();
 
-    memberService.postingChangeToVirtualMember(virtualMember, deletedMember);
-    memberService.deleteMember(deletedMember);
+    memberDeleteService.postingChangeToVirtualMember(virtualMember, deletedMember);
+    memberDeleteService.deleteMember(deletedMember);
 
     for (PostingEntity post : removeTestTempPosts) {
       Assertions.assertTrue(postingRepository.findById(post.getId()).isEmpty());
@@ -171,8 +171,8 @@ public class MemberServiceTest extends MemberServiceTestSetup {
     generatePostingLikeRemoveTestcase();
     int befLikeCount = postLikeTest.getLikeCount();
 
-    memberService.decreasePostingsLike(deletedMember);
-    memberService.deleteMember(deletedMember);
+    memberDeleteService.decreasePostingsLike(deletedMember);
+    memberDeleteService.deleteMember(deletedMember);
 
     Assertions.assertFalse(
         postingRepository.existsByMemberHasPostingLikeEntitiesContaining(mhpLike));
@@ -185,8 +185,8 @@ public class MemberServiceTest extends MemberServiceTestSetup {
     generatePostingDislikeRemoveTestcase();
     int befDislikeCount = postDislikeTest.getDislikeCount();
 
-    memberService.decreasePostingsDislike(deletedMember);
-    memberService.deleteMember(deletedMember);
+    memberDeleteService.decreasePostingsDislike(deletedMember);
+    memberDeleteService.deleteMember(deletedMember);
 
     Assertions.assertFalse(
         postingRepository.existsByMemberHasPostingDislikeEntitiesContaining(mhpDislike));
@@ -198,8 +198,8 @@ public class MemberServiceTest extends MemberServiceTestSetup {
   public void thumbnailRemoveTest() {
     generateThumbnailRemoveTestcase();
 
-    memberService.deleteThumbnail(deletedMember);
-    memberService.deleteMember(deletedMember);
+    memberDeleteService.deleteThumbnail(deletedMember);
+    memberDeleteService.deleteMember(deletedMember);
 
     Assertions.assertTrue(thumbnailRepository.findById(thumbnailRemoveTest.getId()).isEmpty());
     Assertions.assertTrue(fileRepository.findById(thumbnailRemoveTest.getFile().getId()).isEmpty());
@@ -217,8 +217,8 @@ public class MemberServiceTest extends MemberServiceTestSetup {
   public void attendanceRemoveTest() {
     generateAttendanceRemoveTestcase();
 
-    memberService.deleteAttendance(deletedMember);
-    memberService.deleteMember(deletedMember);
+    memberDeleteService.deleteAttendance(deletedMember);
+    memberDeleteService.deleteMember(deletedMember);
 
     Assertions.assertTrue(memberRepository.findById(deletedMember.getId()).isEmpty());
     Assertions.assertTrue(attendanceRepository.findById(attendance.getId()).isEmpty());
@@ -232,7 +232,7 @@ public class MemberServiceTest extends MemberServiceTestSetup {
     generateCheckRemainBorrowInfoTestcase();
 
     Assertions.assertThrows(CustomAccountDeleteFailedException.class, () -> {
-      memberService.checkRemainBorrowInfo(deletedMember);
+      memberDeleteService.checkRemainBorrowInfo(deletedMember);
     });
   }
 
@@ -243,7 +243,7 @@ public class MemberServiceTest extends MemberServiceTestSetup {
 
     bookBorrowRepository.delete(borrow);
     Assertions.assertDoesNotThrow(() -> {
-      memberService.checkRemainBorrowInfo(deletedMember);
+      memberDeleteService.checkRemainBorrowInfo(deletedMember);
     });
 
     Assertions.assertTrue(bookBorrowRepository.findByMember(deletedMember).isEmpty());
@@ -256,7 +256,7 @@ public class MemberServiceTest extends MemberServiceTestSetup {
 
     final String wrongPassword = "wrongpw";
     Assertions.assertThrows(CustomAccountDeleteFailedException.class, () -> {
-      memberService.checkCorrectPassword(deletedMember, wrongPassword);
+      memberDeleteService.checkCorrectPassword(deletedMember, wrongPassword);
     });
   }
 
@@ -267,7 +267,7 @@ public class MemberServiceTest extends MemberServiceTestSetup {
 
     final String correctPassword = "keeper1";
     Assertions.assertDoesNotThrow(() -> {
-      memberService.checkCorrectPassword(deletedMember, correctPassword);
+      memberDeleteService.checkCorrectPassword(deletedMember, correctPassword);
     });
   }
 }
