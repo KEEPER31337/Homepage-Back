@@ -59,12 +59,12 @@ public class ExceptionAdvice {
   }
 
   // code정보에 해당하는 메시지를 조회합니다.
-  private String getMessage(String code) {
+  public String getMessage(String code) {
     return getMessage(code, null);
   }
 
   // code정보, 추가 argument로 현재 locale에 맞는 메시지를 조회합니다.
-  private String getMessage(String code, Object[] args) {
+  public String getMessage(String code, Object[] args) {
     return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
   }
 
@@ -217,7 +217,7 @@ public class ExceptionAdvice {
 
   @ExceptionHandler(CustomMemberInfoNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  protected CommonResult CustomMemberInfoNotFoundException(HttpServletRequest request,
+  protected CommonResult memberInfoNotFoundException(HttpServletRequest request,
       CustomMemberInfoNotFoundException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(Integer.parseInt(getMessage("memberInfoNotFound.code")),
@@ -226,7 +226,7 @@ public class ExceptionAdvice {
 
   @ExceptionHandler(CustomMemberDuplicateException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult CustomMemberDuplicateException(HttpServletRequest request,
+  protected CommonResult memberDuplicateException(HttpServletRequest request,
       CustomMemberDuplicateException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(Integer.parseInt(getMessage("memberDuplicate.code")),
