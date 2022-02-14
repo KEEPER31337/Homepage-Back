@@ -6,12 +6,9 @@ import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.common.ImageCenterCrop;
 import keeper.project.homepage.dto.library.BookDto;
 import keeper.project.homepage.dto.result.CommonResult;
-<<<<<<< HEAD
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
-=======
 import keeper.project.homepage.dto.result.ListResult;
->>>>>>> 4c9a008226c4b116b98e7f0895b244cd145d175e
 import keeper.project.homepage.entity.library.BookBorrowEntity;
 import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.exception.CustomAboutFailedException;
@@ -53,17 +50,12 @@ public class BookManageController {
   private final AuthService authService;
   private final FileService fileService;
   private final ThumbnailService thumbnailService;
+  private final ResponseService responseService;
 
   @Secured({"ROLE_사서", "ROLE_회장"})
   @GetMapping(value = "/overduebooks")
-<<<<<<< HEAD
-  public ResponseEntity<List<BookBorrowEntity>> sendOverdueBooks(
-      @PageableDefault(size = 10, sort = "expireDate", direction = Direction.ASC)
-          Pageable pageable) {
-=======
   public ListResult<BookBorrowEntity> sendOverdueBooks(@PageableDefault(size = 10, sort = "expireDate", direction = Direction.ASC)
       Pageable pageable){
->>>>>>> 4c9a008226c4b116b98e7f0895b244cd145d175e
 
     return responseService.getSuccessListResult(bookManageService.sendOverdueBooks(pageable));
   }
