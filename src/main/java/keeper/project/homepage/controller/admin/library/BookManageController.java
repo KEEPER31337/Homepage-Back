@@ -1,4 +1,4 @@
-package keeper.project.homepage.controller.library;
+package keeper.project.homepage.controller.admin.library;
 
 import java.util.List;
 import javax.servlet.ServletRequest;
@@ -40,10 +40,11 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 
-@RequestMapping("/v1")
+@RequestMapping("/v1/admin")
 @RestController
 @RequiredArgsConstructor
 @Log4j2
+@Secured({"ROLE_사서", "ROLE_회장"})
 public class BookManageController {
 
   private final BookManageService bookManageService;
@@ -52,15 +53,14 @@ public class BookManageController {
   private final ThumbnailService thumbnailService;
   private final ResponseService responseService;
 
-  @Secured({"ROLE_사서", "ROLE_회장"})
   @GetMapping(value = "/overduebooks")
-  public ListResult<BookBorrowEntity> sendOverdueBooks(@PageableDefault(size = 10, sort = "expireDate", direction = Direction.ASC)
-      Pageable pageable){
+  public ListResult<BookBorrowEntity> sendOverdueBooks(
+      @PageableDefault(size = 10, sort = "expireDate", direction = Direction.ASC)
+          Pageable pageable) {
 
     return responseService.getSuccessListResult(bookManageService.sendOverdueBooks(pageable));
   }
 
-  @Secured({"ROLE_사서", "ROLE_회장"})
   @PostMapping(value = "/addbook", consumes = "multipart/form-data", produces = {
       MediaType.TEXT_PLAIN_VALUE})
   public CommonResult add(
@@ -87,7 +87,6 @@ public class BookManageController {
     return bookManageService.doAdd(bookDto, thumbnail, ip);
   }
 
-  @Secured({"ROLE_사서", "ROLE_회장"})
   @PostMapping(value = "/deletebook")
   public CommonResult delete(@RequestParam String title, @RequestParam String author,
       @RequestParam Long quantity) {
@@ -96,7 +95,6 @@ public class BookManageController {
 
   }
 
-  @Secured({"ROLE_사서", "ROLE_회장"})
   @PostMapping(value = "/borrowbook")
   public CommonResult borrow(
       @RequestParam String title,
@@ -107,7 +105,6 @@ public class BookManageController {
     return bookManageService.doBorrow(title, author, borrowMemberId, quantity);
   }
 
-  @Secured({"ROLE_사서", "ROLE_회장"})
   @PostMapping(value = "/returnbook")
   public CommonResult returnBook(
       @RequestParam String title,
