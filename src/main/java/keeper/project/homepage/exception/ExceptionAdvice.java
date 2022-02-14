@@ -265,4 +265,13 @@ public class ExceptionAdvice {
     return responseService.getFailResult(Integer.parseInt(getMessage("bookBorrowNotFound.code")),
         getMessage("bookBorrowNotFound.msg"));
   }
+
+  @ExceptionHandler(CustomPointLogRequestNullException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected CommonResult pointLogRequestNullException(HttpServletRequest request,
+      CustomPointLogRequestNullException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(Integer.parseInt(getMessage("pointLogRequestNullException.code")),
+        getMessage("pointLogRequestNullException.msg"));
+  }
 }
