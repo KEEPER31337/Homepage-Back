@@ -5,8 +5,9 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -43,7 +44,7 @@ public class CategoryControllerTest extends ApiControllerTestSetUp {
 
   private String adminToken;
 
-  final private String rootName = "root";
+  final private String rootName = "root_1";
   final private Long parentId = 0L;
 
   final private String childName = "child";
@@ -128,12 +129,12 @@ public class CategoryControllerTest extends ApiControllerTestSetUp {
         .andDo(print())
         .andDo(document("categories-getByParentId",
             pathParameters(
-                parameterWithName("parentId").description("찾고자 하는 카테고리의 이름(최상위 카테고리 = 0)")
+                parameterWithName("parentId").description("찾고자 하는 카테고리의 ID(최상위 카테고리 = 0)")
             ),
-            relaxedResponseFields(
+            responseFields(
                 fieldWithPath("[].id").description("카테고리 ID"),
                 fieldWithPath("[].name").description("카테고리 이름"),
-                fieldWithPath("[].children[]").description("하위 카테고리 리스트")
+                subsectionWithPath("[].children[]").description("하위 카테고리 리스트")
             )
         ));
   }
@@ -150,10 +151,10 @@ public class CategoryControllerTest extends ApiControllerTestSetUp {
             pathParameters(
                 parameterWithName("name").description("찾고자 하는 카테고리의 이름")
             ),
-            relaxedResponseFields(
+            responseFields(
                 fieldWithPath("[].id").description("카테고리 ID"),
                 fieldWithPath("[].name").description("카테고리 이름"),
-                fieldWithPath("[].children[]").description("하위 카테고리 리스트")
+                subsectionWithPath("[].children[]").description("하위 카테고리 리스트")
             )
         ));
   }
@@ -179,11 +180,13 @@ public class CategoryControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("name").description("생성하고자 하는 카테고리 이름"),
                 fieldWithPath("parentId").description("생성하는 카테고리의 상위 카테고리 지정(존재하지 않으면 0으로 지정)")
             ),
-            relaxedResponseFields(
+            responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("data").description("생성된 카테고리 정보 반환")
+                fieldWithPath("data.id").description("생성된 카테고리 ID"),
+                fieldWithPath("data.name").description("생성된 카테고리 이름"),
+                subsectionWithPath("data.children[]").description("하위 카테고리 리스트")
             )));
   }
 
@@ -266,11 +269,13 @@ public class CategoryControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("name").description("수정을 원하는 카테고리 이름(변하지 않는 경우 기존의 값 전달)"),
                 fieldWithPath("parentId").description("수정을 원하는 상위 카테고리 ID(존재하지 않으면 0, 수정을 원하지 않으면 기존의 값 전달)")
             ),
-            relaxedResponseFields(
+            responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("data").description("수정된 카테고리 정보 반환")
+                fieldWithPath("data.id").description("수정된 카테고리 ID"),
+                fieldWithPath("data.name").description("수정된 카테고리 이름"),
+                subsectionWithPath("data.children[]").description("하위 카테고리 리스트")
             )));
   }
 
@@ -343,11 +348,13 @@ public class CategoryControllerTest extends ApiControllerTestSetUp {
             pathParameters(
                 parameterWithName("id").description("삭제를 원하는 카테고리의 ID")
             ),
-            relaxedResponseFields(
+            responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("data").description("삭제된 카테고리 정보 반환")
+                fieldWithPath("data.id").description("삭제된 카테고리 ID"),
+                fieldWithPath("data.name").description("삭제된 카테고리 이름"),
+                subsectionWithPath("data.children[]").description("하위 카테고리 리스트")
             )));
 
   }
