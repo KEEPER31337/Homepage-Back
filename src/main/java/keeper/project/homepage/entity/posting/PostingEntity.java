@@ -85,7 +85,7 @@ public class PostingEntity {
   @JoinColumn(name = "category_id")
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private CategoryEntity categoryId;
-  @OneToOne(targetEntity = ThumbnailEntity.class, fetch = FetchType.LAZY)
+  @OneToOne
   @JoinColumn(name = "thumbnail_id")
   private ThumbnailEntity thumbnail;
   @OneToMany(cascade = CascadeType.ALL, targetEntity = MemberHasPostingLikeEntity.class, mappedBy = "postingId", orphanRemoval = true, fetch = FetchType.LAZY)
