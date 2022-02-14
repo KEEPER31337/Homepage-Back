@@ -238,10 +238,10 @@ public class MemberController {
 
   @Secured("ROLE_회원")
   @DeleteMapping("/member/delete")
-  public CommonResult deleteMember() {
+  public CommonResult deleteMember(@RequestParam("password") String password) {
     Long id = authService.getMemberIdByJWT();
 
-    memberService.deleteAccount(id);
+    memberService.deleteAccount(id, password);
 
     // 탈퇴 후 로그아웃 (세션 초기화)
     return responseService.getSuccessResult();

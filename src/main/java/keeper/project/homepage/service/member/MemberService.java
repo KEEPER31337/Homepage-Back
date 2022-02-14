@@ -57,12 +57,14 @@ import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.ThumbnailService;
 import keeper.project.homepage.service.mail.MailService;
 import keeper.project.homepage.service.posting.PostingService;
+import keeper.project.homepage.service.sign.CustomPasswordService;
 import keeper.project.homepage.service.sign.DuplicateCheckService;
 import lombok.RequiredArgsConstructor;
 import keeper.project.homepage.dto.posting.PostingDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -88,6 +90,8 @@ public class MemberService {
   private final MemberHasPostingDislikeRepository memberHasPostingDislikeRepository;
   private final AttendanceRepository attendanceRepository;
   private final BookBorrowRepository bookBorrowRepository;
+  private final PasswordEncoder passwordEncoder;
+  private final CustomPasswordService customPasswordService;
 
   private final ThumbnailService thumbnailService;
   private final FileService fileService;
@@ -507,9 +511,6 @@ public class MemberService {
     thumbnailService.deleteById(deleteThumbnail.getId());
   }
 
-  public void deleteAccount(Long memberId) {
-    // 비밀번호 인증
-    // 동아리 물품, 책 미납한 기록 있으면 불가능
   public void deleteAttendance(MemberEntity member) {
     List<AttendanceEntity> attendances = attendanceRepository.findAllByMemberId(member);
     attendanceRepository.deleteAll(attendances);
@@ -527,10 +528,28 @@ public class MemberService {
     }
   }
 
+  // FIXME : SignInService와 겹치는 메소드
+  private boolean passwordMatches(String password, String hashedPassword) {
+    return passwordEncoder.matches(password, hashedPassword)
+        || customPasswordService.checkPasswordWithPBKDF2SHA256(password, hashedPassword)
+        || customPasswordService.checkPasswordWithMD5(password, hashedPassword);
+  }
 
+  public void checkCorrectPassword(MemberEntity member, String password) {
+    String hashedPassword = member.getPassword();
+    if (!passwordMatches(password, hashedPassword)) {
+      throw new CustomAccountDeleteFailedException("비밀번호가 일치하지 않습니다.");
+    }
+  }
+
+  public void deleteAccount(Long memberId, String password) {
     MemberEntity deleted = findById(memberId);
     // 동아리 물품, 책 미납한 기록 있으면 불가능
     checkRemainBorrowInfo(deleted);
+
+    // 비밀번호 인증
+    checkCorrectPassword(deleted, password);
+
     decreaseCommentsLike(deleted);
     decreaseCommentsDislike(deleted);
     decreasePostingsLike(deleted);
