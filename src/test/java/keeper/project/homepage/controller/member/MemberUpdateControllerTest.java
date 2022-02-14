@@ -219,31 +219,6 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
     adminToken = adminSign.getData().getToken();
   }
 
-//  public ResponseFieldsSnippet generateMemberCommonResponseField(
-//      String success, String code, String msg, FieldDescriptor... addDescriptors) {
-//    List<FieldDescriptor> commonFields = new ArrayList<>();
-//    commonFields.addAll(Arrays.asList(
-//        fieldWithPath("success").description(success),
-//        fieldWithPath("code").description(code),
-//        fieldWithPath("msg").description(msg),
-//        fieldWithPath("data.id").description("아이디"),
-//        fieldWithPath("data.emailAddress").description("이메일 주소"),
-//        fieldWithPath("data.nickName").description("닉네임"),
-//        fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
-//        fieldWithPath("data.registerDate").description("가입 날짜"),
-//        fieldWithPath("data.point").description("포인트 점수"),
-//        fieldWithPath("data.level").description("레벨"),
-//        fieldWithPath("data.rank").description("회원 등급: null, 우수회원, 일반회원]"),
-//        fieldWithPath("data.type").description("회원 상태: null, 비회원, 정회원, 휴면회원, 졸업회원, 탈퇴]"),
-//        fieldWithPath("data.jobs").description(
-//            "동아리 직책: null, ROLE_회장, ROLE_부회장, ROLE_대외부장, ROLE_학술부장, ROLE_전산관리자, ROLE_서기, ROLE_총무, ROLE_사서"))
-//    );
-//    if (addDescriptors.length > 0) {
-//      commonFields.addAll(Arrays.asList(addDescriptors));
-//    }
-//    return responseFields(commonFields);
-//  }
-
   @Test
   @DisplayName("Admin 권한으로 회원 등급 변경하기")
   public void updateRank() throws Exception {
