@@ -1,121 +1,27 @@
 package keeper.project.homepage.service.member;
 
-import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
+import java.io.File;
 import java.util.Optional;
-import java.util.Random;
-import keeper.project.homepage.entity.attendance.AttendanceEntity;
-import keeper.project.homepage.entity.member.FriendEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberHasCommentEntityPK;
-import keeper.project.homepage.entity.member.MemberHasCommentLikeEntity;
-import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
-import keeper.project.homepage.entity.member.MemberJobEntity;
-import keeper.project.homepage.entity.member.MemberRankEntity;
-import keeper.project.homepage.entity.member.MemberTypeEntity;
-import keeper.project.homepage.entity.posting.CategoryEntity;
-import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
-import keeper.project.homepage.repository.attendance.AttendanceRepository;
-import keeper.project.homepage.repository.member.FriendRepository;
-import keeper.project.homepage.repository.member.MemberHasCommentLikeRepository;
-import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
-import keeper.project.homepage.repository.member.MemberJobRepository;
-import keeper.project.homepage.repository.member.MemberRankRepository;
-import keeper.project.homepage.repository.member.MemberRepository;
-import keeper.project.homepage.repository.member.MemberTypeRepository;
-import keeper.project.homepage.repository.posting.CategoryRepository;
-import keeper.project.homepage.repository.posting.CommentRepository;
-import keeper.project.homepage.repository.posting.PostingRepository;
-import keeper.project.homepage.service.posting.CommentService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Transactional
-public class MemberServiceTest {
-
-  @Autowired
-  private MemberRepository memberRepository;
-
-  @Autowired
-  private MemberJobRepository memberJobRepository;
-
-  @Autowired
-  private MemberService memberService;
-
-  @Autowired
-  private MemberHasMemberJobRepository memberHasMemberJobRepository;
-
-  @Autowired
-  private PasswordEncoder passwordEncoder;
-
-  @Autowired
-  private FriendRepository friendRepository;
-
-  @Autowired
-  private AttendanceRepository attendanceRepository;
-
-  @Autowired
-  private MemberRankRepository memberRankRepository;
-
-  @Autowired
-  private MemberTypeRepository memberTypeRepository;
-
-  @Autowired
-  private CommentRepository commentRepository;
-
-  @Autowired
-  private PostingRepository postingRepository;
-
-  @Autowired
-  private CategoryRepository categoryRepository;
-
-  @Autowired
-  private CommentService commentService;
-
-  @Autowired
-  private MemberHasCommentLikeRepository memberHasCommentLikeRepository;
-
-  private MemberEntity jobTest;
-  private MemberHasMemberJobEntity hasMemberJobEntity;
-
-  private MemberEntity follower;
-  private MemberEntity followee;
-  private FriendEntity follow;
-
-  private MemberEntity rankAndTypeTest;
-  private MemberRankEntity rank;
-  private MemberTypeEntity type;
-
-  private MemberEntity attendanceTest;
-  private AttendanceEntity attendance;
-
-  private MemberEntity commentLikeTestMember;
-  private CommentEntity commentLike;
-  private MemberHasCommentLikeEntity memberHasCommentLike;
-
-  final private String loginId = "hyeonmomo";
-  final private String password = "keeper";
-  final private String realName = "JeongHyeonMo";
-  final private String nickName = "JeongHyeonMo";
-  final private String emailAddress = "gusah@naver.com";
-  final private String studentId = "201724579";
+public class MemberServiceTest extends MemberServiceTestSetup {
 
   @BeforeEach
   public void setup() throws Exception {
-
+    virtualMember = memberRepository.findById(MemberService.VIRTUAL_MEMBER_ID).orElseThrow(null);
+    Assertions.assertNotNull(virtualMember, "id=1인 가상 멤버 레코드가 존재하지 않습니다.");
   }
 
   @Test
@@ -137,8 +43,8 @@ public class MemberServiceTest {
     Assertions.assertTrue(
         memberHasMemberJobRepository.findById(hasMemberJobEntity.getId()).isPresent());
     Assertions.assertTrue(
-        hasMemberJobEntity.getMemberEntity().getId().equals(jobTest.getId()));
-    Assertions.assertTrue(jobTest.getMemberJobs().contains(hasMemberJobEntity));
+        hasMemberJobEntity.getMemberEntity().getId().equals(deletedMember.getId()));
+    Assertions.assertTrue(deletedMember.getMemberJobs().contains(hasMemberJobEntity));
   }
 
   @Test
@@ -147,12 +53,12 @@ public class MemberServiceTest {
     generateJobCascadeRemoveTestcase();
 
     // 삭제 전 연관관계 확인
-    Assertions.assertTrue(jobTest.getMemberJobs().contains(hasMemberJobEntity));
+    Assertions.assertTrue(deletedMember.getMemberJobs().contains(hasMemberJobEntity));
 
-    memberService.deleteMember(jobTest);
+    memberService.deleteMember(deletedMember);
 
     // CascadeType.REMOVE - 삭제 후 하위 레코드까지 삭제 됐는지 확인
-    Assertions.assertTrue(memberRepository.findById(jobTest.getId()).isEmpty());
+    Assertions.assertTrue(memberRepository.findById(deletedMember.getId()).isEmpty());
     Assertions.assertTrue(
         memberHasMemberJobRepository.findById(hasMemberJobEntity.getId()).isEmpty());
   }
@@ -183,86 +89,128 @@ public class MemberServiceTest {
   public void rankAndTypeRemoveTest() {
     generateRankAndTypeRemoveTestcase();
 
-    memberService.deleteMember(rankAndTypeTest);
+    memberService.deleteMember(deletedMember);
 
-    Assertions.assertFalse(rank.getMembers().contains(rankAndTypeTest));
-    Assertions.assertFalse(type.getMembers().contains(rankAndTypeTest));
+    Assertions.assertFalse(rank.getMembers().contains(deletedMember));
+    Assertions.assertFalse(type.getMembers().contains(deletedMember));
   }
 
   @Test
   @DisplayName("회원 삭제 시, 댓글 좋아요 삭제 확인")
   public void commentLikeRemoveTest() {
     generateCommentLikeRemoveTestcase();
-    int likeCount = commentLike.getLikeCount();
+    int likeCount = commentLikeTest.getLikeCount();
 
-    memberService.decreaseCommentsLike(commentLikeTestMember);
+    memberService.decreaseCommentsLike(deletedMember);
+    memberService.deleteMember(deletedMember);
 
     Assertions.assertTrue(
-        memberHasCommentLikeRepository.findById(memberHasCommentLike.getMemberHasCommentEntityPK())
+        memberHasCommentLikeRepository.findById(mhcLike.getMemberHasCommentEntityPK())
             .isEmpty());
+    // 이건 자동으로 안 됨. comment 돌면서 수동으로 감해줘야 함.
+    Assertions.assertTrue(commentLikeTest.getLikeCount().equals(likeCount - 1));
+  }
+
+  @Test
+  @DisplayName("회원 삭제 시, 댓글 싫어요 삭제 확인")
+  public void commentDislikeRemoveTest() {
+    generateCommentDislikeRemoveTestcase();
+    int dislikeCount = commentDislikeTest.getDislikeCount();
+
+    memberService.decreaseCommentsDislike(deletedMember);
+    memberService.deleteMember(deletedMember);
+
     Assertions.assertTrue(
-        commentLike.getLikeCount().equals(likeCount - 1)); // 이건 자동으로 안 됨. comment 돌면서 수동으로 감해줘야 함.
+        memberHasCommentDislikeRepository.findById(
+            mhcDislike.getMemberHasCommentEntityPK()).isEmpty());
+    // 이건 자동으로 안 됨. comment 돌면서 수동으로 감해줘야 함.
+    Assertions.assertTrue(commentDislikeTest.getDislikeCount().equals(dislikeCount - 1));
   }
 
-  public void generateCommentLikeRemoveTestcase() {
-    commentLikeTestMember = generateMemberEntity(1);
-    MemberEntity writer = generateMemberEntity(2);
-    PostingEntity post = generatePostingEntity(1, writer);
-    commentLike = generateCommentEntity(1, writer, post);
-    commentService.updateLikeCount(commentLikeTestMember.getId(), commentLike.getId());
-    memberHasCommentLike = memberHasCommentLikeRepository.findById(
-        new MemberHasCommentEntityPK(commentLikeTestMember, commentLike)).orElse(null);
-    // 테스트 전 객체 생성 확인
-    Assertions.assertNotNull(memberHasCommentLike, "존재하지 않는 MemberHasCommentLikeEntity 입니다.");
+  @Test
+  @DisplayName("댓글의 작성자가 virtual member로 변경되었는지 확인")
+  public void commentChangeToVirtualMemberTest() {
+    generateCommentChangeToVirtualMemberTestcase();
+
+    memberService.commentChangeToVirtualMember(virtualMember, deletedMember);
+    memberService.deleteMember(deletedMember);
+
+    Assertions.assertTrue(updatedComment.getMemberId().equals(virtualMember));
   }
 
-  public PostingEntity generatePostingEntity(Integer numPreventDupl, MemberEntity memberEntity) {
-    CategoryEntity categoryEntity = categoryRepository.save(
-        CategoryEntity.builder()
-            .name("test category" + numPreventDupl)
-            .build());
-    return postingRepository.save(PostingEntity.builder()
-        .title("posting 제목" + numPreventDupl)
-        .content("posting 내용" + numPreventDupl)
-        .categoryId(categoryEntity)
-        .ipAddress("192.111.222.333")
-        .allowComment(0)
-        .isNotice(0)
-        .isSecret(1)
-        .isTemp(0)
-        .likeCount(10)
-        .dislikeCount(1)
-        .commentCount(0)
-        .visitCount(0)
-        .registerTime(new Date())
-        .updateTime(new Date())
-        .memberId(memberEntity)
-        .password("pw" + numPreventDupl)
-        .build());
+  @Test
+  @DisplayName("게시글의 작성자가 virtual member로 변경되었는지 확인")
+  public void postingChangeToVirtualMemberTest() {
+    generatePostingChangeToVirtualMemberTestcase();
+
+    memberService.postingChangeToVirtualMember(virtualMember, deletedMember);
+    memberService.deleteMember(deletedMember);
+
+    for (PostingEntity post : virtualTestPosts) {
+      Assertions.assertTrue(post.getMemberId().equals(virtualMember));
+    }
   }
 
-  public CommentEntity generateCommentEntity(Integer numPreventDupl, MemberEntity memberEntity,
-      PostingEntity postingEntity) {
-    return commentRepository.save(CommentEntity.builder()
-        .content("댓글 내용" + numPreventDupl)
-        .registerTime(LocalDate.now())
-        .updateTime(LocalDate.now())
-        .ipAddress("111.111.111.111")
-        .likeCount(0)
-        .dislikeCount(0)
-        .parentId(0L)
-        .memberId(memberEntity)
-        .postingId(postingEntity)
-        .build());
+  @Test
+  @DisplayName("임시저장 게시글이 삭제되었는지 확인")
+  public void tempPostingRemovedTest() {
+    generateTempPostingRemovedTestcase();
+
+    memberService.postingChangeToVirtualMember(virtualMember, deletedMember);
+    memberService.deleteMember(deletedMember);
+
+    for (PostingEntity post : removeTestTempPosts) {
+      Assertions.assertTrue(postingRepository.findById(post.getId()).isEmpty());
+    }
   }
 
-  public void generateRankAndTypeRemoveTestcase() {
-    rankAndTypeTest = generateMemberEntity(1);
-    rank = memberRankRepository.findByName("우수회원").get();
-    type = memberTypeRepository.findByName("정회원").get();
-    rankAndTypeTest.changeMemberRank(rank);
-    rankAndTypeTest.changeMemberType(type);
+  @Test
+  @DisplayName("회원 삭제 시, 게시글 좋아요 삭제 확인")
+  public void postingLikeRemoveTest() {
+    generatePostingLikeRemoveTestcase();
+    int befLikeCount = postLikeTest.getLikeCount();
+
+    memberService.decreasePostingsLike(deletedMember);
+    memberService.deleteMember(deletedMember);
+
+    Assertions.assertFalse(
+        postingRepository.existsByMemberHasPostingLikeEntitiesContaining(mhpLike));
+    Assertions.assertTrue(postLikeTest.getLikeCount().equals(befLikeCount - 1));
   }
+
+  @Test
+  @DisplayName("회원 삭제 시, 게시글 싫어요 삭제 확인")
+  public void postingDislikeRemoveTest() {
+    generatePostingDislikeRemoveTestcase();
+    int befDislikeCount = postDislikeTest.getDislikeCount();
+
+    memberService.decreasePostingsDislike(deletedMember);
+    memberService.deleteMember(deletedMember);
+
+    Assertions.assertFalse(
+        postingRepository.existsByMemberHasPostingDislikeEntitiesContaining(mhpDislike));
+    Assertions.assertTrue(postDislikeTest.getDislikeCount().equals(befDislikeCount - 1));
+  }
+
+  @Test
+  @DisplayName("회원 삭제 시, 썸네일 삭제 확인")
+  public void thumbnailRemoveTest() {
+    generateThumbnailRemoveTestcase();
+
+    memberService.deleteThumbnail(deletedMember);
+    memberService.deleteMember(deletedMember);
+
+    Assertions.assertTrue(thumbnailRepository.findById(thumbnailRemoveTest.getId()).isEmpty());
+    Assertions.assertTrue(fileRepository.findById(thumbnailRemoveTest.getFile().getId()).isEmpty());
+    File thumbnail = new File(
+        System.getProperty("user.dir") + File.separator + thumbnailRemoveTest.getPath());
+    File image = new File(
+        System.getProperty("user.dir") + File.separator + thumbnailRemoveTest.getFile()
+            .getFilePath());
+    Assertions.assertFalse(thumbnail.exists());
+    Assertions.assertFalse(image.exists());
+  }
+
   // TODO : attendance 양방향 연결 후 test 추가
 //  @Test
 //  public void attendanceCascadeRemoveTest() {
@@ -273,56 +221,5 @@ public class MemberServiceTest {
 //    Assertions.assertTrue(memberRepository.findById(attendanceTest.getId()).isEmpty());
 //    Assertions.assertTrue(attendanceRepository.findById(attendance.getId()).isEmpty());
 //  }
-
-  public MemberEntity generateMemberEntity(Integer preventDuplNum) {
-    return memberRepository.save(MemberEntity.builder()
-        .loginId(loginId + preventDuplNum.toString())
-        .password(passwordEncoder.encode(password + preventDuplNum.toString()))
-        .realName(realName + preventDuplNum.toString())
-        .nickName(nickName + preventDuplNum.toString())
-        .emailAddress(emailAddress + preventDuplNum.toString())
-        .studentId(studentId + preventDuplNum.toString())
-        .build());
-  }
-
-  public void generateJobCascadeRemoveTestcase() {
-    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
-    jobTest = generateMemberEntity(1);
-    hasMemberJobEntity = MemberHasMemberJobEntity.builder()
-        .memberEntity(jobTest)
-        .memberJobEntity(memberJobEntity)
-        .build();
-    memberHasMemberJobRepository.save(hasMemberJobEntity);
-    jobTest.getMemberJobs().add(hasMemberJobEntity);
-
-  }
-
-  public void generateFriendCascadeRemoveTestcase() {
-    follower = generateMemberEntity(2);
-    followee = generateMemberEntity(3);
-    follow = friendRepository.save(
-        FriendEntity.builder()
-            .follower(follower)
-            .followee(followee)
-            .registerDate(LocalDate.now())
-            .build());
-    follower.getFollowee().add(follow);
-    followee.getFollower().add(follow);
-  }
-
-  private void generateAttendanceCascadeRemoveTestcase() {
-    attendanceTest = generateMemberEntity(3);
-    Random random = new Random();
-    attendance = attendanceRepository.save(
-        AttendanceEntity.builder()
-            .point(10)
-            .continousDay(0)
-            .greetings("hi")
-            .ipAddress("111.111.111.111")
-            .time(Timestamp.valueOf(LocalDateTime.now()))
-            .memberId(attendanceTest)
-            .rank(3)
-            .randomPoint(random.nextInt(100, 1001)).build());
-  }
 
 }
