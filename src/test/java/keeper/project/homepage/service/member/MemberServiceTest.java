@@ -135,7 +135,7 @@ public class MemberServiceTest extends MemberServiceTestSetup {
     memberService.commentChangeToVirtualMember(virtualMember, deletedMember);
     memberService.deleteMember(deletedMember);
 
-    Assertions.assertTrue(updatedComment.getMemberId().equals(virtualMember));
+    Assertions.assertTrue(updatedComment.getMember().equals(virtualMember));
   }
 
   @Test

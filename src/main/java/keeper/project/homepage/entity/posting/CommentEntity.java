@@ -86,7 +86,7 @@ public class CommentEntity {
     this.updateTime = updateTime;
   }
 
-  public void changeMemberId(MemberEntity memberId) {
-    this.memberId = memberId;
+  public void changeMemberId(MemberEntity member) {
+    this.member = member;
   }
 }
