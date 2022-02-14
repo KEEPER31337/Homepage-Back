@@ -1,14 +1,22 @@
 package keeper.project.homepage.service.member;
 
 import java.io.File;
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import keeper.project.homepage.common.FileConversion;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.attendance.AttendanceEntity;
+import keeper.project.homepage.entity.library.BookBorrowEntity;
+import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.entity.member.FriendEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasCommentDislikeEntity;
@@ -26,6 +34,8 @@ import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.repository.FileRepository;
 import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.repository.attendance.AttendanceRepository;
+import keeper.project.homepage.repository.library.BookBorrowRepository;
+import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.member.FriendRepository;
 import keeper.project.homepage.repository.member.MemberHasCommentDislikeRepository;
 import keeper.project.homepage.repository.member.MemberHasCommentLikeRepository;
@@ -108,10 +118,16 @@ public class MemberServiceTestSetup {
   @Autowired
   public ThumbnailRepository thumbnailRepository;
 
+  @Autowired
+  public BookRepository bookRepository;
+
+  @Autowired
+  public BookBorrowRepository bookBorrowRepository;
+
   public MemberEntity virtualMember;
   public MemberEntity deletedMember;
   public MemberEntity writer;
-  
+
   public MemberEntity follower;
   public MemberEntity followee;
   public FriendEntity follow;
@@ -134,6 +150,8 @@ public class MemberServiceTestSetup {
   public PostingEntity postDislikeTest;
 
   public ThumbnailEntity thumbnailRemoveTest;
+
+  public BookBorrowEntity borrow;
 
   public List<PostingEntity> virtualTestPosts = new ArrayList<>();
   public List<PostingEntity> removeTestTempPosts = new ArrayList<>();
@@ -193,7 +211,7 @@ public class MemberServiceTestSetup {
         .likeCount(0)
         .dislikeCount(0)
         .parentId(0L)
-        .memberId(memberEntity)
+        .member(memberEntity)
         .postingId(postingEntity)
         .build());
   }
@@ -238,6 +256,55 @@ public class MemberServiceTestSetup {
     fileConversion.makeSampleJPEGImage(filePath);
     File createdFile = new File(filePath);
     return createdFile.length();
+  }
+
+  public BookBorrowEntity generateBookBorrowEntity(Integer numPreventDupl, MemberEntity member) {
+
+    final String bookTitle = "일반물리학" + numPreventDupl.toString();
+    final String bookAuthor = "우웩1" + numPreventDupl.toString();
+    final String bookPicture = "우우웩1" + numPreventDupl.toString() + ".png";
+    final String bookInformation = "우웩우웩1";
+    final Long bookQuantity = 2L;
+    final Long bookBorrow = 0L;
+    final Long bookEnable = bookQuantity - bookBorrow;
+    final String bookRegisterDate = "20220116";
+
+    SimpleDateFormat stringToDate = new SimpleDateFormat("yyyymmdd");
+    Date registerDate = new Date();
+    try {
+      registerDate = stringToDate.parse(bookRegisterDate);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    BookEntity book = bookRepository.save(
+        BookEntity.builder()
+            .title(bookTitle)
+            .author(bookAuthor)
+            .information(bookInformation)
+            .total(bookQuantity)
+            .borrow(bookBorrow)
+            .enable(bookEnable)
+            .registerDate(registerDate)
+            .build());
+
+    return bookBorrowRepository.save(
+        BookBorrowEntity.builder()
+            .member(member)
+            .book(book)
+            .quantity(1L)
+            .borrowDate(java.sql.Date.valueOf(getDate(-17)))
+            .expireDate(java.sql.Date.valueOf(getDate(-3)))
+            .build());
+  }
+
+  private String getDate(int date) {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(new Date());
+    calendar.add(Calendar.DATE, date);
+
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+    String transferDate = format.format(date);
+    return transferDate;
   }
 
   // 각 test별 필요한 객체 생성
@@ -358,21 +425,40 @@ public class MemberServiceTestSetup {
     followee.getFollower().add(follow);
   }
 
-  // TODO : attendance 양방향 연결 후 test 추가
-//  public void generateAttendanceCascadeRemoveTestcase() {
-//    attendanceTest = generateMemberEntity(1);
-//    Random random = new Random();
-//    attendance = attendanceRepository.save(
-//        AttendanceEntity.builder()
-//            .point(10)
-//            .continousDay(0)
-//            .greetings("hi")
-//            .ipAddress("111.111.111.111")
-//            .time(Timestamp.valueOf(LocalDateTime.now()))
-//            .memberId(attendanceTest)
-//            .rank(3)
-//            .randomPoint(random.nextInt(100, 1001)).build());
-//  }
+  public void generateAttendanceRemoveTestcase() {
+    deletedMember = generateMemberEntity(1);
+    Random random = new Random();
+    attendance = attendanceRepository.save(
+        AttendanceEntity.builder()
+            .point(10)
+            .continousDay(0)
+            .greetings("hi")
+            .ipAddress("111.111.111.111")
+            .time(Timestamp.valueOf(LocalDateTime.now()))
+            .memberId(deletedMember)
+            .rank(3)
+            .randomPoint(random.nextInt(100, 1001)).build());
 
+    // 다른 출석 기록에 영향을 안 끼치는 지 확인용
+    MemberEntity otherMember = generateMemberEntity(2);
+    attendanceRepository.save(
+        AttendanceEntity.builder()
+            .point(10)
+            .continousDay(0)
+            .greetings("hi")
+            .ipAddress("111.111.111.111")
+            .time(Timestamp.valueOf(LocalDateTime.now()))
+            .memberId(otherMember)
+            .rank(3)
+            .randomPoint(random.nextInt(100, 1001)).build());
+  }
 
+  public void generateCheckRemainBorrowInfoTestcase() {
+    deletedMember = generateMemberEntity(1);
+    borrow = generateBookBorrowEntity(1, deletedMember);
+  }
+
+  public void generateCheckCorrectPasswordTestcase() {
+    deletedMember = generateMemberEntity(1);
+  }
 }

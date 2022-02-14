@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Optional;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.exception.member.CustomAccountDeleteFailedException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -211,15 +212,62 @@ public class MemberServiceTest extends MemberServiceTestSetup {
     Assertions.assertFalse(image.exists());
   }
 
-  // TODO : attendance 양방향 연결 후 test 추가
-//  @Test
-//  public void attendanceCascadeRemoveTest() {
-//    generateAttendanceCascadeRemoveTestcase();
-//
-//    memberService.deleteMember(attendanceTest.getId());
-//
-//    Assertions.assertTrue(memberRepository.findById(attendanceTest.getId()).isEmpty());
-//    Assertions.assertTrue(attendanceRepository.findById(attendance.getId()).isEmpty());
-//  }
+  @Test
+  @DisplayName("회원 탈퇴 시, 출석 기록 삭제 테스트")
+  public void attendanceRemoveTest() {
+    generateAttendanceRemoveTestcase();
 
+    memberService.deleteAttendance(deletedMember);
+    memberService.deleteMember(deletedMember);
+
+    Assertions.assertTrue(memberRepository.findById(deletedMember.getId()).isEmpty());
+    Assertions.assertTrue(attendanceRepository.findById(attendance.getId()).isEmpty());
+    // deleteAll()이 다른 출석에 영향을 안 끼치는지 확인
+    Assertions.assertFalse(attendanceRepository.findAll().isEmpty());
+  }
+
+  @Test
+  @DisplayName("미납한 기록이 있으면 회원 탈퇴 실패 예외처리")
+  public void remainBookBorrowInfoTest() {
+    generateCheckRemainBorrowInfoTestcase();
+
+    Assertions.assertThrows(CustomAccountDeleteFailedException.class, () -> {
+      memberService.checkRemainBorrowInfo(deletedMember);
+    });
+  }
+
+  @Test
+  @DisplayName("미납한 기록이 없으면 정상")
+  public void noBookBorrowInfoTest() {
+    generateCheckRemainBorrowInfoTestcase();
+
+    bookBorrowRepository.delete(borrow);
+    Assertions.assertDoesNotThrow(() -> {
+      memberService.checkRemainBorrowInfo(deletedMember);
+    });
+
+    Assertions.assertTrue(bookBorrowRepository.findByMember(deletedMember).isEmpty());
+  }
+
+  @Test
+  @DisplayName("비밀번호가 일치하지 않으면 회원 탈퇴 실패 예외처리")
+  public void incorrectPasswordTest() {
+    generateCheckCorrectPasswordTestcase();
+
+    final String wrongPassword = "wrongpw";
+    Assertions.assertThrows(CustomAccountDeleteFailedException.class, () -> {
+      memberService.checkCorrectPassword(deletedMember, wrongPassword);
+    });
+  }
+
+  @Test
+  @DisplayName("비밀번호가 일치하면 정상")
+  public void correctPasswordTest() {
+    generateCheckCorrectPasswordTestcase();
+
+    final String correctPassword = "keeper1";
+    Assertions.assertDoesNotThrow(() -> {
+      memberService.checkCorrectPassword(deletedMember, correctPassword);
+    });
+  }
 }
