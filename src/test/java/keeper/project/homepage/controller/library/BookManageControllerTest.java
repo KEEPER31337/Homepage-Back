@@ -324,7 +324,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("information", bookInformation1);
     params.add("quantity", String.valueOf(bookQuantity1));
 
-    mockMvc.perform(multipart("/v1/addbook")
+    mockMvc.perform(multipart("/v1/admin/addbook")
             .file(thumbnail)
             .header("Authorization", adminToken)
             .contentType(MediaType.MULTIPART_FORM_DATA)
