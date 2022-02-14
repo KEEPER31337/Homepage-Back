@@ -142,8 +142,8 @@ public class MemberDeleteService {
 
   public void deleteThumbnail(MemberEntity member) {
     ThumbnailEntity deleteThumbnail = thumbnailService.findById(member.getThumbnail().getId());
-    fileService.deleteOriginalThumbnailById(deleteThumbnail.getFile().getId());
     thumbnailService.deleteById(deleteThumbnail.getId());
+    fileService.deleteOriginalThumbnailById(deleteThumbnail.getFile().getId());
   }
 
   public void deleteAttendance(MemberEntity member) {
@@ -189,7 +189,6 @@ public class MemberDeleteService {
     decreaseCommentsDislike(deleted);
     decreasePostingsLike(deleted);
     decreasePostingsDislike(deleted);
-    deleteThumbnail(deleted);
     deleteAttendance(deleted);
     // TODO : point_log 삭제 추가
 
@@ -198,5 +197,6 @@ public class MemberDeleteService {
     postingChangeToVirtualMember(virtualMember, deleted);
 
     deleteMember(deleted);
+    deleteThumbnail(deleted);
   }
 }

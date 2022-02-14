@@ -2,11 +2,14 @@ package keeper.project.homepage.controller.member;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -481,4 +484,26 @@ public class MemberControllerTest extends MemberControllerTestSetup {
             result.getResolvedException() instanceof CustomMemberNotFoundException));
   }
 
+  @Test
+  @DisplayName("회원 탈퇴하기")
+  public void deleteAccount() throws Exception {
+    String docMsg = "물품을 대여하고 미납한 기록이 남아있을 경우, 또는 입력한 비밀번호가 옳지 않은 경우 탈퇴가 실패합니다.";
+    String docCode =
+        "물품 미납 기록이 있거나 비밀번호가 틀린 경우: " + exceptionAdvice.getMessage("accountDeleteFailed.code")
+            + " +\n" + "그 외 실패한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+    mockMvc.perform(delete("/v1/member/delete")
+            .param("password", password)
+            .header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andDo(document("member-delete",
+            requestParameters(
+                parameterWithName("password").description("비밀번호")
+            ),
+            generateCommonResponseField("성공 시: success, 실패 시: fail", docCode, docMsg)));
+
+    Assertions.assertThrows(CustomMemberNotFoundException.class, () -> {
+      memberService.findById(memberEntity.getId());
+    });
+  }
 }
