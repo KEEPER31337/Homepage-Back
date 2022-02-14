@@ -115,6 +115,24 @@ public class GameControllerTest extends ApiControllerTestSetUp {
   }
 
   @Test
+  @DisplayName("주사위 게임 횟수 제한")
+  public void validateDice() throws Exception {
+
+    ResultActions result = mockMvc.perform(
+        MockMvcRequestBuilders.get("/v1/game/dice/check").header("Authorization", userToken1));
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(print())
+        .andDo(document("game-diceValid",
+            responseFields(
+                fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
+                fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
+                fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
+                fieldWithPath("data").description("횟수(6)가 넘어갔으면 true, 아니면 false")
+            )));
+  }
+
+  @Test
   @DisplayName("룰렛 게임 실행")
   public void playRoulette() throws Exception {
 
@@ -133,6 +151,24 @@ public class GameControllerTest extends ApiControllerTestSetUp {
                     "룰렛판에 들어갈 랜덤으로 생성된 포인트 배열 (length:8)"),
                 fieldWithPath("data.roulettePointIdx").description(
                     "랜덤으로 하나 뽑은 포인트의 index (0~7중 랜덤 한 숫자)")
+            )));
+  }
+
+  @Test
+  @DisplayName("룰렛 게임 횟수 제한")
+  public void validateRoulette() throws Exception {
+
+    ResultActions result = mockMvc.perform(
+        MockMvcRequestBuilders.get("/v1/game/roulette/check").header("Authorization", userToken1));
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(print())
+        .andDo(document("game-rouletteValid",
+            responseFields(
+                fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
+                fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
+                fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
+                fieldWithPath("data").description("횟수(3)가 넘어갔으면 true, 아니면 false")
             )));
   }
 
@@ -169,6 +205,24 @@ public class GameControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
                 fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
                 fieldWithPath("data").description("로또 게임 결과(등수)")
+            )));
+  }
+
+  @Test
+  @DisplayName("로또 게임 횟수 제한")
+  public void validateLotto() throws Exception {
+
+    ResultActions result = mockMvc.perform(
+        MockMvcRequestBuilders.get("/v1/game/lotto/check").header("Authorization", userToken1));
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(print())
+        .andDo(document("game-lottoValid",
+            responseFields(
+                fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
+                fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
+                fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
+                fieldWithPath("data").description("횟수(1)가 넘어갔으면 true, 아니면 false")
             )));
   }
 

@@ -70,6 +70,12 @@ public class GameService {
     return true;
   }
 
+  public Integer checkRouletteTimes() {
+
+    GameEntity gameEntity = getOrResetGameEntity();
+    return gameEntity.getRoulettePerDay();
+  }
+
   @Transactional
   public RouletteDto playRouletteGame() {
 
@@ -111,7 +117,6 @@ public class GameService {
   public Integer checkLottoTimes() {
 
     GameEntity gameEntity = getOrResetGameEntity();
-
     return gameEntity.getLottoPerDay();
   }
 

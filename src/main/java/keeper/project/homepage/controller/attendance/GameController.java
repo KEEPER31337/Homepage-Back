@@ -35,7 +35,8 @@ public class GameController {
   public CommonResult playDice(@RequestParam("bet") Integer bettingPoint) {
 
     boolean ret = gameService.playDiceGame(bettingPoint);
-    return ret ? responseService.getSuccessResult() : responseService.getFailResult(-1, "베팅 금액이 1000을 초과하였습니다.");
+    return ret ? responseService.getSuccessResult()
+        : responseService.getFailResult(-1, "베팅 금액이 1000을 초과하였습니다.");
   }
 
   @Secured("ROLE_회원")
@@ -44,14 +45,32 @@ public class GameController {
       @RequestParam("bet") Integer bettingPoint) {
 
     boolean ret = gameService.saveDiceGame(result, bettingPoint);
-    return ret ? responseService.getSuccessResult() : responseService.getFailResult(-1, "베팅 금액이 1000을 초과하였습니다.");
+    return ret ? responseService.getSuccessResult()
+        : responseService.getFailResult(-1, "베팅 금액이 1000을 초과하였습니다.");
   }
+
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/dice/check")
+  public SingleResult<Boolean> validateDice() {
+
+    return gameService.checkDiceTimes() > 6 ? responseService.getSuccessSingleResult(true)
+        : responseService.getSuccessSingleResult(false);
+  }
+
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/roulette/play")
   public SingleResult<RouletteDto> playRoulette() {
 
     return responseService.getSuccessSingleResult(gameService.playRouletteGame());
+  }
+
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/roulette/check")
+  public SingleResult<Boolean> validateRoulette() {
+
+    return gameService.checkRouletteTimes() > 3 ? responseService.getSuccessSingleResult(true)
+        : responseService.getSuccessSingleResult(false);
   }
 
   @Secured("ROLE_회원")
@@ -66,6 +85,14 @@ public class GameController {
   public SingleResult<Integer> playLotto() {
 
     return responseService.getSuccessSingleResult(gameService.playLottoGame());
+  }
+
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/lotto/check")
+  public SingleResult<Boolean> validateLotto() {
+
+    return gameService.checkLottoTimes() > 1 ? responseService.getSuccessSingleResult(true)
+        : responseService.getSuccessSingleResult(false);
   }
 
   @GetMapping(value = "/info")
