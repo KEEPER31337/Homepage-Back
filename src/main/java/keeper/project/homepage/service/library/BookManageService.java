@@ -4,11 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-<<<<<<< HEAD
 import java.util.Optional;
 import keeper.project.homepage.dto.library.BookDto;
-=======
->>>>>>> 4c9a008226c4b116b98e7f0895b244cd145d175e
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.library.BookBorrowEntity;
@@ -76,7 +73,8 @@ public class BookManageService {
   /**
    * 도서 추가
    */
-  public void addBook(String title, String author, String information, Long total, Long thumbnailId) {
+  public void addBook(String title, String author, String information, Long total,
+      Long thumbnailId) {
     Long borrowState = 0L;
     if (bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
       borrowState = bookRepository.findByTitleAndAuthor(title, author).get().getBorrow();
