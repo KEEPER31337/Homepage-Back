@@ -41,14 +41,11 @@ public class AttendanceController {
   private final AttendanceService attendanceService;
   private final ResponseService responseService;
 
-  @PostMapping(value = "/check", consumes = "application/json", produces = {
-      MediaType.TEXT_PLAIN_VALUE})
-  public ResponseEntity<String> createAttend(@RequestBody AttendanceDto attendanceDto) {
+  @PostMapping(value = "/")
+  public CommonResult createAttend(@RequestBody AttendanceDto attendanceDto) {
 
-    boolean result = attendanceService.save(attendanceDto);
-
-    return result ? new ResponseEntity<>("success",
-        HttpStatus.OK) : new ResponseEntity<>("fail", HttpStatus.OK);
+    attendanceService.save(attendanceDto);
+    return responseService.getSuccessResult();
   }
 
   @Secured("ROLE_회원")
@@ -85,7 +82,8 @@ public class AttendanceController {
   }
 
   @GetMapping(value = "/point-info")
-  public HashMap<String, Integer> getPointInfo() throws IllegalAccessException {
-    return attendanceService.getAllBonusPointInfo();
+  public SingleResult<HashMap<String, Integer>> getPointInfo() throws IllegalAccessException {
+    return responseService.getSuccessSingleResult(
+        attendanceService.getAllBonusPointInfo());
   }
 }

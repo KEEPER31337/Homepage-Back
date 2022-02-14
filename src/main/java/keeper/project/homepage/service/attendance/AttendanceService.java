@@ -37,7 +37,7 @@ public class AttendanceService {
   private final MemberRepository memberRepository;
   private final AuthService authService;
 
-  public boolean save(AttendanceDto attendanceDto) {
+  public void save(AttendanceDto attendanceDto) {
 
     if (isAlreadyAttendance()) {
       throw new CustomAttendanceException("이미 출석을 완료했습니다.");
@@ -63,7 +63,6 @@ public class AttendanceService {
       point += YEAR_ATTENDANCE_POINT;
     }
 
-    Random random = new Random();
     MemberEntity memberEntity = getMemberEntityWithJWT();
     attendanceRepository.save(
         AttendanceEntity.builder()
@@ -73,11 +72,9 @@ public class AttendanceService {
             .ipAddress(attendanceDto.getIpAddress())
             .time(now)
             .memberId(memberEntity)
-            .randomPoint(random.nextInt(100, 1001))
+            .randomPoint((int) (Math.random() * 900 + 100))
             .rank(rank)
             .build());
-
-    return true;
   }
 
   private int getMyTodayRank(Date now) {
@@ -157,7 +154,8 @@ public class AttendanceService {
         .findTopByMemberIdOrderByIdDesc(memberEntity);
 
     if (attendanceEntity.isEmpty()) {
-      throw new CustomAttendanceException("출석을 하지 않았습니다.");
+//      throw new CustomAttendanceException("출석을 하지 않았습니다.");
+      return null;
     }
     return attendanceEntity.get();
   }
@@ -185,13 +183,16 @@ public class AttendanceService {
         member, java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
 
     if (attendanceEntities.size() != 1) {
-      throw new CustomAttendanceException("출석 저장에 문제가 생겼습니다");
+      throw new CustomAttendanceException("해당 날짜에 출석하지 않았습니다.");
     }
     return attendanceEntities.get(0);
   }
 
   private int getContinousDay(Date now) {
     AttendanceEntity recentAttendanceEntity = getMostRecentlyAttendance();
+    if (recentAttendanceEntity == null) {
+      return 0;
+    }
 
     int continousDay = 0;
     if (isBeforeDay(recentAttendanceEntity.getTime(), now)) {
@@ -202,6 +203,10 @@ public class AttendanceService {
 
   private boolean isAlreadyAttendance() {
     AttendanceEntity recentAttendanceEntity = getMostRecentlyAttendance();
+    if (recentAttendanceEntity == null) {
+      return false;
+    }
+    
     return isToday(recentAttendanceEntity.getTime());
   }
 }

@@ -3,7 +3,6 @@ package keeper.project.homepage.service.posting;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import keeper.project.homepage.dto.posting.CommentDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
@@ -17,11 +16,8 @@ import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.service.member.MemberHasCommentLikeService;
 import keeper.project.homepage.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.jni.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,7 +38,7 @@ public class CommentService {
 
   private void isValidMember(Long commentId, Long memberId) {
     CommentEntity comment = getComment(commentId);
-    if (comment.getMemberId().getId().equals(memberId) == false) {
+    if (comment.getMember().getId().equals(memberId) == false) {
       throw new CustomAuthenticationEntryPointException();
     }
   }
@@ -67,7 +63,7 @@ public class CommentService {
         .likeCount(0)
         .dislikeCount(0)
         .parentId(commentDto.getParentId() == null ? 0L : commentDto.getParentId())
-        .memberId(memberEntity)
+        .member(memberEntity)
         .postingId(postingEntity)
         .build());
     commentDto.initWithEntity(commentEntity);

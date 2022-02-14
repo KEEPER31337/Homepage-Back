@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.dto.posting.PostingDto;
+import keeper.project.homepage.dto.posting.LikeAndDislikeDto;
+import keeper.project.homepage.dto.result.PostingResult;
+import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasPostingDislikeEntity;
@@ -45,13 +48,25 @@ public class PostingService {
         pageable).getContent();
 
     for (PostingEntity postingEntity : postingEntities) {
-      if (postingEntity.getCategoryId().getName().equals("비밀게시판")) {
-        postingEntity.setWriter("익명");
-      } else {
-        postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+      setWriterInfo(postingEntity);
+      if (postingEntity.getIsSecret() == 1) {
+        postingEntity.makeSecret();
       }
     }
+
     return postingEntities;
+  }
+
+  private void setWriterInfo(PostingEntity postingEntity) {
+    if (postingEntity.getCategoryId().getName().equals("비밀게시판")) {
+      postingEntity.setWriter("익명");
+    } else {
+      postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+      postingEntity.setWriterId(postingEntity.getMemberId().getId());
+      if (postingEntity.getMemberId().getThumbnail() != null) {
+        postingEntity.setWriterThumbnailId(postingEntity.getMemberId().getThumbnail().getId());
+      }
+    }
   }
 
   public List<PostingEntity> findAllByCategoryId(Long categoryId, Pageable pageable) {
@@ -60,13 +75,10 @@ public class PostingService {
     List<PostingEntity> postingEntities = postingRepository.findAllByCategoryIdAndIsTemp(
         categoryEntity.get(), isNotTempPosting, pageable);
 
-    if (categoryEntity.get().getName().equals("비밀게시판")) {
-      for (PostingEntity postingEntity : postingEntities) {
-        postingEntity.setWriter("익명");
-      }
-    } else {
-      for (PostingEntity postingEntity : postingEntities) {
-        postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+    for (PostingEntity postingEntity : postingEntities) {
+      setWriterInfo(postingEntity);
+      if (postingEntity.getIsSecret() == 1) {
+        postingEntity.makeSecret();
       }
     }
 
@@ -92,13 +104,29 @@ public class PostingService {
   public PostingEntity getPostingById(Long pid) {
 
     PostingEntity postingEntity = postingRepository.findById(pid).get();
-    if (postingEntity.getCategoryId().getName().equals("비밀게시판")) {
-      postingEntity.setWriter("익명");
-    } else {
-      postingEntity.setWriter(postingEntity.getMemberId().getNickName());
-    }
+    setWriterInfo(postingEntity);
 
     return postingEntity;
+  }
+
+  public PostingResult getSuccessPostingResult(PostingEntity postingEntity) {
+
+    PostingResult postingResult = new PostingResult(postingEntity);
+    postingResult.setSuccess(true);
+    postingResult.setCode(0);
+    postingResult.setMsg("성공하였습니다.");
+
+    return postingResult;
+  }
+
+  public PostingResult getFailPostingResult(String msg) {
+
+    PostingResult postingResult = new PostingResult(null);
+    postingResult.setSuccess(false);
+    postingResult.setCode(-1);
+    postingResult.setMsg(msg);
+
+    return postingResult;
   }
 
   @Transactional
@@ -187,10 +215,9 @@ public class PostingService {
     }
 
     for (PostingEntity postingEntity : postingEntities) {
-      if (categoryEntity.getName().equals("비밀게시판")) {
-        postingEntity.setWriter("익명");
-      } else {
-        postingEntity.setWriter(postingEntity.getMemberId().getNickName());
+      setWriterInfo(postingEntity);
+      if (postingEntity.getIsSecret() == 1) {
+        postingEntity.makeSecret();
       }
     }
 
@@ -255,6 +282,35 @@ public class PostingService {
         return false;
       }
     }
+  }
+
+  @Transactional
+  public LikeAndDislikeDto checkLikeAndDisLike(Long postingId) {
+
+    MemberEntity memberEntity = getMemberEntityWithJWT();
+    PostingEntity postingEntity = postingRepository.findById(postingId).get();
+    MemberHasPostingDislikeEntity memberHasPostingDislikeEntity = MemberHasPostingDislikeEntity.builder()
+        .memberId(memberEntity).postingId(postingEntity).build();
+    MemberHasPostingLikeEntity memberHasPostingLikeEntity = MemberHasPostingLikeEntity.builder()
+        .memberId(memberEntity).postingId(postingEntity).build();
+
+    List<Boolean> checked = new ArrayList<>();
+
+    if (postingRepository.existsByMemberHasPostingLikeEntitiesContaining(
+        memberHasPostingLikeEntity)) {
+      checked.add(true);
+    } else {
+      checked.add(false);
+    }
+    if (postingRepository.existsByMemberHasPostingDislikeEntitiesContaining(
+        memberHasPostingDislikeEntity)) {
+      checked.add(true);
+    } else {
+      checked.add(false);
+    }
+    LikeAndDislikeDto likeAndDislikeDto = new LikeAndDislikeDto(checked.get(0), checked.get(1));
+
+    return likeAndDislikeDto;
   }
 
   private MemberEntity getMemberEntityWithJWT() {

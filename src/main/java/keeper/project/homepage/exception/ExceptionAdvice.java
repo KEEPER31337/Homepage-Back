@@ -8,6 +8,9 @@ import keeper.project.homepage.exception.file.CustomFileTransferFailedException;
 import keeper.project.homepage.exception.file.CustomImageFormatException;
 import keeper.project.homepage.exception.file.CustomImageIOException;
 import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
+import keeper.project.homepage.exception.library.CustomBookBorrowNotFoundException;
+import keeper.project.homepage.exception.library.CustomBookNotFoundException;
+import keeper.project.homepage.exception.library.CustomBookOverTheMaxException;
 import keeper.project.homepage.exception.member.CustomMemberDuplicateException;
 import keeper.project.homepage.exception.member.CustomMemberEmptyFieldException;
 import keeper.project.homepage.exception.member.CustomMemberInfoNotFoundException;
@@ -279,5 +282,14 @@ public class ExceptionAdvice {
       CustomAccessRootCategoryException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("accessRootCategory.code")),
         getMessage("accessRootCategory.msg"));
+  }
+  
+  @ExceptionHandler(CustomBookBorrowNotFoundException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected CommonResult bookBorrowNotFoundException(HttpServletRequest request,
+      CustomBookBorrowNotFoundException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(Integer.parseInt(getMessage("bookBorrowNotFound.code")),
+        getMessage("bookBorrowNotFound.msg"));
   }
 }

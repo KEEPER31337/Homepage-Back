@@ -1,14 +1,14 @@
 package keeper.project.homepage.dto.posting;
 
 import java.time.LocalDate;
-import keeper.project.homepage.entity.posting.CommentEntity;
+import javax.persistence.Transient;
+import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.entity.posting.CommentEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @AllArgsConstructor
@@ -16,14 +16,17 @@ import lombok.Setter;
 @Builder
 public class CommentDto {
 
-  public Long id;
-  public String content;
-  public LocalDate registerTime;
-  public LocalDate updateTime;
-  public String ipAddress;
-  public Integer likeCount;
-  public Integer dislikeCount;
-  public Long parentId;
+  private Long id;
+  private String content;
+  private LocalDate registerTime;
+  private LocalDate updateTime;
+  private String ipAddress;
+  private Integer likeCount;
+  private Integer dislikeCount;
+  private Long parentId;
+  private String writer;
+  private Long writerId;
+  private Long writerThumbnailId;
 
   public void initWithEntity(CommentEntity commentEntity) {
     this.id = commentEntity.getId();
@@ -34,5 +37,18 @@ public class CommentDto {
     this.likeCount = commentEntity.getLikeCount();
     this.dislikeCount = commentEntity.getDislikeCount();
     this.parentId = commentEntity.getParentId();
+    setWriterInfo(commentEntity);
+  }
+
+  private void setWriterInfo(CommentEntity commentEntity) {
+    MemberEntity member = commentEntity.getMember();
+    if (member != null) {
+      this.writer = member.getNickName();
+      this.writerId = member.getId();
+      ThumbnailEntity thumbnail = member.getThumbnail();
+      if (thumbnail != null) {
+        this.writerThumbnailId = thumbnail.getId();
+      }
+    }
   }
 }

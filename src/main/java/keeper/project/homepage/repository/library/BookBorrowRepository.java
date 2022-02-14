@@ -16,4 +16,6 @@ public interface BookBorrowRepository extends JpaRepository<BookBorrowEntity, Lo
   List<BookBorrowEntity> findAllByExpireDateBetween(Pageable pageable, Date start, Date end);
 
   Optional<BookBorrowEntity> findByBookAndMember(BookEntity book, MemberEntity returnMember);
+
+  List<BookBorrowEntity> findByBookAndMemberOrderByBorrowDateAsc(BookEntity book, MemberEntity member);
 }

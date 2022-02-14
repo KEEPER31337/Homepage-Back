@@ -12,19 +12,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
+import keeper.project.homepage.common.FileConversion;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.dto.sign.SignInDto;
+import keeper.project.homepage.entity.FileEntity;
+import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.member.MemberRankEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,11 +50,54 @@ public class SignInControllerTest extends ApiControllerTestSetUp {
   private final String birthday = "19980101";
   private final String studentId = "201724579";
 
+  private final String ipAddress = "127.0.0.1";
+
+  @BeforeAll
+  public static void createFile() {
+    final String keeperFilesDirectoryPath = System.getProperty("user.dir") + File.separator
+        + "keeper_files";
+    final String thumbnailDirectoryPath = System.getProperty("user.dir") + File.separator
+        + "keeper_files" + File.separator + "thumbnail";
+    final String updateImage = keeperFilesDirectoryPath + File.separator + "test.jpg";
+    final String updateThumbnail = thumbnailDirectoryPath + File.separator + "thumb_test.jpg";
+
+    File keeperFilesDir = new File(keeperFilesDirectoryPath);
+    File thumbnailDir = new File(thumbnailDirectoryPath);
+
+    if (!keeperFilesDir.exists()) {
+      keeperFilesDir.mkdir();
+    }
+
+    if (!thumbnailDir.exists()) {
+      thumbnailDir.mkdir();
+    }
+
+    createImageForTest(updateImage);
+    createImageForTest(updateThumbnail);
+  }
+
+  private static void createImageForTest(String filePath) {
+    FileConversion fileConversion = new FileConversion();
+    fileConversion.makeSampleJPEGImage(filePath);
+  }
+
   @BeforeEach
   public void setUp() throws Exception {
+    FileEntity imageEntity = FileEntity.builder()
+        .fileName("test.jpg")
+        .filePath("keeper_files" + File.separator + "test.jpg")
+        .fileSize(0L)
+        .ipAddress(ipAddress)
+        .build();
+    fileRepository.save(imageEntity);
+
     SimpleDateFormat stringToDate = new SimpleDateFormat("yyyymmdd");
     Date birthdayDate = stringToDate.parse(birthday);
 
+    ThumbnailEntity thumbnailEntity = ThumbnailEntity.builder()
+        .path("keeper_files" + File.separator + "thumbnail" + File.separator + "thumb_test.jpg")
+        .file(imageEntity).build();
+    thumbnailRepository.save(thumbnailEntity);
     MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
     MemberTypeEntity memberTypeEntity = memberTypeRepository.findByName("정회원").get();
     MemberRankEntity memberRankEntity = memberRankRepository.findByName("일반회원").get();
@@ -66,6 +114,7 @@ public class SignInControllerTest extends ApiControllerTestSetUp {
         .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .memberType(memberTypeEntity)
         .memberRank(memberRankEntity)
+        .thumbnail(thumbnailEntity)
         .build();
     memberRepository.save(memberEntity);
   }
@@ -107,7 +156,8 @@ public class SignInControllerTest extends ApiControllerTestSetUp {
                     .optional(),
                 fieldWithPath("data.member.jobs").description(
                         "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
-                    .optional()
+                    .optional(),
+                fieldWithPath("data.member.thumbnailId").description("썸네일 Id").optional()
             )));
   }
 

@@ -6,7 +6,6 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
@@ -18,7 +17,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
@@ -32,11 +30,9 @@ import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.MvcResult;
@@ -134,7 +130,7 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
         .likeCount(likeCount)
         .dislikeCount(dislikeCount)
         .parentId(0L)
-        .memberId(memberEntity)
+        .member(memberEntity)
         .postingId(postingEntity)
         .build());
 
@@ -146,7 +142,7 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
         .likeCount(likeCount)
         .dislikeCount(dislikeCount)
         .parentId(parentComment.getId())
-        .memberId(memberEntity)
+        .member(memberEntity)
         .postingId(postingEntity)
         .build());
   }
@@ -222,7 +218,7 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
           .likeCount(likeCount)
           .dislikeCount(dislikeCount)
           .parentId(commentEntity.getId())
-          .memberId(memberEntity)
+          .member(memberEntity)
           .postingId(postingEntity)
           .build());
     }
@@ -254,10 +250,12 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].ipAddress").description("댓글 작성자의 ip address"),
                 fieldWithPath("list[].likeCount").description("좋아요 개수"),
                 fieldWithPath("list[].dislikeCount").description("싫어요 개수"),
-                fieldWithPath("list[].parentId").description("대댓글인 경우, 부모 댓글의 id")
+                fieldWithPath("list[].parentId").description("대댓글인 경우, 부모 댓글의 id"),
+                fieldWithPath("list[].writer").optional().description("작성자 (탈퇴한 작성자일 경우 null)"),
+                fieldWithPath("list[].writerId").optional().description("작성자 (탈퇴한 작성자일 경우 null)"),
+                fieldWithPath("list[].writerThumbnailId").optional()
+                    .description("작성자 (탈퇴했을 경우 / 썸네일을 등록하지 않았을 경우 null)")
             )
-//                fieldWithPath("list[].memberId").description("댓글 작성자의 member id"),
-//                fieldWithPath("list[].postingId").description("댓글이 작성된 게시글의 id"))
         ));
   }
 
@@ -312,10 +310,14 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.content").description("수정한 댓글 내용"),
                 fieldWithPath("data.registerTime").ignored(),
                 fieldWithPath("data.updateTime").description("수정한 시간"),
-                fieldWithPath("data.ipAddress").description("수정한 댓글 작성자의 ipAdress"),
+                fieldWithPath("data.ipAddress").description("수정한 댓글 작성자의 ipAddress"),
                 fieldWithPath("data.likeCount").ignored(),
                 fieldWithPath("data.dislikeCount").ignored(),
-                fieldWithPath("data.parentId").ignored()
+                fieldWithPath("data.parentId").ignored(),
+                fieldWithPath("data.writer").optional().description("작성자 (탈퇴한 작성자일 경우 null)"),
+                fieldWithPath("data.writerId").optional().description("작성자 (탈퇴한 작성자일 경우 null)"),
+                fieldWithPath("data.writerThumbnailId").optional()
+                    .description("작성자 (탈퇴했을 경우 / 썸네일을 등록하지 않았을 경우 null)")
 //                fieldWithPath("data.memberId").ignored(),
 //                fieldWithPath("data.postingId").ignored()
             )));
