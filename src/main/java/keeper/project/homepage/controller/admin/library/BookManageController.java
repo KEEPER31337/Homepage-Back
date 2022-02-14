@@ -82,9 +82,7 @@ public class BookManageController {
       throw new CustomAboutFailedException();
     }
 
-    bookDto.setThumbnailId(thumbnailEntity.getId());
-
-    return bookManageService.doAdd(bookDto, thumbnail, ip);
+    return bookManageService.doAdd(bookDto, thumbnailEntity);
   }
 
   @PostMapping(value = "/deletebook")

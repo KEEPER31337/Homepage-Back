@@ -1,5 +1,6 @@
 package keeper.project.homepage.service.library;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -7,14 +8,17 @@ import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.dto.library.BookDto;
 import keeper.project.homepage.dto.result.CommonResult;
+import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.library.BookBorrowEntity;
+import keeper.project.homepage.entity.library.BookDepartmentEntity;
 import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.library.CustomBookBorrowNotFoundException;
 import keeper.project.homepage.exception.library.CustomBookNotFoundException;
 import keeper.project.homepage.exception.library.CustomBookOverTheMaxException;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
+import keeper.project.homepage.repository.FileRepository;
 import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.library.BookRepository;
@@ -40,11 +44,12 @@ public class BookManageService {
   private final FileService fileService;
   private final ThumbnailService thumbnailService;
   private final ThumbnailRepository thumbnailRepository;
+  private final FileRepository fileRepository;
 
   /**
    * 도서 최대 권수 체크
    */
-  public CommonResult doAdd(BookDto bookDto, MultipartFile thumbnail, String ip) {
+  public CommonResult doAdd(BookDto bookDto, ThumbnailEntity thumbnailEntity) {
 
     String title = bookDto.getTitle();
     String author = bookDto.getAuthor();
@@ -54,19 +59,19 @@ public class BookManageService {
     if (information == null) {
       information = "도서 정보입니다.";
     }
+
     Long nowTotal = 0L;
     if (bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
       nowTotal = bookRepository.findByTitleAndAuthor(title, author).get().getTotal();
     }
     Long total = quantity + nowTotal;
 
-    if (quantity + nowTotal > MAXIMUM_ALLOWD_BOOK_NUMBER) {
+    if (total > MAXIMUM_ALLOWD_BOOK_NUMBER) {
       throw new CustomBookOverTheMaxException("수량 초과입니다.");
     }
-    fileService.saveFileInServer(thumbnail, ip);
 
-    Long thumbnailId = bookDto.getThumbnailId();
-    addBook(title, author, information, total, thumbnailId);
+    addBook(title, author, information, total, thumbnailEntity);
+
     return responseService.getSuccessResult();
   }
 
@@ -74,11 +79,13 @@ public class BookManageService {
    * 도서 추가
    */
   public void addBook(String title, String author, String information, Long total,
-      Long thumbnailId) {
+      ThumbnailEntity thumbnailId) {
+
     Long borrowState = 0L;
     if (bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
       borrowState = bookRepository.findByTitleAndAuthor(title, author).get().getBorrow();
     }
+
     bookRepository.save(
         BookEntity.builder()
             .title(title)
@@ -86,9 +93,9 @@ public class BookManageService {
             .information(information)
             .total(total)
             .borrow(borrowState)
-            .enable(total)
+            .enable(total - borrowState)
             .registerDate(new Date())
-            .thumbnailId(thumbnailRepository.getById(thumbnailId))
+            .thumbnailId(thumbnailId)
             .build());
   }
 
