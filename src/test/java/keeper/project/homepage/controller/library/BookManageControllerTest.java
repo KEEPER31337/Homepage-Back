@@ -609,8 +609,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.msg").exists());
   }
 
-/* FIXME
-  //--------------------------도서 대여------------------------------------
+  //--------------------------도서 반납------------------------------------
   @Test
   @DisplayName("책 반납 성공(전부 반납)")
   public void returnBookAll() throws Exception {
@@ -642,8 +641,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
                     "책 반납 실패가 수량 초과 일 때 수량 초과 메시지를, 없는 책일 때 책이 없다는 메시지를 발생시킵니다.")
             )));
   }
- */
-/* FIXME
+
   @Test
   @DisplayName("책 반납 성공(일부 반납)")
   public void returnBookPart() throws Exception {
@@ -662,8 +660,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.code").value(0))
         .andExpect(jsonPath("$.msg").exists());
   }
- */
-/* FIXME
+
   @Test
   @DisplayName("책 반납 실패(수량 초과)")
   public void returnBookFailedOverMax() throws Exception {
@@ -682,14 +679,13 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.code").value(-1))
         .andExpect(jsonPath("$.msg").exists());
   }
- */
-/* FIXME
+
   @Test
   @DisplayName("책 반납 실패(없는 책)")
   public void returnBookFailedNotExist() throws Exception {
     Long borrowQuantity = 1L;
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    params.add("title", bookTitle2);
+    params.add("title", bookTitle2 + epochTime);
     params.add("author", bookAuthor2);
     params.add("quantity", String.valueOf(borrowQuantity));
 
@@ -702,7 +698,25 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.code").value(-2))
         .andExpect(jsonPath("$.msg").exists());
   }
- */
+
+  @Test
+  @DisplayName("책 반납 실패(대출 안 한 책)")
+  public void returnBookFailedNotBorrowExist() throws Exception {
+    Long borrowQuantity = 1L;
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("title", bookTitle2);
+    params.add("author", bookAuthor2);
+    params.add("quantity", String.valueOf(borrowQuantity));
+
+    mockMvc.perform(post("/v1/returnbook")
+            .params(params)
+            .header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().is5xxServerError())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(-3))
+        .andExpect(jsonPath("$.msg").exists());
+  }
 
   //--------------------------연체 도서 표시------------------------------------
   @Test
@@ -721,12 +735,16 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
                 parameterWithName("size").optional().description("한 페이지당 출력 수(default = 10)")
             ),
             responseFields(
-                fieldWithPath("[].id").description("대여정보 ID"),
+                fieldWithPath("success").description("연체 도서 전달 시 true, 실패 시 false 값을 보냅니다."),
+                fieldWithPath("code").description(
+                    "연체 도서 전달 성공 시 0, 실패 시 -11 코드를 보냅니다."),
+                fieldWithPath("msg").description(
+                    "연체 도서 전달 실패 시 연체 도서가 없다는 메시지를 전달합니다.")
+            ).andWithPrefix("list.", fieldWithPath("[].id").description("대여정보 ID"),
                 subsectionWithPath("[].member").description("대여자 ID"),
                 subsectionWithPath("[].book").description("책 ID"),
                 fieldWithPath("[].quantity").description("대여 수량"),
                 fieldWithPath("[].borrowDate").description("대여일"),
-                fieldWithPath("[].expireDate").description("만기일")
-            )));
+                fieldWithPath("[].expireDate").description("만기일"))));
   }
 }

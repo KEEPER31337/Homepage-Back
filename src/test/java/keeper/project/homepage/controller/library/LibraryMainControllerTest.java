@@ -172,14 +172,17 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
                 parameterWithName("size").optional().description("한 페이지당 출력 수(default = 10)")
             ),
             responseFields(
-                fieldWithPath("[].id").description("책 ID"),
-                fieldWithPath("[].title").description("책 제목"),
-                fieldWithPath("[].author").description("책 저자"),
-                fieldWithPath("[].information").description("책 정보"),
-                fieldWithPath("[].total").description("전체 수"),
-                fieldWithPath("[].borrow").description("대여 중인 수"),
-                fieldWithPath("[].enable").description("대여 가능한 수"),
-                fieldWithPath("[].registerDate").description("등록된 날짜")
+                fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
+                fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
+                fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
+                fieldWithPath("list[].id").description("책 ID"),
+                fieldWithPath("list[].title").description("책 제목"),
+                fieldWithPath("list[].author").description("책 저자"),
+                fieldWithPath("list[].information").description("책 정보"),
+                fieldWithPath("list[].total").description("전체 수"),
+                fieldWithPath("list[].borrow").description("대여 중인 수"),
+                fieldWithPath("list[].enable").description("대여 가능한 수"),
+                fieldWithPath("list[].registerDate").description("등록된 날짜")
             )));
   }
 
@@ -204,14 +207,17 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
                 parameterWithName("size").optional().description("한 페이지당 출력 수(default = 10)")
             ),
             responseFields(
-                fieldWithPath("[].id").description("책 ID"),
-                fieldWithPath("[].title").description("책 제목"),
-                fieldWithPath("[].author").description("책 저자"),
-                fieldWithPath("[].information").description("책 정보"),
-                fieldWithPath("[].total").description("전체 수"),
-                fieldWithPath("[].borrow").description("대여 중인 수"),
-                fieldWithPath("[].enable").description("대여 가능한 수"),
-                fieldWithPath("[].registerDate").description("등록된 날짜")
+                fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
+                fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
+                fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
+                fieldWithPath("list[].id").description("책 ID"),
+                fieldWithPath("list[].title").description("책 제목"),
+                fieldWithPath("list[].author").description("책 저자"),
+                fieldWithPath("list[].information").description("책 정보"),
+                fieldWithPath("list[].total").description("전체 수"),
+                fieldWithPath("list[].borrow").description("대여 중인 수"),
+                fieldWithPath("list[].enable").description("대여 가능한 수"),
+                fieldWithPath("list[].registerDate").description("등록된 날짜")
             )));
   }
 
@@ -234,14 +240,17 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
                 parameterWithName("author").description("책 저자")
             ),
             responseFields(
-                fieldWithPath("id").description("책 ID"),
-                fieldWithPath("title").description("책 제목"),
-                fieldWithPath("author").description("책 저자"),
-                fieldWithPath("information").description("책 정보"),
-                fieldWithPath("total").description("전체 수"),
-                fieldWithPath("borrow").description("대여 중인 수"),
-                fieldWithPath("enable").description("대여 가능한 수"),
-                fieldWithPath("registerDate").description("등록된 날짜")
+                fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
+                fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
+                fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
+                fieldWithPath("data.id").description("책 ID"),
+                fieldWithPath("data.title").description("책 제목"),
+                fieldWithPath("data.author").description("책 저자"),
+                fieldWithPath("data.information").description("책 정보"),
+                fieldWithPath("data.total").description("전체 수"),
+                fieldWithPath("data.borrow").description("대여 중인 수"),
+                fieldWithPath("data.enable").description("대여 가능한 수"),
+                fieldWithPath("data.registerDate").description("등록된 날짜")
             )));
   }
 }

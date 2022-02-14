@@ -11,7 +11,6 @@ import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
-import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import org.apache.logging.log4j.LogManager;
@@ -113,7 +112,7 @@ public class CommentRepositoryTest {
         .likeCount(likeCount)
         .dislikeCount(dislikeCount)
         .parentId(0L)
-        .memberId(memberEntity)
+        .member(memberEntity)
         .postingId(posting)
         .build());
 
@@ -125,7 +124,7 @@ public class CommentRepositoryTest {
         .likeCount(likeCount)
         .dislikeCount(dislikeCount)
         .parentId(parentComment.getId())
-        .memberId(memberEntity)
+        .member(memberEntity)
         .postingId(posting)
         .build());
 
@@ -141,7 +140,7 @@ public class CommentRepositoryTest {
         .likeCount(likeCount)
         .dislikeCount(dislikeCount)
         .parentId(commentEntity.getId())
-        .memberId(memberEntity)
+        .member(memberEntity)
         .postingId(commentEntity.getPostingId())
         .build());
     LOGGER.info("create한 comment의 id : " + newComment.getId().toString());

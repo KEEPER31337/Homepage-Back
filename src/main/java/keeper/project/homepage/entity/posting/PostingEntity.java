@@ -16,6 +16,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
+import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.member.MemberHasPostingDislikeEntity;
 import keeper.project.homepage.entity.member.MemberHasPostingLikeEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
@@ -51,6 +52,10 @@ public class PostingEntity {
   // DB 테이블과 별도의 변수 - Transient Annotation
   @Transient
   private String writer;
+  @Transient
+  private Long writerId;
+  @Transient
+  private Long writerThumbnailId;
   @Column
   private Integer visitCount;
   @Column
@@ -72,6 +77,7 @@ public class PostingEntity {
   @Column
   private Integer isSecret;
   @Column
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private String password;
   @Column
   private Integer isTemp;
@@ -81,12 +87,15 @@ public class PostingEntity {
   private CategoryEntity categoryId;
   @OneToOne(targetEntity = ThumbnailEntity.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "thumbnail_id")
-  @JsonIgnore
-  private ThumbnailEntity thumbnailId;
+  private ThumbnailEntity thumbnail;
   @OneToMany(cascade = CascadeType.ALL, targetEntity = MemberHasPostingLikeEntity.class, mappedBy = "postingId", orphanRemoval = true, fetch = FetchType.LAZY)
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   @Builder.Default
   private List<MemberHasPostingLikeEntity> memberHasPostingLikeEntities = new ArrayList<>();
+
+  @OneToMany(mappedBy = "postingId")
+  @Builder.Default
+  private List<FileEntity> files = new ArrayList<>();
 
   @OneToMany(cascade = CascadeType.ALL, targetEntity = MemberHasPostingDislikeEntity.class, mappedBy = "postingId", orphanRemoval = true, fetch = FetchType.LAZY)
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -139,5 +148,18 @@ public class PostingEntity {
 
   public void setWriter(String writer) {
     this.writer = writer;
+  }
+
+  public void setWriterId(Long writerId) {
+    this.writerId = writerId;
+  }
+
+  public void setWriterThumbnailId(Long writerThumbnailId) {
+    this.writerThumbnailId = writerThumbnailId;
+  }
+
+  public void makeSecret() {
+    this.title = "비밀 게시글입니다.";
+    this.content = "비밀 게시글입니다.";
   }
 }
