@@ -93,6 +93,28 @@ include::{snippets}/game-diceSave/response-body.adoc[]
 
 include::{snippets}/game-diceSave/response-fields.adoc[]
 
+== 주사위 게임 횟수 제한
+
+=== 요청
+
+==== Request
+
+include::{snippets}/game-diceValid/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/game-diceValid/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/game-diceValid/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/game-diceValid/response-fields.adoc[]
+
 == 룰렛
 
 === 요청
@@ -114,6 +136,28 @@ include::{snippets}/game-roulettePlay/response-body.adoc[]
 ==== Response Fields
 
 include::{snippets}/game-roulettePlay/response-fields.adoc[]
+
+== 룰렛 게임 횟수 제한
+
+=== 요청
+
+==== Request
+
+include::{snippets}/game-rouletteValid/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/game-rouletteValid/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/game-rouletteValid/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/game-rouletteValid/response-fields.adoc[]
 
 == 하루 로또한 횟수
 
@@ -158,6 +202,28 @@ include::{snippets}/game-lottoPlay/response-body.adoc[]
 ==== Response Fields
 
 include::{snippets}/game-lottoPlay/response-fields.adoc[]
+
+== 로또 게임 횟수 제한
+
+=== 요청
+
+==== Request
+
+include::{snippets}/game-lottoValid/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/game-lottoValid/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/game-lottoValid/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/game-lottoValid/response-fields.adoc[]
 
 == 게임 정보 불러오기
 
