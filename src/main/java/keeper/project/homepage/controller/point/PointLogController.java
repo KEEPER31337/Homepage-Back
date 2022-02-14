@@ -1,6 +1,5 @@
 package keeper.project.homepage.controller.point;
 
-import java.util.List;
 import keeper.project.homepage.dto.request.PointGiftLogRequest;
 import keeper.project.homepage.dto.request.PointLogRequest;
 import keeper.project.homepage.dto.result.ListResult;
@@ -40,7 +39,7 @@ public class PointLogController {
 
   @Secured("ROLE_회원")
   @PostMapping(value = "/transfer")
-  public SingleResult<PointGiftLogResult> transferPoing(
+  public SingleResult<PointGiftLogResult> transferPoint(
       @RequestBody PointGiftLogRequest pointGiftLogRequest
   ) {
     return responseService.getSuccessSingleResult(
