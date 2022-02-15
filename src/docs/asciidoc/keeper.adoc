@@ -31,6 +31,10 @@ link:signin.html[API 문서 보기]
 
 link:bookmanage.html[API 문서 보기]
 
+== *카테고리*
+
+link:category.html[API 문서 보기]
+
 == *게시판*
 
 link:posting.html[API 문서 보기]
@@ -54,3 +58,7 @@ link:librarymain.html[API 문서 보기]
 == *랭킹*
 
 link:rank.html[API 문서 보기]
+
+== *게임*
+
+link:game.html[API 문서 보기]

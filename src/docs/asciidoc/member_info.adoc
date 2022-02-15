@@ -1,0 +1,102 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+// 자동으로 생성된 snippet 설정하는 부분
+
+= KEEPER API 문서
+:icons: font
+// NOTE, TIP, WARNING, CAUTION, IMPORTANT 같은 경고구들 아이콘화 해줌
+:source-highlighter: highlight.js
+// source code 블럭에서 사용되는 highlighter 설정, 4개 정도 있던데 차이를 아직 잘 모르겠음.
+:toc: left
+// table of contents(toc) 왼쪽정렬하여 생성
+:toclevels: 3
+// default : 2 (==,  ===) 까지 toc에 보여줌.
+:sectlinks:
+// section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
+
+== API 목록
+
+link:member.html[회원 API 목록으로 돌아가기]
+
+// 본인 정보 열람 추가
+
+== *팔로우*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/member-follow/http-request.adoc[]
+
+==== Request Fields
+
+include::{snippets}/member-follow/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/member-follow/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/member-follow/response-fields.adoc[]
+
+== *언팔로우*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/member-unfollow/http-request.adoc[]
+
+==== Request Fields
+
+include::{snippets}/member-unfollow/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/member-unfollow/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/member-unfollow/response-fields.adoc[]
+
+== *팔로우 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/friend-show-followee/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/friend-show-followee/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/friend-show-followee/response-fields.adoc[]
+
+== *팔로워 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/friend-show-follower/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/friend-show-follower/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/friend-show-follower/response-fields.adoc[]
