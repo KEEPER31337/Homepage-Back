@@ -53,6 +53,7 @@ public class PostingService {
         postingEntity.makeSecret();
       }
     }
+    setSizeInfo(postingEntities);
 
     return postingEntities;
   }
@@ -69,6 +70,12 @@ public class PostingService {
     }
   }
 
+  private void setSizeInfo(List<PostingEntity> postingEntities) {
+    for (PostingEntity postingEntity : postingEntities) {
+      postingEntity.setSize(postingEntities.size());
+    }
+  }
+
   public List<PostingEntity> findAllByCategoryId(Long categoryId, Pageable pageable) {
 
     Optional<CategoryEntity> categoryEntity = categoryRepository.findById(Long.valueOf(categoryId));
@@ -81,6 +88,7 @@ public class PostingService {
         postingEntity.makeSecret();
       }
     }
+    setSizeInfo(postingEntities);
 
     return postingEntities;
   }
@@ -105,6 +113,7 @@ public class PostingService {
 
     PostingEntity postingEntity = postingRepository.findById(pid).get();
     setWriterInfo(postingEntity);
+    postingEntity.setSize(1);
 
     return postingEntity;
   }
@@ -220,6 +229,7 @@ public class PostingService {
         postingEntity.makeSecret();
       }
     }
+    setSizeInfo(postingEntities);
 
     return postingEntities;
   }

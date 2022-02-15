@@ -56,6 +56,8 @@ public class PostingEntity {
   private Long writerId;
   @Transient
   private Long writerThumbnailId;
+  @Transient
+  private Integer size;
   @Column
   private Integer visitCount;
   @Column
@@ -156,6 +158,10 @@ public class PostingEntity {
 
   public void setWriterThumbnailId(Long writerThumbnailId) {
     this.writerThumbnailId = writerThumbnailId;
+  }
+
+  public void setSize(Integer size) {
+    this.size = size;
   }
 
   public void makeSecret() {

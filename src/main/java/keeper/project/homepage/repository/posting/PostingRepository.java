@@ -36,5 +36,4 @@ public interface PostingRepository extends JpaRepository<PostingEntity, Long> {
 
   boolean existsByMemberHasPostingDislikeEntitiesContaining(
       MemberHasPostingDislikeEntity memberHasPostingDislikeEntity);
-
 }
