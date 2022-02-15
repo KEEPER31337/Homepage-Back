@@ -5,12 +5,16 @@ import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.dto.posting.CommentDto;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.member.MemberHasCommentDislikeEntity;
+import keeper.project.homepage.entity.member.MemberHasCommentLikeEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.CustomAuthenticationEntryPointException;
 import keeper.project.homepage.exception.CustomNumberOverflowException;
 import keeper.project.homepage.exception.posting.CustomCommentEmptyFieldException;
 import keeper.project.homepage.exception.posting.CustomCommentNotFoundException;
+import keeper.project.homepage.repository.member.MemberHasCommentDislikeRepository;
+import keeper.project.homepage.repository.member.MemberHasCommentLikeRepository;
 import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.service.member.MemberHasCommentLikeService;
@@ -25,25 +29,28 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CommentService {
 
+  public static final String DELETED_COMMENT_CONTENT = "(삭제된 댓글입니다)";
   private final CommentRepository commentRepository;
   private final PostingService postingService;
   private final MemberService memberService;
   private final MemberHasCommentLikeService memberHasCommentLikeService;
   private final MemberHasCommentDislikeService memberHasCommentDislikeService;
+  private final MemberHasCommentLikeRepository memberHasCommentLikeRepository;
+  private final MemberHasCommentDislikeRepository memberHasCommentDislikeRepository;
 
   private CommentEntity getComment(Long commentId) {
     return commentRepository.findById(commentId)
         .orElseThrow(CustomCommentNotFoundException::new);
   }
 
-  private void isValidMember(Long commentId, Long memberId) {
+  private void checkCorrectWriter(Long commentId, Long memberId) {
     CommentEntity comment = getComment(commentId);
     if (comment.getMember().getId().equals(memberId) == false) {
       throw new CustomAuthenticationEntryPointException();
     }
   }
 
-  private void isNotEmptyContent(CommentDto commentDto) {
+  private void checkNotEmptyContent(CommentDto commentDto) {
     if (commentDto.getContent().isEmpty()) {
       throw new CustomCommentEmptyFieldException("댓글의 내용이 비어있습니다.");
     }
@@ -51,7 +58,7 @@ public class CommentService {
 
   @Transactional
   public CommentDto save(CommentDto commentDto, Long postId, Long memberId) {
-    isNotEmptyContent(commentDto);
+    checkNotEmptyContent(commentDto);
 
     PostingEntity postingEntity = postingService.getPostingById(postId);
     MemberEntity memberEntity = memberService.findById(memberId);
@@ -86,8 +93,8 @@ public class CommentService {
 
   @Transactional
   public CommentDto updateById(CommentDto commentDto, Long commentId, Long memberId) {
-    isValidMember(commentId, memberId);
-    isNotEmptyContent(commentDto);
+    checkCorrectWriter(commentId, memberId);
+    checkNotEmptyContent(commentDto);
 
     CommentEntity updated = getComment(commentId);
     updated.changeContent(commentDto.getContent());
@@ -98,10 +105,25 @@ public class CommentService {
     return commentDto;
   }
 
+  public void deleteCommentLike(CommentEntity comment) {
+    memberHasCommentLikeRepository.deleteByMemberHasCommentEntityPK_CommentEntity(comment);
+  }
+
+  public void deleteCommentDislike(CommentEntity comment) {
+    memberHasCommentDislikeRepository.deleteByMemberHasCommentEntityPK_CommentEntity(comment);
+  }
+
   @Transactional
-  public void deleteById(Long id, Long memberId) {
-    isValidMember(id, memberId);
-    commentRepository.deleteById(id);
+  public void deleteById(Long memberId, Long id) {
+    checkCorrectWriter(id, memberId);
+    CommentEntity comment = commentRepository.findById(id)
+        .orElseThrow(CustomCommentNotFoundException::new);
+    MemberEntity virtual = memberService.findById(1L);
+
+    deleteCommentLike(comment);
+    deleteCommentDislike(comment);
+    comment.initInfo(virtual, DELETED_COMMENT_CONTENT);
+    commentRepository.save(comment);
   }
 
   @Transactional

@@ -85,4 +85,11 @@ public class CommentEntity {
   public void changeUpdateTime(LocalDate updateTime) {
     this.updateTime = updateTime;
   }
+
+  public void initInfo(MemberEntity virtual, String initContent){
+    this.member = virtual;
+    this.content = initContent;
+    this.likeCount = 0;
+    this.dislikeCount = 0;
+  }
 }

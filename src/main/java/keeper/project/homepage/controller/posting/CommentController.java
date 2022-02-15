@@ -66,7 +66,7 @@ public class CommentController {
   @DeleteMapping("/{commentId}")
   public ResponseEntity<CommonResult> deleteComment(@PathVariable("commentId") Long commentId) {
     Long memberId = authService.getMemberIdByJWT();
-    commentService.deleteById(commentId, memberId);
+    commentService.deleteById(memberId, commentId);
     return ResponseEntity.ok().body(responseService.getSuccessResult());
   }
 
