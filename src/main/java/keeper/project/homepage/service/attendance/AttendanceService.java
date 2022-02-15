@@ -37,6 +37,8 @@ public class AttendanceService {
   private final MemberRepository memberRepository;
   private final AuthService authService;
 
+  private static final String DEFAULT_GREETINGS = "자동 출석입니다.";
+
   public void save(AttendanceDto attendanceDto) {
 
     if (isAlreadyAttendance()) {
@@ -66,7 +68,7 @@ public class AttendanceService {
     MemberEntity memberEntity = getMemberEntityWithJWT();
     String greeting = attendanceDto.getGreetings();
     if (greeting == "" || greeting == null) {
-      greeting = "자동 출석입니다.";
+      greeting = DEFAULT_GREETINGS;
     }
     attendanceRepository.save(
         AttendanceEntity.builder()
@@ -95,7 +97,7 @@ public class AttendanceService {
     }
     String greeting = attendanceDto.getGreetings();
     if (greeting == "" || greeting == null) {
-      greeting = "자동 출석입니다.";
+      greeting = DEFAULT_GREETINGS;
     }
     attendanceEntity.setGreetings(greeting);
     attendanceRepository.save(attendanceEntity);
