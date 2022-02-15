@@ -22,7 +22,7 @@ public class RankController {
   private final RankService rankService;
   private final ResponseService responseService;
 
-  @GetMapping("/")
+  @GetMapping(value = "")
   public ListResult<MemberEntity> showRanking(
       @PageableDefault(size = 25, sort = "point", direction = Direction.DESC)
           Pageable pageable) {

@@ -48,7 +48,7 @@ public class RankControllerTest extends ApiControllerTestSetUp {
   @DisplayName("전체 랭킹 출력")
   public void showRanking() throws Exception {
     ResultActions result = mockMvc.perform(
-        MockMvcRequestBuilders.get("/v1/rank/")
+        MockMvcRequestBuilders.get("/v1/rank")
             .param("page", "0")
             .param("size", "2")
     );
@@ -77,7 +77,7 @@ public class RankControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].follower").description("팔로워"),
                 fieldWithPath("list[].followee").description("팔로잉"),
                 subsectionWithPath("list[].memberJobs").description("멤버 직책"),
-                fieldWithPath("list[].posting").description("작성한 게시물"),
+                subsectionWithPath("list[].posting").description("작성한 게시물"),
                 subsectionWithPath("list[].authorities").description("멤버 권한")
             )));
   }
