@@ -190,8 +190,20 @@ public class CommentServiceTest {
   @DisplayName("댓글 삭제")
   public void deleteTest() throws RuntimeException {
     Long deleteId = commentEntity.getId();
-    commentService.deleteById(deleteId, memberEntity.getId());
-    Assertions.assertTrue(commentRepository.findById(deleteId).isEmpty());
+    Long writerId = memberEntity.getId();
+
+    // 댓글 좋아요 추가
+    commentService.updateLikeCount(writerId, deleteId);
+    commentService.deleteById(writerId, deleteId);
+    CommentEntity updated = commentRepository.findById(deleteId).get();
+
+    Assertions.assertTrue(updated.getMember().getId().equals(1L));
+    Assertions.assertTrue(updated.getContent().equals(CommentService.DELETED_COMMENT_CONTENT));
+    Assertions.assertTrue(updated.getLikeCount().equals(0));
+    Assertions.assertTrue(updated.getDislikeCount().equals(0));
+    Assertions.assertTrue(
+        memberHasCommentLikeRepository.findByMemberHasCommentEntityPK_CommentEntity(commentEntity)
+            .isEmpty());
   }
 
   @Test

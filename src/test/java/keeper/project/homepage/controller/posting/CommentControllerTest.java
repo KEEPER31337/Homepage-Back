@@ -28,6 +28,7 @@ import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.service.util.AuthService;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,6 +61,7 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
   private CommentEntity parentComment;
   private CommentEntity commentEntity;
   private MemberEntity memberEntity;
+  private AuthService authService;
 
   private String userToken;
 
@@ -274,9 +276,10 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description(
-                    "이미 삭제된 댓글인 경우: BAD_REQUEST(400)" + " +\n"
-                        + "삭제 중 에러가 난 경우: INTERNAL_SERVER_ERROR(500)"),
-                fieldWithPath("msg").description("이미 삭제된 댓글인 경우: \"존재하지 않는 댓글입니다.\"")
+                    "존재하지 않는 댓글인 경우: " + exceptionAdvice.getMessage("commentNotFound.code") + " +\n"
+                        + "삭제 중 에러가 난 경우: " + exceptionAdvice.getMessage("unKnown.code")),
+                fieldWithPath("msg").description(
+                    "댓글 기록을 완전히 삭제하지 않고 작성자와 댓글 내용, 좋아요와 싫어요 수를 초기화합니다.")
             )
         ));
   }
