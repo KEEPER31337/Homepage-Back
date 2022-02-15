@@ -16,8 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Random;
 import keeper.project.homepage.dto.attendance.AttendanceDto;
+import keeper.project.homepage.dto.attendance.AttendanceForListDto;
 import keeper.project.homepage.dto.attendance.AttendancePointDto;
 import keeper.project.homepage.entity.attendance.AttendanceEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -83,7 +83,7 @@ public class AttendanceService {
             .greetings(greeting)
             .ipAddress(attendanceDto.getIpAddress())
             .time(now)
-            .memberId(memberEntity)
+            .member(memberEntity)
             .randomPoint(randomPoint)
             .rank(rank)
             .build());
@@ -127,15 +127,37 @@ public class AttendanceService {
     return getMyAttendanceWithDate(date);
   }
 
-  public List<AttendanceEntity> getAllAttendance(LocalDate date) {
+  public List<AttendanceForListDto> getAllAttendance(LocalDate date) {
     if (date == null) {
       throw new CustomAttendanceException("date를 입력하지 않았습니다.");
     }
     LocalDate startDate = date.atStartOfDay().toLocalDate();
     LocalDate endDate = date.plusDays(1).atStartOfDay().toLocalDate();
 
-    return attendanceRepository.findAllByTimeBetween(
+    List<AttendanceEntity> attendanceEntities = attendanceRepository.findAllByTimeBetween(
         java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
+
+    return makeEntityToDto(attendanceEntities);
+  }
+
+  public List<AttendanceForListDto> makeEntityToDto(List<AttendanceEntity> attendanceEntities) {
+
+    List<AttendanceForListDto> returnList = new ArrayList<>();
+    for (AttendanceEntity attendanceEntity : attendanceEntities) {
+      returnList.add(new AttendanceForListDto(hidingIpAddress(attendanceEntity.getIpAddress()),
+          attendanceEntity.getMember().getNickName(), attendanceEntity.getMember().getThumbnail(),
+          attendanceEntity.getGreetings(), attendanceEntity.getContinousDay(),
+          attendanceEntity.getRank()));
+    }
+    return returnList;
+  }
+
+  public String hidingIpAddress(String ipAddress) {
+    String[] splits = ipAddress.split("\\.");
+    splits[0] = "*";
+    splits[1] = "*";
+
+    return String.join(".", splits);
   }
 
   public HashMap<String, Integer> getAllBonusPointInfo() throws IllegalAccessException {
@@ -159,14 +181,14 @@ public class AttendanceService {
     }
     MemberEntity member = getMemberEntityWithJWT();
 
-    return attendanceRepository.findByMemberIdAndTimeBetween(
+    return attendanceRepository.findByMemberAndTimeBetween(
         member, java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
   }
 
   private AttendanceEntity getMostRecentlyAttendance() {
     MemberEntity memberEntity = getMemberEntityWithJWT();
     Optional<AttendanceEntity> attendanceEntity = attendanceRepository
-        .findTopByMemberIdOrderByIdDesc(memberEntity);
+        .findTopByMemberOrderByIdDesc(memberEntity);
 
     if (attendanceEntity.isEmpty()) {
 //      throw new CustomAttendanceException("출석을 하지 않았습니다.");
@@ -194,7 +216,7 @@ public class AttendanceService {
     LocalDate startDate = date.atStartOfDay().toLocalDate();
     LocalDate endDate = date.plusDays(1).atStartOfDay().toLocalDate();
 
-    List<AttendanceEntity> attendanceEntities = attendanceRepository.findByMemberIdAndTimeBetween(
+    List<AttendanceEntity> attendanceEntities = attendanceRepository.findByMemberAndTimeBetween(
         member, java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
 
     if (attendanceEntities.size() != 1) {

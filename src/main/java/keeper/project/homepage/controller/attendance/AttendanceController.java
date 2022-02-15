@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import keeper.project.homepage.dto.attendance.AttendanceDto;
+import keeper.project.homepage.dto.attendance.AttendanceForListDto;
 import keeper.project.homepage.dto.attendance.AttendancePointDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.ListResult;
@@ -75,7 +76,7 @@ public class AttendanceController {
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/all")
-  public ListResult<AttendanceEntity> getAllAttend(
+  public ListResult<AttendanceForListDto> getAllAttend(
       @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate date) {
     return responseService.getSuccessListResult(
         attendanceService.getAllAttendance(date));
