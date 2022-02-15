@@ -39,6 +39,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.MediaType;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -102,7 +103,7 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
         .andDo(document("attend-create",
             requestFields(
                 fieldWithPath("ipAddress").description("IP 주소"),
-                fieldWithPath("greetings").optional().description("인삿말")
+                fieldWithPath("greetings").description("인삿말").type(JsonFieldType.STRING).optional()
             ),
             responseFields(
                 fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
@@ -155,7 +156,7 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
         .andDo(print())
         .andDo(document("attend-update",
             requestFields(
-                fieldWithPath("greetings").description("출석 메시지")
+                fieldWithPath("greetings").description("인삿말").type(JsonFieldType.STRING).optional()
             ),
             responseFields(
                 fieldWithPath("success").description("에러 발생이 아니면 항상 true"),

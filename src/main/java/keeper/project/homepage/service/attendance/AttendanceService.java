@@ -64,11 +64,15 @@ public class AttendanceService {
     }
 
     MemberEntity memberEntity = getMemberEntityWithJWT();
+    String greeting = attendanceDto.getGreetings();
+    if (greeting == "" || greeting == null) {
+      greeting = "자동 출석입니다.";
+    }
     attendanceRepository.save(
         AttendanceEntity.builder()
             .point(point)
             .continousDay(continousDay)
-            .greetings(attendanceDto.getGreetings())
+            .greetings(greeting)
             .ipAddress(attendanceDto.getIpAddress())
             .time(now)
             .memberId(memberEntity)
@@ -90,6 +94,9 @@ public class AttendanceService {
       throw new CustomAttendanceException("출석을 하지 않았습니다.");
     }
     String greeting = attendanceDto.getGreetings();
+    if (greeting == "" || greeting == null) {
+      greeting = "자동 출석입니다.";
+    }
     attendanceEntity.setGreetings(greeting);
     attendanceRepository.save(attendanceEntity);
   }
@@ -206,7 +213,7 @@ public class AttendanceService {
     if (recentAttendanceEntity == null) {
       return false;
     }
-    
+
     return isToday(recentAttendanceEntity.getTime());
   }
 }
