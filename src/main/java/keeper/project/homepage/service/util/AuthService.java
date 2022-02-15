@@ -3,6 +3,7 @@ package keeper.project.homepage.service.util;
 import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
+import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -32,6 +33,12 @@ public class AuthService {
   public Long getMemberIdByJWT() {
 
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    return Long.valueOf(authentication.getName());
+    Long memberId;
+    try {
+      memberId = Long.valueOf(authentication.getName());
+    } catch (Exception e){
+      throw new CustomMemberNotFoundException();
+    }
+    return memberId;
   }
 }

@@ -58,6 +58,6 @@ public class AttendanceEntity {
   @ManyToOne(targetEntity = MemberEntity.class, fetch = FetchType.EAGER)
   @JoinColumn(name = "member_id", nullable = false)
 //  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-  private MemberEntity memberId;
+  private MemberEntity member;
 
 }
