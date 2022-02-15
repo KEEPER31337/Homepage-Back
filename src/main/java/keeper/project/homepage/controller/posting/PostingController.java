@@ -6,9 +6,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
+import keeper.project.homepage.dto.posting.LikeAndDislikeDto;
 import keeper.project.homepage.dto.posting.PostingDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.ListResult;
+import keeper.project.homepage.dto.result.PostingResult;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
@@ -100,19 +102,26 @@ public class PostingController {
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/{pid}")
-  public SingleResult<PostingEntity> getPosting(@PathVariable("pid") Long postingId) {
+  public PostingResult getPosting(@PathVariable("pid") Long postingId,
+      @RequestParam(value = "password", required = false) String password) {
+
     PostingEntity postingEntity = postingService.getPostingById(postingId);
     Long visitMemberId = authService.getMemberIdByJWT();
-    // 본인이 아닌경우
+
+    if (postingEntity.getIsSecret() == 1) {
+      if (!(postingEntity.getPassword().equals(password))) {
+        return postingService.getFailPostingResult("비밀번호가 일치하지 않습니다.");
+      }
+    }
     if (visitMemberId != postingEntity.getMemberId().getId()) {
       if (postingEntity.getIsTemp() == PostingService.isTempPosting) {
-        return responseService.getFailSingleResult(null, -1, "임시저장 게시물입니다.");
+        return postingService.getFailPostingResult("임시저장 게시물입니다.");
       }
       postingEntity.increaseVisitCount();
       postingService.updateInfoById(postingEntity, postingId);
     }
-
-    return responseService.getSuccessSingleResult(postingEntity);
+    
+    return postingService.getSuccessPostingResult(postingEntity);
   }
 
   @GetMapping(value = "/attach/{pid}")
@@ -175,7 +184,7 @@ public class PostingController {
   public CommonResult removePosting(@PathVariable("pid") Long postingId) {
 
     ThumbnailEntity deleteThumbnail = thumbnailService.findById(
-        postingService.getPostingById(postingId).getThumbnailId().getId());
+        postingService.getPostingById(postingId).getThumbnail().getId());
 
     List<FileEntity> fileEntities = fileService.findFileEntitiesByPostingId(
         postingService.getPostingById(postingId));
@@ -218,5 +227,12 @@ public class PostingController {
         Locale.ROOT));
 
     return result ? responseService.getSuccessResult() : responseService.getFailResult();
+  }
+
+  @GetMapping(value = "/check")
+  public SingleResult<LikeAndDislikeDto> checkMemberLikedAndDisliked(
+      @RequestParam("postingId") Long postingId) {
+
+    return responseService.getSuccessSingleResult(postingService.checkLikeAndDisLike(postingId));
   }
 }

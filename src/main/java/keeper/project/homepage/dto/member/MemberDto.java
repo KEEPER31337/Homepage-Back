@@ -36,7 +36,7 @@ public class MemberDto {
   private String rank;
   private String type;
   private List<String> jobs;
-//  private String thumbnail;
+  private Long thumbnailId;
 
   public MemberEntity toEntity() {
     return MemberEntity.builder()
@@ -62,9 +62,9 @@ public class MemberDto {
     this.registerDate = memberEntity.getRegisterDate();
     this.point = memberEntity.getPoint();
     this.level = memberEntity.getLevel();
-//    if (memberEntity.getThumbnail() != null) {
-//      this.thumbnail = memberEntity.getThumbnail().getPath();
-//    }
+    if (memberEntity.getThumbnail() != null) {
+      this.thumbnailId = memberEntity.getThumbnail().getId();
+    }
     if (memberEntity.getMemberRank() != null) {
       this.rank = memberEntity.getMemberRank().getName();
     }

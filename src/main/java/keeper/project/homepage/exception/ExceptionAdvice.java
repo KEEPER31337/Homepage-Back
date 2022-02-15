@@ -8,12 +8,18 @@ import keeper.project.homepage.exception.file.CustomFileTransferFailedException;
 import keeper.project.homepage.exception.file.CustomImageFormatException;
 import keeper.project.homepage.exception.file.CustomImageIOException;
 import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
+import keeper.project.homepage.exception.library.CustomBookBorrowNotFoundException;
+import keeper.project.homepage.exception.library.CustomBookNotFoundException;
+import keeper.project.homepage.exception.library.CustomBookOverTheMaxException;
 import keeper.project.homepage.exception.member.CustomMemberDuplicateException;
 import keeper.project.homepage.exception.member.CustomMemberEmptyFieldException;
 import keeper.project.homepage.exception.member.CustomMemberInfoNotFoundException;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
+import keeper.project.homepage.exception.posting.CustomAccessRootCategoryException;
+import keeper.project.homepage.exception.posting.CustomCategoryNotFoundException;
 import keeper.project.homepage.exception.posting.CustomCommentEmptyFieldException;
 import keeper.project.homepage.exception.posting.CustomCommentNotFoundException;
+import keeper.project.homepage.exception.posting.CustomParentCategoryNotFoundException;
 import keeper.project.homepage.service.ResponseService;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -53,12 +59,12 @@ public class ExceptionAdvice {
   }
 
   // code정보에 해당하는 메시지를 조회합니다.
-  private String getMessage(String code) {
+  public String getMessage(String code) {
     return getMessage(code, null);
   }
 
   // code정보, 추가 argument로 현재 locale에 맞는 메시지를 조회합니다.
-  private String getMessage(String code, Object[] args) {
+  public String getMessage(String code, Object[] args) {
     return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
   }
 
@@ -211,7 +217,7 @@ public class ExceptionAdvice {
 
   @ExceptionHandler(CustomMemberInfoNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  protected CommonResult CustomMemberInfoNotFoundException(HttpServletRequest request,
+  protected CommonResult memberInfoNotFoundException(HttpServletRequest request,
       CustomMemberInfoNotFoundException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(Integer.parseInt(getMessage("memberInfoNotFound.code")),
@@ -220,7 +226,7 @@ public class ExceptionAdvice {
 
   @ExceptionHandler(CustomMemberDuplicateException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult CustomMemberDuplicateException(HttpServletRequest request,
+  protected CommonResult memberDuplicateException(HttpServletRequest request,
       CustomMemberDuplicateException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(Integer.parseInt(getMessage("memberDuplicate.code")),
@@ -252,5 +258,38 @@ public class ExceptionAdvice {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(Integer.parseInt(getMessage("numberOverflow.code")),
         getMessage("numberOverflow.msg"));
+  }
+
+  @ExceptionHandler(CustomCategoryNotFoundException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected  CommonResult categoryNotFoundException(HttpServletRequest request,
+      CustomCategoryNotFoundException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("categoryNotFound.code")),
+        getMessage("categoryNotFound.msg"));
+  }
+
+  @ExceptionHandler(CustomParentCategoryNotFoundException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected  CommonResult parentCategoryNotFoundException(HttpServletRequest request,
+      CustomParentCategoryNotFoundException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("parentCategoryNotFound.code")),
+        getMessage("parentCategoryNotFound.msg"));
+  }
+
+  @ExceptionHandler(CustomAccessRootCategoryException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected  CommonResult accessRootCategoryException(HttpServletRequest request,
+      CustomAccessRootCategoryException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("accessRootCategory.code")),
+        getMessage("accessRootCategory.msg"));
+  }
+  
+  @ExceptionHandler(CustomBookBorrowNotFoundException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected CommonResult bookBorrowNotFoundException(HttpServletRequest request,
+      CustomBookBorrowNotFoundException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(Integer.parseInt(getMessage("bookBorrowNotFound.code")),
+        getMessage("bookBorrowNotFound.msg"));
   }
 }

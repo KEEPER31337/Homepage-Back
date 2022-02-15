@@ -2,6 +2,7 @@ package keeper.project.homepage.controller.library;
 
 import java.util.List;
 import keeper.project.homepage.dto.result.CommonResult;
+import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.entity.library.BookBorrowEntity;
 import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.repository.library.BookRepository;
@@ -39,10 +40,10 @@ public class BookManageController {
 
   @Secured({"ROLE_사서", "ROLE_회장"})
   @GetMapping(value = "/overduebooks")
-  public ResponseEntity<List<BookBorrowEntity>> sendOverdueBooks(@PageableDefault(size = 10, sort = "expireDate", direction = Direction.ASC)
+  public ListResult<BookBorrowEntity> sendOverdueBooks(@PageableDefault(size = 10, sort = "expireDate", direction = Direction.ASC)
       Pageable pageable){
 
-    return ResponseEntity.status(HttpStatus.OK).body(bookManageService.sendOverdueBooks(pageable));
+    return responseService.getSuccessListResult(bookManageService.sendOverdueBooks(pageable));
   }
 
   @Secured({"ROLE_사서", "ROLE_회장"})
