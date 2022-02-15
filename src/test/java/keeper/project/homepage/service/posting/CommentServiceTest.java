@@ -194,7 +194,7 @@ public class CommentServiceTest {
 
     // 댓글 좋아요 추가
     commentService.updateLikeCount(writerId, deleteId);
-    commentService.deleteById(writerId, deleteId);
+    commentService.deleteByWriter(writerId, deleteId);
     CommentEntity updated = commentRepository.findById(deleteId).get();
 
     Assertions.assertTrue(updated.getMember().getId().equals(1L));

@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.dto.posting.CommentDto;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberHasCommentDislikeEntity;
-import keeper.project.homepage.entity.member.MemberHasCommentLikeEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.CustomAuthenticationEntryPointException;
@@ -105,25 +103,34 @@ public class CommentService {
     return commentDto;
   }
 
-  public void deleteCommentLike(CommentEntity comment) {
+  private void deleteCommentLike(CommentEntity comment) {
     memberHasCommentLikeRepository.deleteByMemberHasCommentEntityPK_CommentEntity(comment);
   }
 
-  public void deleteCommentDislike(CommentEntity comment) {
+  private void deleteCommentDislike(CommentEntity comment) {
     memberHasCommentDislikeRepository.deleteByMemberHasCommentEntityPK_CommentEntity(comment);
   }
 
-  @Transactional
-  public void deleteById(Long memberId, Long id) {
-    checkCorrectWriter(id, memberId);
-    CommentEntity comment = commentRepository.findById(id)
+  private void deleteComment(Long commentId) {
+    CommentEntity comment = commentRepository.findById(commentId)
         .orElseThrow(CustomCommentNotFoundException::new);
     MemberEntity virtual = memberService.findById(1L);
 
     deleteCommentLike(comment);
     deleteCommentDislike(comment);
-    comment.initInfo(virtual, DELETED_COMMENT_CONTENT);
+    comment.overwriteInfo(virtual, DELETED_COMMENT_CONTENT);
     commentRepository.save(comment);
+  }
+
+  @Transactional
+  public void deleteByWriter(Long memberId, Long commentId) {
+    checkCorrectWriter(commentId, memberId);
+    deleteComment(commentId);
+  }
+
+  @Transactional
+  public void deleteByAdmin(Long commentId) {
+    deleteComment(commentId);
   }
 
   @Transactional
