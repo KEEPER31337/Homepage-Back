@@ -41,7 +41,7 @@ public class AttendanceController {
   private final AttendanceService attendanceService;
   private final ResponseService responseService;
 
-  @PostMapping(value = "/")
+  @PostMapping(value = "")
   public CommonResult createAttend(@RequestBody AttendanceDto attendanceDto) {
 
     attendanceService.save(attendanceDto);
@@ -49,7 +49,7 @@ public class AttendanceController {
   }
 
   @Secured("ROLE_회원")
-  @PatchMapping(value = "/")
+  @PatchMapping(value = "")
   public CommonResult updateMessage(@RequestBody AttendanceDto attendanceDto) {
 
     attendanceService.updateGreeting(attendanceDto);

@@ -94,7 +94,7 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
     String content = objectMapper.writeValueAsString(attendanceDto);
 
     ResultActions result = mockMvc.perform(
-        MockMvcRequestBuilders.post("/v1/attend/")
+        MockMvcRequestBuilders.post("/v1/attend")
             .header("Authorization", userToken1)
             .contentType(MediaType.APPLICATION_JSON).content(content));
 
@@ -129,7 +129,7 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
     String content = objectMapper.writeValueAsString(attendanceDto);
 
     ResultActions result = mockMvc.perform(
-        MockMvcRequestBuilders.post("/v1/attend/")
+        MockMvcRequestBuilders.post("/v1/attend")
             .header("Authorization", userToken1)
             .contentType(MediaType.APPLICATION_JSON).content(content));
 
@@ -148,7 +148,7 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
         .build();
     String newContent = objectMapper.writeValueAsString(attendanceDto);
     mockMvc.perform(MockMvcRequestBuilders
-            .patch("/v1/attend/")
+            .patch("/v1/attend")
             .header("Authorization", userToken1)
             .contentType(MediaType.APPLICATION_JSON)
             .content(newContent))
@@ -177,7 +177,7 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
         .build();
     String newContent = objectMapper.writeValueAsString(newAttendanceDto);
     mockMvc.perform(MockMvcRequestBuilders
-            .patch("/v1/attend/")
+            .patch("/v1/attend")
             .header("Authorization", userToken2)
             .contentType(MediaType.APPLICATION_JSON)
             .content(newContent))
@@ -323,6 +323,7 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.WEEK_ATTENDANCE").description("주 개근 일 수"),
                 fieldWithPath("data.MONTH_ATTENDANCE").description("월 개근 일 수"),
                 fieldWithPath("data.YEAR_ATTENDANCE").description("연 개근 일 수"),
+                fieldWithPath("data.DAILY_ATTENDANCE_POINT").description("기본 출석 포인트"),
                 fieldWithPath("data.WEEK_ATTENDANCE_POINT").description("주 개근 추가 포인트"),
                 fieldWithPath("data.MONTH_ATTENDANCE_POINT").description("월 개근 추가 포인트"),
                 fieldWithPath("data.YEAR_ATTENDANCE_POINT").description("연 개근 추가 포인트")

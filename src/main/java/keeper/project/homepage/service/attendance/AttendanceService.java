@@ -48,22 +48,28 @@ public class AttendanceService {
 
     int point = 0;
     int rank = getMyTodayRank(now);
+    // db변경되기전 미리 살짝 바꿔놓음
+    int rankPoint = 0;
     if (rank == 1) {
-      point += FIRST_PLACE_POINT;
+      rankPoint += FIRST_PLACE_POINT;
     } else if (rank == 2) {
-      point += SECOND_PLACE_POINT;
+      rankPoint += SECOND_PLACE_POINT;
     } else if (rank == 3) {
-      point += THIRD_PLACE_POINT;
+      rankPoint += THIRD_PLACE_POINT;
     }
 
-    int continousDay = getContinousDay(now);
-    if (continousDay == WEEK_ATTENDANCE) {
-      point += WEEK_ATTENDANCE_POINT;
-    } else if (continousDay == MONTH_ATTENDANCE) {
-      point += MONTH_ATTENDANCE_POINT;
-    } else if (continousDay == YEAR_ATTENDANCE) {
-      point += YEAR_ATTENDANCE_POINT;
+    int continuousDay = getContinousDay(now);
+    int continuousPoint = 0;
+    if (continuousDay == WEEK_ATTENDANCE) {
+      continuousPoint += WEEK_ATTENDANCE_POINT;
+    } else if (continuousDay == MONTH_ATTENDANCE) {
+      continuousPoint += MONTH_ATTENDANCE_POINT;
+    } else if (continuousDay == YEAR_ATTENDANCE) {
+      continuousPoint += YEAR_ATTENDANCE_POINT;
     }
+
+    int randomPoint = (int) (Math.random() * 900 + 100);
+    point = rankPoint + continuousPoint + DAILY_ATTENDANCE_POINT + randomPoint;
 
     MemberEntity memberEntity = getMemberEntityWithJWT();
     String greeting = attendanceDto.getGreetings();
@@ -73,12 +79,12 @@ public class AttendanceService {
     attendanceRepository.save(
         AttendanceEntity.builder()
             .point(point)
-            .continousDay(continousDay)
+            .continousDay(continuousDay)
             .greetings(greeting)
             .ipAddress(attendanceDto.getIpAddress())
             .time(now)
             .memberId(memberEntity)
-            .randomPoint((int) (Math.random() * 900 + 100))
+            .randomPoint(randomPoint)
             .rank(rank)
             .build());
   }
@@ -203,7 +209,7 @@ public class AttendanceService {
       return 0;
     }
 
-    int continousDay = 0;
+    int continousDay = 1;
     if (isBeforeDay(recentAttendanceEntity.getTime(), now)) {
       continousDay = recentAttendanceEntity.getContinousDay() + 1;
     }
