@@ -335,7 +335,7 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
                 .header("Authorization", adminToken))
         .andExpect(status().isOk())
         .andDo(print())
-        .andDo(document("comment-delete",
+        .andDo(document("admin-comment-delete",
             pathParameters(
                 parameterWithName("commentId").description("삭제할 댓글의 id")
             ),
