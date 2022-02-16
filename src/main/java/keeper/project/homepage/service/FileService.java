@@ -40,7 +40,7 @@ public class FileService {
     String fileFormat = fileFormatSplitArray[fileFormatSplitArray.length - 1];
     Timestamp timestamp = new Timestamp(System.nanoTime());
     fileName += timestamp.toString();
-    fileName = encryptSHA256(fileName) + fileFormat;
+    fileName = encryptSHA256(fileName) + "." + fileFormat;
     return fileName;
   }
 

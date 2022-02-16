@@ -3,7 +3,7 @@ ifndef::snippets[]
 endif::[]
 // 자동으로 생성된 snippet 설정하는 부분
 
-= KEEPER API 문서
+= KEEPER API 관리자 문서
 :icons: font
 // NOTE, TIP, WARNING, CAUTION, IMPORTANT 같은 경고구들 아이콘화 해줌
 :source-highlighter: highlight.js
@@ -15,54 +15,50 @@ endif::[]
 :sectlinks:
 // section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
 
-== *관리자 페이지*
+== *API 목록으로 돌아가기*
 
-link:admin.html[API 문서 보기]
+link:keeper.html[API 목록으로 돌아가기]
 
 == *유틸리티*
 
-link:util.html[API 문서 보기]
+link:utilAdmin.html[API 문서 보기]
 
 == *회원가입*
 
-link:signup.html[API 문서 보기]
+link:signupAdmin.html[API 문서 보기]
 
 == *로그인*
 
-link:signin.html[API 문서 보기]
+link:signinAdmin.html[API 문서 보기]
 
 == *도서관리*
 
-link:bookmanage.html[API 문서 보기]
+link:bookmanageAdmin.html[API 문서 보기]
 
 == *카테고리*
 
-link:category.html[API 문서 보기]
+link:categoryAdmin.html[API 문서 보기]
 
 == *게시판*
 
-link:posting.html[API 문서 보기]
+link:postingAdmin.html[API 문서 보기]
 
 == *댓글*
 
-link:comment.html[API 문서 보기]
+link:commentAdmin.html[API 문서 보기]
 
 == *회원 관리*
 
-link:member.html[API 문서 보기]
+link:memberAdmin.html[API 문서 보기]
 
 == *출석*
 
-link:attendance.html[API 문서 보기]
+link:attendanceAdmin.html[API 문서 보기]
 
 == *도서관*
 
-link:librarymain.html[API 문서 보기]
-
-== *랭킹*
-
-link:rank.html[API 문서 보기]
+link:librarymainAdmin.html[API 문서 보기]
 
 == *게임*
 
-link:game.html[API 문서 보기]
+link:gameAdmin.html[API 문서 보기]

@@ -51,7 +51,7 @@ public class MemberController {
   private final AuthService authService;
 
   @Secured("ROLE_회장") // 각 리소스별 권한 설정
-  @GetMapping(value = "/members")
+  @GetMapping(value = "/admin/members")
   public ListResult<MemberEntity> findAllMember() {
     // 결과데이터가 여러건인경우 getSuccessListResult 이용해서 결과를 출력한다.
     return responseService.getSuccessListResult(memberService.findAll());
@@ -64,6 +64,12 @@ public class MemberController {
     Long id = authService.getMemberIdByJWT();
     // 결과데이터가 단일건인경우 getSuccessSingleResult 이용해서 결과를 출력한다.
     return responseService.getSuccessSingleResult(memberService.findById(id));
+  }
+
+  @Secured("ROLE_회원") // 각 리소스별 권한 설정
+  @GetMapping(value = "/members")
+  public ListResult<OtherMemberInfoResult> getAllGeneralMemberInfo() {
+    return responseService.getSuccessListResult(memberService.getAllGeneralMemberInfo());
   }
 
   @Secured("ROLE_회원")

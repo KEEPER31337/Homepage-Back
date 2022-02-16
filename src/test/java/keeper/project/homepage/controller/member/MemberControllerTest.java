@@ -244,7 +244,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   @DisplayName("권한이 없을 때")
   public void accessDenied() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders
-            .get("/v1/members")
+            .get("/v1/admin/members")
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(jsonPath("$.success").value(false))
@@ -255,7 +255,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   @DisplayName("권한이 있을 때")
   public void accessAccept() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders
-            .get("/v1/members")
+            .get("/v1/admin/members")
             .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -267,7 +267,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   @DisplayName("ADMIN 권한으로 모든 멤버 열람하기")
   public void findAllMember() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders
-            .get("/v1/members")
+            .get("/v1/admin/members")
             .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -479,6 +479,29 @@ public class MemberControllerTest extends MemberControllerTestSetup {
         .andDo(print())
         .andExpect(result -> assertTrue(
             result.getResolvedException() instanceof CustomMemberNotFoundException));
+  }
+
+  @Test
+  @DisplayName("회원 정보 조회(민감한 정보 제외) - 성공")
+  public void getAllGeneralMemberInfoSuccess() throws Exception {
+    mockMvc.perform(MockMvcRequestBuilders
+            .get("/v1/members")
+            .header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true));
+  }
+
+  @Test
+  @DisplayName("회원 정보 조회(민감한 정보 제외) - 실패(회원 권한 X)")
+  public void getAllGeneralMemberInfoFail() throws Exception {
+    mockMvc.perform(MockMvcRequestBuilders
+            .get("/v1/members")
+            .header("Authorization", 1234))
+        .andDo(print())
+        .andExpect(status().is4xxClientError())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.msg").value("보유한 권한으로 접근할수 없는 리소스 입니다"));
   }
 
 }
