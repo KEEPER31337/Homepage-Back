@@ -18,7 +18,7 @@ public class AttendanceForListDto {
   private String nickName;
   private ThumbnailEntity thumbnail;
   private String greetings;
-  private Integer continousDay;
+  private Integer continuousDay;
   private Integer rank;
 
 }

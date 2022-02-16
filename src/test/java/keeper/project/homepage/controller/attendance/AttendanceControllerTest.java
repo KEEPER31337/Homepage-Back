@@ -256,7 +256,7 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.randomPoint").description("해당일 받은 random Point"),
                 fieldWithPath("data.ipAddress").description("출석 당시 ip 주소"),
                 fieldWithPath("data.greetings").description("해당일 출석 메시지"),
-                fieldWithPath("data.continousDay").description("현재 개근 일 수"),
+                fieldWithPath("data.continuousDay").description("현재 개근 일 수"),
                 fieldWithPath("data.rank").description("랭킹"),
                 subsectionWithPath("data.member").description("회원 정보")
             )));
@@ -295,7 +295,7 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].nickName").description("사용자 이름"),
                 subsectionWithPath("list[].thumbnail").description("썸네일 정보"),
                 fieldWithPath("list[].greetings").description("해당일 출석 메시지"),
-                fieldWithPath("list[].continousDay").description("현재 개근 일 수"),
+                fieldWithPath("list[].continuousDay").description("현재 개근 일 수"),
                 fieldWithPath("list[].rank").description("랭킹")
             )));
   }
@@ -332,7 +332,7 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
     attendanceRepository.save(
         AttendanceEntity.builder()
             .point(10)
-            .continousDay(0)
+            .continuousDay(0)
             .greetings("hi")
             .ipAddress(ipAddress1)
             .time(time)

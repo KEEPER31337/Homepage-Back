@@ -58,7 +58,7 @@ public class AttendanceService {
       rankPoint += THIRD_PLACE_POINT;
     }
 
-    int continuousDay = getContinousDay(now);
+    int continuousDay = getContinuousDay(now);
     int continuousPoint = 0;
     if (continuousDay == WEEK_ATTENDANCE) {
       continuousPoint += WEEK_ATTENDANCE_POINT;
@@ -79,7 +79,7 @@ public class AttendanceService {
     attendanceRepository.save(
         AttendanceEntity.builder()
             .point(point)
-            .continousDay(continuousDay)
+            .continuousDay(continuousDay)
             .greetings(greeting)
             .ipAddress(attendanceDto.getIpAddress())
             .time(now)
@@ -146,7 +146,7 @@ public class AttendanceService {
     for (AttendanceEntity attendanceEntity : attendanceEntities) {
       returnList.add(new AttendanceForListDto(hidingIpAddress(attendanceEntity.getIpAddress()),
           attendanceEntity.getMember().getNickName(), attendanceEntity.getMember().getThumbnail(),
-          attendanceEntity.getGreetings(), attendanceEntity.getContinousDay(),
+          attendanceEntity.getGreetings(), attendanceEntity.getContinuousDay(),
           attendanceEntity.getRank()));
     }
     return returnList;
@@ -225,17 +225,17 @@ public class AttendanceService {
     return attendanceEntities.get(0);
   }
 
-  private int getContinousDay(Date now) {
+  private int getContinuousDay(Date now) {
     AttendanceEntity recentAttendanceEntity = getMostRecentlyAttendance();
     if (recentAttendanceEntity == null) {
       return 0;
     }
 
-    int continousDay = 1;
+    int continuousDay = 1;
     if (isBeforeDay(recentAttendanceEntity.getTime(), now)) {
-      continousDay = recentAttendanceEntity.getContinousDay() + 1;
+      continuousDay = recentAttendanceEntity.getContinuousDay() + 1;
     }
-    return continousDay;
+    return continuousDay;
   }
 
   private boolean isAlreadyAttendance() {

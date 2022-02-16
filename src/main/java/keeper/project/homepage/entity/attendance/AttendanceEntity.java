@@ -47,8 +47,8 @@ public class AttendanceEntity {
   @Column(name = "greetings", length = 250)
   private String greetings;
 
-  @Column(name = "continous_day", nullable = false)
-  private Integer continousDay;
+  @Column(name = "continuous_day", nullable = false)
+  private Integer continuousDay;
 
   // 엔티티에 자바의 예약어와 동일한 컬럼이 있다면 같은 오류가 발생할 수 있다.
   // 위와 같은 경우는 ``로 감싸준다.
