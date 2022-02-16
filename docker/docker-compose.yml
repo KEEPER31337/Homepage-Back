@@ -4,8 +4,11 @@ services:
   app:
     container_name: app
     image: keeper-homepage-app:${KEEPER_APP_TAG}
+    volumes:
+      - ../:/home/keeper
     ports:
       - 8080:8080
+    entrypoint: "/entrypoint.sh"
     environment:
       - SECRET=${SECRET}
       - MAIL_HOST=${MAIL_HOST}
