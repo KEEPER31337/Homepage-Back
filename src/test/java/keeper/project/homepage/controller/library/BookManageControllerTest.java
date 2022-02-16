@@ -357,7 +357,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(bookQuantity1));
 
-    mockMvc.perform(post("/v1/addbook")
+    mockMvc.perform(post("/v1/admin/addbook")
             .params(params)
             .header("Authorization", adminToken))
         .andDo(print())
@@ -377,7 +377,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(bookQuantity2));
 
-    mockMvc.perform(post("/v1/addbook")
+    mockMvc.perform(post("/v1/admin/addbook")
             .params(params)
             .header("Authorization", adminToken))
         .andDo(print())
@@ -398,7 +398,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", newAuthor);
     params.add("quantity", String.valueOf(bookQuantity2));
 
-    mockMvc.perform(post("/v1/addbook")
+    mockMvc.perform(post("/v1/admin/addbook")
             .params(params)
             .header("Authorization", adminToken))
         .andDo(print())
@@ -417,7 +417,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(bookQuantity3));
 
-    mockMvc.perform(post("/v1/addbook")
+    mockMvc.perform(post("/v1/admin/addbook")
             .params(params)
             .header("Authorization", adminToken))
         .andDo(print())
@@ -437,7 +437,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(bookQuantity1));
 
-    mockMvc.perform(post("/v1/deletebook")
+    mockMvc.perform(post("/v1/admin/deletebook")
             .params(params)
             .header("Authorization", adminToken))
         .andDo(print())
@@ -469,7 +469,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(bookQuantity3));
 
-    mockMvc.perform(post("/v1/deletebook")
+    mockMvc.perform(post("/v1/admin/deletebook")
             .params(params)
             .header("Authorization", adminToken))
         .andDo(print())
@@ -488,7 +488,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor1 + epochTime);
     params.add("quantity", String.valueOf(bookQuantity3));
 
-    mockMvc.perform(post("/v1/deletebook")
+    mockMvc.perform(post("/v1/admin/deletebook")
             .params(params)
             .header("Authorization", adminToken))
         .andDo(print())
@@ -507,7 +507,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(bookQuantity3));
 
-    mockMvc.perform(post("/v1/deletebook")
+    mockMvc.perform(post("/v1/admin/deletebook")
             .params(params)
             .header("Authorization", adminToken))
         .andDo(print())
@@ -526,7 +526,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor2);
     params.add("quantity", String.valueOf(bookQuantity3));
 
-    mockMvc.perform(post("/v1/deletebook")
+    mockMvc.perform(post("/v1/admin/deletebook")
             .params(params)
             .header("Authorization", adminToken))
         .andDo(print())
@@ -546,7 +546,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(borrowQuantity));
 
-    mockMvc.perform(post("/v1/borrowbook").params(params).header("Authorization", userToken))
+    mockMvc.perform(post("/v1/admin/borrowbook").params(params).header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -576,7 +576,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor2);
     params.add("quantity", String.valueOf(borrowQuantity));
 
-    mockMvc.perform(post("/v1/borrowbook").params(params).header("Authorization", userToken))
+    mockMvc.perform(post("/v1/admin/borrowbook").params(params).header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
@@ -593,7 +593,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor2);
     params.add("quantity", String.valueOf(borrowQuantity));
 
-    mockMvc.perform(post("/v1/borrowbook").params(params).header("Authorization", userToken))
+    mockMvc.perform(post("/v1/admin/borrowbook").params(params).header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
@@ -611,7 +611,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(returnQuantity));
 
-    mockMvc.perform(post("/v1/returnbook")
+    mockMvc.perform(post("/v1/admin/returnbook")
             .params(params)
             .header("Authorization", userToken))
         .andDo(print())
@@ -643,7 +643,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(returnQuantity));
 
-    mockMvc.perform(post("/v1/returnbook")
+    mockMvc.perform(post("/v1/admin/returnbook")
             .params(params)
             .header("Authorization", userToken))
         .andDo(print())
@@ -662,7 +662,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(borrowQuantity));
 
-    mockMvc.perform(post("/v1/returnbook")
+    mockMvc.perform(post("/v1/admin/returnbook")
             .params(params)
             .header("Authorization", userToken))
         .andDo(print())
@@ -681,7 +681,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor2);
     params.add("quantity", String.valueOf(borrowQuantity));
 
-    mockMvc.perform(post("/v1/returnbook")
+    mockMvc.perform(post("/v1/admin/returnbook")
             .params(params)
             .header("Authorization", userToken))
         .andDo(print())
@@ -700,7 +700,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor2);
     params.add("quantity", String.valueOf(borrowQuantity));
 
-    mockMvc.perform(post("/v1/returnbook")
+    mockMvc.perform(post("/v1/admin/returnbook")
             .params(params)
             .header("Authorization", userToken))
         .andDo(print())
@@ -716,7 +716,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   public void sendOverdueBooks() throws Exception {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
-    mockMvc.perform(get("/v1/overduebooks")
+    mockMvc.perform(get("/v1/admin/overduebooks")
             .contentType(MediaType.APPLICATION_JSON)
             .header("Authorization", adminToken))
         .andDo(print())
