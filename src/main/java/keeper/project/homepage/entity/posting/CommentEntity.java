@@ -2,6 +2,7 @@ package keeper.project.homepage.entity.posting;
 
 import com.sun.istack.NotNull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -36,10 +37,10 @@ public class CommentEntity {
   private String content;
   @Column
   @NotNull
-  private LocalDate registerTime;
+  private LocalDateTime registerTime;
   @Column
   @NotNull
-  private LocalDate updateTime;
+  private LocalDateTime updateTime;
   @Column(length = 128)
   @NotNull
   private String ipAddress;
@@ -82,7 +83,7 @@ public class CommentEntity {
     this.content = content;
   }
 
-  public void changeUpdateTime(LocalDate updateTime) {
+  public void changeUpdateTime(LocalDateTime updateTime) {
     this.updateTime = updateTime;
   }
 

@@ -1,6 +1,7 @@
 package keeper.project.homepage.repository.posting;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -49,8 +50,8 @@ public class CommentRepositoryTest {
   @Autowired
   protected PasswordEncoder passwordEncoder;
 
-  private LocalDate registerTime = LocalDate.now();
-  private LocalDate updateTime = LocalDate.now();
+  private LocalDateTime registerTime = LocalDateTime.now();
+  private LocalDateTime updateTime = LocalDateTime.now();
   private String ipAddress = "127.0.0.1";
   private Integer likeCount = 0;
   private Integer dislikeCount = 0;

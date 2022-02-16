@@ -1,6 +1,7 @@
 package keeper.project.homepage.service.posting;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.dto.posting.CommentDto;
@@ -62,8 +63,8 @@ public class CommentService {
     MemberEntity memberEntity = memberService.findById(memberId);
     CommentEntity commentEntity = commentRepository.save(CommentEntity.builder()
         .content(commentDto.getContent())
-        .registerTime(LocalDate.now())
-        .updateTime(LocalDate.now())
+        .registerTime(LocalDateTime.now())
+        .updateTime(LocalDateTime.now())
         .ipAddress(commentDto.getIpAddress())
         .likeCount(0)
         .dislikeCount(0)
@@ -96,7 +97,7 @@ public class CommentService {
 
     CommentEntity updated = getComment(commentId);
     updated.changeContent(commentDto.getContent());
-    updated.changeUpdateTime(LocalDate.now());
+    updated.changeUpdateTime(LocalDateTime.now());
     commentRepository.save(updated);
 
     commentDto.initWithEntity(updated);

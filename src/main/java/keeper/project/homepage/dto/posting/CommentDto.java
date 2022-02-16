@@ -1,6 +1,7 @@
 package keeper.project.homepage.dto.posting;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.Transient;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -18,8 +19,8 @@ public class CommentDto {
 
   private Long id;
   private String content;
-  private LocalDate registerTime;
-  private LocalDate updateTime;
+  private LocalDateTime registerTime;
+  private LocalDateTime updateTime;
   private String ipAddress;
   private Integer likeCount;
   private Integer dislikeCount;
