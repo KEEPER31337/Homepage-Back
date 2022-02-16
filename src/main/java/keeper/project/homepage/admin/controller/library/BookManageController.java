@@ -53,7 +53,7 @@ public class BookManageController {
   }
 
   @PostMapping(value = "/addbook", consumes = "multipart/form-data", produces = {
-      MediaType.TEXT_PLAIN_VALUE})
+      MediaType.APPLICATION_JSON_VALUE})
   public CommonResult add(
       @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
       BookDto bookDto) {
