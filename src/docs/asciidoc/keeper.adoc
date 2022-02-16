@@ -39,6 +39,14 @@ link:bookmanage.html[API 문서 보기]
 
 link:category.html[API 문서 보기]
 
+== *페이지 블럭*
+
+link:about.html[API 문서 보기]
+
+== *페이지 블럭 (관리자)*
+
+link:aboutAdmin.html[API 문서 보기]
+
 == *게시판*
 
 link:posting.html[API 문서 보기]
