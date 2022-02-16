@@ -1,5 +1,7 @@
 package keeper.project.homepage.service.posting;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -91,8 +93,8 @@ public class PostingService {
         Long.valueOf(dto.getCategoryId()));
     Optional<ThumbnailEntity> thumbnailEntity = thumbnailRepository.findById(dto.getThumbnailId());
     MemberEntity memberEntity = getMemberEntityWithJWT();
-    dto.setRegisterTime(new Date());
-    dto.setUpdateTime(new Date());
+    dto.setRegisterTime(LocalDateTime.now());
+    dto.setUpdateTime(LocalDateTime.now());
     PostingEntity postingEntity = dto.toEntity(categoryEntity.get(), memberEntity,
         thumbnailEntity.get());
 
@@ -133,7 +135,7 @@ public class PostingService {
   public PostingEntity updateById(PostingDto dto, Long postingId) {
     PostingEntity tempEntity = postingRepository.findById(postingId).get();
 
-    dto.setUpdateTime(new Date());
+    dto.setUpdateTime(LocalDateTime.now());
     dto.setCommentCount(tempEntity.getCommentCount());
     dto.setLikeCount(tempEntity.getLikeCount());
     dto.setDislikeCount(tempEntity.getDislikeCount());
