@@ -5,13 +5,11 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.mo
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import keeper.project.homepage.repository.etc.StaticWriteContentRepository;
 import keeper.project.homepage.repository.etc.StaticWriteSubtitleImageRepository;
 import keeper.project.homepage.repository.etc.StaticWriteTitleRepository;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.attendance.AttendanceRepository;
-import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.member.FriendRepository;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
@@ -24,7 +22,7 @@ import keeper.project.homepage.repository.FileRepository;
 import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
-import keeper.project.homepage.service.library.BookManageService;
+import keeper.project.homepage.admin.service.library.BookManageService;
 import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.service.member.MemberHasCommentLikeService;
 import keeper.project.homepage.service.member.MemberService;
