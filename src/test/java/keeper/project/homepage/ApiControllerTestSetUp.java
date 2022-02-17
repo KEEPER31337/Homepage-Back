@@ -6,6 +6,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import keeper.project.homepage.exception.ExceptionAdvice;
 import keeper.project.homepage.repository.etc.StaticWriteContentRepository;
 import keeper.project.homepage.repository.etc.StaticWriteSubtitleImageRepository;
 import keeper.project.homepage.repository.etc.StaticWriteTitleRepository;
@@ -129,6 +130,9 @@ public abstract class ApiControllerTestSetUp {
   @Autowired
   protected MessageSource messageSource;
 
+  @Autowired
+  protected ExceptionAdvice exceptionAdvice;
+  
   @BeforeEach
   public void setUpAll(RestDocumentationContextProvider restDocumentation) throws Exception {
     // mockMvc의 한글 사용을 위한 코드
