@@ -18,3 +18,15 @@ endif::[]
 == API 목록
 
 link:admin.html[API 목록으로 돌아가기]
+
+== *댓글 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/admin-comment-delete/http-request.adoc[]
+
+=== Path Parameters
+
+include::{snippets}/admin-comment-delete/path-parameters.adoc[]
