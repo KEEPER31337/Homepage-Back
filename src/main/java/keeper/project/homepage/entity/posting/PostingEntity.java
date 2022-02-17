@@ -1,7 +1,10 @@
 package keeper.project.homepage.entity.posting;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,6 +30,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import lombok.Setter;
 import org.springframework.util.Assert;
 
 @Builder
@@ -65,9 +69,11 @@ public class PostingEntity {
   @Column
   private Integer commentCount;
   @Column
-  private Date registerTime;
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+  private LocalDateTime registerTime;
   @Column
-  private Date updateTime;
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+  private LocalDateTime updateTime;
   @Column
   private String ipAddress;
   @Column
@@ -87,6 +93,7 @@ public class PostingEntity {
   private CategoryEntity categoryId;
   @OneToOne
   @JoinColumn(name = "thumbnail_id")
+  @Setter
   private ThumbnailEntity thumbnail;
   @OneToMany(cascade = CascadeType.ALL, targetEntity = MemberHasPostingLikeEntity.class, mappedBy = "postingId", orphanRemoval = true, fetch = FetchType.LAZY)
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -102,7 +109,7 @@ public class PostingEntity {
   @Builder.Default
   private List<MemberHasPostingDislikeEntity> memberHasPostingDislikeEntities = new ArrayList<>();
 
-  public void updateInfo(String title, String content, Date updateTime, String ipAddress,
+  public void updateInfo(String title, String content, LocalDateTime updateTime, String ipAddress,
       Integer allowComment, Integer isNotice, Integer isSecret) {
     this.title = title;
     this.content = content;

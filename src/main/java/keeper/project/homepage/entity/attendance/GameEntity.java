@@ -2,6 +2,8 @@ package keeper.project.homepage.entity.attendance;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -47,7 +49,7 @@ public class GameEntity {
   private Integer lottoPerDay;
 
   @Column(name = "last_play_time")
-  private Date lastPlayTime;
+  private LocalDateTime lastPlayTime;
 
   public void increaseDiceTimes() {
     dicePerDay += 1;
@@ -61,7 +63,7 @@ public class GameEntity {
     lottoPerDay += 1;
   }
 
-  public void setLastPlayTime(Date time) {
+  public void setLastPlayTime(LocalDateTime time) {
     lastPlayTime = time;
   }
 

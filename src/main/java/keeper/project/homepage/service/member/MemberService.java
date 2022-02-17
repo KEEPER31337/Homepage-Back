@@ -311,7 +311,7 @@ public class MemberService {
 
     if (prevThumbnail != null) {
       thumbnailService.deleteById(prevThumbnail.getId());
-      fileService.deleteOriginalThumbnailById(prevThumbnail.getFile().getId());
+      fileService.deleteOriginalThumbnail(prevThumbnail);
     }
     return result;
   }
@@ -357,7 +357,8 @@ public class MemberService {
   }
 
   public List<OtherMemberInfoResult> getAllGeneralMemberInfo() {
-    return memberRepository.findAll().stream().map(OtherMemberInfoResult::new).collect(Collectors.toList());
+    return memberRepository.findAll().stream().map(OtherMemberInfoResult::new)
+        .collect(Collectors.toList());
   }
 
   public PointTransferResult transferPoint(Long senderId,

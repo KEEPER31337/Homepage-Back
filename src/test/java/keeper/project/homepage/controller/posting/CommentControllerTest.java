@@ -45,19 +45,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 public class CommentControllerTest extends ApiControllerTestSetUp {
 
-  final private String loginId = "hyeonmomo";
-  final private String password = "keeper";
-  final private String realName = "JeongHyeonMo";
-  final private String nickName = "JeongHyeonMo";
-  final private String emailAddress = "gusah@naver.com";
-  final private String studentId = "201724579";
-
   final private String adminLoginId = "hyeonmoAdmin";
   final private String adminPassword = "keeper2";
   final private String adminRealName = "JeongHyeonMo2";
   final private String adminNickName = "JeongHyeonMo2";
   final private String adminEmailAddress = "test2@k33p3r.com";
   final private String adminStudentId = "201724580";
+
+  final private String loginId = "hyeonmomo";
+  final private String password = "keeper";
+  final private String realName = "JeongHyeonMo";
+  final private String nickName = "JeongHyeonMo";
+  final private String emailAddress = "gusah@naver.com";
+  final private String studentId = "201724579";
 
   private LocalDateTime registerTime = LocalDateTime.now();
   private LocalDateTime updateTime = LocalDateTime.now();
@@ -160,8 +160,8 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
         .dislikeCount(1)
         .commentCount(0)
         .visitCount(0)
-        .registerTime(new Date())
-        .updateTime(new Date())
+        .registerTime(LocalDateTime.now())
+        .updateTime(LocalDateTime.now())
         .password("asdsdf")
         .memberId(memberEntity)
         .build());

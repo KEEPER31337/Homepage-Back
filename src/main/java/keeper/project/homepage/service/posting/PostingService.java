@@ -1,5 +1,7 @@
 package keeper.project.homepage.service.posting;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +17,7 @@ import keeper.project.homepage.entity.member.MemberHasPostingLikeEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
+import keeper.project.homepage.repository.FileRepository;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.member.MemberHasPostingDislikeRepository;
 import keeper.project.homepage.repository.member.MemberHasPostingLikeRepository;
@@ -34,6 +37,7 @@ public class PostingService {
   private final PostingRepository postingRepository;
   private final CategoryRepository categoryRepository;
   private final MemberRepository memberRepository;
+  private final FileRepository fileRepository;
   private final ThumbnailRepository thumbnailRepository;
   private final MemberHasPostingLikeRepository memberHasPostingLikeRepository;
   private final MemberHasPostingDislikeRepository memberHasPostingDislikeRepository;
@@ -91,8 +95,8 @@ public class PostingService {
         Long.valueOf(dto.getCategoryId()));
     Optional<ThumbnailEntity> thumbnailEntity = thumbnailRepository.findById(dto.getThumbnailId());
     MemberEntity memberEntity = getMemberEntityWithJWT();
-    dto.setRegisterTime(new Date());
-    dto.setUpdateTime(new Date());
+    dto.setRegisterTime(LocalDateTime.now());
+    dto.setUpdateTime(LocalDateTime.now());
     PostingEntity postingEntity = dto.toEntity(categoryEntity.get(), memberEntity,
         thumbnailEntity.get());
 
@@ -103,7 +107,8 @@ public class PostingService {
   @Transactional
   public PostingEntity getPostingById(Long pid) {
 
-    PostingEntity postingEntity = postingRepository.findById(pid).get();
+    PostingEntity postingEntity = postingRepository.findById(pid)
+        .orElseThrow(RuntimeException::new); // TODO: CustomPostingNotFoundException 만들어주세여~
     setWriterInfo(postingEntity);
 
     return postingEntity;
@@ -130,10 +135,10 @@ public class PostingService {
   }
 
   @Transactional
-  public PostingEntity updateById(PostingDto dto, Long postingId) {
+  public PostingEntity updateById(PostingDto dto, Long postingId, ThumbnailEntity newThumbnail) {
     PostingEntity tempEntity = postingRepository.findById(postingId).get();
 
-    dto.setUpdateTime(new Date());
+    dto.setUpdateTime(LocalDateTime.now());
     dto.setCommentCount(tempEntity.getCommentCount());
     dto.setLikeCount(tempEntity.getLikeCount());
     dto.setDislikeCount(tempEntity.getDislikeCount());
@@ -146,6 +151,7 @@ public class PostingService {
     tempEntity.updateInfo(dto.getTitle(), dto.getContent(),
         dto.getUpdateTime(), dto.getIpAddress(),
         dto.getAllowComment(), dto.getIsNotice(), dto.getIsSecret());
+    tempEntity.setThumbnail(newThumbnail);
 
     return postingRepository.save(tempEntity);
   }
@@ -162,23 +168,24 @@ public class PostingService {
   }
 
   @Transactional
-  public int deleteById(Long postingId) {
-    Optional<PostingEntity> postingEntity = postingRepository.findById(postingId);
+  public void delete(PostingEntity postingEntity) {
 
-    if (postingEntity.isPresent()) {
-      MemberEntity memberEntity = memberRepository.findById(
-          postingEntity.get().getMemberId().getId()).get();
+    MemberEntity memberEntity = memberRepository.findById(
+        postingEntity.getMemberId().getId()).orElseThrow(CustomMemberNotFoundException::new);
 
-      if (memberEntity.getId() != getMemberEntityWithJWT().getId()) {
-        throw new RuntimeException("작성자만 삭제할 수 있습니다.");
-      }
-
-      memberEntity.getPosting().remove(postingEntity.get());
-      postingRepository.delete(postingEntity.get());
-      return 1;
-    } else {
-      return 0;
+    if (!memberEntity.getId().equals(getMemberEntityWithJWT().getId())) {
+      throw new RuntimeException("작성자만 삭제할 수 있습니다.");
     }
+
+    // Foreign Key로 연결 된 file 제거
+    List<FileEntity> fileEntities = fileRepository.findAllByPostingId(postingEntity);
+    for (FileEntity fileEntity : fileEntities) {
+      fileEntity.setPostingId(null);
+      fileRepository.save(fileEntity);
+    }
+
+    memberEntity.getPosting().remove(postingEntity);
+    postingRepository.delete(postingEntity);
   }
 
   @Transactional
