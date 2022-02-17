@@ -17,7 +17,7 @@ public class BookDto {
   private String title;
   private String author;
   private String information;
-  private Integer department;
+  private Long department;
   private Long quantity;
   private Long thumbnailId;
 

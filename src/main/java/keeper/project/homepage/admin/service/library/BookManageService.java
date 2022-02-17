@@ -1,6 +1,5 @@
 package keeper.project.homepage.admin.service.library;
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -8,29 +7,24 @@ import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.dto.library.BookDto;
 import keeper.project.homepage.dto.result.CommonResult;
-import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.library.BookBorrowEntity;
 import keeper.project.homepage.entity.library.BookDepartmentEntity;
 import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.library.CustomBookBorrowNotFoundException;
+import keeper.project.homepage.exception.library.CustomBookDepartmentNotFoundException;
 import keeper.project.homepage.exception.library.CustomBookNotFoundException;
 import keeper.project.homepage.exception.library.CustomBookOverTheMaxException;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
-import keeper.project.homepage.repository.FileRepository;
-import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
+import keeper.project.homepage.repository.library.BookDepartmentRepository;
 import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
-import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.ResponseService;
-import keeper.project.homepage.service.ThumbnailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import reactor.util.annotation.Nullable;
 
 @Service
 @RequiredArgsConstructor
@@ -41,10 +35,7 @@ public class BookManageService {
   private final MemberRepository memberRepository;
   private static final Integer MAXIMUM_ALLOWD_BOOK_NUMBER = 4;
   private final ResponseService responseService;
-  private final FileService fileService;
-  private final ThumbnailService thumbnailService;
-  private final ThumbnailRepository thumbnailRepository;
-  private final FileRepository fileRepository;
+  private final BookDepartmentRepository bookDepartmentRepository;
 
   /**
    * 도서 최대 권수 체크
@@ -55,6 +46,8 @@ public class BookManageService {
     String author = bookDto.getAuthor();
     String information = bookDto.getInformation();
     Long quantity = bookDto.getQuantity();
+    BookDepartmentEntity department = bookDepartmentRepository.findById(bookDto.getDepartment())
+        .orElseThrow(() -> new CustomBookDepartmentNotFoundException());
 
     if (information == null) {
       information = "도서 정보입니다.";
@@ -70,7 +63,7 @@ public class BookManageService {
       throw new CustomBookOverTheMaxException("수량 초과입니다.");
     }
 
-    addBook(title, author, information, total, thumbnailEntity);
+    addBook(title, author, information, total, department, thumbnailEntity);
 
     return responseService.getSuccessResult();
   }
@@ -79,7 +72,7 @@ public class BookManageService {
    * 도서 추가
    */
   public void addBook(String title, String author, String information, Long total,
-      ThumbnailEntity thumbnailId) {
+      BookDepartmentEntity department, ThumbnailEntity thumbnailId) {
 
     Long borrowState = 0L;
     if (bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
@@ -91,6 +84,7 @@ public class BookManageService {
             .title(title)
             .author(author)
             .information(information)
+            .department(department)
             .total(total)
             .borrow(borrowState)
             .enable(total - borrowState)
