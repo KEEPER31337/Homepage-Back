@@ -1,6 +1,5 @@
 package keeper.project.homepage.repository.member;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -112,8 +111,8 @@ public class MemberHasCommentDislikeRepositoryTest {
         .dislikeCount(1)
         .commentCount(0)
         .visitCount(0)
-        .registerTime(new Date())
-        .updateTime(new Date())
+        .registerTime(LocalDateTime.now())
+        .updateTime(LocalDateTime.now())
         .memberId(memberEntity)
         .password("asdsdf")
         .build());

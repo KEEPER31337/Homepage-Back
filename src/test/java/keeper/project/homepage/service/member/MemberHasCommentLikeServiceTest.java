@@ -109,8 +109,8 @@ public class MemberHasCommentLikeServiceTest {
         .dislikeCount(1)
         .commentCount(0)
         .visitCount(0)
-        .registerTime(new Date())
-        .updateTime(new Date())
+        .registerTime(LocalDateTime.now())
+        .updateTime(LocalDateTime.now())
         .memberId(memberEntity)
         .password("asdsdf")
         .build());

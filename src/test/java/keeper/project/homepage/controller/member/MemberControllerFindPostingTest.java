@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -116,8 +117,8 @@ public class MemberControllerFindPostingTest extends MemberControllerTestSetup {
         .dislikeCount(0)
         .commentCount(0)
         .visitCount(0)
-        .registerTime(new Date())
-        .updateTime(new Date())
+        .registerTime(LocalDateTime.now())
+        .updateTime(LocalDateTime.now())
         .password("asd")
         .build();
     memberEntity2.getPosting().add(tempPosting);
@@ -138,8 +139,8 @@ public class MemberControllerFindPostingTest extends MemberControllerTestSetup {
           .dislikeCount(1)
           .commentCount(0)
           .visitCount(0)
-          .registerTime(new Date())
-          .updateTime(new Date())
+          .registerTime(LocalDateTime.now())
+          .updateTime(LocalDateTime.now())
           .password("asd2")
           .build());
       memberEntity.getPosting().add(posting);
@@ -159,8 +160,8 @@ public class MemberControllerFindPostingTest extends MemberControllerTestSetup {
           .dislikeCount(1)
           .commentCount(0)
           .visitCount(0)
-          .registerTime(new Date())
-          .updateTime(new Date())
+          .registerTime(LocalDateTime.now())
+          .updateTime(LocalDateTime.now())
           .password("asd2")
           .build());
       memberEntity.getPosting().add(tempPosting);

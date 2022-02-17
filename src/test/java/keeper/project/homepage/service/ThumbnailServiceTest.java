@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -179,8 +180,8 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
         .dislikeCount(0)
         .commentCount(0)
         .visitCount(0)
-        .registerTime(new Date())
-        .updateTime(new Date())
+        .registerTime(LocalDateTime.now())
+        .updateTime(LocalDateTime.now())
         .password("asd")
         .build();
 
@@ -200,8 +201,8 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
         .dislikeCount(1)
         .commentCount(0)
         .visitCount(0)
-        .registerTime(new Date())
-        .updateTime(new Date())
+        .registerTime(LocalDateTime.now())
+        .updateTime(LocalDateTime.now())
         .password("asd2")
         .build());
 
@@ -210,7 +211,7 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
         .fileName("test file")
         .filePath("test/file.txt")
         .fileSize(12345L)
-        .uploadTime(new Date())
+        .uploadTime(LocalDateTime.now())
         .ipAddress(postingEntity.getIpAddress())
         .build());
 

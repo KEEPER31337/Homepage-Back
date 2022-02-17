@@ -1,6 +1,8 @@
 package keeper.project.homepage.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,7 +40,7 @@ public class FileEntity {
   private Long fileSize;
   @CreationTimestamp
   @Column
-  private Date uploadTime;
+  private LocalDateTime uploadTime;
   @Column
   private String ipAddress;
   @ManyToOne(targetEntity = PostingEntity.class, fetch = FetchType.LAZY)

@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.FileInputStream;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -236,8 +237,8 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .dislikeCount(0)
         .commentCount(0)
         .visitCount(0)
-        .registerTime(new Date())
-        .updateTime(new Date())
+        .registerTime(LocalDateTime.now())
+        .updateTime(LocalDateTime.now())
         .password("asd")
         .build());
     memberEntity.getPosting().add(postingGeneralTest);
@@ -257,8 +258,8 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .dislikeCount(1)
         .commentCount(0)
         .visitCount(0)
-        .registerTime(new Date())
-        .updateTime(new Date())
+        .registerTime(LocalDateTime.now())
+        .updateTime(LocalDateTime.now())
         .password("asd2")
         .build());
     memberEntity.getPosting().add(postingModifyTest);
@@ -278,8 +279,8 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .dislikeCount(1)
         .commentCount(0)
         .visitCount(0)
-        .registerTime(new Date())
-        .updateTime(new Date())
+        .registerTime(LocalDateTime.now())
+        .updateTime(LocalDateTime.now())
         .password("asd2")
         .build());
     memberEntity.getPosting().add(postingDeleteTest);
@@ -299,8 +300,8 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .dislikeCount(1)
         .commentCount(0)
         .visitCount(0)
-        .registerTime(new Date())
-        .updateTime(new Date())
+        .registerTime(LocalDateTime.now())
+        .updateTime(LocalDateTime.now())
         .password("asd2")
         .build());
     memberEntity.getPosting().add(postingTempTest);
@@ -310,7 +311,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .fileName("test file")
         .filePath("test/file.txt")
         .fileSize(12345L)
-        .uploadTime(new Date())
+        .uploadTime(LocalDateTime.now())
         .ipAddress(postingGeneralTest.getIpAddress())
         .build();
     fileRepository.save(generalTestFile);
@@ -321,7 +322,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .fileName("test file")
         .filePath("test/file.txt")
         .fileSize(12345L)
-        .uploadTime(new Date())
+        .uploadTime(LocalDateTime.now())
         .ipAddress(postingModifyTest.getIpAddress())
         .build());
   }

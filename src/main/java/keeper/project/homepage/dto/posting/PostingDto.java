@@ -1,5 +1,7 @@
 package keeper.project.homepage.dto.posting;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -26,8 +28,8 @@ public class PostingDto {
   private Integer likeCount;
   private Integer dislikeCount;
   private Integer commentCount;
-  private Date registerTime;
-  private Date updateTime;
+  private LocalDateTime registerTime;
+  private LocalDateTime updateTime;
   private String ipAddress;
   private Integer allowComment;
   private Integer isNotice;

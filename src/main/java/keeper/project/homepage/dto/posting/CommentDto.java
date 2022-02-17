@@ -1,6 +1,5 @@
 package keeper.project.homepage.dto.posting;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.Transient;
 import keeper.project.homepage.entity.ThumbnailEntity;

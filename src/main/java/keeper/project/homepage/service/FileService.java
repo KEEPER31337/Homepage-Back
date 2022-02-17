@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.common.ImageFormatChecking;
@@ -83,7 +84,7 @@ public class FileService {
     // DB엔 상대경로로 저장
     fileDto.setFilePath(relDirPath + File.separator + file.getName());
     fileDto.setFileSize(file.length());
-    fileDto.setUploadTime(new Date());
+    fileDto.setUploadTime(LocalDateTime.now());
     fileDto.setIpAddress(ipAddress);
     return fileRepository.save(fileDto.toEntity(postingEntity));
   }

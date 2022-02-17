@@ -1,7 +1,10 @@
 package keeper.project.homepage.entity.posting;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -65,9 +68,11 @@ public class PostingEntity {
   @Column
   private Integer commentCount;
   @Column
-  private Date registerTime;
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+  private LocalDateTime registerTime;
   @Column
-  private Date updateTime;
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
+  private LocalDateTime updateTime;
   @Column
   private String ipAddress;
   @Column
@@ -102,7 +107,7 @@ public class PostingEntity {
   @Builder.Default
   private List<MemberHasPostingDislikeEntity> memberHasPostingDislikeEntities = new ArrayList<>();
 
-  public void updateInfo(String title, String content, Date updateTime, String ipAddress,
+  public void updateInfo(String title, String content, LocalDateTime updateTime, String ipAddress,
       Integer allowComment, Integer isNotice, Integer isSecret) {
     this.title = title;
     this.content = content;
