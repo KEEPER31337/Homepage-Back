@@ -58,6 +58,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   final private String bookAuthor1 = "박응용";
   final private String bookPicture1 = "JumpToPython.png";
   final private String bookInformation1 = "파이썬의 기본이 잘 정리된 책이다.";
+  final private Long bookDepartment1 = 1L;
   final private Long bookQuantity1 = 3L;
   final private Long bookBorrow1 = 0L;
   final private Long bookEnable1 = bookQuantity1 - bookBorrow1;
@@ -314,6 +315,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("title", bookTitle1);
     params.add("author", bookAuthor1);
     params.add("information", bookInformation1);
+    params.add("department", String.valueOf(bookDepartment1));
     params.add("quantity", String.valueOf(bookQuantity1));
 
     mockMvc.perform(multipart("/v1/admin/addbook")
@@ -335,6 +337,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
                 parameterWithName("title").description("책 제목"),
                 parameterWithName("author").description("저자"),
                 parameterWithName("information").description("한줄평(없어도 됨)"),
+                parameterWithName("department").description("도서 분류 코드"),
                 parameterWithName("quantity").description("추가 할 수량")
             ),
             requestParts(
@@ -355,6 +358,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1);
     params.add("author", bookAuthor1);
+    params.add("department", String.valueOf(bookDepartment1));
     params.add("quantity", String.valueOf(bookQuantity1));
 
     mockMvc.perform(post("/v1/admin/addbook")
@@ -376,6 +380,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", newTitle);
     params.add("author", bookAuthor1);
+    params.add("department", String.valueOf(bookDepartment1));
     params.add("quantity", String.valueOf(bookQuantity2));
 
     mockMvc.perform(post("/v1/admin/addbook")
@@ -398,6 +403,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", newTitle);
     params.add("author", newAuthor);
+    params.add("department", String.valueOf(bookDepartment1));
     params.add("quantity", String.valueOf(bookQuantity2));
 
     mockMvc.perform(post("/v1/admin/addbook")
@@ -418,6 +424,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1 + epochTime);
     params.add("author", bookAuthor1);
+    params.add("department", String.valueOf(bookDepartment1));
     params.add("quantity", String.valueOf(bookQuantity3));
 
     mockMvc.perform(post("/v1/admin/addbook")
