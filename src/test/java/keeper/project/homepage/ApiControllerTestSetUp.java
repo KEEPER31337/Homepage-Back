@@ -29,6 +29,7 @@ import keeper.project.homepage.service.library.BookManageService;
 import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.service.member.MemberHasCommentLikeService;
 import keeper.project.homepage.service.member.MemberService;
+import keeper.project.homepage.service.posting.CommentService;
 import keeper.project.homepage.service.sign.SignUpService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -117,6 +118,9 @@ public abstract class ApiControllerTestSetUp {
   @Autowired
   protected MemberService memberService;
 
+  @Autowired
+  protected CommentService commentService;
+  
   /********* Others Start ********/
   @Autowired
   protected MockMvc mockMvc;
@@ -132,7 +136,7 @@ public abstract class ApiControllerTestSetUp {
 
   @Autowired
   protected ExceptionAdvice exceptionAdvice;
-  
+
   @BeforeEach
   public void setUpAll(RestDocumentationContextProvider restDocumentation) throws Exception {
     // mockMvc의 한글 사용을 위한 코드
