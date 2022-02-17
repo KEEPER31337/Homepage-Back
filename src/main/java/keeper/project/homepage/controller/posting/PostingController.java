@@ -157,9 +157,9 @@ public class PostingController {
       @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
       PostingDto dto, @PathVariable("pid") Long postingId) {
 
-    saveThumbnail(thumbnail, dto);
+    ThumbnailEntity newThumbnail = saveThumbnail(thumbnail, dto);
 
-    PostingEntity postingEntity = postingService.updateById(dto, postingId);
+    PostingEntity postingEntity = postingService.updateById(dto, postingId, newThumbnail);
     deletePrevFiles(postingId);
     fileService.saveFiles(files, dto.getIpAddress(), postingEntity);
 
@@ -178,7 +178,7 @@ public class PostingController {
     deletePrevFiles(postingService.getPostingById(postingId));
   }
 
-  private void saveThumbnail(MultipartFile thumbnail, PostingDto dto) {
+  private ThumbnailEntity saveThumbnail(MultipartFile thumbnail, PostingDto dto) {
     ThumbnailEntity newThumbnail = null;
     FileEntity fileEntity = fileService.saveOriginalThumbnail(thumbnail, dto.getIpAddress());
     if (fileEntity == null) {
@@ -189,13 +189,14 @@ public class PostingController {
     if (newThumbnail == null) {
       throw new CustomThumbnailEntityNotFoundException("썸네일 저장 중에 에러가 발생했습니다.");
     }
+    return newThumbnail;
   }
 
   private void deletePrevThumbnail(PostingDto dto) {
     if (dto.getThumbnailId() != null) {
       ThumbnailEntity prevThumbnail = thumbnailService.findById(dto.getThumbnailId());
       thumbnailService.deleteById(prevThumbnail.getId());
-      fileService.deleteOriginalThumbnailById(prevThumbnail.getFile().getId());
+      fileService.deleteOriginalThumbnail(prevThumbnail);
     }
   }
 
@@ -208,14 +209,16 @@ public class PostingController {
       deleteThumbnail = thumbnailService.findById(
           postingEntity.getThumbnail().getId());
     }
+    System.out.println(postingEntity.getThumbnail());
 
     deletePrevFiles(postingEntity);
 
-    if (postingEntity.getThumbnail() != null) {
-      fileService.deleteOriginalThumbnailById(deleteThumbnail.getFile().getId());
-      thumbnailService.deleteById(deleteThumbnail.getId());
-    }
     postingService.delete(postingEntity);
+
+    if (postingEntity.getThumbnail() != null) {
+      thumbnailService.deleteById(deleteThumbnail.getId());
+      fileService.deleteOriginalThumbnail(deleteThumbnail);
+    }
 
     return responseService.getSuccessResult();
   }

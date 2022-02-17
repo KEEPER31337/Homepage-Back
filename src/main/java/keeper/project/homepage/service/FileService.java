@@ -8,11 +8,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.common.ImageFormatChecking;
 import keeper.project.homepage.dto.FileDto;
 import keeper.project.homepage.entity.FileEntity;
+import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.file.CustomFileNotFoundException;
 import keeper.project.homepage.exception.file.CustomFileDeleteFailedException;
@@ -140,22 +140,25 @@ public class FileService {
     fileRepository.deleteById(deleteId);
   }
 
-  public boolean deleteOriginalThumbnailById(Long deleteId) {
+  public void deleteOriginalThumbnail(ThumbnailEntity deleteThumbnail) {
+    Long deleteId = deleteThumbnail.getFile().getId();
     FileEntity deleted = fileRepository.findById(deleteId)
         .orElseThrow(CustomFileEntityNotFoundException::new);
-    File originalImageFile = new File(
-        System.getProperty("user.dir") + File.separator + deleted.getFilePath());
-    String originalImageFileName = originalImageFile.getName();
-    if (originalImageFileName.equals(defaultImageName) == false) {
-      if (originalImageFile.exists() == false) {
-        throw new CustomFileNotFoundException();
-      }
-      if (originalImageFile.delete() == false) {
-        throw new CustomFileDeleteFailedException();
+    if (!(fileRelDirPath + File.separator + defaultImageName).equals(
+        deleted.getFilePath())) { // 기본 이미지면 삭제 X
+      File originalImageFile = new File(
+          System.getProperty("user.dir") + File.separator + deleted.getFilePath());
+      String originalImageFileName = originalImageFile.getName();
+      if (originalImageFileName.equals(defaultImageName) == false) {
+        if (originalImageFile.exists() == false) {
+          throw new CustomFileNotFoundException();
+        }
+        if (originalImageFile.delete() == false) {
+          throw new CustomFileDeleteFailedException();
+        }
       }
     }
     deleteFileEntityById(deleteId);
-    return true;
   }
 
   public String encryptSHA256(String str) {

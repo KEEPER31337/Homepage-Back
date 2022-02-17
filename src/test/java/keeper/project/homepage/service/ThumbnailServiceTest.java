@@ -275,7 +275,7 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
     String originalThumbnailPath =
         System.getProperty("user.dir") + File.separator + thumbnailEntity.getFile().getFilePath();
     thumbnailService.deleteById(thumbnailEntity.getId());
-    fileService.deleteOriginalThumbnailById(thumbnailEntity.getFile().getId());
+    fileService.deleteOriginalThumbnail(thumbnailEntity);
 
     Assertions.assertTrue(thumbnailRepository.findById(thumbnailEntity.getId()).isEmpty());
     Assertions.assertTrue(fileRepository.findById(thumbnailEntity.getFile().getId()).isEmpty());
@@ -292,7 +292,7 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
         System.getProperty("user.dir") + File.separator + defaultThumbnailEntity.getFile()
             .getFilePath();
     thumbnailService.deleteById(defaultThumbnailEntity.getId());
-    fileService.deleteOriginalThumbnailById(defaultThumbnailEntity.getFile().getId());
+    fileService.deleteOriginalThumbnail(defaultThumbnailEntity);
 
     Assertions.assertTrue(thumbnailRepository.findById(defaultThumbnailEntity.getId()).isEmpty());
     Assertions.assertTrue(

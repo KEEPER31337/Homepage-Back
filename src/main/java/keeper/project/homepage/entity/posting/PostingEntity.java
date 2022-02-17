@@ -30,6 +30,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import lombok.Setter;
 import org.springframework.util.Assert;
 
 @Builder
@@ -92,6 +93,7 @@ public class PostingEntity {
   private CategoryEntity categoryId;
   @OneToOne
   @JoinColumn(name = "thumbnail_id")
+  @Setter
   private ThumbnailEntity thumbnail;
   @OneToMany(cascade = CascadeType.ALL, targetEntity = MemberHasPostingLikeEntity.class, mappedBy = "postingId", orphanRemoval = true, fetch = FetchType.LAZY)
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
