@@ -1,5 +1,6 @@
 package keeper.project.homepage.admin.service.library;
 
+import java.awt.print.Book;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -122,12 +123,15 @@ public class BookManageService {
     Long borrow = bookRepository.findByTitleAndAuthor(title, author).get().getBorrow();
     Long total = bookRepository.findByTitleAndAuthor(title, author).get().getTotal();
     Long enable = bookRepository.findByTitleAndAuthor(title, author).get().getEnable();
+    BookDepartmentEntity department = bookRepository.findByTitleAndAuthor(title, author).get()
+        .getDepartment();
 
     bookRepository.save(
         BookEntity.builder()
             .title(title)
             .author(author)
             .information(information)
+            .department(department)
             .total(total - quantity)
             .borrow(borrow)
             .enable(enable - quantity)
@@ -190,6 +194,7 @@ public class BookManageService {
     Long borrow = nowBookEntity.getBorrow() + quantity;
     Long enable = nowBookEntity.getEnable() - quantity;
     Date registerDate = nowBookEntity.getRegisterDate();
+    BookDepartmentEntity bookDepartment = nowBookEntity.getDepartment();
 
     bookRepository.save(
         BookEntity.builder()
@@ -292,12 +297,14 @@ public class BookManageService {
     Long borrow = nowBookEntity.getBorrow() - quantity;
     Long enable = nowBookEntity.getEnable() + quantity;
     Date registerDate = nowBookEntity.getRegisterDate();
+    BookDepartmentEntity department = nowBookEntity.getDepartment();
 
     bookRepository.save(
         BookEntity.builder()
             .title(title)
             .author(author)
             .information(infromation)
+            .department(department)
             .total(total)
             .borrow(borrow)
             .enable(enable)
