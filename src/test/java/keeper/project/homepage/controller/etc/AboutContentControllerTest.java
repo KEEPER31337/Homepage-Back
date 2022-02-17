@@ -1,6 +1,13 @@
 package keeper.project.homepage.controller.etc;
 
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -153,7 +160,22 @@ public class AboutContentControllerTest extends ApiControllerTestSetUp {
             .accept(MediaType.APPLICATION_JSON_VALUE))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true));
+        .andExpect(jsonPath("$.success").value(true))
+        .andDo(document("aboutContent-create",
+            requestFields(
+                fieldWithPath("content").description("생성하고자 하는 페이지 블럭 컨텐츠의 내용"),
+                fieldWithPath("staticWriteSubtitleImageId").description("생성하고자 하는 페이지 블럭 컨텐츠와 연결되는 페이지 블럭 서브타이틀의 ID"),
+                fieldWithPath("displayOrder").description("생성하고자 하는 페이지 블럭 컨텐츠가 보여지는 순서")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("data.id").description("생성에 성공한 페이지 블럭 컨텐츠의 ID"),
+                fieldWithPath("data.content").description("생성에 성공한 페이지 블럭 컨텐츠의 내용"),
+                fieldWithPath("data.staticWriteSubtitleImageId").description("생성에 성공한 페이지 블럭 컨텐츠와 연결된 페이지 블럭 서브타이틀의 ID"),
+                fieldWithPath("data.displayOrder").description("생성에 성공한 페이지 블럭 컨텐츠가 보여지는 순서")
+            )));
   }
 
   @Test
@@ -184,7 +206,20 @@ public class AboutContentControllerTest extends ApiControllerTestSetUp {
             .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true));
+        .andExpect(jsonPath("$.success").value(true))
+        .andDo(document("aboutContent-delete",
+            pathParameters(
+                parameterWithName("id").description("삭제하고자 하는 페이지 블럭 컨텐츠의 ID")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("data.id").description("삭제에 성공한 페이지 블럭 컨텐츠의 ID"),
+                fieldWithPath("data.content").description("삭제에 성공한 페이지 블럭 컨텐츠의 내용"),
+                fieldWithPath("data.staticWriteSubtitleImageId").description("삭제에 성공한 페이지 블럭 컨텐츠와 연결된 페이지 블럭 서브타이틀의 ID"),
+                fieldWithPath("data.displayOrder").description("삭제에 성공한 페이지 블럭 컨텐츠가 보여지던 순서")
+            )));
   }
 
   @Test
@@ -204,7 +239,25 @@ public class AboutContentControllerTest extends ApiControllerTestSetUp {
             .accept(MediaType.APPLICATION_JSON_VALUE))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true));
+        .andExpect(jsonPath("$.success").value(true))
+        .andDo(document("aboutContent-modify",
+            pathParameters(
+                parameterWithName("id").description("수정하고자 하는 페이지 블럭 컨텐츠의 ID")
+            ),
+            requestFields(
+                fieldWithPath("content").description("수정하고자 하는 페이지 블럭 컨텐츠의 내용(변하지 않을 시 기존 내용)"),
+                fieldWithPath("staticWriteSubtitleImageId").description("수정하고자 하는 페이지 블럭 컨텐츠와 연결되는 페이지 블럭 서브타이틀의 ID(변하지 않을 시 기존 ID)"),
+                fieldWithPath("displayOrder").description("수정하고자 하는 페이지 블럭 컨텐츠가 보여지는 순서(변하지 않을 시 기존 순서)")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("data.id").description("수정에 성공한 페이지 블럭 컨텐츠의 ID"),
+                fieldWithPath("data.content").description("수정에 성공한 페이지 블럭 컨텐츠의 내용"),
+                fieldWithPath("data.staticWriteSubtitleImageId").description("수정에 성공한 페이지 블럭 컨텐츠와 연결된 페이지 블럭 서브타이틀의 ID"),
+                fieldWithPath("data.displayOrder").description("수정에 성공한 페이지 블럭 컨텐츠가 보여지는 순서")
+            )));
   }
 
   @Test
