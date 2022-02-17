@@ -45,6 +45,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 public class CommentControllerTest extends ApiControllerTestSetUp {
 
+  final private String adminLoginId = "hyeonmoAdmin";
+  final private String adminPassword = "keeper2";
+  final private String adminRealName = "JeongHyeonMo2";
+  final private String adminNickName = "JeongHyeonMo2";
+  final private String adminEmailAddress = "test2@k33p3r.com";
+  final private String adminStudentId = "201724580";
+
   final private String loginId = "hyeonmomo";
   final private String password = "keeper";
   final private String realName = "JeongHyeonMo";
