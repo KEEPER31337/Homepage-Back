@@ -21,7 +21,7 @@ public class MemberHasCommentLikeService {
 
   public MemberHasCommentLikeEntity saveWithMemberAndCommentEntity(MemberEntity memberEntity,
       CommentEntity commentEntity) {
-    return memberHasCommentLikeRepository.save(MemberHasCommentLikeEntity.builder()
+    return memberHasCommentLikeRepository.saveAndFlush(MemberHasCommentLikeEntity.builder()
         .memberHasCommentEntityPK(new MemberHasCommentEntityPK(memberEntity, commentEntity))
         .build());
   }

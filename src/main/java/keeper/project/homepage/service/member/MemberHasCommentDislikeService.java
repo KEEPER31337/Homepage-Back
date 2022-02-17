@@ -22,7 +22,7 @@ public class MemberHasCommentDislikeService {
 
   public MemberHasCommentDislikeEntity saveWithMemberAndCommentEntity(MemberEntity memberEntity,
       CommentEntity commentEntity) {
-    return memberHasCommentDislikeRepository.save(MemberHasCommentDislikeEntity.builder()
+    return memberHasCommentDislikeRepository.saveAndFlush(MemberHasCommentDislikeEntity.builder()
         .memberHasCommentEntityPK(new MemberHasCommentEntityPK(memberEntity, commentEntity))
         .build());
   }

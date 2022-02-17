@@ -50,6 +50,7 @@ public class CommentController {
     return ResponseEntity.ok().body(responseService.getSuccessResult());
   }
 
+  @Secured("ROLE_회원")
   @GetMapping(value = "/{postId}")
   public ResponseEntity<ListResult<CommentDto>> showCommentByPostId(
       @PathVariable("postId") Long postId,
@@ -57,7 +58,8 @@ public class CommentController {
           @SortDefault(sort = "registerTime", direction = Direction.ASC)})
       @PageableDefault(page = 0, size = 10) Pageable pageable) {
 
-    List<CommentDto> dtoPage = commentService.findAllByPost(postId, pageable);
+    Long memberId = authService.getMemberIdByJWT();
+    List<CommentDto> dtoPage = commentService.findAllByPost(memberId, postId, pageable);
     return ResponseEntity.ok().body(responseService.getSuccessListResult(dtoPage));
   }
 
