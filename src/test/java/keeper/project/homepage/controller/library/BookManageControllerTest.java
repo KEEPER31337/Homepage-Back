@@ -359,6 +359,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
 
     mockMvc.perform(post("/v1/admin/addbook")
             .params(params)
+            .contentType(MediaType.MULTIPART_FORM_DATA)
             .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().is5xxServerError())
@@ -379,6 +380,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
 
     mockMvc.perform(post("/v1/admin/addbook")
             .params(params)
+            .contentType(MediaType.MULTIPART_FORM_DATA)
             .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -400,6 +402,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
 
     mockMvc.perform(post("/v1/admin/addbook")
             .params(params)
+            .contentType(MediaType.MULTIPART_FORM_DATA)
             .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -419,6 +422,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
 
     mockMvc.perform(post("/v1/admin/addbook")
             .params(params)
+            .contentType(MediaType.MULTIPART_FORM_DATA)
             .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().is5xxServerError())
