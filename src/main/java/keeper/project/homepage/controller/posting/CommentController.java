@@ -15,7 +15,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.data.web.SortDefault.SortDefaults;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -66,7 +65,7 @@ public class CommentController {
   @DeleteMapping("/{commentId}")
   public ResponseEntity<CommonResult> deleteComment(@PathVariable("commentId") Long commentId) {
     Long memberId = authService.getMemberIdByJWT();
-    commentService.deleteById(commentId, memberId);
+    commentService.deleteByWriter(memberId, commentId);
     return ResponseEntity.ok().body(responseService.getSuccessResult());
   }
 

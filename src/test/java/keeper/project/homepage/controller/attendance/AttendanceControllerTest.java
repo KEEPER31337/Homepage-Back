@@ -102,18 +102,14 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
         .andDo(document("attend-create",
             requestFields(
                 fieldWithPath("ipAddress").description("IP 주소"),
-                fieldWithPath("greetings").description("인삿말").type(JsonFieldType.STRING).optional()
+                fieldWithPath("greetings").description("인삿말 (null일 경우 \"자동출석입니다\")")
+                    .type(JsonFieldType.STRING).optional()
             ),
             responseFields(
                 fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
                 fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
                 fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다")
             )));
-
-    List<AttendanceEntity> attendanceEntities = attendanceRepository.findAllByMember(
-        memberEntity1);
-    AttendanceEntity attendance = attendanceEntities.get(attendanceEntities.size() - 1);
-    assertEquals(1, (int) attendance.getRank());
   }
 
   @Test
@@ -250,15 +246,17 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
                 fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
                 fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
-                fieldWithPath("data.id").description("출석 id"),
-                fieldWithPath("data.time").description("출석한 시간"),
-                fieldWithPath("data.point").description("해당일 받은 순위권 + 개근 point"),
-                fieldWithPath("data.randomPoint").description("해당일 받은 random Point"),
-                fieldWithPath("data.ipAddress").description("출석 당시 ip 주소"),
+                fieldWithPath("data.ipAddress").description("출석 당시 IP 주소 (앞의 두 자리는 가려집니다.)"),
+                fieldWithPath("data.nickName").description("출석자의 nickname"),
+                subsectionWithPath("data.thumbnail").description("출석자의 썸네일 정보"),
                 fieldWithPath("data.greetings").description("해당일 출석 메시지"),
-                fieldWithPath("data.continousDay").description("현재 개근 일 수"),
+                fieldWithPath("data.continuousDay").description("현재 개근 일 수"),
                 fieldWithPath("data.rank").description("랭킹"),
-                subsectionWithPath("data.member").description("회원 정보")
+                fieldWithPath("data.point").description(
+                    "해당일 받은 순위권 point + 개근 point + 해당일 받은 random point + 기본 출석 point(1000)"),
+                fieldWithPath("data.rankPoint").description("해당일 받은 순위권 point"),
+                fieldWithPath("data.continuousPoint").description("개근 point"),
+                fieldWithPath("data.randomPoint").description("해당일 받은 random Point")
             )));
 
     LocalDate twoDaysAgoParam = LocalDate.now().minusDays(2);
@@ -291,12 +289,17 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
                 fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
                 fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
-                fieldWithPath("list[].ipAddress").description("출석 당시 ip 주소(가려서)"),
-                fieldWithPath("list[].nickName").description("사용자 이름"),
-                subsectionWithPath("list[].thumbnail").description("썸네일 정보"),
+                fieldWithPath("list[].ipAddress").description("출석 당시 IP 주소 (앞의 두 자리는 가려집니다.)"),
+                fieldWithPath("list[].nickName").description("출석자의 nickname"),
+                subsectionWithPath("list[].thumbnail").description("출석자의 썸네일 정보"),
                 fieldWithPath("list[].greetings").description("해당일 출석 메시지"),
-                fieldWithPath("list[].continousDay").description("현재 개근 일 수"),
-                fieldWithPath("list[].rank").description("랭킹")
+                fieldWithPath("list[].continuousDay").description("현재 개근 일 수"),
+                fieldWithPath("list[].rank").description("랭킹"),
+                fieldWithPath("list[].point").description(
+                    "해당일 받은 순위권 point + 개근 point + 해당일 받은 random point + 기본 출석 point(1000)"),
+                fieldWithPath("list[].rankPoint").description("해당일 받은 순위권 point"),
+                fieldWithPath("list[].continuousPoint").description("개근 point"),
+                fieldWithPath("list[].randomPoint").description("해당일 받은 random Point")
             )));
   }
 
@@ -328,17 +331,18 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
 
   private void generateNewAttendanceWithTime(Date time, MemberEntity memberEntity)
       throws Exception {
-    Random random = new Random();
     attendanceRepository.save(
         AttendanceEntity.builder()
-            .point(10)
-            .continousDay(0)
-            .greetings("hi")
-            .ipAddress(ipAddress1)
             .time(time)
-            .member(memberEntity)
-            .rank(3)
+            .point(10)
+            .rankPoint(500)
+            .continuousPoint(0)
             .randomPoint((int) (Math.random() * 900 + 100))
+            .ipAddress(ipAddress1)
+            .greetings("hi")
+            .continuousDay(1)
+            .rank(3)
+            .member(memberEntity)
             .build());
   }
 

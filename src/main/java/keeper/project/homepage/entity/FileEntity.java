@@ -1,6 +1,8 @@
 package keeper.project.homepage.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 
 @Builder
@@ -38,12 +41,13 @@ public class FileEntity {
   private Long fileSize;
   @CreationTimestamp
   @Column
-  private Date uploadTime;
+  private LocalDateTime uploadTime;
   @Column
   private String ipAddress;
   @ManyToOne(targetEntity = PostingEntity.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "posting_id")
   @JsonIgnore
+  @Setter
   private PostingEntity postingId;
 
   @OneToOne(mappedBy = "file")
