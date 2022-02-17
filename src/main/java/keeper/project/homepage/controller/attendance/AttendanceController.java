@@ -1,28 +1,18 @@
 package keeper.project.homepage.controller.attendance;
 
-import java.lang.reflect.Field;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import keeper.project.homepage.dto.attendance.AttendanceDto;
-import keeper.project.homepage.dto.attendance.AttendanceForListDto;
-import keeper.project.homepage.dto.attendance.AttendancePointDto;
+import keeper.project.homepage.dto.attendance.AttendanceResultDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.dto.result.SingleResult;
-import keeper.project.homepage.entity.attendance.AttendanceEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.service.ResponseService;
 import keeper.project.homepage.service.attendance.AttendanceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -68,15 +58,15 @@ public class AttendanceController {
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/info")
-  public SingleResult<AttendanceEntity> getAttend(
+  public SingleResult<AttendanceResultDto> getAttend(
       @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate date) {
     return responseService.getSuccessSingleResult(
-        attendanceService.getMyAttendance(date));
+        attendanceService.getMyAttendanceWithDate(date));
   }
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/all")
-  public ListResult<AttendanceForListDto> getAllAttend(
+  public ListResult<AttendanceResultDto> getAllAttend(
       @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate date) {
     return responseService.getSuccessListResult(
         attendanceService.getAllAttendance(date));

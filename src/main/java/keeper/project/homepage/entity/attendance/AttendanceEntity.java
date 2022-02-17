@@ -37,6 +37,12 @@ public class AttendanceEntity {
   @Column(name = "point", nullable = false)
   private Integer point;
 
+  @Column(name = "rank_point", nullable = false)
+  private Integer rankPoint;
+
+  @Column(name = "continuous_point", nullable = false)
+  private Integer continuousPoint;
+
   @Column(name = "random_point", nullable = false)
   private Integer randomPoint;
 
