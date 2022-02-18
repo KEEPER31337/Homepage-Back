@@ -65,6 +65,7 @@ public class MemberControllerFindPostingTest extends MemberControllerTestSetup {
         .emailAddress(emailAddress)
         .studentId(studentId)
         .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
+        .generation(getMemberGeneration())
         .build();
     memberRepository.save(memberEntity);
     memberEntity2 = MemberEntity.builder()
@@ -75,6 +76,7 @@ public class MemberControllerFindPostingTest extends MemberControllerTestSetup {
         .emailAddress(emailAddress + "2")
         .studentId(studentId + "2")
         .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
+        .generation(getMemberGeneration())
         .build();
     memberRepository.save(memberEntity2);
 

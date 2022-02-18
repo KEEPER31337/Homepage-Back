@@ -1,8 +1,11 @@
 package keeper.project.homepage.controller.member;
 
+import static keeper.project.homepage.service.sign.SignUpService.HALF_GENERATION_MONTH;
+import static keeper.project.homepage.service.sign.SignUpService.KEEPER_FOUNDING_YEAR;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -32,6 +35,9 @@ public class MemberControllerTestSetup extends ApiControllerTestSetUp {
         fieldWithPath("data.registerDate").description("가입 날짜"),
         fieldWithPath("data.point").description("포인트 점수"),
         fieldWithPath("data.level").description("레벨"),
+        fieldWithPath("data.merit").description("상점"),
+        fieldWithPath("data.demerit").description("벌점"),
+        fieldWithPath("data.generation").description("기수 (7월 이후는 N.5기)"),
         fieldWithPath("data.thumbnailId").description("회원의 썸네일 이미지 아이디"),
         fieldWithPath("data.rank").description("회원 등급: null, 우수회원, 일반회원"),
         fieldWithPath("data.type").description("회원 상태: null, 비회원, 정회원, 휴면회원, 졸업회원, 탈퇴"),
@@ -59,6 +65,9 @@ public class MemberControllerTestSetup extends ApiControllerTestSetUp {
         fieldWithPath("list[].point").description("포인트 점수"),
         fieldWithPath("list[].level").description("레벨"),
         fieldWithPath("list[].thumbnailId").description("회원의 썸네일 이미지 아이디"),
+        fieldWithPath("list[].merit").description("상점"),
+        fieldWithPath("list[].demerit").description("벌점"),
+        fieldWithPath("list[].generation").description("기수 (7월 이후는 N.5기)"),
         fieldWithPath("list[].rank").description("회원 등급: null, 우수회원, 일반회원"),
         fieldWithPath("list[].type").description("회원 상태: null, 비회원, 정회원, 휴면회원, 졸업회원, 탈퇴"),
         fieldWithPath("list[].jobs").description(
@@ -110,4 +119,12 @@ public class MemberControllerTestSetup extends ApiControllerTestSetUp {
     return responseFields(commonFields);
   }
 
+  public Float getMemberGeneration() {
+    LocalDate date = LocalDate.now();
+    Float generation = (float) (date.getYear() - KEEPER_FOUNDING_YEAR);
+    if (date.getMonthValue() >= HALF_GENERATION_MONTH) {
+      generation += 0.5F;
+    }
+    return generation;
+  }
 }

@@ -142,6 +142,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
         .memberType(memberTypeEntity)
         .memberRank(memberRankEntity)
         .thumbnail(thumbnailEntity)
+        .generation(getMemberGeneration())
 //        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
     memberEntity = memberRepository.save(memberEntity);
@@ -194,6 +195,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
         .memberType(memberTypeEntity)
         .memberRank(memberRankEntity)
         .thumbnail(thumbnailEntity)
+        .generation(getMemberGeneration())
         .memberJobs(new ArrayList<>(List.of(hasMemberAdminJobEntity)))
         .build();
     memberRepository.save(memberAdmin);
@@ -217,6 +219,37 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
     SingleResult<SignInDto> adminSign = mapper.readValue(adminResultString, new TypeReference<>() {
     });
     adminToken = adminSign.getData().getToken();
+  }
+
+  @Test
+  @DisplayName("Admin 권한으로 회원 기수 변경하기")
+  public void updateGeneration() throws Exception {
+    String content = "{"
+        + "\"memberLoginId\" : \"" + loginId + "\","
+        + "\"generation\" : \"" + 7.5 + "\""
+        + "}";
+    String docMsg = "변경할 기수를 입력하지 않았다면 실패합니다.";
+    String docCode =
+        "입력 데이터가 비어있는 경우: " + exceptionAdvice.getMessage("memberEmptyField.code") + " +\n"
+            + "존재하지 않는 회원인 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+    mockMvc.perform(MockMvcRequestBuilders
+            .put("/v1/admin/member/update/generation")
+            .header("Authorization", adminToken)
+            .content(content)
+            .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.data").exists())
+        .andExpect(jsonPath("$.data.generation").value(7.5))
+        .andDo(document("member-update-generation",
+            requestFields(
+                fieldWithPath("memberLoginId").description("변경할 회원의 로그인 아이디"),
+                fieldWithPath("generation").description("변경할 회원 기수")
+            ),
+            generateMemberCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
+        ));
   }
 
   @Test
@@ -249,7 +282,6 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
             ),
             generateMemberCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
         ));
-    ;
 
     MemberEntity member = memberRepository.findByLoginId(loginId).get();
     assertTrue(

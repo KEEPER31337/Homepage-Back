@@ -135,6 +135,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
         .memberType(memberTypeEntity)
         .memberRank(memberRankEntity)
         .thumbnail(thumbnailEntity)
+        .generation(getMemberGeneration())
 //        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
     memberEntity = memberRepository.save(memberEntity);
@@ -188,6 +189,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
         .memberRank(memberRankEntity)
         .thumbnail(thumbnailEntity)
         .memberJobs(new ArrayList<>(List.of(hasMemberAdminJobEntity)))
+        .generation(getMemberGeneration())
         .build();
     memberRepository.save(memberAdmin);
 
