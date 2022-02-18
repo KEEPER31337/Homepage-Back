@@ -189,6 +189,7 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
         .member(memberEntity)
         .postingId(postingEntity)
         .build());
+
   }
 
   @Test
@@ -254,8 +255,8 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
   public void showCommentByPostIdTest() throws Exception {
     Long postId = postingEntity.getId();
     for (int i = 0; i < 15; i++) {
-      commentRepository.save(CommentEntity.builder()
-          .content("페이징 댓글 내용")
+      CommentEntity comment = commentRepository.save(CommentEntity.builder()
+          .content("페이징 댓글 내용 " + i)
           .registerTime(registerTime)
           .updateTime(updateTime)
           .ipAddress(ipAddress)
@@ -265,12 +266,14 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
           .member(memberEntity)
           .postingId(postingEntity)
           .build());
+      commentService.updateLikeCount(memberEntity.getId(), comment.getId());
     }
 
     mockMvc.perform(
             RestDocumentationRequestBuilders.get("/v1/comment/{postId}", postId)
                 .param("page", "0")
                 .param("size", "10")
+                .header("Authorization", userToken)
         )
         .andDo(print())
         .andExpect(status().isOk())
@@ -294,10 +297,14 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].ipAddress").description("댓글 작성자의 ip address"),
                 fieldWithPath("list[].likeCount").description("좋아요 개수"),
                 fieldWithPath("list[].dislikeCount").description("싫어요 개수"),
+                fieldWithPath("list[].checkedLike").description(
+                    "좋아요 눌렀는지 확인 (눌렀으면 true, 아니면 false)"),
+                fieldWithPath("list[].checkedDislike").description(
+                    "싫어요 눌렀는지 확인 (눌렀으면 true, 아니면 false)"),
                 fieldWithPath("list[].parentId").description("대댓글인 경우, 부모 댓글의 id"),
                 fieldWithPath("list[].writer").optional().description("작성자 (탈퇴한 작성자일 경우 null)"),
                 fieldWithPath("list[].writerId").optional().description("작성자 (탈퇴한 작성자일 경우 null)"),
-                fieldWithPath("list[].writerThumbnailId").optional()
+                fieldWithPath("list[].writerThumbnailId").optional().type(Long.TYPE)
                     .description("작성자 (탈퇴했을 경우 / 썸네일을 등록하지 않았을 경우 null)")
             )
         ));
@@ -385,7 +392,7 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.parentId").ignored(),
                 fieldWithPath("data.writer").optional().description("작성자 (탈퇴한 작성자일 경우 null)"),
                 fieldWithPath("data.writerId").optional().description("작성자 (탈퇴한 작성자일 경우 null)"),
-                fieldWithPath("data.writerThumbnailId").optional()
+                fieldWithPath("data.writerThumbnailId").optional().type(Long.TYPE)
                     .description("작성자 (탈퇴했을 경우 / 썸네일을 등록하지 않았을 경우 null)")
 //                fieldWithPath("data.memberId").ignored(),
 //                fieldWithPath("data.postingId").ignored()

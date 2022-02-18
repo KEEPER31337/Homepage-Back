@@ -166,7 +166,8 @@ public class CommentServiceTest {
   public void findAllWithPagingTest() {
     Long postId = postingEntity.getId();
     Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
-    List<CommentDto> commentEntityPage = commentService.findAllByPost(postId, pageable);
+    List<CommentDto> commentEntityPage = commentService.findAllByPost(memberEntity.getId(), postId,
+        pageable);
 
     Assertions.assertFalse(commentEntityPage.isEmpty());
     commentEntityPage.forEach(comment -> log.info(comment.getId()));

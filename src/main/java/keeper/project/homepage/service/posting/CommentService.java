@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.dto.posting.CommentDto;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.member.MemberHasCommentEntityPK;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.CustomAuthenticationEntryPointException;
@@ -17,6 +18,7 @@ import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.service.member.MemberHasCommentLikeService;
 import keeper.project.homepage.service.member.MemberService;
+import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,6 +33,7 @@ public class CommentService {
   private final CommentRepository commentRepository;
   private final PostingService postingService;
   private final MemberService memberService;
+  private final AuthService authService;
   private final MemberHasCommentLikeService memberHasCommentLikeService;
   private final MemberHasCommentDislikeService memberHasCommentDislikeService;
   private final MemberHasCommentLikeRepository memberHasCommentLikeRepository;
@@ -54,6 +57,14 @@ public class CommentService {
     }
   }
 
+  private boolean checkPushLike(MemberEntity member, CommentEntity comment) {
+    return memberHasCommentLikeService.findById(member, comment) == null ? false : true;
+  }
+
+  private boolean checkPushDislike(MemberEntity member, CommentEntity comment) {
+    return memberHasCommentDislikeService.findById(member, comment) == null ? false : true;
+  }
+
   @Transactional
   public CommentDto save(CommentDto commentDto, Long postId, Long memberId) {
     checkNotEmptyContent(commentDto);
@@ -75,14 +86,26 @@ public class CommentService {
     return commentDto;
   }
 
-  public List<CommentDto> findAllByPost(Long postId, Pageable pageable) {
+  // FIXME : service에서 jwt확인하면 service test가 모두 먹통이 됨
+//  private MemberEntity getMemberByJWT() {
+//    Long memberId = authService.getMemberIdByJWT();
+//    return memberService.findById(memberId);
+//  }
+
+  public List<CommentDto> findAllByPost(Long memberId, Long postId, Pageable pageable) {
+    MemberEntity member = memberService.findById(memberId);
     PostingEntity postingEntity = postingService.getPostingById(postId);
-    Page<CommentEntity> entityPage = commentRepository.findAllByPostingId(postingEntity, pageable);
+    List<CommentEntity> entityPage = commentRepository.findAllByPostingId(postingEntity, pageable)
+        .getContent();
 
     List<CommentDto> dtoPage = new ArrayList<>();
-    for (CommentEntity comment : entityPage.getContent()) {
+    for (CommentEntity comment : entityPage) {
       CommentDto dto = CommentDto.builder().build();
       dto.initWithEntity(comment);
+      dto.setCheckedLike(false);
+      dto.setCheckedDislike(false);
+      dto.setCheckedLike(checkPushLike(member, comment));
+      dto.setCheckedDislike(checkPushDislike(member, comment));
       dtoPage.add(dto);
     }
 
