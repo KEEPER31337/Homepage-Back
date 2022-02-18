@@ -53,7 +53,7 @@ link:posting.html[API 문서 보기]
 
 == *댓글*
 
-link:comment.html[API 문서 보기]
+link:posting/comment.html[API 문서 보기]
 
 == *회원 관리*
 
