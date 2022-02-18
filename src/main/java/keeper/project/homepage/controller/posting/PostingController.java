@@ -209,10 +209,7 @@ public class PostingController {
       deleteThumbnail = thumbnailService.findById(
           postingEntity.getThumbnail().getId());
     }
-    System.out.println(postingEntity.getThumbnail());
-
     deletePrevFiles(postingEntity);
-
     postingService.delete(postingEntity);
 
     if (postingEntity.getThumbnail() != null) {
