@@ -419,7 +419,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
             result.getResolvedException() instanceof CustomMemberNotFoundException))
         .andExpect(jsonPath("$.success").value(false));
   }
-  
+
   @Test
   @DisplayName("회원 정보 조회(민감한 정보 제외) - 성공")
   public void getAllGeneralMemberInfoSuccess() throws Exception {

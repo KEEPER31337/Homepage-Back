@@ -1,7 +1,13 @@
 package keeper.project.homepage.controller.point;
 
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -135,64 +141,6 @@ public class PointLogControllerTest extends ApiControllerTestSetUp {
   }
 
   @Test
-  @DisplayName("포인트 사용 로그 생성하기 - 성공")
-  public void createPointUseLogSuccess() throws Exception {
-    String content = "{\n"
-        + "    \"time\": \"" + now + "\",\n"
-        + "    \"point\": \"" + 100 + "\",\n"
-        + "    \"detail\": \"" + "포인트복권에서 사용" + "\",\n"
-        + "    \"isSpent\": \"" + 1 + "\"\n"
-        + "}";
-
-    mockMvc.perform(post("/v1/point/create")
-            .header("Authorization", userToken1)
-            .content(content)
-            .contentType(MediaType.APPLICATION_JSON))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true));
-  }
-
-  @Test
-  @DisplayName("포인트 적립 로그 생성하기 - 성공")
-  public void createPointSaveLogSuccess() throws Exception {
-    String content = "{\n"
-        + "    \"time\": \"" + now + "\",\n"
-        + "    \"point\": \"" + 1000 + "\",\n"
-        + "    \"detail\": \"" + "포인트복권에서 적립" + "\",\n"
-        + "    \"isSpent\": \"" + 0 + "\"\n"
-        + "}";
-
-    mockMvc.perform(post("/v1/point/create")
-            .header("Authorization", userToken1)
-            .content(content)
-            .contentType(MediaType.APPLICATION_JSON))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true));
-  }
-
-  @Test
-  @DisplayName("포인트 로그 생성하기 - 실패(잘못된 사용 여부 요청)")
-  public void createPointSaveLogFail() throws Exception {
-    String content = "{\n"
-        + "    \"time\": \"" + now + "\",\n"
-        + "    \"point\": \"" + 1000 + "\",\n"
-        + "    \"detail\": \"" + "포인트복권에서 적립" + "\",\n"
-        + "    \"isSpent\": \"" + 3 + "\"\n"
-        + "}";
-
-    mockMvc.perform(post("/v1/point/create")
-            .header("Authorization", userToken1)
-            .content(content)
-            .contentType(MediaType.APPLICATION_JSON))
-        .andDo(print())
-        .andExpect(status().is5xxServerError())
-        .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.msg").value("존재하지 않는 포인트 사용 여부 요청입니다."));
-  }
-
-  @Test
   @DisplayName("포인트 선물하기 - 성공")
   public void transferPointSuccess() throws Exception {
     String content = "{\n"
@@ -208,7 +156,28 @@ public class PointLogControllerTest extends ApiControllerTestSetUp {
             .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true));
+        .andExpect(jsonPath("$.success").value(true))
+        .andDo(document("point-transfer",
+            requestFields(
+                fieldWithPath("time").description("선물한 포인트 로그가 생성되는 시간"),
+                fieldWithPath("point").description("선물한 포인트 값"),
+                fieldWithPath("detail").description("선물 시 작성하게 되는 내용"),
+                fieldWithPath("presentedId").description("선물 받는 멤버의 ID")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("data.memberName").description("포인트를 선물한 멤버의 실제 이름"),
+                fieldWithPath("data.time").description("선물한 포인트 로그가 생성된 시간"),
+                fieldWithPath("data.point").description("선물한 포인트 값"),
+                fieldWithPath("data.detail").description("선물 시 작성한 내용"),
+                fieldWithPath("data.presentedMemberName").description("포인트를 선물받은 멤버의 실제 이름"),
+                fieldWithPath("data.prePointMember").description("포인트를 선물한 멤버의 선물 보내기 전 포인트"),
+                fieldWithPath("data.finalPointMember").description("포인트를 선물한 멤버의 선물 보낸 후 포인트"),
+                fieldWithPath("data.prePointPresented").description("포인트를 선물받은 멤버의 선물 받기 전 포인트"),
+                fieldWithPath("data.finalPointPresented").description("포인트를 선물받은 멤버의 선물 받은 후 포인트")
+            )));
   }
 
   @Test
@@ -260,7 +229,24 @@ public class PointLogControllerTest extends ApiControllerTestSetUp {
             .header("Authorization", userToken1))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true));
+        .andExpect(jsonPath("$.success").value(true))
+        .andDo(document("point-lists-log",
+            requestParameters(
+                parameterWithName("page").optional().description("페이지 번호(default = 0)"),
+                parameterWithName("size").optional().description("한 페이지당 출력 수(default = 20)")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("list[].memberId").description("해당 포인트 로그를 보유한 멤버의 ID"),
+                fieldWithPath("list[].time").description("해당 포인트 로그가 생성된 시간"),
+                fieldWithPath("list[].point").description("포인트 변화량"),
+                fieldWithPath("list[].detail").description("포인트 변화를 발생시킨 내용"),
+                fieldWithPath("list[].isSpent").description("포인트 사용/적립 여부(0: 적립, 1: 사용)"),
+                fieldWithPath("list[].prePoint").description("포인트 변화가 발생하기 전 멤버의 포인트"),
+                fieldWithPath("list[].finalPoint").description("포인트 변화 발생 후 멤버의 포인트")
+            )));
   }
 
   @Test
@@ -272,7 +258,26 @@ public class PointLogControllerTest extends ApiControllerTestSetUp {
             .header("Authorization", userToken1))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true));
+        .andExpect(jsonPath("$.success").value(true))
+        .andDo(document("point-lists-sentLog",
+            requestParameters(
+                parameterWithName("page").optional().description("페이지 번호(default = 0)"),
+                parameterWithName("size").optional().description("한 페이지당 출력 수(default = 20)")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("list[].memberName").description("포인트를 선물한 멤버의 실제 이름"),
+                fieldWithPath("list[].time").description("포인트 선물 로그가 생성된 시간"),
+                fieldWithPath("list[].point").description("선물한 포인트"),
+                fieldWithPath("list[].detail").description("선물 시 작성한 내용"),
+                fieldWithPath("list[].presentedMemberName").description("포인트를 선물받은 멤버의 실제 이름"),
+                fieldWithPath("list[].prePointMember").description("포인트를 선물한 멤버의 선물하기 전 포인트"),
+                fieldWithPath("list[].finalPointMember").description("포인트를 선물한 멤버의 선물한 후 포인트"),
+                fieldWithPath("list[].prePointPresented").description("포인트를 선물받은 멤버의 선물받기 전 포인트"),
+                fieldWithPath("list[].finalPointPresented").description("포인트를 선물받은 멤버의 선물받은 후 포인트")
+            )));
   }
 
   @Test
@@ -284,7 +289,26 @@ public class PointLogControllerTest extends ApiControllerTestSetUp {
             .header("Authorization", userToken2))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true));
+        .andExpect(jsonPath("$.success").value(true))
+        .andDo(document("point-lists-receivedLog",
+            requestParameters(
+                parameterWithName("page").optional().description("페이지 번호(default = 0)"),
+                parameterWithName("size").optional().description("한 페이지당 출력 수(default = 20)")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("list[].memberName").description("포인트를 선물한 멤버의 실제 이름"),
+                fieldWithPath("list[].time").description("포인트 선물 로그가 생성된 시간"),
+                fieldWithPath("list[].point").description("선물한 포인트"),
+                fieldWithPath("list[].detail").description("선물 시 작성한 내용"),
+                fieldWithPath("list[].presentedMemberName").description("포인트를 선물받은 멤버의 실제 이름"),
+                fieldWithPath("list[].prePointMember").description("포인트를 선물한 멤버의 선물하기 전 포인트"),
+                fieldWithPath("list[].finalPointMember").description("포인트를 선물한 멤버의 선물한 후 포인트"),
+                fieldWithPath("list[].prePointPresented").description("포인트를 선물받은 멤버의 선물받기 전 포인트"),
+                fieldWithPath("list[].finalPointPresented").description("포인트를 선물받은 멤버의 선물받은 후 포인트")
+            )));
   }
 
 }
