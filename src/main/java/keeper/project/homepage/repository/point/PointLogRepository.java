@@ -5,7 +5,6 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.point.PointLogEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 
 public interface PointLogRepository extends JpaRepository<PointLogEntity, Long> {
 
@@ -14,4 +13,5 @@ public interface PointLogRepository extends JpaRepository<PointLogEntity, Long> 
   List<PointLogEntity> findAllByMemberAndPresentedMemberIsNotNull(MemberEntity memberEntity, Pageable pageable);
 
   List<PointLogEntity> findAllByPresentedMemberAndMemberIsNotNull(MemberEntity memberEntity, Pageable pageable);
+
 }
