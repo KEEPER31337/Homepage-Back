@@ -247,6 +247,7 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
                 fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
                 fieldWithPath("data.ipAddress").description("출석 당시 IP 주소 (앞의 두 자리는 가려집니다.)"),
+                fieldWithPath("data.memberId").description("출석자의 Id"),
                 fieldWithPath("data.nickName").description("출석자의 nickname"),
                 subsectionWithPath("data.thumbnail").description("출석자의 썸네일 정보"),
                 fieldWithPath("data.greetings").description("해당일 출석 메시지"),
@@ -288,8 +289,9 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
             responseFields(
                 fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
                 fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
-                fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
                 fieldWithPath("list[].ipAddress").description("출석 당시 IP 주소 (앞의 두 자리는 가려집니다.)"),
+                fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
+                fieldWithPath("list[].memberId").description("출석자의 Id"),
                 fieldWithPath("list[].nickName").description("출석자의 nickname"),
                 subsectionWithPath("list[].thumbnail").description("출석자의 썸네일 정보"),
                 fieldWithPath("list[].greetings").description("해당일 출석 메시지"),
