@@ -96,6 +96,9 @@ public class MemberEntity implements UserDetails, Serializable {
   @Column(name = "demerit", nullable = false)
   private Integer demerit;
 
+  @Column(name = "generation", nullable = false)
+  private Float generation;
+  
   @OneToOne
   @JoinColumn(name = "thumbnail_id")
   // DEFAULT 1
