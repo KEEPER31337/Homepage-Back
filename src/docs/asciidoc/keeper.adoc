@@ -47,6 +47,10 @@ link:about.html[API 문서 보기]
 
 link:aboutAdmin.html[API 문서 보기]
 
+== *포인트*
+
+link:pointLog.html[API 문서 보기]
+
 == *게시판*
 
 link:posting.html[API 문서 보기]
