@@ -80,18 +80,15 @@ public class ThumbnailService {
   }
 
   public void deleteById(Long deleteId) {
-    // original thumbnail file을 가지고 있으면 서버에 있는 이미지는 삭제 X
     ThumbnailEntity deleted = findById(deleteId);
-    if (deleted.getPath().equals(relDirPath + File.separator + defaultImageName)) { // 기본 썸네일이면 삭제 X
+    // 기본 썸네일이면 삭제 X
+    if (deleted.getPath().equals(relDirPath + File.separator + defaultImageName) == false) {
       File thumbnailFile = new File(
           System.getProperty("user.dir") + File.separator + deleted.getPath());
-      String thumbnailFileName = thumbnailFile.getName();
-      if (thumbnailFileName.equals(defaultImageName) == false) {
-        if (thumbnailFile.exists() == false) {
-          throw new CustomFileNotFoundException();
-        } else if (thumbnailFile.delete() == false) {
-          throw new CustomFileDeleteFailedException();
-        }
+      if (thumbnailFile.exists() == false) {
+        throw new CustomFileNotFoundException();
+      } else if (thumbnailFile.delete() == false) {
+        throw new CustomFileDeleteFailedException();
       }
     }
     thumbnailRepository.deleteById(deleteId);

@@ -17,6 +17,7 @@ import lombok.Setter;
 @Builder
 public class AttendanceResultDto {
 
+  private Long memberId;
   private String ipAddress;
   private String nickName;
   private ThumbnailEntity thumbnail;
@@ -29,6 +30,7 @@ public class AttendanceResultDto {
   private Integer randomPoint;
 
   public void initWithEntity(AttendanceEntity attendanceEntity) {
+    this.memberId = attendanceEntity.getMember().getId();
     this.ipAddress = hidingIpAddress(attendanceEntity.getIpAddress());
     this.nickName = attendanceEntity.getMember().getNickName();
     this.thumbnail = attendanceEntity.getMember().getThumbnail();

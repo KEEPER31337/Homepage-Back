@@ -12,7 +12,6 @@ import keeper.project.homepage.repository.etc.StaticWriteSubtitleImageRepository
 import keeper.project.homepage.repository.etc.StaticWriteTitleRepository;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.attendance.AttendanceRepository;
-import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.member.FriendRepository;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
@@ -25,7 +24,7 @@ import keeper.project.homepage.repository.FileRepository;
 import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
-import keeper.project.homepage.service.library.BookManageService;
+import keeper.project.homepage.admin.service.library.BookManageService;
 import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.service.member.MemberHasCommentLikeService;
 import keeper.project.homepage.service.member.MemberService;
