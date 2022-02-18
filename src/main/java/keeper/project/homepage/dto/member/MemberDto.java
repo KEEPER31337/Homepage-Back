@@ -37,6 +37,8 @@ public class MemberDto {
   private String type;
   private List<String> jobs;
   private Long thumbnailId;
+  private Integer merit;
+  private Integer demerit;
 
   public MemberEntity toEntity() {
     return MemberEntity.builder()
@@ -62,6 +64,9 @@ public class MemberDto {
     this.registerDate = memberEntity.getRegisterDate();
     this.point = memberEntity.getPoint();
     this.level = memberEntity.getLevel();
+    this.merit = memberEntity.getMerit();
+    this.demerit = memberEntity.getDemerit();
+    
     if (memberEntity.getThumbnail() != null) {
       this.thumbnailId = memberEntity.getThumbnail().getId();
     }
