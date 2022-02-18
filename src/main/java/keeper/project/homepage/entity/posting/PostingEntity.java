@@ -60,6 +60,9 @@ public class PostingEntity {
   private Long writerId;
   @Transient
   private Long writerThumbnailId;
+  @Setter
+  @Transient
+  private Integer size;
   @Column
   private Integer visitCount;
   @Column

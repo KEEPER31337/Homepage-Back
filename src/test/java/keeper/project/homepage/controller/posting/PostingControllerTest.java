@@ -366,6 +366,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].isNotice").description("공지글?"),
                 fieldWithPath("list[].isSecret").description("비밀글?"),
                 fieldWithPath("list[].isTemp").description("임시저장?"),
+                fieldWithPath("list[].size").description("총 게시물 수"),
                 subsectionWithPath("list[].files").description(
                         "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
                     .optional(),
@@ -414,6 +415,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].isNotice").description("공지글?"),
                 fieldWithPath("list[].isSecret").description("비밀글?"),
                 fieldWithPath("list[].isTemp").description("임시저장?"),
+                fieldWithPath("list[].size").description("총 게시물 수"),
                 subsectionWithPath("list[].files").description(
                         "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
                     .optional(),
@@ -459,6 +461,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.isNotice").description("공지글?"),
                 fieldWithPath("data.isSecret").description("비밀글?"),
                 fieldWithPath("data.isTemp").description("임시저장?"),
+                fieldWithPath("data.size").description("총 게시물 수(getPosting 에선 1개)"),
                 subsectionWithPath("data.files").description(
                         "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
                     .optional(),
@@ -505,6 +508,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.isNotice").description("공지글?"),
                 fieldWithPath("data.isSecret").description("비밀글?"),
                 fieldWithPath("data.isTemp").description("임시저장?"),
+                fieldWithPath("data.size").description("총 게시물 수(getPosting 에선 1개)"),
                 subsectionWithPath("data.files").description(
                         "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
                     .optional(),
@@ -743,6 +747,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].isNotice").description("공지글?"),
                 fieldWithPath("list[].isSecret").description("비밀글?"),
                 fieldWithPath("list[].isTemp").description("임시저장?"),
+                fieldWithPath("list[].size").description("총 게시물 수"),
                 subsectionWithPath("list[].files").description(
                         "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
                     .optional(),

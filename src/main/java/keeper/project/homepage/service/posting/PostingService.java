@@ -26,6 +26,8 @@ import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,17 +50,11 @@ public class PostingService {
 
   public List<PostingEntity> findAll(Pageable pageable) {
 
-    List<PostingEntity> postingEntities = postingRepository.findAllByIsTemp(isNotTempPosting,
-        pageable).getContent();
+    Page<PostingEntity> postingEntities = postingRepository.findAllByIsTemp(isNotTempPosting,
+        pageable);
+    setAllInfo(postingEntities);
 
-    for (PostingEntity postingEntity : postingEntities) {
-      setWriterInfo(postingEntity);
-      if (postingEntity.getIsSecret() == 1) {
-        postingEntity.makeSecret();
-      }
-    }
-
-    return postingEntities;
+    return postingEntities.getContent();
   }
 
   private void setWriterInfo(PostingEntity postingEntity) {
@@ -73,20 +69,25 @@ public class PostingService {
     }
   }
 
-  public List<PostingEntity> findAllByCategoryId(Long categoryId, Pageable pageable) {
-
-    Optional<CategoryEntity> categoryEntity = categoryRepository.findById(Long.valueOf(categoryId));
-    List<PostingEntity> postingEntities = postingRepository.findAllByCategoryIdAndIsTemp(
-        categoryEntity.get(), isNotTempPosting, pageable);
+  private void setAllInfo(Page<PostingEntity> postingEntities) {
 
     for (PostingEntity postingEntity : postingEntities) {
       setWriterInfo(postingEntity);
+      postingEntity.setSize((int) postingEntities.getTotalElements());
       if (postingEntity.getIsSecret() == 1) {
         postingEntity.makeSecret();
       }
     }
+  }
 
-    return postingEntities;
+  public List<PostingEntity> findAllByCategoryId(Long categoryId, Pageable pageable) {
+
+    Optional<CategoryEntity> categoryEntity = categoryRepository.findById(Long.valueOf(categoryId));
+    Page<PostingEntity> postingEntities = postingRepository.findAllByCategoryIdAndIsTemp(
+        categoryEntity.get(), isNotTempPosting, pageable);
+    setAllInfo(postingEntities);
+
+    return postingEntities.getContent();
   }
 
   public PostingEntity save(PostingDto dto) {
@@ -110,6 +111,7 @@ public class PostingService {
     PostingEntity postingEntity = postingRepository.findById(pid)
         .orElseThrow(RuntimeException::new); // TODO: CustomPostingNotFoundException 만들어주세여~
     setWriterInfo(postingEntity);
+    postingEntity.setSize(1);
 
     return postingEntity;
   }
@@ -193,7 +195,7 @@ public class PostingService {
       Long categoryId, Pageable pageable) {
 
     CategoryEntity categoryEntity = categoryRepository.findById(categoryId).get();
-    List<PostingEntity> postingEntities = new ArrayList<>();
+    Page<PostingEntity> postingEntities = null;
     switch (type) {
       case "T": {
         postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingAndIsTemp(
@@ -220,15 +222,9 @@ public class PostingService {
         break;
       }
     }
+    setAllInfo(postingEntities);
 
-    for (PostingEntity postingEntity : postingEntities) {
-      setWriterInfo(postingEntity);
-      if (postingEntity.getIsSecret() == 1) {
-        postingEntity.makeSecret();
-      }
-    }
-
-    return postingEntities;
+    return postingEntities.getContent();
   }
 
   @Transactional
