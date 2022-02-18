@@ -1,6 +1,6 @@
 package keeper.project.homepage.service.posting;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -72,8 +72,8 @@ public class CommentServiceTest {
   private PostingEntity postingEntity;
 
   private String content = "댓글 내용";
-  private LocalDate registerTime = LocalDate.now();
-  private LocalDate updateTime = LocalDate.now();
+  private LocalDateTime registerTime = LocalDateTime.now();
+  private LocalDateTime updateTime = LocalDateTime.now();
   private String ipAddress = "127.0.0.1";
   private Integer likeCount = 0;
   private Integer dislikeCount = 0;
@@ -118,8 +118,8 @@ public class CommentServiceTest {
         .dislikeCount(1)
         .commentCount(0)
         .visitCount(0)
-        .registerTime(new Date())
-        .updateTime(new Date())
+        .registerTime(LocalDateTime.now())
+        .updateTime(LocalDateTime.now())
         .memberId(memberEntity)
         .password("pw")
         .build());
@@ -166,7 +166,8 @@ public class CommentServiceTest {
   public void findAllWithPagingTest() {
     Long postId = postingEntity.getId();
     Pageable pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
-    List<CommentDto> commentEntityPage = commentService.findAllByPost(postId, pageable);
+    List<CommentDto> commentEntityPage = commentService.findAllByPost(memberEntity.getId(), postId,
+        pageable);
 
     Assertions.assertFalse(commentEntityPage.isEmpty());
     commentEntityPage.forEach(comment -> log.info(comment.getId()));
@@ -190,8 +191,20 @@ public class CommentServiceTest {
   @DisplayName("댓글 삭제")
   public void deleteTest() throws RuntimeException {
     Long deleteId = commentEntity.getId();
-    commentService.deleteById(deleteId, memberEntity.getId());
-    Assertions.assertTrue(commentRepository.findById(deleteId).isEmpty());
+    Long writerId = memberEntity.getId();
+
+    // 댓글 좋아요 추가
+    commentService.updateLikeCount(writerId, deleteId);
+    commentService.deleteByWriter(writerId, deleteId);
+    CommentEntity updated = commentRepository.findById(deleteId).get();
+
+    Assertions.assertTrue(updated.getMember().getId().equals(1L));
+    Assertions.assertTrue(updated.getContent().equals(CommentService.DELETED_COMMENT_CONTENT));
+    Assertions.assertTrue(updated.getLikeCount().equals(0));
+    Assertions.assertTrue(updated.getDislikeCount().equals(0));
+    Assertions.assertTrue(
+        memberHasCommentLikeRepository.findByMemberHasCommentEntityPK_CommentEntity(commentEntity)
+            .isEmpty());
   }
 
   @Test

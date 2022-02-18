@@ -7,9 +7,6 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
-import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -17,13 +14,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.common.FileConversion;
-import keeper.project.homepage.dto.EmailAuthDto;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.dto.sign.SignInDto;
 import keeper.project.homepage.entity.FileEntity;
@@ -33,15 +28,11 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.exception.CustomAboutFailedException;
+import keeper.project.homepage.exception.ExceptionAdvice;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.exception.CustomTransferPointLackException;
 import keeper.project.homepage.entity.member.MemberRankEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
-import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
-import keeper.project.homepage.repository.member.MemberJobRepository;
-import keeper.project.homepage.repository.member.MemberRankRepository;
-import keeper.project.homepage.repository.member.MemberTypeRepository;
-import keeper.project.homepage.service.member.MemberService;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -49,17 +40,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @Log4j2
-public class MemberControllerTest extends ApiControllerTestSetUp {
+public class MemberControllerTest extends MemberControllerTestSetup {
 
   private String userToken;
   private String adminToken;
@@ -231,7 +219,7 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
             .header("Authorization", "XXXXXXXXXX"))
         .andDo(print())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(-1003));
+        .andExpect(jsonPath("$.code").value(exceptionAdvice.getMessage("accessDenied.code")));
   }
 
   @Test
@@ -256,18 +244,18 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
   @DisplayName("권한이 없을 때")
   public void accessDenied() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders
-            .get("/v1/members")
+            .get("/v1/admin/members")
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(-1003));
+        .andExpect(jsonPath("$.code").value(exceptionAdvice.getMessage("accessDenied.code")));
   }
 
   @Test
   @DisplayName("권한이 있을 때")
   public void accessAccept() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders
-            .get("/v1/members")
+            .get("/v1/admin/members")
             .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -279,7 +267,7 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
   @DisplayName("ADMIN 권한으로 모든 멤버 열람하기")
   public void findAllMember() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders
-            .get("/v1/members")
+            .get("/v1/admin/members")
             .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -305,6 +293,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
     String content = "{"
         + "\"followeeLoginId\" : \"" + adminLoginId + "\""
         + "}";
+    String docMsg = "팔로우할 회원이 존재하지 않는다면 실패합니다.";
+    String docCode = "회원이 존재하지 않을 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+        + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders.post("/v1/member/follow")
             .header("Authorization", userToken)
             .content(content)
@@ -315,17 +306,14 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
             requestFields(
                 fieldWithPath("followeeLoginId").description("팔로우할 회원의 로그인 아이디")
             ),
-            responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("실패 시: -9999")
-            )));
+            generateCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
+        ));
 
     MemberEntity memberEntity = memberRepository.findByLoginId(loginId).get();
     MemberEntity memberAdmin = memberRepository.findByLoginId(adminLoginId).get();
     List<FriendEntity> followeeList = memberEntity.getFollowee();
     FriendEntity followee = followeeList.get(followeeList.size() - 1);
-    // friend entity에 followee와 follower가 잘 들어갔나요?
+    // friend entity에 followee와 follower가 잘 들어갔는지 확인
     assertTrue(followee.getFollowee().equals(memberAdmin));
     assertTrue(followee.getFollower().equals(memberEntity));
   }
@@ -344,6 +332,9 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
     FriendEntity followee = followeeList.get(followeeList.size() - 1);
 
     // unfollow
+    String docMsg = "언팔로우할 회원이 존재하지 않는다면 실패합니다.";
+    String docCode = "회원이 존재하지 않을 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+        + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders.delete("/v1/member/unfollow")
             .header("Authorization", userToken)
             .content(content)
@@ -354,11 +345,8 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
             requestFields(
                 fieldWithPath("followeeLoginId").description("팔로우한 회원의 로그인 아이디")
             ),
-            responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("실패 시: -9999")
-            )));
+            generateCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
+        ));
 
     assertTrue(friendRepository.findById(followee.getId()).isEmpty());
     Assertions.assertFalse(memberEntity.getFollowee().contains(followee));
@@ -372,29 +360,16 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
     MemberEntity memberEntity = memberRepository.findByLoginId(loginId).get();
     memberService.follow(memberEntity.getId(), adminLoginId);
 
+    String docMsg = "";
+    String docCode = "에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(get("/v1/member/followee")
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.list[0].nickName").value(adminNickName))
-        .andDo(document("friend-show-followee",
-            responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("실패 시: -9999"),
-                fieldWithPath("list[].id").description("아이디"),
-                fieldWithPath("list[].emailAddress").description("이메일 주소"),
-                fieldWithPath("list[].nickName").description("닉네임"),
-                fieldWithPath("list[].birthday").description("생일").type(Date.class).optional(),
-                fieldWithPath("list[].registerDate").description("가입 날짜"),
-                fieldWithPath("list[].point").description("포인트 점수"),
-                fieldWithPath("list[].level").description("레벨"),
-                fieldWithPath("list[].rank").description("회원 등급: [null/우수회원/일반회원]"),
-                fieldWithPath("list[].type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
-                fieldWithPath("list[].jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]"),
-                fieldWithPath("list[].thumbnailId").description("썸네일 Id").optional()
-            )));
+        .andDo(document("member-show-followee",
+            generateMemberListCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
+        ));
   }
 
 
@@ -405,440 +380,16 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
     MemberEntity memberAdmin = memberRepository.findByLoginId(adminLoginId).get();
     memberService.follow(memberAdmin.getId(), loginId);
 
+    String docMsg = "";
+    String docCode = "에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(get("/v1/member/follower")
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.list[0].nickName").value(adminNickName))
-        .andDo(document("friend-show-follower",
-            responseFields(
-                fieldWithPath("success").description(""),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description(""),
-                fieldWithPath("list[].id").description("아이디"),
-                fieldWithPath("list[].emailAddress").description("이메일 주소"),
-                fieldWithPath("list[].nickName").description("닉네임"),
-                fieldWithPath("list[].birthday").description("생일").type(Date.class).optional(),
-                fieldWithPath("list[].registerDate").description("가입 날짜"),
-                fieldWithPath("list[].point").description("포인트 점수"),
-                fieldWithPath("list[].level").description("레벨"),
-                fieldWithPath("list[].rank").description("회원 등급: [null/우수회원/일반회원]"),
-                fieldWithPath("list[].type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
-                fieldWithPath("list[].jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]"),
-                fieldWithPath("list[].thumbnailId").description("썸네일 Id").optional()
-            )));
-  }
-
-  @Test
-  @DisplayName("Admin 권한으로 회원 등급 변경하기")
-  public void updateRank() throws Exception {
-    String content = "{\n"
-        + "\"memberLoginId\" : \"" + loginId + "\",\n"
-        + "\"name\" : \"우수회원\"\n"
-        + "}";
-    String docMsg = "실패 문구 종류: " + " +\n"
-        + "* 변경할 등급을 입력해주세요." + " +\n"
-        + "* xxx인 member rank가 존재하지 않습니다.";
-    mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/member/update/rank")
-            .header("Authorization", adminToken)
-            .content(content)
-            .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.data").exists())
-        .andExpect(jsonPath("$.data.rank").value("우수회원"))
-        .andDo(document("member-update-rank",
-            requestFields(
-                fieldWithPath("memberLoginId").description("변경할 회원의 로그인 아이디"),
-                fieldWithPath("name").description("변경할 등급명")
-            ),
-            responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("실패 시: -9999"),
-                fieldWithPath("msg").description(docMsg),
-                fieldWithPath("data.id").description("아이디"),
-                fieldWithPath("data.emailAddress").description("이메일 주소"),
-                fieldWithPath("data.nickName").description("닉네임"),
-                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
-                fieldWithPath("data.registerDate").description("가입 날짜"),
-                fieldWithPath("data.point").description("포인트 점수"),
-                fieldWithPath("data.level").description("레벨"),
-                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
-                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
-                fieldWithPath("data.jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]"),
-                fieldWithPath("data.thumbnailId").description("썸네일 Id").optional()
-            )));
-    ;
-
-    MemberEntity member = memberRepository.findByLoginId(loginId).get();
-    assertTrue(
-        memberRankRepository.findByName("우수회원").get().getMembers().contains(member));
-  }
-
-  @Test
-  @DisplayName("Admin 권한으로 회원 유형 변경하기")
-  public void updateType() throws Exception {
-    String content = "{\n"
-        + "\"memberLoginId\" : \"" + loginId + "\",\n"
-        + "\"name\" : \"탈퇴\"\n"
-        + "}";
-    String docMsg = "실패 문구 종류: " + " +\n"
-        + "* 변경할 유형을 입력해주세요." + " +\n"
-        + "* xxx인 member type이 존재하지 않습니다.";
-    mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/member/update/type")
-            .header("Authorization", adminToken)
-            .content(content)
-            .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.data").exists())
-        .andExpect(jsonPath("$.data.type").value("탈퇴"))
-        .andDo(document("member-update-type",
-            requestFields(
-                fieldWithPath("memberLoginId").description("변경할 회원의 로그인 아이디"),
-                fieldWithPath("name").description("변경할 유형")
-            ),
-            responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("실패 시: -9999"),
-                fieldWithPath("msg").description(docMsg),
-                fieldWithPath("data.id").description("아이디"),
-                fieldWithPath("data.emailAddress").description("이메일 주소"),
-                fieldWithPath("data.nickName").description("닉네임"),
-                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
-                fieldWithPath("data.registerDate").description("가입 날짜"),
-                fieldWithPath("data.point").description("포인트 점수"),
-                fieldWithPath("data.level").description("레벨"),
-                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
-                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
-                fieldWithPath("data.jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]"),
-                fieldWithPath("data.thumbnailId").description("썸네일 Id").optional()
-            )));
-
-    MemberEntity member = memberRepository.findByLoginId(loginId).get();
-    assertTrue(
-        memberTypeRepository.findByName("탈퇴").get().getMembers().contains(member));
-  }
-
-  @Test
-  @DisplayName("Admin 권한으로 회원 직책 변경하기")
-  public void updateJob() throws Exception {
-//    memberJobRepository.findAll().forEach(memberJobEntity -> log.info(memberJobEntity.getName()));
-    String content = "{\n"
-        + "\"memberLoginId\" : \"" + loginId + "\",\n"
-        + "\"names\" : [\"ROLE_사서\",\"ROLE_총무\"]\n"
-        + "}";
-
-    String docMsg = "실패 문구 종류: " + " +\n"
-        + "* 존재하지 않는 회원입니다.";
-    mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/member/update/job")
-            .header("Authorization", adminToken)
-            .content(content)
-            .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.data").exists())
-        .andExpect(jsonPath("$.data.jobs[0]").value("ROLE_사서"))
-        .andExpect(jsonPath("$.data.jobs[1]").value("ROLE_총무"))
-        .andDo(document("member-update-job",
-            requestFields(
-                fieldWithPath("memberLoginId").description("변경할 회원의 로그인 아이디"),
-                fieldWithPath("names").description("변경할 직책명 리스트")
-            ),
-            responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("실패 시: -1000"),
-                fieldWithPath("msg").description(docMsg),
-                fieldWithPath("data.id").description("아이디"),
-                fieldWithPath("data.emailAddress").description("이메일 주소"),
-                fieldWithPath("data.nickName").description("닉네임"),
-                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
-                fieldWithPath("data.registerDate").description("가입 날짜"),
-                fieldWithPath("data.point").description("포인트 점수"),
-                fieldWithPath("data.level").description("레벨"),
-                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
-                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
-                fieldWithPath("data.jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]"),
-                fieldWithPath("data.thumbnailId").description("썸네일 Id").optional()
-            )));
-
-    MemberEntity member = memberRepository.findByLoginId(loginId).get();
-    MemberJobEntity job1 = memberJobRepository.findByName("ROLE_사서").get();
-    MemberJobEntity job2 = memberJobRepository.findByName("ROLE_총무").get();
-    assertTrue(
-        memberHasMemberJobRepository.findAllByMemberEntity_IdAndAndMemberJobEntity_Id(
-            member.getId(), job1.getId()).isEmpty() == false);
-    assertTrue(
-        memberHasMemberJobRepository.findAllByMemberEntity_IdAndAndMemberJobEntity_Id(
-            member.getId(), job2.getId()).isEmpty() == false);
-  }
-
-  @Test
-  @DisplayName("기본 권한으로 본인 실명, 닉네임 변경하기")
-  public void updateNames() throws Exception {
-    String updateContent = "{"
-        + "\"realName\":\"Changed\","
-        + "\"nickName\":\"Changed Nick\""
-        + "}";
-
-    String docMsg = "실패 문구 종류: " + " +\n"
-        + "* 알 수 없는 오류가 발생하였습니다";
-    mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/member/update/names")
-            .header("Authorization", userToken)
-            .content(updateContent)
-            .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.data").exists())
-        .andExpect(jsonPath("$.data.nickName").value("Changed Nick"))
-        .andDo(document("member-update-names",
-            requestFields(
-                fieldWithPath("realName").description("변경할 이름"),
-                fieldWithPath("nickName").description("변경할 닉네임")
-            ),
-            responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("실패 시: -9999"),
-                fieldWithPath("msg").description(docMsg),
-                fieldWithPath("data.id").description("아이디"),
-                fieldWithPath("data.emailAddress").description("이메일 주소"),
-                fieldWithPath("data.nickName").description("닉네임"),
-                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
-                fieldWithPath("data.registerDate").description("가입 날짜"),
-                fieldWithPath("data.point").description("포인트 점수"),
-                fieldWithPath("data.level").description("레벨"),
-                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
-                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
-                fieldWithPath("data.jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]"),
-                fieldWithPath("data.thumbnailId").description("썸네일 Id").optional()
-            )));
-    assertTrue(memberEntity.getRealName().equals("Changed"));
-  }
-
-  @Test
-  @DisplayName("기본 권한으로 이메일 변경하기")
-  public void updateEmailAddress() throws Exception {
-    String newEmail = "new@email.address";
-    EmailAuthDto emailAuthDto = new EmailAuthDto(newEmail, "");
-    EmailAuthDto emailAuthDtoForSend = memberService.generateEmailAuth(emailAuthDto);
-    String content = "{\n"
-        + "\"emailAddress\":\"" + newEmail + "\",\n"
-        + "    \"authCode\": \"" + emailAuthDtoForSend.getAuthCode() + "\""
-        + "}";
-
-    String docMsg = "실패 문구 종류: " + " +\n"
-        + "알 수 없는 오류가 발생하였습니다" + " +\n"
-        + "이메일 인증 코드가 만료되었습니다." + " +\n"
-        + "이메일 인증 코드가 일치하지 않습니다.";
-    mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/member/update/email")
-            .header("Authorization", userToken)
-            .content(content)
-            .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.data.emailAddress").value(newEmail))
-        .andDo(document("member-update-email",
-            requestFields(
-                fieldWithPath("emailAddress").description("이메일 주소"),
-                fieldWithPath("authCode").description("이메일 인증 코드")
-            ),
-            responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("실패 시: " + " +\n"
-                    + "* 인증 실패: -1002" + " +\n"
-                    + "* 그 외: -9999"),
-                fieldWithPath("msg").description(docMsg),
-                fieldWithPath("data.id").description("아이디"),
-                fieldWithPath("data.emailAddress").description("이메일 주소"),
-                fieldWithPath("data.nickName").description("닉네임"),
-                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
-                fieldWithPath("data.registerDate").description("가입 날짜"),
-                fieldWithPath("data.point").description("포인트 점수"),
-                fieldWithPath("data.level").description("레벨"),
-                fieldWithPath("data.authCode").description("인증 코드"),
-                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
-                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
-                fieldWithPath("data.jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]"),
-                fieldWithPath("data.thumbnailId").description("썸네일 Id").optional()
-            )));
-  }
-
-  @Test
-  @DisplayName("기본 권한으로 이메일 변경하기 - 이메일 중복으로 실패")
-  public void updateEmailAddress_DuplFail() throws Exception {
-    EmailAuthDto emailAuthDto = new EmailAuthDto(emailAddress, "");
-    EmailAuthDto emailAuthDtoForSend = memberService.generateEmailAuth(emailAuthDto);
-    String content = "{\n"
-        + "\"emailAddress\":\"" + emailAddress + "\",\n"
-        + "    \"authCode\": \"" + emailAuthDtoForSend.getAuthCode() + "\""
-        + "}";
-
-    mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/member/update/email")
-            .header("Authorization", userToken)
-            .content(content)
-            .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andDo(print())
-        .andExpect(status().is4xxClientError())
-        .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(-22));
-  }
-
-  @Test
-  @DisplayName("기본 권한으로 이메일 변경하기 - 이메일 인증 실패")
-  public void updateEmailAddress_AuthFail() throws Exception {
-    String newEmail = "new@email.address";
-    EmailAuthDto emailAuthDto = new EmailAuthDto(newEmail, "");
-    memberService.generateEmailAuth(emailAuthDto);
-    String content = "{\n"
-        + "\"emailAddress\":\"" + newEmail + "\",\n"
-        + "    \"authCode\": \"" + "wrong auth code" + "\""
-        + "}";
-
-    mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/member/update/email")
-            .header("Authorization", userToken)
-            .content(content)
-            .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andDo(print())
-        .andExpect(status().is4xxClientError())
-        .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(-1002));
-  }
-
-  @Test
-  @DisplayName("기본 권한으로 본인의 썸네일 변경하기")
-  public void updateThumbnails() throws Exception {
-    MockMultipartFile image = new MockMultipartFile("thumbnail", "aft.jpg", "image/jpg",
-        new FileInputStream(new File(
-            System.getProperty("user.dir") + File.separator + "keeper_files" + File.separator
-                + "aft.jpg")));
-
-    String docMsg = "실패 문구 종류 : " + " +\n"
-        + "* 썸네일 용 이미지는 image 타입이어야 합니다." + " +\n"
-        + "* 이미지 파일을 BufferedImage로 읽어들일 수 없습니다." + " +\n"
-        + "* 이미지 파일을 읽는 것을 실패했습니다." + " +\n"
-        + "* 썸네일 용 파일은 이미지 파일이어야 합니다." + " +\n"
-        + "* 이미지 파일을 BufferedImage로 읽어들일 수 없습니다." + " +\n"
-        + "* 이미지 파일을 읽는 것을 실패했습니다." + " +\n"
-        + "* 썸네일 이미지용 후처리를 실패했습니다.";
-    mockMvc.perform(RestDocumentationRequestBuilders.fileUpload("/v1/member/update/thumbnail")
-            .file(image)
-            .contentType(MediaType.MULTIPART_FORM_DATA)
-            .param("ipAddress", "111.111.111.111")
-            .header("Authorization", userToken)
-            .with(request -> {
-              request.setMethod("PUT");
-              return request;
-            }))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andDo(document("member-update-thumbnail",
-            requestParameters(
-                parameterWithName("ipAddress").description("회원의 IP 주소")
-            ),
-//            requestParts(
-//                partWithName("thumbnail").description("썸네일 용 이미지 파일")
-//            ),
-            responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("실패 시: -9999"),
-                fieldWithPath("msg").description(docMsg),
-                fieldWithPath("data.id").description("아이디"),
-                fieldWithPath("data.emailAddress").description("이메일 주소"),
-                fieldWithPath("data.nickName").description("닉네임"),
-                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
-                fieldWithPath("data.registerDate").description("가입 날짜"),
-                fieldWithPath("data.point").description("포인트 점수"),
-                fieldWithPath("data.level").description("레벨"),
-                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
-                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
-                fieldWithPath("data.jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]"),
-                fieldWithPath("data.thumbnailId").description("썸네일 Id").optional()
-            )));
-    Assertions.assertTrue(
-        memberEntity.getThumbnail().getPath().equals(
-            "keeper_files" + File.separator + "aft.jpg") == false);
-  }
-
-
-  @Test
-  @DisplayName("기본 권한으로 학번 변경하기")
-  public void updateStudentId() throws Exception {
-    String newStudentId = "123456789";
-    String content = "{\n"
-        + "\"studentId\":\"" + newStudentId + "\""
-        + "}";
-
-    String docMsg = "실패 문구 종류: " + " +\n"
-        + "* 알 수 없는 오류가 발생하였습니다" + " +\n"
-        + "* 이미 사용중인 학번입니다.";
-    mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/member/update/studentid")
-            .header("Authorization", userToken)
-            .content(content)
-            .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-//        .andExpect(jsonPath("$.data.studentId").value(newStudentId))
-        .andDo(document("member-update-studentid",
-            requestFields(
-                fieldWithPath("studentId").description("회원의 학번")
-            ),
-            responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("실패 시 -9999"),
-                fieldWithPath("msg").description(docMsg),
-                fieldWithPath("data.id").description("아이디"),
-                fieldWithPath("data.emailAddress").description("이메일 주소"),
-                fieldWithPath("data.nickName").description("닉네임"),
-                fieldWithPath("data.birthday").description("생일").type(Date.class).optional(),
-                fieldWithPath("data.registerDate").description("가입 날짜"),
-                fieldWithPath("data.point").description("포인트 점수"),
-                fieldWithPath("data.level").description("레벨"),
-                fieldWithPath("data.rank").description("회원 등급: [null/우수회원/일반회원]"),
-                fieldWithPath("data.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]"),
-                fieldWithPath("data.jobs").description(
-                    "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]"),
-                fieldWithPath("data.thumbnailId").description("썸네일 Id").optional()
-            )));
-    assertTrue(memberEntity.getStudentId().equals("123456789"));
-  }
-
-  @Test
-  @DisplayName("기본 권한으로 학번 변경 실패 - 중복 학번")
-  public void updateStudentId_DuplFail() throws Exception {
-    String content = "{\n"
-        + "\"studentId\":\"" + studentId + "\""
-        + "}";
-
-    mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/member/update/studentid")
-            .header("Authorization", userToken)
-            .content(content)
-            .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andDo(print())
-        .andExpect(status().is4xxClientError())
-        .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(-22));
+        .andDo(document("member-show-follower",
+            generateMemberListCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
+        ));
   }
 
   @Test
@@ -867,6 +418,29 @@ public class MemberControllerTest extends ApiControllerTestSetUp {
         .andExpect(result -> assertTrue(
             result.getResolvedException() instanceof CustomMemberNotFoundException))
         .andExpect(jsonPath("$.success").value(false));
+  }
+  
+  @Test
+  @DisplayName("회원 정보 조회(민감한 정보 제외) - 성공")
+  public void getAllGeneralMemberInfoSuccess() throws Exception {
+    mockMvc.perform(MockMvcRequestBuilders
+            .get("/v1/members")
+            .header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true));
+  }
+
+  @Test
+  @DisplayName("회원 정보 조회(민감한 정보 제외) - 실패(회원 권한 X)")
+  public void getAllGeneralMemberInfoFail() throws Exception {
+    mockMvc.perform(MockMvcRequestBuilders
+            .get("/v1/members")
+            .header("Authorization", 1234))
+        .andDo(print())
+        .andExpect(status().is4xxClientError())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.msg").value("보유한 권한으로 접근할수 없는 리소스 입니다"));
   }
 
 }

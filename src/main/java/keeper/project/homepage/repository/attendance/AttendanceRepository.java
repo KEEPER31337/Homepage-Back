@@ -9,13 +9,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AttendanceRepository extends JpaRepository<AttendanceEntity, Long> {
 
-  Optional<AttendanceEntity> findTopByMemberIdOrderByIdDesc(MemberEntity memberEntity);
+  Optional<AttendanceEntity> findTopByMemberOrderByIdDesc(MemberEntity memberEntity);
 
-  List<AttendanceEntity> findAllByMemberId(MemberEntity memberEntity);
+  List<AttendanceEntity> findAllByMember(MemberEntity memberEntity);
 
   List<AttendanceEntity> findAllByTimeBetween(Date date1, Date date2);
 
-  List<AttendanceEntity> findByMemberIdAndTimeBetween(
+  List<AttendanceEntity> findByMemberAndTimeBetween(
       MemberEntity memberId, Date time, Date time2);
 
 }

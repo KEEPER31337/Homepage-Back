@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "member_has_comment_like")
+@Table(name = "member_has_comment_dislike")
 public class MemberHasCommentDislikeEntity {
 
   @EmbeddedId

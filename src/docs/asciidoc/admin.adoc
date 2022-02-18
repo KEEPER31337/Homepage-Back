@@ -1,0 +1,64 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+// 자동으로 생성된 snippet 설정하는 부분
+
+= KEEPER API 관리자 문서
+:icons: font
+// NOTE, TIP, WARNING, CAUTION, IMPORTANT 같은 경고구들 아이콘화 해줌
+:source-highlighter: highlight.js
+// source code 블럭에서 사용되는 highlighter 설정, 4개 정도 있던데 차이를 아직 잘 모르겠음.
+:toc: left
+// table of contents(toc) 왼쪽정렬하여 생성
+:toclevels: 1
+// default : 2 (==,  ===) 까지 toc에 보여줌.
+:sectlinks:
+// section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
+
+== *API 목록으로 돌아가기*
+
+link:keeper.html[API 목록으로 돌아가기]
+
+== *유틸리티*
+
+link:utilAdmin.html[API 문서 보기]
+
+== *회원가입*
+
+link:signupAdmin.html[API 문서 보기]
+
+== *로그인*
+
+link:signinAdmin.html[API 문서 보기]
+
+== *도서관리*
+
+link:bookmanageAdmin.html[API 문서 보기]
+
+== *카테고리*
+
+link:categoryAdmin.html[API 문서 보기]
+
+== *게시판*
+
+link:postingAdmin.html[API 문서 보기]
+
+== *댓글*
+
+link:commentAdmin.html[API 문서 보기]
+
+== *회원 관리*
+
+link:memberAdmin.html[API 문서 보기]
+
+== *출석*
+
+link:attendanceAdmin.html[API 문서 보기]
+
+== *도서관*
+
+link:librarymainAdmin.html[API 문서 보기]
+
+== *게임*
+
+link:gameAdmin.html[API 문서 보기]
