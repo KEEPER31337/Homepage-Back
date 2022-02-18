@@ -3,13 +3,15 @@ package keeper.project.homepage.dto.request;
 import java.time.LocalDateTime;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.point.PointLogEntity;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
+import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class PointLogRequest {
 
   private LocalDateTime time;
@@ -18,9 +20,9 @@ public class PointLogRequest {
 
   private String detail;
 
-  private Integer isSpent;
 
-  public PointLogEntity toEntity(MemberEntity member) {
+
+  public PointLogEntity toEntity(MemberEntity member, Integer isSpent) {
     return PointLogEntity.builder()
         .member(member)
         .time(time)
