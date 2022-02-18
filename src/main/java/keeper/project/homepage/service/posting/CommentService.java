@@ -15,6 +15,7 @@ import keeper.project.homepage.exception.posting.CustomCommentNotFoundException;
 import keeper.project.homepage.repository.member.MemberHasCommentDislikeRepository;
 import keeper.project.homepage.repository.member.MemberHasCommentLikeRepository;
 import keeper.project.homepage.repository.posting.CommentRepository;
+import keeper.project.homepage.repository.posting.CommentSpec;
 import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.service.member.MemberHasCommentLikeService;
 import keeper.project.homepage.service.member.MemberService;
@@ -22,6 +23,7 @@ import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentService {
 
   public static final String DELETED_COMMENT_CONTENT = "(삭제된 댓글입니다)";
+  public static final Long VIRTUAL_PARENT_COMMENT_ID = 0L;
+
   private final CommentRepository commentRepository;
   private final PostingService postingService;
   private final MemberService memberService;
@@ -95,11 +99,23 @@ public class CommentService {
   public List<CommentDto> findAllByPost(Long memberId, Long postId, Pageable pageable) {
     MemberEntity member = memberService.findById(memberId);
     PostingEntity postingEntity = postingService.getPostingById(postId);
-    List<CommentEntity> entityPage = commentRepository.findAllByPostingId(postingEntity, pageable)
-        .getContent();
+
+    // 조회 검색 조건
+    Specification<CommentEntity> commentSpec = CommentSpec.equalParentId(VIRTUAL_PARENT_COMMENT_ID);
+    commentSpec = commentSpec.and(CommentSpec.equalPosting(postingEntity));
+
+    List<CommentEntity> commentPage = new ArrayList<>();
+    List<CommentEntity> comments = commentRepository.findAll(commentSpec, pageable);
+
+    for (CommentEntity comment : comments) {
+      Specification<CommentEntity> replySpec = CommentSpec.equalParentId(comment.getId());
+      List<CommentEntity> replies = commentRepository.findAll(replySpec);
+      commentPage.add(comment);
+      commentPage.addAll(replies);
+    }
 
     List<CommentDto> dtoPage = new ArrayList<>();
-    for (CommentEntity comment : entityPage) {
+    for (CommentEntity comment : commentPage) {
       CommentDto dto = CommentDto.builder().build();
       dto.initWithEntity(comment);
       dto.setCheckedLike(false);
