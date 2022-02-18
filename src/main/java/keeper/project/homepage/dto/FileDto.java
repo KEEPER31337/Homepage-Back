@@ -1,5 +1,7 @@
 package keeper.project.homepage.dto;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
@@ -20,7 +22,7 @@ public class FileDto {
   private String fileName;
   private String filePath;
   private Long fileSize;
-  private Date uploadTime;
+  private LocalDateTime uploadTime;
   private String ipAddress;
 
   public FileEntity toEntity(PostingEntity postingEntity) {

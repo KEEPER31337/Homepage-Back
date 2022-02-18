@@ -1,5 +1,6 @@
-FROM openjdk:17
+FROM gradle:7.3.2-jdk17
 
-COPY ../app.jar /app.jar
+WORKDIR /home/keeper
 
-ENTRYPOINT [ "java", "-jar", "/app.jar" ]
+COPY ../config/application.properties /application.properties
+COPY ../config/entrypoint.sh /entrypoint.sh

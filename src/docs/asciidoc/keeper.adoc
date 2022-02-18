@@ -10,10 +10,14 @@ endif::[]
 // source code 블럭에서 사용되는 highlighter 설정, 4개 정도 있던데 차이를 아직 잘 모르겠음.
 :toc: left
 // table of contents(toc) 왼쪽정렬하여 생성
-:toclevels: 3
+:toclevels: 1
 // default : 2 (==,  ===) 까지 toc에 보여줌.
 :sectlinks:
 // section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
+
+== *관리자 페이지*
+
+link:admin.html[API 문서 보기]
 
 == *유틸리티*
 
@@ -30,6 +34,18 @@ link:signin.html[API 문서 보기]
 == *도서관리*
 
 link:bookmanage.html[API 문서 보기]
+
+== *카테고리*
+
+link:category.html[API 문서 보기]
+
+== *페이지 블럭*
+
+link:about.html[API 문서 보기]
+
+== *페이지 블럭 (관리자)*
+
+link:aboutAdmin.html[API 문서 보기]
 
 == *게시판*
 
@@ -50,3 +66,11 @@ link:attendance.html[API 문서 보기]
 == *도서관*
 
 link:librarymain.html[API 문서 보기]
+
+== *랭킹*
+
+link:rank.html[API 문서 보기]
+
+== *게임*
+
+link:game.html[API 문서 보기]

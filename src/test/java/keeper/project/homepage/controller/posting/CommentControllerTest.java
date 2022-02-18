@@ -16,6 +16,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +29,7 @@ import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.service.util.AuthService;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,6 +45,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 public class CommentControllerTest extends ApiControllerTestSetUp {
 
+  final private String adminLoginId = "hyeonmoAdmin";
+  final private String adminPassword = "keeper2";
+  final private String adminRealName = "JeongHyeonMo2";
+  final private String adminNickName = "JeongHyeonMo2";
+  final private String adminEmailAddress = "test2@k33p3r.com";
+  final private String adminStudentId = "201724580";
+
   final private String loginId = "hyeonmomo";
   final private String password = "keeper";
   final private String realName = "JeongHyeonMo";
@@ -50,8 +59,8 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
   final private String emailAddress = "gusah@naver.com";
   final private String studentId = "201724579";
 
-  private LocalDate registerTime = LocalDate.now();
-  private LocalDate updateTime = LocalDate.now();
+  private LocalDateTime registerTime = LocalDateTime.now();
+  private LocalDateTime updateTime = LocalDateTime.now();
   private String ipAddress = "127.0.0.1";
   private Integer likeCount = 0;
   private Integer dislikeCount = 0;
@@ -60,14 +69,21 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
   private CommentEntity parentComment;
   private CommentEntity commentEntity;
   private MemberEntity memberEntity;
+  private MemberEntity adminEntity;
+  private AuthService authService;
 
   private String userToken;
+  private String adminToken;
 
   @BeforeEach
   public void setUp() throws Exception {
     MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
+    MemberJobEntity adminJobEntity = memberJobRepository.findByName("ROLE_회장").get();
     MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
         .memberJobEntity(memberJobEntity)
+        .build();
+    MemberHasMemberJobEntity adminHasMemberJobEntity = MemberHasMemberJobEntity.builder()
+        .memberJobEntity(adminJobEntity)
         .build();
     memberEntity = memberRepository.save(MemberEntity.builder()
         .loginId(loginId)
@@ -78,7 +94,6 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
         .studentId(studentId)
         .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build());
-
     String content = "{\n"
         + "    \"loginId\": \"" + loginId + "\",\n"
         + "    \"password\": \"" + password + "\"\n"
@@ -100,6 +115,35 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
     });
     userToken = sign.getData().getToken();
 
+    adminEntity = memberRepository.save(MemberEntity.builder()
+        .loginId(adminLoginId)
+        .password(passwordEncoder.encode(adminPassword))
+        .realName(adminRealName)
+        .nickName(adminNickName)
+        .emailAddress(adminEmailAddress)
+        .studentId(adminStudentId)
+        .memberJobs(new ArrayList<>(List.of(adminHasMemberJobEntity)))
+        .build());
+    String adminContent = "{\n"
+        + "    \"loginId\": \"" + adminLoginId + "\",\n"
+        + "    \"password\": \"" + adminPassword + "\"\n"
+        + "}";
+    MvcResult adminResult = mockMvc.perform(post("/v1/signin")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(adminContent))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").exists())
+        .andExpect(jsonPath("$.data").exists())
+        .andReturn();
+
+    String adminResultString = adminResult.getResponse().getContentAsString();
+    SingleResult<SignInDto> adminSign = mapper.readValue(adminResultString, new TypeReference<>() {
+    });
+    adminToken = adminSign.getData().getToken();
+
     CategoryEntity categoryEntity = categoryRepository.save(
         CategoryEntity.builder().name("test category").build());
 
@@ -116,8 +160,8 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
         .dislikeCount(1)
         .commentCount(0)
         .visitCount(0)
-        .registerTime(new Date())
-        .updateTime(new Date())
+        .registerTime(LocalDateTime.now())
+        .updateTime(LocalDateTime.now())
         .password("asdsdf")
         .memberId(memberEntity)
         .build());
@@ -145,6 +189,7 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
         .member(memberEntity)
         .postingId(postingEntity)
         .build());
+
   }
 
   @Test
@@ -210,8 +255,8 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
   public void showCommentByPostIdTest() throws Exception {
     Long postId = postingEntity.getId();
     for (int i = 0; i < 15; i++) {
-      commentRepository.save(CommentEntity.builder()
-          .content("페이징 댓글 내용")
+      CommentEntity comment = commentRepository.save(CommentEntity.builder()
+          .content("페이징 댓글 내용 " + i)
           .registerTime(registerTime)
           .updateTime(updateTime)
           .ipAddress(ipAddress)
@@ -221,12 +266,14 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
           .member(memberEntity)
           .postingId(postingEntity)
           .build());
+      commentService.updateLikeCount(memberEntity.getId(), comment.getId());
     }
 
     mockMvc.perform(
             RestDocumentationRequestBuilders.get("/v1/comment/{postId}", postId)
                 .param("page", "0")
                 .param("size", "10")
+                .header("Authorization", userToken)
         )
         .andDo(print())
         .andExpect(status().isOk())
@@ -250,10 +297,14 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].ipAddress").description("댓글 작성자의 ip address"),
                 fieldWithPath("list[].likeCount").description("좋아요 개수"),
                 fieldWithPath("list[].dislikeCount").description("싫어요 개수"),
+                fieldWithPath("list[].checkedLike").description(
+                    "좋아요 눌렀는지 확인 (눌렀으면 true, 아니면 false)"),
+                fieldWithPath("list[].checkedDislike").description(
+                    "싫어요 눌렀는지 확인 (눌렀으면 true, 아니면 false)"),
                 fieldWithPath("list[].parentId").description("대댓글인 경우, 부모 댓글의 id"),
                 fieldWithPath("list[].writer").optional().description("작성자 (탈퇴한 작성자일 경우 null)"),
                 fieldWithPath("list[].writerId").optional().description("작성자 (탈퇴한 작성자일 경우 null)"),
-                fieldWithPath("list[].writerThumbnailId").optional()
+                fieldWithPath("list[].writerThumbnailId").optional().type(Long.TYPE)
                     .description("작성자 (탈퇴했을 경우 / 썸네일을 등록하지 않았을 경우 null)")
             )
         ));
@@ -274,9 +325,34 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description(
-                    "이미 삭제된 댓글인 경우: BAD_REQUEST(400)" + " +\n"
-                        + "삭제 중 에러가 난 경우: INTERNAL_SERVER_ERROR(500)"),
-                fieldWithPath("msg").description("이미 삭제된 댓글인 경우: \"존재하지 않는 댓글입니다.\"")
+                    "존재하지 않는 댓글인 경우: " + exceptionAdvice.getMessage("commentNotFound.code") + " +\n"
+                        + "삭제 중 에러가 난 경우: " + exceptionAdvice.getMessage("unKnown.code")),
+                fieldWithPath("msg").description(
+                    "댓글 기록을 완전히 삭제하지 않고 작성자와 댓글 내용, 좋아요와 싫어요 수를 초기화합니다.")
+            )
+        ));
+  }
+
+  @Test
+  @DisplayName("관리자 권한 댓글 삭제 - 성공")
+  public void adminCommentDeleteTest() throws Exception {
+    Long commentId = commentEntity.getId();
+    mockMvc.perform(
+            RestDocumentationRequestBuilders.delete("/v1/admin/comment/{commentId}", commentId)
+                .header("Authorization", adminToken))
+        .andExpect(status().isOk())
+        .andDo(print())
+        .andDo(document("admin-comment-delete",
+            pathParameters(
+                parameterWithName("commentId").description("삭제할 댓글의 id")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description(
+                    "존재하지 않는 댓글인 경우: " + exceptionAdvice.getMessage("commentNotFound.code") + " +\n"
+                        + "삭제 중 에러가 난 경우: " + exceptionAdvice.getMessage("unKnown.code")),
+                fieldWithPath("msg").description(
+                    "댓글 기록을 완전히 삭제하지 않고 작성자와 댓글 내용, 좋아요와 싫어요 수를 초기화합니다.")
             )
         ));
   }
@@ -316,7 +392,7 @@ public class CommentControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.parentId").ignored(),
                 fieldWithPath("data.writer").optional().description("작성자 (탈퇴한 작성자일 경우 null)"),
                 fieldWithPath("data.writerId").optional().description("작성자 (탈퇴한 작성자일 경우 null)"),
-                fieldWithPath("data.writerThumbnailId").optional()
+                fieldWithPath("data.writerThumbnailId").optional().type(Long.TYPE)
                     .description("작성자 (탈퇴했을 경우 / 썸네일을 등록하지 않았을 경우 null)")
 //                fieldWithPath("data.memberId").ignored(),
 //                fieldWithPath("data.postingId").ignored()
