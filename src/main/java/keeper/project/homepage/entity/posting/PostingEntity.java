@@ -27,6 +27,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import lombok.Setter;
 import org.springframework.util.Assert;
 
 @Builder
@@ -56,6 +57,7 @@ public class PostingEntity {
   private Long writerId;
   @Transient
   private Long writerThumbnailId;
+  @Setter
   @Transient
   private Integer size;
   @Column
@@ -158,10 +160,6 @@ public class PostingEntity {
 
   public void setWriterThumbnailId(Long writerThumbnailId) {
     this.writerThumbnailId = writerThumbnailId;
-  }
-
-  public void setSize(Integer size) {
-    this.size = size;
   }
 
   public void makeSecret() {

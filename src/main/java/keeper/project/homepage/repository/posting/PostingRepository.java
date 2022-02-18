@@ -14,21 +14,21 @@ public interface PostingRepository extends JpaRepository<PostingEntity, Long> {
 
   Page<PostingEntity> findAllByIsTemp(Integer isTemp, Pageable pageable);
 
-  List<PostingEntity> findAllByCategoryIdAndIsTemp(CategoryEntity category, Integer isTemp,
+  Page<PostingEntity> findAllByCategoryIdAndIsTemp(CategoryEntity category, Integer isTemp,
       Pageable pageable);
 
-  List<PostingEntity> findAllByCategoryIdAndTitleContainingAndIsTemp(CategoryEntity category,
+  Page<PostingEntity> findAllByCategoryIdAndTitleContainingAndIsTemp(CategoryEntity category,
       String title, Integer isTemp, Pageable pageable);
 
-  List<PostingEntity> findAllByCategoryIdAndContentContainingAndIsTemp(CategoryEntity category,
+  Page<PostingEntity> findAllByCategoryIdAndContentContainingAndIsTemp(CategoryEntity category,
       String content, Integer isTemp, Pageable pageable);
 
-  List<PostingEntity> findAllByCategoryIdAndTitleContainingOrCategoryIdAndContentContainingAndIsTemp(
+  Page<PostingEntity> findAllByCategoryIdAndTitleContainingOrCategoryIdAndContentContainingAndIsTemp(
       CategoryEntity category1, String title, CategoryEntity category2, String content,
       Integer isTemp,
       Pageable pageable);
 
-  List<PostingEntity> findAllByCategoryIdAndMemberIdAndIsTemp(CategoryEntity category,
+  Page<PostingEntity> findAllByCategoryIdAndMemberIdAndIsTemp(CategoryEntity category,
       MemberEntity member, Integer isTemp, Pageable pageable);
 
   boolean existsByMemberHasPostingLikeEntitiesContaining(
