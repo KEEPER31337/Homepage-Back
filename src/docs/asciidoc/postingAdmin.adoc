@@ -18,3 +18,29 @@ endif::[]
 == API 목록
 
 link:admin.html[API 목록으로 돌아가기]
+
+== 게시글 삭제(관리자)
+
+=== 요청
+
+==== Request
+
+include::{snippets}/post-admin-delete/http-request.adoc[]
+
+==== Request Path Parameters
+
+include::{snippets}/post-admin-delete/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/post-admin-delete/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/post-admin-delete/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/post-admin-delete/response-fields.adoc[]
