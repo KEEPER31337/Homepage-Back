@@ -98,7 +98,7 @@ public class MemberEntity implements UserDetails, Serializable {
 
   @Column(name = "generation", nullable = false)
   private Float generation;
-  
+
   @OneToOne
   @JoinColumn(name = "thumbnail_id")
   // DEFAULT 1
@@ -216,6 +216,10 @@ public class MemberEntity implements UserDetails, Serializable {
 
   public void decreaseDemerit(int point) {
     this.demerit -= point;
+  }
+
+  public void changeGeneration(float generation) {
+    this.generation = generation;
   }
 
   @PrePersist

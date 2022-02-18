@@ -50,13 +50,6 @@ public class MemberController {
   private final ResponseService responseService;
   private final AuthService authService;
 
-  @Secured("ROLE_회장") // 각 리소스별 권한 설정
-  @GetMapping(value = "/admin/members")
-  public ListResult<MemberEntity> findAllMember() {
-    // 결과데이터가 여러건인경우 getSuccessListResult 이용해서 결과를 출력한다.
-    return responseService.getSuccessListResult(memberService.findAll());
-  }
-
   @Secured("ROLE_회원") // 각 리소스별 권한 설정
   @GetMapping(value = "/member")
   public SingleResult<MemberEntity> findMember() {
@@ -107,30 +100,6 @@ public class MemberController {
     // 실제 존재하는 email인지 인증 코드를 통해 확인
     MemberDto updated = memberService.updateEmailAddress(memberDto, id);
     return responseService.getSuccessSingleResult(updated);
-  }
-
-  @Secured("ROLE_회장")
-  @PutMapping("member/update/rank")
-  public SingleResult<MemberDto> updateMemberRank(@RequestBody MemberRankDto memberRankDto) {
-    String loginId = memberRankDto.getMemberLoginId();
-    MemberDto update = memberService.updateMemberRank(memberRankDto, loginId);
-    return responseService.getSuccessSingleResult(update);
-  }
-
-  @Secured("ROLE_회장")
-  @PutMapping("member/update/type")
-  public SingleResult<MemberDto> updateMemberType(@RequestBody MemberTypeDto memberTypeDto) {
-    String loginId = memberTypeDto.getMemberLoginId();
-    MemberDto update = memberService.updateMemberType(memberTypeDto, loginId);
-    return responseService.getSuccessSingleResult(update);
-  }
-
-  @Secured("ROLE_회장")
-  @PutMapping("member/update/job")
-  public SingleResult<MemberDto> updateMemberJob(@RequestBody MemberJobDto memberJobDto) {
-    String loginId = memberJobDto.getMemberLoginId();
-    MemberDto update = memberService.updateMemberJobs(memberJobDto, loginId);
-    return responseService.getSuccessSingleResult(update);
   }
 
   @Secured("ROLE_회원")

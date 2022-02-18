@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import keeper.project.homepage.dto.member.MemberDto;
+import keeper.project.homepage.dto.member.MemberGenerationDto;
 import keeper.project.homepage.dto.result.OtherMemberInfoResult;
 import keeper.project.homepage.entity.member.FriendEntity;
 import keeper.project.homepage.dto.request.PointTransferRequest;
@@ -396,4 +397,22 @@ public class MemberService {
 
     return member.getPoint();
   }
+
+  public MemberDto updateGeneration(MemberGenerationDto dto) {
+    if (dto.getGeneration() == null) {
+      throw new CustomMemberEmptyFieldException("변경할 기수가 비어있습니다.");
+    }
+
+    String loginId = dto.getMemberLoginId();
+    Float generation = dto.getGeneration();
+
+    MemberEntity member = findByLoginId(loginId);
+    member.changeGeneration(generation);
+    memberRepository.save(member);
+
+    MemberDto result = MemberDto.builder().build();
+    result.initWithEntity(member);
+    return result;
+  }
+  // TODO : merit, demerit 관련 메소드 추가
 }
