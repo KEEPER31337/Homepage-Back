@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class CategoryResult {
+public class CategoryWithChildResult {
 
   private Long id;
 
@@ -19,9 +19,16 @@ public class CategoryResult {
 
   private String href;
 
-  public CategoryResult(CategoryEntity category) {
+  private List<CategoryWithChildResult> children = new ArrayList<>();
+
+  public CategoryWithChildResult(CategoryEntity category) {
     this.id = category.getId();
     this.name = category.getName();
     this.href = category.getHref();
+    if(category.getChildren() != null) {
+      this.children = category.getChildren().stream().map(CategoryWithChildResult::new).collect(
+          Collectors.toList());
+    }
   }
+
 }
