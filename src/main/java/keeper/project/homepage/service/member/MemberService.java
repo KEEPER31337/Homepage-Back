@@ -3,6 +3,7 @@ package keeper.project.homepage.service.member;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.dto.result.OtherMemberInfoResult;
 import keeper.project.homepage.entity.member.FriendEntity;
@@ -224,8 +225,7 @@ public class MemberService {
     return followeeList;
   }
 
-  // update realName, nickName
-  public MemberDto updateNames(MemberDto memberDto, Long memberId) {
+  public MemberDto updateProfile(MemberDto memberDto, Long memberId) {
     MemberEntity updateEntity = memberRepository.findById(memberId)
         .orElseThrow(CustomMemberNotFoundException::new);
     if (memberDto.getRealName().isBlank()) {
@@ -234,21 +234,14 @@ public class MemberService {
     if (memberDto.getNickName().isBlank()) {
       throw new CustomMemberEmptyFieldException("변경할 닉네임의 내용이 비어있습니다.");
     }
-    updateEntity.changeRealName(memberDto.getRealName());
-    updateEntity.changeNickName(memberDto.getNickName());
-    memberDto.initWithEntity(memberRepository.save(updateEntity));
-    return memberDto;
-  }
-
-  public MemberDto updateStudentId(MemberDto memberDto, Long memberId) {
-    MemberEntity updateEntity = memberRepository.findById(memberId)
-        .orElseThrow(CustomMemberNotFoundException::new);
     if (memberDto.getStudentId().isBlank()) {
       throw new CustomMemberEmptyFieldException("변경할 학번의 내용이 비어있습니다.");
     }
     if (duplicateCheckService.checkStudentIdDuplicate(memberDto.getStudentId())) {
       throw new CustomMemberDuplicateException("이미 사용중인 학번입니다.");
     }
+    updateEntity.changeRealName(memberDto.getRealName());
+    updateEntity.changeNickName(memberDto.getNickName());
     updateEntity.changeStudentId(memberDto.getStudentId());
     memberDto.initWithEntity(memberRepository.save(updateEntity));
     return memberDto;
@@ -318,7 +311,7 @@ public class MemberService {
 
     if (prevThumbnail != null) {
       thumbnailService.deleteById(prevThumbnail.getId());
-      fileService.deleteOriginalThumbnailById(prevThumbnail.getFile().getId());
+      fileService.deleteOriginalThumbnail(prevThumbnail);
     }
     return result;
   }
@@ -361,6 +354,11 @@ public class MemberService {
         .orElseThrow(CustomMemberNotFoundException::new);
 
     return new OtherMemberInfoResult(memberEntity);
+  }
+
+  public List<OtherMemberInfoResult> getAllGeneralMemberInfo() {
+    return memberRepository.findAll().stream().map(OtherMemberInfoResult::new)
+        .collect(Collectors.toList());
   }
 
   public PointTransferResult transferPoint(Long senderId,

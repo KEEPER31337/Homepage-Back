@@ -1,6 +1,6 @@
 package keeper.project.homepage.repository.member;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -62,8 +62,8 @@ public class MemberHasCommentLikeRepositoryTest {
   private MemberEntity memberEntity;
   private MemberHasCommentLikeEntity memberHasCommentLikeEntity;
 
-  private LocalDate registerTime = LocalDate.now();
-  private LocalDate updateTime = LocalDate.now();
+  private LocalDateTime registerTime = LocalDateTime.now();
+  private LocalDateTime updateTime = LocalDateTime.now();
   private String ipAddress = "127.0.0.1";
   private Integer likeCount = 0;
   private Integer dislikeCount = 0;
@@ -108,8 +108,8 @@ public class MemberHasCommentLikeRepositoryTest {
         .dislikeCount(1)
         .commentCount(0)
         .visitCount(0)
-        .registerTime(new Date())
-        .updateTime(new Date())
+        .registerTime(LocalDateTime.now())
+        .updateTime(LocalDateTime.now())
         .memberId(memberEntity)
         .password("asdsdf")
         .build());

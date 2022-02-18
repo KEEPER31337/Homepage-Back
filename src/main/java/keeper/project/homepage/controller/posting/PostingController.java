@@ -15,6 +15,8 @@ import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.exception.file.CustomFileEntityNotFoundException;
+import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
 import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.ResponseService;
 import keeper.project.homepage.service.ThumbnailService;
@@ -33,6 +35,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -120,7 +123,7 @@ public class PostingController {
       postingEntity.increaseVisitCount();
       postingService.updateInfoById(postingEntity, postingId);
     }
-    
+
     return postingService.getSuccessPostingResult(postingEntity);
   }
 
@@ -154,48 +157,72 @@ public class PostingController {
       @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
       PostingDto dto, @PathVariable("pid") Long postingId) {
 
-    ThumbnailEntity prevThumbnail = thumbnailService.findById(dto.getThumbnailId());
+    ThumbnailEntity newThumbnail = saveThumbnail(thumbnail, dto);
 
+    PostingEntity postingEntity = postingService.updateById(dto, postingId, newThumbnail);
+    deletePrevFiles(postingId);
+    fileService.saveFiles(files, dto.getIpAddress(), postingEntity);
+
+    deletePrevThumbnail(dto);
+
+    return responseService.getSuccessResult();
+  }
+
+  private void deletePrevFiles(PostingEntity postingEntity) {
+    List<FileEntity> fileEntities = fileService.findFileEntitiesByPostingId(
+        postingEntity);
+    fileService.deleteFiles(fileEntities);
+  }
+
+  private void deletePrevFiles(Long postingId) {
+    deletePrevFiles(postingService.getPostingById(postingId));
+  }
+
+  private ThumbnailEntity saveThumbnail(MultipartFile thumbnail, PostingDto dto) {
     ThumbnailEntity newThumbnail = null;
     FileEntity fileEntity = fileService.saveOriginalThumbnail(thumbnail, dto.getIpAddress());
     if (fileEntity == null) {
-      return responseService.getFailResult();
+      throw new CustomFileEntityNotFoundException("파일 저장 중에 에러가 발생했습니다.");
     }
     newThumbnail = thumbnailService.saveThumbnail(new ImageCenterCrop(),
         thumbnail, fileEntity, "large");
     if (newThumbnail == null) {
-      return responseService.getFailResult();
+      throw new CustomThumbnailEntityNotFoundException("썸네일 저장 중에 에러가 발생했습니다.");
     }
+    return newThumbnail;
+  }
 
-    PostingEntity postingEntity = postingService.updateById(dto, postingId);
-    List<FileEntity> fileEntities = fileService.findFileEntitiesByPostingId(
-        postingService.getPostingById(postingId));
-    fileService.deleteFiles(fileEntities);
-    fileService.saveFiles(files, dto.getIpAddress(), postingEntity);
-
-    thumbnailService.deleteById(prevThumbnail.getId());
-    fileService.deleteOriginalThumbnailById(prevThumbnail.getFile().getId());
-
-    return postingEntity.getId() != null ? responseService.getSuccessResult() :
-        responseService.getFailResult();
+  private void deletePrevThumbnail(PostingDto dto) {
+    if (dto.getThumbnailId() != null) {
+      ThumbnailEntity prevThumbnail = thumbnailService.findById(dto.getThumbnailId());
+      thumbnailService.deleteById(prevThumbnail.getId());
+      fileService.deleteOriginalThumbnail(prevThumbnail);
+    }
   }
 
   @DeleteMapping(value = "/{pid}", produces = {MediaType.APPLICATION_JSON_VALUE})
   public CommonResult removePosting(@PathVariable("pid") Long postingId) {
 
-    ThumbnailEntity deleteThumbnail = thumbnailService.findById(
-        postingService.getPostingById(postingId).getThumbnail().getId());
+    PostingEntity postingEntity = postingService.getPostingById(postingId);
+    ThumbnailEntity deleteThumbnail = null;
+    if (postingEntity.getThumbnail() != null) {
+      deleteThumbnail = thumbnailService.findById(
+          postingEntity.getThumbnail().getId());
+    }
+    System.out.println(postingEntity.getThumbnail());
 
-    List<FileEntity> fileEntities = fileService.findFileEntitiesByPostingId(
-        postingService.getPostingById(postingId));
-    fileService.deleteFiles(fileEntities);
-    int result = postingService.deleteById(postingId);
+    deletePrevFiles(postingEntity);
 
-    fileService.deleteOriginalThumbnailById(deleteThumbnail.getFile().getId());
-    thumbnailService.deleteById(deleteThumbnail.getId());
+    postingService.delete(postingEntity);
 
-    return result == 1 ? responseService.getSuccessResult() : responseService.getFailResult();
+    if (postingEntity.getThumbnail() != null) {
+      thumbnailService.deleteById(deleteThumbnail.getId());
+      fileService.deleteOriginalThumbnail(deleteThumbnail);
+    }
+
+    return responseService.getSuccessResult();
   }
+
 
   @GetMapping(value = "/search")
   public ListResult<PostingEntity> searchPosting(@RequestParam("type") String type,

@@ -15,11 +15,8 @@ import keeper.project.homepage.dto.result.OtherMemberInfoResult;
 import keeper.project.homepage.dto.result.PointTransferResult;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.repository.member.MemberRepository;
-import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.ResponseService;
 import keeper.project.homepage.service.member.MemberService;
-import keeper.project.homepage.service.ThumbnailService;
 import keeper.project.homepage.service.posting.PostingService;
 import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -54,7 +51,7 @@ public class MemberController {
   private final AuthService authService;
 
   @Secured("ROLE_회장") // 각 리소스별 권한 설정
-  @GetMapping(value = "/members")
+  @GetMapping(value = "/admin/members")
   public ListResult<MemberEntity> findAllMember() {
     // 결과데이터가 여러건인경우 getSuccessListResult 이용해서 결과를 출력한다.
     return responseService.getSuccessListResult(memberService.findAll());
@@ -69,12 +66,18 @@ public class MemberController {
     return responseService.getSuccessSingleResult(memberService.findById(id));
   }
 
+  @Secured("ROLE_회원") // 각 리소스별 권한 설정
+  @GetMapping(value = "/members")
+  public ListResult<OtherMemberInfoResult> getAllGeneralMemberInfo() {
+    return responseService.getSuccessListResult(memberService.getAllGeneralMemberInfo());
+  }
+
   @Secured("ROLE_회원")
-  @PutMapping(value = "/member/update/names")
-  public SingleResult<MemberDto> updateNames(@RequestBody MemberDto memberDto) {
+  @PutMapping(value = "/member/update/profile")
+  public SingleResult<MemberDto> updateProfile(@RequestBody MemberDto memberDto) {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
     Long id = authService.getMemberIdByJWT();
-    MemberDto updated = memberService.updateNames(memberDto, id);
+    MemberDto updated = memberService.updateProfile(memberDto, id);
     return responseService.getSuccessSingleResult(updated);
   }
 
@@ -104,15 +107,6 @@ public class MemberController {
     // 실제 존재하는 email인지 인증 코드를 통해 확인
     MemberDto updated = memberService.updateEmailAddress(memberDto, id);
     return responseService.getSuccessSingleResult(updated);
-  }
-
-  @Secured("ROLE_회원")
-  @PutMapping("/member/update/studentid")
-  public SingleResult<MemberDto> updateStudentId(@RequestBody MemberDto memberDto) {
-    // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
-    Long id = authService.getMemberIdByJWT();
-    MemberDto update = memberService.updateStudentId(memberDto, id);
-    return responseService.getSuccessSingleResult(update);
   }
 
   @Secured("ROLE_회장")
@@ -164,7 +158,7 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @GetMapping(value = "/member/temp_post/{pid}")
+  @GetMapping(value = "/member/post/{pid}")
   public void findPosting(@PathVariable("pid") Long postingId, HttpServletResponse response) {
     String uri = "/v1/post/" + postingId;
     try {

@@ -15,7 +15,6 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.data.web.SortDefault.SortDefaults;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -51,6 +50,7 @@ public class CommentController {
     return ResponseEntity.ok().body(responseService.getSuccessResult());
   }
 
+  @Secured("ROLE_회원")
   @GetMapping(value = "/{postId}")
   public ResponseEntity<ListResult<CommentDto>> showCommentByPostId(
       @PathVariable("postId") Long postId,
@@ -58,7 +58,8 @@ public class CommentController {
           @SortDefault(sort = "registerTime", direction = Direction.ASC)})
       @PageableDefault(page = 0, size = 10) Pageable pageable) {
 
-    List<CommentDto> dtoPage = commentService.findAllByPost(postId, pageable);
+    Long memberId = authService.getMemberIdByJWT();
+    List<CommentDto> dtoPage = commentService.findAllByPost(memberId, postId, pageable);
     return ResponseEntity.ok().body(responseService.getSuccessListResult(dtoPage));
   }
 
@@ -66,7 +67,7 @@ public class CommentController {
   @DeleteMapping("/{commentId}")
   public ResponseEntity<CommonResult> deleteComment(@PathVariable("commentId") Long commentId) {
     Long memberId = authService.getMemberIdByJWT();
-    commentService.deleteById(commentId, memberId);
+    commentService.deleteByWriter(memberId, commentId);
     return ResponseEntity.ok().body(responseService.getSuccessResult());
   }
 

@@ -1,6 +1,14 @@
 package keeper.project.homepage.controller.etc;
 
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -146,7 +154,25 @@ public class AboutSubtitleControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data.subtitle").value("세미나"))
         .andExpect(jsonPath("$.data.staticWriteTitleId").value(1))
-        .andExpect(jsonPath("$.data.displayOrder").value(10));
+        .andExpect(jsonPath("$.data.displayOrder").value(10))
+        .andDo(document("aboutSubtitle-create",
+            requestFields(
+                fieldWithPath("subtitle").description("생성하고자 하는 페이지 블럭 서브타이틀의 제목"),
+                fieldWithPath("staticWriteTitleId").description("생성하고자 하는 페이지 블럭 서브타이틀과 연결되는 페이지 블럭 타이틀의 ID"),
+                fieldWithPath("thumbnailId").description("생성하고자 하는 페이지 블럭 서브타이틀과 연결되는 썸네일의 ID"),
+                fieldWithPath("displayOrder").description("생성하고자 하는 페이지 블럭 서브타이틀이 보여지는 순서")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("data.id").description("생성에 성공한 페이지 블럭 서브타이틀의 ID"),
+                fieldWithPath("data.subtitle").description("생성에 성공한 페이지 블럭 서브타이틀의 제목"),
+                fieldWithPath("data.staticWriteTitleId").description("생성에 성공한 페이지 블럭 서브타이틀과 연결되는 페이지 블럭 타이틀의 ID"),
+                fieldWithPath("data.thumbnail.id").description("생성에 성공한 페이지 블럭 서브타이틀과 연결되는 썸네일의 ID"),
+                fieldWithPath("data.displayOrder").description("생성에 성공한 페이지 블럭 서브타이틀이 보여지는 순서"),
+                subsectionWithPath("data.staticWriteContentResults[]").description("생성에 성공한 페이지 블럭 서브타이틀과 연결된 페이지 블럭 컨텐츠의 리스트 데이터")
+            )));
 
   }
 
@@ -158,7 +184,22 @@ public class AboutSubtitleControllerTest extends ApiControllerTestSetUp {
             .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true));
+        .andExpect(jsonPath("$.success").value(true))
+        .andDo(document("aboutSubtitle-delete",
+            pathParameters(
+                parameterWithName("id").description("삭제하고자 하는 페이지 블럭 서브타이틀의 ID")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("data.id").description("삭제에 성공한 페이지 블럭 서브타이틀의 ID"),
+                fieldWithPath("data.subtitle").description("삭제에 성공한 페이지 블럭 서브타이틀의 제목"),
+                fieldWithPath("data.staticWriteTitleId").description("삭제에 성공한 페이지 블럭 서브타이틀과 연결되는 페이지 블럭 타이틀의 ID"),
+                fieldWithPath("data.thumbnail.id").description("삭제에 성공한 페이지 블럭 서브타이틀과 연결되는 썸네일의 ID"),
+                fieldWithPath("data.displayOrder").description("삭제에 성공한 페이지 블럭 서브타이틀이 보여지던 순서"),
+                subsectionWithPath("data.staticWriteContentResults[]").description("삭제에 성공한 페이지 블럭 서브타이틀과 연결된 페이지 블럭 컨텐츠의 리스트 데이터")
+            )));
   }
 
   @Test
@@ -194,7 +235,28 @@ public class AboutSubtitleControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.data.staticWriteTitleId").value(2))
         .andExpect(jsonPath("$.data.thumbnail.id").value(thumbnailEntity.getId()))
-        .andExpect(jsonPath("$.data.displayOrder").value(5));
+        .andExpect(jsonPath("$.data.displayOrder").value(5))
+        .andDo(document("aboutSubtitle-modify",
+            pathParameters(
+                parameterWithName("id").description("수정하고자 하는 페이지 블럭 서브타이틀의 ID")
+            ),
+            requestFields(
+                fieldWithPath("subtitle").description("수정하고자 하는 페이지 블럭 서브타이틀의 제목(변하지 않을 시 기존 제목)"),
+                fieldWithPath("staticWriteTitleId").description("수정하고자 하는 페이지 블럭 서브타이틀과 연결되는 페이지 블럭 타이틀의 ID(변하지 않을 시 기존 타이틀 ID)"),
+                fieldWithPath("thumbnailId").description("수정하고자 하는 페이지 블럭 서브타이틀과 연결되는 썸네일의 ID(변하지 않을 시 기존 썸네일 ID)"),
+                fieldWithPath("displayOrder").description("수정하고자 하는 페이지 블럭 서브타이틀이 보여지는 순서(변하지 않을 시 기존 보여지는 순서)")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("data.id").description("수정에 성공한 페이지 블럭 서브타이틀의 ID"),
+                fieldWithPath("data.subtitle").description("수정에 성공한 페이지 블럭 서브타이틀의 제목"),
+                fieldWithPath("data.staticWriteTitleId").description("수정에 성공한 페이지 블럭 서브타이틀과 연결되는 페이지 블럭 타이틀의 ID"),
+                fieldWithPath("data.thumbnail.id").description("수정에 성공한 페이지 블럭 서브타이틀과 연결되는 썸네일의 ID"),
+                fieldWithPath("data.displayOrder").description("수정에 성공한 페이지 블럭 서브타이틀이 보여지는 순서"),
+                subsectionWithPath("data.staticWriteContentResults[]").description("수정에 성공한 페이지 블럭 서브타이틀과 연결된 페이지 블럭 컨텐츠의 리스트 데이터")
+            )));
   }
 
   @Test

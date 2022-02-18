@@ -10,7 +10,7 @@ endif::[]
 // source code 블럭에서 사용되는 highlighter 설정, 4개 정도 있던데 차이를 아직 잘 모르겠음.
 :toc: left
 // table of contents(toc) 왼쪽정렬하여 생성
-:toclevels: 3
+:toclevels: 1
 // default : 2 (==,  ===) 까지 toc에 보여줌.
 :sectlinks:
 // section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
@@ -78,3 +78,85 @@ include::{snippets}/categories-getByName/response-body.adoc[]
 ==== Response Fields
 
 include::{snippets}/categories-getByName/response-fields.adoc[]
+
+== *카테고리 생성*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/category-create/http-request.adoc[]
+
+==== Request Body
+
+include::{snippets}/category-create/request-body.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/category-create/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/category-create/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/category-create/response-fields.adoc[]
+
+== *카테고리 수정*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/category-modify/http-request.adoc[]
+
+==== Request Body
+
+include::{snippets}/category-modify/request-body.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/category-modify/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/category-modify/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/category-modify/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/category-modify/response-fields.adoc[]
+
+== *카테고리 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/category-delete/http-request.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/category-delete/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/category-delete/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/category-delete/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/category-delete/response-fields.adoc[]

@@ -1,0 +1,124 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+// 자동으로 생성된 snippet 설정하는 부분
+
+= KEEPER API 문서
+:icons: font
+// NOTE, TIP, WARNING, CAUTION, IMPORTANT 같은 경고구들 아이콘화 해줌
+:source-highlighter: highlight.js
+// source code 블럭에서 사용되는 highlighter 설정, 4개 정도 있던데 차이를 아직 잘 모르겠음.
+:toc: left
+// table of contents(toc) 왼쪽정렬하여 생성
+:toclevels: 1
+// default : 2 (==,  ===) 까지 toc에 보여줌.
+:sectlinks:
+// section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
+
+== API 목록
+
+link:member.html[회원 API 목록으로 돌아가기]
+
+== *작성한 게시글 조회하기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/member-show-all-post/http-request.adoc[]
+
+==== Request Fields
+
+include::{snippets}/member-show-all-post/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/member-show-all-post/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/member-show-all-post/response-fields.adoc[]
+
+== *임시 저장한 게시글 조회하기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/member-show-all-temp-post/http-request.adoc[]
+
+==== Request Fields
+
+include::{snippets}/member-show-all-temp-post/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/member-show-all-temp-post/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/member-show-all-temp-post/response-fields.adoc[]
+
+== *작성한 게시글 하나 조회하기*
+
+NOTE: link:posting.html#_게시글_확인[/v1/post/{pid}]로 리다이렉트 합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/member-show-post/http-request.adoc[]
+
+==== Request Fields
+
+include::{snippets}/member-show-post/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/member-show-post/http-response.adoc[]
+
+== *작성한 게시글 수정하기*
+
+NOTE: link:posting.html#_게시글_수정[/v1/post/{pid}]로 리다이렉트 합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/member-update-post/http-request.adoc[]
+
+==== Request Fields
+
+include::{snippets}/member-update-post/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/member-update-post/http-response.adoc[]
+
+== *작성한 게시글 삭제하기*
+
+NOTE: link:posting.html#_게시글_삭제[/v1/post/{pid}]로 리다이렉트 합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/member-delete-post/http-request.adoc[]
+
+==== Request Fields
+
+include::{snippets}/member-delete-post/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/member-delete-post/http-response.adoc[]
