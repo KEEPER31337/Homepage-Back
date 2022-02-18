@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.request;
+package keeper.project.homepage.dto.point.request;
 
 import java.time.LocalDateTime;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -27,6 +27,7 @@ public class PointGiftLogRequest {
         .point(point)
         .detail(detail)
         .presentedMember(presented)
+        .isSpent(1)
         .build();
   }
 

@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.request;
+package keeper.project.homepage.dto.point.request;
 
 import java.time.LocalDateTime;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -19,8 +19,6 @@ public class PointLogRequest {
   private Integer point;
 
   private String detail;
-
-
 
   public PointLogEntity toEntity(MemberEntity member, Integer isSpent) {
     return PointLogEntity.builder()
