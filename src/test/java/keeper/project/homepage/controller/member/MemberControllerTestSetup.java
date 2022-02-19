@@ -22,12 +22,4 @@ public class MemberControllerTestSetup extends ApiControllerTestHelper {
   @Autowired
   public ExceptionAdvice exceptionAdvice;
 
-  public Float getMemberGeneration() {
-    LocalDate date = LocalDate.now();
-    Float generation = (float) (date.getYear() - KEEPER_FOUNDING_YEAR);
-    if (date.getMonthValue() >= HALF_GENERATION_MONTH) {
-      generation += 0.5F;
-    }
-    return generation;
-  }
 }

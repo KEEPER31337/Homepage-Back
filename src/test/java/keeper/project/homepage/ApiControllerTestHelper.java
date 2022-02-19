@@ -1,5 +1,7 @@
 package keeper.project.homepage;
 
+import static keeper.project.homepage.service.sign.SignUpService.HALF_GENERATION_MONTH;
+import static keeper.project.homepage.service.sign.SignUpService.KEEPER_FOUNDING_YEAR;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -9,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -102,6 +105,15 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     }
   }
 
+  public Float getMemberGeneration() {
+    LocalDate date = LocalDate.now();
+    Float generation = (float) (date.getYear() - KEEPER_FOUNDING_YEAR);
+    if (date.getMonthValue() >= HALF_GENERATION_MONTH) {
+      generation += 0.5F;
+    }
+    return generation;
+  }
+
   public MemberEntity generateMemberEntity(MemberJobName jobName, MemberTypeName typeName,
       MemberRankName rankName) {
     final String epochTime = Long.toHexString(System.nanoTime());
@@ -118,6 +130,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         .nickName("NickName")
         .emailAddress("member" + epochTime + "@k33p3r.com")
         .studentId(epochTime)
+        .generation(getMemberGeneration())
         .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .memberType(memberType)
         .memberRank(memberRank)

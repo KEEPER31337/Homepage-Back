@@ -177,6 +177,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .nickName(nickName)
         .emailAddress(emailAddress)
         .studentId(studentId)
+        .generation(0F)
         .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
     memberRepository.save(memberEntity);
@@ -209,6 +210,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .nickName(adminNickName)
         .emailAddress(adminEmailAddress)
         .studentId(adminStudentId)
+        .generation(0F)
         .memberJobs(new ArrayList<>(List.of(adminHasMemberJobEntity)))
         .build());
     String adminContent = "{\n"
