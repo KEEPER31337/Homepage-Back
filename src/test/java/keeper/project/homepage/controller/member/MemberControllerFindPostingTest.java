@@ -6,6 +6,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
@@ -188,7 +189,9 @@ public class MemberControllerFindPostingTest extends MemberControllerTestSetup {
                 parameterWithName("page").description("페이지 번호 (페이지 시작 번호 : 0)"),
                 parameterWithName("size").description("한 페이지에 보이는 게시글 개수 (default : 10)")
             ),
-            generatePostingListResponseField("", docCode, docMsg)
+            responseFields(
+                generatePostingResponseFields(ResponseType.LIST, "", docCode, docMsg)
+            )
         ));
   }
 
