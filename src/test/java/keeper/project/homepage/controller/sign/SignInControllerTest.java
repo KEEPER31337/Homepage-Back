@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.common.FileConversion;
 import keeper.project.homepage.dto.result.SingleResult;
@@ -40,7 +41,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-public class SignInControllerTest extends ApiControllerTestSetUp {
+public class SignInControllerTest extends ApiControllerTestHelper {
 
   private final String loginId = "hyeonmomo";
   private final String emailAddress = "test@k33p3r.com";
@@ -115,6 +116,7 @@ public class SignInControllerTest extends ApiControllerTestSetUp {
         .memberType(memberTypeEntity)
         .memberRank(memberRankEntity)
         .thumbnail(thumbnailEntity)
+        .generation(0F)
         .build();
     memberRepository.save(memberEntity);
   }
@@ -151,6 +153,9 @@ public class SignInControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.member.registerDate").description("가입 날짜"),
                 fieldWithPath("data.member.point").description("포인트 점수"),
                 fieldWithPath("data.member.level").description("레벨"),
+                fieldWithPath("data.member.merit").description("상점"),
+                fieldWithPath("data.member.demerit").description("벌점"),
+                fieldWithPath("data.member.generation").description("기수 (7월 이후는 N.5기)"),
                 fieldWithPath("data.member.rank").description("회원 등급: [null/우수회원/일반회원]").optional(),
                 fieldWithPath("data.member.type").description("회원 상태: [null/비회원/정회원/휴면회원/졸업회원/탈퇴]")
                     .optional(),

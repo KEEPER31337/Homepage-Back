@@ -89,6 +89,7 @@ public class CategoryControllerTest extends ApiControllerTestSetUp {
         .emailAddress(adminEmailAddress)
         .studentId(adminStudentId)
         .point(adminPoint)
+        .generation(0F)
         .memberType(memberTypeEntity)
         .memberRank(memberRankEntity)
         .memberJobs(new ArrayList<>(List.of(hasMemberAdminJobEntity)))
@@ -267,7 +268,8 @@ public class CategoryControllerTest extends ApiControllerTestSetUp {
             ),
             requestFields(
                 fieldWithPath("name").description("수정을 원하는 카테고리 이름(변하지 않는 경우 기존의 값 전달)"),
-                fieldWithPath("parentId").description("수정을 원하는 상위 카테고리 ID(존재하지 않으면 0, 수정을 원하지 않으면 기존의 값 전달)")
+                fieldWithPath("parentId").description(
+                    "수정을 원하는 상위 카테고리 ID(존재하지 않으면 0, 수정을 원하지 않으면 기존의 값 전달)")
             ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),

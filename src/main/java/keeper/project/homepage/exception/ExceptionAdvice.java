@@ -9,6 +9,7 @@ import keeper.project.homepage.exception.file.CustomImageFormatException;
 import keeper.project.homepage.exception.file.CustomImageIOException;
 import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
 import keeper.project.homepage.exception.library.CustomBookBorrowNotFoundException;
+import keeper.project.homepage.exception.library.CustomBookDepartmentNotFoundException;
 import keeper.project.homepage.exception.library.CustomBookNotFoundException;
 import keeper.project.homepage.exception.library.CustomBookOverTheMaxException;
 import keeper.project.homepage.exception.member.CustomMemberDuplicateException;
@@ -291,5 +292,26 @@ public class ExceptionAdvice {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(Integer.parseInt(getMessage("bookBorrowNotFound.code")),
         getMessage("bookBorrowNotFound.msg"));
+  }
+
+  @ExceptionHandler(CustomPointLogRequestNullException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected CommonResult pointLogRequestNullException(HttpServletRequest request,
+      CustomPointLogRequestNullException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(
+        Integer.parseInt(getMessage("pointLogRequestNullException.code")),
+        getMessage("pointLogRequestNullException.msg"));
+  }
+
+  @ExceptionHandler(CustomBookDepartmentNotFoundException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected CommonResult bookDepartmentNotFoundException(HttpServletRequest request,
+      CustomBookDepartmentNotFoundException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(
+        Integer.parseInt(getMessage("bookDepartmentNotFound.code")),
+        getMessage("bookDepartmentNotFound.msg"));
+
   }
 }

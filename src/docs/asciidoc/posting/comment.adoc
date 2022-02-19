@@ -17,7 +17,7 @@ endif::[]
 
 == API 목록
 
-link:keeper.html[API 목록으로 돌아가기]
+link:../keeper.html[API 목록으로 돌아가기]
 
 == *댓글 생성*
 
@@ -43,7 +43,7 @@ include::{snippets}/comment-create-fail/http-response.adoc[]
 
 include::{snippets}/comment-create/response-fields.adoc[]
 
-== * 댓글 조회 *
+== *댓글 조회*
 
 === 요청
 

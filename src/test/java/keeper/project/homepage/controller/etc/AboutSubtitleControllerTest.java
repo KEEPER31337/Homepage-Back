@@ -92,6 +92,7 @@ public class AboutSubtitleControllerTest extends ApiControllerTestSetUp {
         .memberType(memberTypeEntity)
         .memberRank(memberRankEntity)
         .thumbnail(thumbnailEntity)
+        .generation(0F)
         .memberJobs(new ArrayList<>(List.of(hasMemberAdminJobEntity)))
         .build();
     memberRepository.save(memberAdmin);

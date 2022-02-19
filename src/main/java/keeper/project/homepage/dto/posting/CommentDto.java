@@ -1,7 +1,8 @@
 package keeper.project.homepage.dto.posting;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.time.LocalDateTime;
-import javax.persistence.Transient;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
@@ -14,6 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonInclude(Include.NON_NULL)
 public class CommentDto {
 
   private Long id;
@@ -27,6 +29,8 @@ public class CommentDto {
   private String writer;
   private Long writerId;
   private Long writerThumbnailId;
+  private Boolean checkedLike;
+  private Boolean checkedDislike;
 
   public void initWithEntity(CommentEntity commentEntity) {
     this.id = commentEntity.getId();
@@ -38,6 +42,14 @@ public class CommentDto {
     this.dislikeCount = commentEntity.getDislikeCount();
     this.parentId = commentEntity.getParentId();
     setWriterInfo(commentEntity);
+  }
+
+  public void setCheckedLike(boolean checkedLike) {
+    this.checkedLike = checkedLike;
+  }
+
+  public void setCheckedDislike(boolean checkedDislike) {
+    this.checkedDislike = checkedDislike;
   }
 
   private void setWriterInfo(CommentEntity commentEntity) {

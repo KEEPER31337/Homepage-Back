@@ -8,13 +8,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class MemberJobDto {
 
-  private Long id;
   private String memberLoginId;
   private List<String> names;
 }

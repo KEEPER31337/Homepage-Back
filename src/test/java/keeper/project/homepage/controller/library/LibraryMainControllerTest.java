@@ -93,6 +93,7 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
         .nickName(nickName)
         .emailAddress(emailAddress)
         .studentId(studentId)
+        .generation(0F)
         .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
     memberRepository.save(memberEntity);
@@ -182,7 +183,8 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].total").description("전체 수"),
                 fieldWithPath("list[].borrow").description("대여 중인 수"),
                 fieldWithPath("list[].enable").description("대여 가능한 수"),
-                fieldWithPath("list[].registerDate").description("등록된 날짜")
+                fieldWithPath("list[].registerDate").description("등록된 날짜"),
+                fieldWithPath("list[].department").description("도서 분류 코드")
             )));
   }
 
@@ -217,7 +219,8 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].total").description("전체 수"),
                 fieldWithPath("list[].borrow").description("대여 중인 수"),
                 fieldWithPath("list[].enable").description("대여 가능한 수"),
-                fieldWithPath("list[].registerDate").description("등록된 날짜")
+                fieldWithPath("list[].registerDate").description("등록된 날짜"),
+                fieldWithPath("list[].department").description("도서 분류 코드")
             )));
   }
 
@@ -250,7 +253,8 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.total").description("전체 수"),
                 fieldWithPath("data.borrow").description("대여 중인 수"),
                 fieldWithPath("data.enable").description("대여 가능한 수"),
-                fieldWithPath("data.registerDate").description("등록된 날짜")
+                fieldWithPath("data.registerDate").description("등록된 날짜"),
+                fieldWithPath("data.department").description("도서 분류 코드")
             )));
   }
 }

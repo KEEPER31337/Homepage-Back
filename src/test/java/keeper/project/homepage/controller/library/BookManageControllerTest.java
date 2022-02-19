@@ -7,41 +7,43 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParts;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.awt.print.Book;
+import java.io.File;
+import java.io.FileInputStream;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import javax.transaction.Transactional;
 import keeper.project.homepage.ApiControllerTestSetUp;
+import keeper.project.homepage.common.FileConversion;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.dto.sign.SignInDto;
+import keeper.project.homepage.entity.FileEntity;
+import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.library.BookBorrowEntity;
 import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
-import keeper.project.homepage.repository.library.BookBorrowRepository;
-import keeper.project.homepage.service.library.BookManageService;
-import keeper.project.homepage.service.util.AuthService;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.json.JacksonJsonParser;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -56,6 +58,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   final private String bookAuthor1 = "박응용";
   final private String bookPicture1 = "JumpToPython.png";
   final private String bookInformation1 = "파이썬의 기본이 잘 정리된 책이다.";
+  final private Long bookDepartment1 = 1L;
   final private Long bookQuantity1 = 3L;
   final private Long bookBorrow1 = 0L;
   final private Long bookEnable1 = bookQuantity1 - bookBorrow1;
@@ -85,6 +88,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   final private String nickName = "JeongHyeonMo";
   final private String emailAddress = "gusah@naver.com";
   final private String studentId = "201724579";
+  final private String ipAddress1 = "127.0.0.1";
 
   final private String adminLoginId = "hyeonmoAdmin";
   final private String adminPassword = "keeper2345";
@@ -96,6 +100,52 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   final private long epochTime = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
 
   private MemberEntity memberEntity;
+
+  private ThumbnailEntity generalThumbnail;
+  private FileEntity generalImageFile;
+
+  private final String userDirectory = System.getProperty("user.dir");
+  private final String generalTestImage = "keeper_files" + File.separator + "image.jpg";
+  private final String generalThumbnailImage =
+      "keeper_files" + File.separator + "thumbnail" + File.separator + "t_image.jpg";
+  private final String createTestImage = "keeper_files" + File.separator + "createTest.jpg";
+
+  private String getFileName(String filePath) {
+    File file = new File(filePath);
+    return file.getName();
+  }
+
+  @BeforeAll
+  public static void createFile() {
+    final String keeperFilesDirectoryPath = System.getProperty("user.dir") + File.separator
+        + "keeper_files";
+    final String thumbnailDirectoryPath = System.getProperty("user.dir") + File.separator
+        + "keeper_files" + File.separator + "thumbnail";
+    final String generalImagePath = keeperFilesDirectoryPath + File.separator + "image.jpg";
+    final String generalThumbnail = thumbnailDirectoryPath + File.separator + "t_image.jpg";
+    final String createTestImage = keeperFilesDirectoryPath + File.separator + "createTest.jpg";
+
+    File keeperFilesDir = new File(keeperFilesDirectoryPath);
+    File thumbnailDir = new File(thumbnailDirectoryPath);
+
+    if (!keeperFilesDir.exists()) {
+      keeperFilesDir.mkdir();
+    }
+
+    if (!thumbnailDir.exists()) {
+      thumbnailDir.mkdir();
+    }
+
+    createImageForTest(generalImagePath);
+    createImageForTest(generalThumbnail);
+    createImageForTest(createTestImage);
+  }
+
+  private static void createImageForTest(String filePath) {
+    FileConversion fileConversion = new FileConversion();
+    fileConversion.makeSampleJPEGImage(filePath);
+  }
+
 
   @BeforeEach
   public void setUp() throws Exception {
@@ -110,6 +160,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .nickName(nickName)
         .emailAddress(emailAddress)
         .studentId(studentId)
+        .generation(0F)
         .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
     memberRepository.save(memberEntity);
@@ -125,6 +176,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .nickName(adminNickName)
         .emailAddress(adminEmailAddress)
         .studentId(adminStudentId)
+        .generation(0F)
         .memberJobs(new ArrayList<>(List.of(hasMemberAdminJobEntity)))
         .build();
     memberRepository.save(memberAdmin);
@@ -170,6 +222,19 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     });
     adminToken = adminSign.getData().getToken();
 
+    generalImageFile = FileEntity.builder()
+        .fileName(getFileName(generalTestImage))
+        .filePath(generalTestImage)
+        .fileSize(0L)
+        .ipAddress(ipAddress1)
+        .build();
+    fileRepository.save(generalImageFile);
+
+    generalThumbnail = ThumbnailEntity.builder()
+        .path(generalThumbnailImage)
+        .file(generalImageFile).build();
+    thumbnailRepository.save(generalThumbnail);
+
     SimpleDateFormat stringToDate = new SimpleDateFormat("yyyymmdd");
     Date registerDate1 = stringToDate.parse(bookRegisterDate1);
     Date registerDate2 = stringToDate.parse(bookRegisterDate2);
@@ -195,6 +260,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
             .borrow(bookBorrow2)
             .enable(bookEnable2)
             .registerDate(registerDate2)
+            .thumbnailId(generalThumbnail)
             .build());
 
     bookRepository.save(
@@ -243,15 +309,26 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   @DisplayName("책 등록 성공(기존 책)")
   public void addBook() throws Exception {
     Long bookQuantity1 = 1L;
+
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    MockMultipartFile thumbnail = new MockMultipartFile("thumbnail", getFileName(createTestImage),
+        "image/jpg", new FileInputStream(userDirectory + File.separator + createTestImage));
+
     params.add("title", bookTitle1);
     params.add("author", bookAuthor1);
     params.add("information", bookInformation1);
+    params.add("department", String.valueOf(bookDepartment1));
     params.add("quantity", String.valueOf(bookQuantity1));
 
-    mockMvc.perform(post("/v1/addbook")
+    mockMvc.perform(multipart("/v1/admin/addbook")
+            .file(thumbnail)
+            .header("Authorization", adminToken)
+            .contentType(MediaType.MULTIPART_FORM_DATA)
             .params(params)
-            .header("Authorization", adminToken))
+            .with(request -> {
+              request.setMethod("POST");
+              return request;
+            }))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -262,7 +339,12 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
                 parameterWithName("title").description("책 제목"),
                 parameterWithName("author").description("저자"),
                 parameterWithName("information").description("한줄평(없어도 됨)"),
+                parameterWithName("department").description("도서 분류 코드"),
                 parameterWithName("quantity").description("추가 할 수량")
+            ),
+            requestParts(
+                partWithName("thumbnail").description(
+                    "썸네일 용 이미지 (form-data 에서 thumbnail= parameter 부분)")
             ),
             responseFields(
                 fieldWithPath("success").description("책 추가 완료 시 true, 실패 시 false 값을 보냅니다."),
@@ -278,10 +360,12 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1);
     params.add("author", bookAuthor1);
+    params.add("department", String.valueOf(bookDepartment1));
     params.add("quantity", String.valueOf(bookQuantity1));
 
-    mockMvc.perform(post("/v1/addbook")
+    mockMvc.perform(post("/v1/admin/addbook")
             .params(params)
+            .contentType(MediaType.MULTIPART_FORM_DATA)
             .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().is5xxServerError())
@@ -298,10 +382,12 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", newTitle);
     params.add("author", bookAuthor1);
+    params.add("department", String.valueOf(bookDepartment1));
     params.add("quantity", String.valueOf(bookQuantity2));
 
-    mockMvc.perform(post("/v1/addbook")
+    mockMvc.perform(post("/v1/admin/addbook")
             .params(params)
+            .contentType(MediaType.MULTIPART_FORM_DATA)
             .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -319,10 +405,12 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", newTitle);
     params.add("author", newAuthor);
+    params.add("department", String.valueOf(bookDepartment1));
     params.add("quantity", String.valueOf(bookQuantity2));
 
-    mockMvc.perform(post("/v1/addbook")
+    mockMvc.perform(post("/v1/admin/addbook")
             .params(params)
+            .contentType(MediaType.MULTIPART_FORM_DATA)
             .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -338,10 +426,12 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1 + epochTime);
     params.add("author", bookAuthor1);
+    params.add("department", String.valueOf(bookDepartment1));
     params.add("quantity", String.valueOf(bookQuantity3));
 
-    mockMvc.perform(post("/v1/addbook")
+    mockMvc.perform(post("/v1/admin/addbook")
             .params(params)
+            .contentType(MediaType.MULTIPART_FORM_DATA)
             .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().is5xxServerError())
@@ -360,7 +450,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(bookQuantity1));
 
-    mockMvc.perform(post("/v1/deletebook")
+    mockMvc.perform(post("/v1/admin/deletebook")
             .params(params)
             .header("Authorization", adminToken))
         .andDo(print())
@@ -392,7 +482,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(bookQuantity3));
 
-    mockMvc.perform(post("/v1/deletebook")
+    mockMvc.perform(post("/v1/admin/deletebook")
             .params(params)
             .header("Authorization", adminToken))
         .andDo(print())
@@ -411,7 +501,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor1 + epochTime);
     params.add("quantity", String.valueOf(bookQuantity3));
 
-    mockMvc.perform(post("/v1/deletebook")
+    mockMvc.perform(post("/v1/admin/deletebook")
             .params(params)
             .header("Authorization", adminToken))
         .andDo(print())
@@ -430,7 +520,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(bookQuantity3));
 
-    mockMvc.perform(post("/v1/deletebook")
+    mockMvc.perform(post("/v1/admin/deletebook")
             .params(params)
             .header("Authorization", adminToken))
         .andDo(print())
@@ -449,7 +539,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor2);
     params.add("quantity", String.valueOf(bookQuantity3));
 
-    mockMvc.perform(post("/v1/deletebook")
+    mockMvc.perform(post("/v1/admin/deletebook")
             .params(params)
             .header("Authorization", adminToken))
         .andDo(print())
@@ -469,7 +559,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(borrowQuantity));
 
-    mockMvc.perform(post("/v1/borrowbook").params(params).header("Authorization", userToken))
+    mockMvc.perform(post("/v1/admin/borrowbook").params(params).header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -499,7 +589,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor2);
     params.add("quantity", String.valueOf(borrowQuantity));
 
-    mockMvc.perform(post("/v1/borrowbook").params(params).header("Authorization", userToken))
+    mockMvc.perform(post("/v1/admin/borrowbook").params(params).header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
@@ -516,7 +606,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor2);
     params.add("quantity", String.valueOf(borrowQuantity));
 
-    mockMvc.perform(post("/v1/borrowbook").params(params).header("Authorization", userToken))
+    mockMvc.perform(post("/v1/admin/borrowbook").params(params).header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
@@ -534,7 +624,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(returnQuantity));
 
-    mockMvc.perform(post("/v1/returnbook")
+    mockMvc.perform(post("/v1/admin/returnbook")
             .params(params)
             .header("Authorization", userToken))
         .andDo(print())
@@ -566,7 +656,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(returnQuantity));
 
-    mockMvc.perform(post("/v1/returnbook")
+    mockMvc.perform(post("/v1/admin/returnbook")
             .params(params)
             .header("Authorization", userToken))
         .andDo(print())
@@ -585,7 +675,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor1);
     params.add("quantity", String.valueOf(borrowQuantity));
 
-    mockMvc.perform(post("/v1/returnbook")
+    mockMvc.perform(post("/v1/admin/returnbook")
             .params(params)
             .header("Authorization", userToken))
         .andDo(print())
@@ -604,7 +694,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor2);
     params.add("quantity", String.valueOf(borrowQuantity));
 
-    mockMvc.perform(post("/v1/returnbook")
+    mockMvc.perform(post("/v1/admin/returnbook")
             .params(params)
             .header("Authorization", userToken))
         .andDo(print())
@@ -623,7 +713,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
     params.add("author", bookAuthor2);
     params.add("quantity", String.valueOf(borrowQuantity));
 
-    mockMvc.perform(post("/v1/returnbook")
+    mockMvc.perform(post("/v1/admin/returnbook")
             .params(params)
             .header("Authorization", userToken))
         .andDo(print())
@@ -639,7 +729,7 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   public void sendOverdueBooks() throws Exception {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 
-    mockMvc.perform(get("/v1/overduebooks")
+    mockMvc.perform(get("/v1/admin/overduebooks")
             .contentType(MediaType.APPLICATION_JSON)
             .header("Authorization", adminToken))
         .andDo(print())

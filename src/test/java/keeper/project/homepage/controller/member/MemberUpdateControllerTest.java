@@ -20,10 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.common.FileConversion;
 import keeper.project.homepage.dto.EmailAuthDto;
 import keeper.project.homepage.dto.result.SingleResult;
@@ -35,19 +32,15 @@ import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.member.MemberRankEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
-import keeper.project.homepage.exception.ExceptionAdvice;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.restdocs.payload.FieldDescriptor;
-import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
@@ -142,6 +135,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
         .memberType(memberTypeEntity)
         .memberRank(memberRankEntity)
         .thumbnail(thumbnailEntity)
+        .generation(getMemberGeneration())
 //        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
     memberEntity = memberRepository.save(memberEntity);
@@ -194,6 +188,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
         .memberType(memberTypeEntity)
         .memberRank(memberRankEntity)
         .thumbnail(thumbnailEntity)
+        .generation(getMemberGeneration())
         .memberJobs(new ArrayList<>(List.of(hasMemberAdminJobEntity)))
         .build();
     memberRepository.save(memberAdmin);
@@ -220,6 +215,40 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
   }
 
   @Test
+  @DisplayName("Admin 권한으로 회원 기수 변경하기")
+  public void updateGeneration() throws Exception {
+    String content = "{"
+        + "\"memberLoginId\" : \"" + loginId + "\","
+        + "\"generation\" : \"" + 7.5 + "\""
+        + "}";
+    String docMsg = "변경할 기수를 입력하지 않았다면 실패합니다.";
+    String docCode =
+        "입력 데이터가 비어있는 경우: " + exceptionAdvice.getMessage("memberEmptyField.code") + " +\n"
+            + "존재하지 않는 회원인 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+    mockMvc.perform(MockMvcRequestBuilders
+            .put("/v1/admin/member/update/generation")
+            .header("Authorization", adminToken)
+            .content(content)
+            .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.data").exists())
+        .andExpect(jsonPath("$.data.generation").value(7.5))
+        .andDo(document("member-update-generation",
+            requestFields(
+                fieldWithPath("memberLoginId").description("변경할 회원의 로그인 아이디"),
+                fieldWithPath("generation").description("변경할 회원 기수")
+            ),
+            responseFields(
+                generateMemberCommonResponseFields(ResponseType.SINGLE,
+                    "성공: true +\n실패: false", docCode, docMsg)
+            )
+        ));
+  }
+
+  @Test
   @DisplayName("Admin 권한으로 회원 등급 변경하기")
   public void updateRank() throws Exception {
     String content = "{\n"
@@ -233,7 +262,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
             + "입력한 rank가 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberInfoNotFound.code")
             + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/member/update/rank")
+            .put("/v1/admin/member/update/rank")
             .header("Authorization", adminToken)
             .content(content)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -247,9 +276,11 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
                 fieldWithPath("memberLoginId").description("변경할 회원의 로그인 아이디"),
                 fieldWithPath("name").description("변경할 회원 등급명")
             ),
-            generateMemberCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
+            responseFields(
+                generateMemberCommonResponseFields(ResponseType.SINGLE,
+                    "성공: true +\n실패: false", docCode, docMsg)
+            )
         ));
-    ;
 
     MemberEntity member = memberRepository.findByLoginId(loginId).get();
     assertTrue(
@@ -270,7 +301,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
             + "입력한 type이 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberInfoNotFound.code")
             + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/member/update/type")
+            .put("/v1/admin/member/update/type")
             .header("Authorization", adminToken)
             .content(content)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -284,7 +315,10 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
                 fieldWithPath("memberLoginId").description("변경할 회원의 로그인 아이디"),
                 fieldWithPath("name").description("변경할 회원 유형")
             ),
-            generateMemberCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
+            responseFields(
+                generateMemberCommonResponseFields(ResponseType.SINGLE,
+                    "성공: true +\n실패: false", docCode, docMsg)
+            )
         ));
 
     MemberEntity member = memberRepository.findByLoginId(loginId).get();
@@ -308,7 +342,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
             + "입력한 job이 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberInfoNotFound.code")
             + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/member/update/job")
+            .put("/v1/admin/member/update/job")
             .header("Authorization", adminToken)
             .content(content)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -323,7 +357,10 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
                 fieldWithPath("memberLoginId").description("변경할 회원의 로그인 아이디"),
                 fieldWithPath("names").description("변경할 직책명 리스트")
             ),
-            generateMemberCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
+            responseFields(
+                generateMemberCommonResponseFields(ResponseType.SINGLE,
+                    "성공: true +\n실패: false", docCode, docMsg)
+            )
         ));
 
     MemberEntity member = memberRepository.findByLoginId(loginId).get();
@@ -369,7 +406,10 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
                 fieldWithPath("nickName").description("변경할 닉네임"),
                 fieldWithPath("studentId").description("변경할 학번")
             ),
-            generateMemberCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
+            responseFields(
+                generateMemberCommonResponseFields(ResponseType.SINGLE,
+                    "성공: true +\n실패: false", docCode, docMsg)
+            )
         ));
     assertTrue(memberEntity.getRealName().equals("Changed"));
     assertTrue(memberEntity.getStudentId().equals(newStudentId));
@@ -429,8 +469,11 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
                 fieldWithPath("emailAddress").description("이메일 주소"),
                 fieldWithPath("authCode").description("이메일 인증 코드")
             ),
-            generateMemberCommonResponseField("성공: true +\n실패: false", docCode, docMsg,
-                fieldWithPath("data.authCode").description("이메일 인증 코드"))
+            responseFields(
+                generateMemberCommonResponseFields(ResponseType.SINGLE,
+                    "성공: true +\n실패: false", docCode, docMsg,
+                    fieldWithPath("data.authCode").description("이메일 인증 코드"))
+            )
         ));
   }
 
@@ -520,11 +563,76 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
             requestParts(
                 partWithName("thumbnail").description("썸네일 용 이미지 파일")
             ),
-            generateMemberCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
+            responseFields(
+                generateMemberCommonResponseFields(ResponseType.SINGLE,
+                    "성공: true +\n실패: false", docCode, docMsg)
+            )
         ));
     Assertions.assertTrue(
         memberEntity.getThumbnail().getPath().equals(
             "keeper_files" + File.separator + "aft.jpg") == false);
+  }
+
+  @Test
+  @DisplayName("관리자 권한으로 상점 변경하기")
+  public void updateMerit() throws Exception {
+    Integer merit = 10;
+    String updateContent = "{"
+        + "\"memberLoginId\":\"" + memberEntity.getLoginId() + "\","
+        + "\"merit\":" + merit + "}";
+    String docMsg = "변경할 상점을 입력하지 않았다면 실패합니다.";
+    String docCode =
+        "입력 데이터가 비어있는 경우: " + exceptionAdvice.getMessage("memberEmptyField.code") + " +\n"
+            + "존재하지 않는 회원인 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+    mockMvc.perform(MockMvcRequestBuilders.put("/v1/admin/member/update/merit")
+            .header("Authorization", adminToken)
+            .content(updateContent)
+            .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.merit").value(merit))
+        .andDo(document("member-update-merit",
+            requestFields(
+                fieldWithPath("memberLoginId").description("변경할 회원의 로그인 아이디"),
+                fieldWithPath("merit").description("변경할 회원의 상점")
+            ),
+            responseFields(
+                generateMemberCommonResponseFields(ResponseType.SINGLE, "성공: true +\n실패: false",
+                    docCode, docMsg)
+            )
+        ));
+  }
+
+  @Test
+  @DisplayName("관리자 권한으로 벌점 변경하기")
+  public void updateDemerit() throws Exception {
+    Integer demerit = 10;
+    String updateContent = "{"
+        + "\"memberLoginId\":\"" + memberEntity.getLoginId() + "\","
+        + "\"demerit\":" + demerit + "}";
+    String docMsg = "변경할 벌점을 입력하지 않았다면 실패합니다.";
+    String docCode =
+        "입력 데이터가 비어있는 경우: " + exceptionAdvice.getMessage("memberEmptyField.code") + " +\n"
+            + "존재하지 않는 회원인 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+    mockMvc.perform(MockMvcRequestBuilders.put("/v1/admin/member/update/demerit")
+            .header("Authorization", adminToken)
+            .content(updateContent)
+            .contentType(MediaType.APPLICATION_JSON_VALUE))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.demerit").value(demerit))
+        .andDo(document("member-update-demerit",
+            requestFields(
+                fieldWithPath("memberLoginId").description("변경할 회원의 로그인 아이디"),
+                fieldWithPath("demerit").description("변경할 회원의 벌점")
+            ),
+            responseFields(
+                generateMemberCommonResponseFields(ResponseType.SINGLE, "성공: true +\n실패: false",
+                    docCode, docMsg)
+            )
+        ));
   }
 
 }

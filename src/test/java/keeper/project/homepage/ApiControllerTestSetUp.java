@@ -12,23 +12,24 @@ import keeper.project.homepage.repository.etc.StaticWriteSubtitleImageRepository
 import keeper.project.homepage.repository.etc.StaticWriteTitleRepository;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.attendance.AttendanceRepository;
-import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.member.FriendRepository;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberRankRepository;
 import keeper.project.homepage.repository.member.MemberTypeRepository;
+import keeper.project.homepage.repository.point.PointLogRepository;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.repository.FileRepository;
 import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
-import keeper.project.homepage.service.library.BookManageService;
+import keeper.project.homepage.admin.service.library.BookManageService;
 import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.service.member.MemberHasCommentLikeService;
 import keeper.project.homepage.service.member.MemberService;
+import keeper.project.homepage.service.posting.CommentService;
 import keeper.project.homepage.service.sign.SignUpService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -101,6 +102,9 @@ public abstract class ApiControllerTestSetUp {
   @Autowired
   protected StaticWriteContentRepository staticWriteContentRepository;
 
+  @Autowired
+  protected PointLogRepository pointLogRepository;
+
   /********* Service Start ********/
   @Autowired
   protected SignUpService signUpService;
@@ -117,6 +121,9 @@ public abstract class ApiControllerTestSetUp {
   @Autowired
   protected MemberService memberService;
 
+  @Autowired
+  protected CommentService commentService;
+  
   /********* Others Start ********/
   @Autowired
   protected MockMvc mockMvc;
@@ -132,7 +139,7 @@ public abstract class ApiControllerTestSetUp {
 
   @Autowired
   protected ExceptionAdvice exceptionAdvice;
-  
+
   @BeforeEach
   public void setUpAll(RestDocumentationContextProvider restDocumentation) throws Exception {
     // mockMvc의 한글 사용을 위한 코드

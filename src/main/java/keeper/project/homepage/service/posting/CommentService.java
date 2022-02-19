@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.dto.posting.CommentDto;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.member.MemberHasCommentEntityPK;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.CustomAuthenticationEntryPointException;
@@ -14,12 +15,15 @@ import keeper.project.homepage.exception.posting.CustomCommentNotFoundException;
 import keeper.project.homepage.repository.member.MemberHasCommentDislikeRepository;
 import keeper.project.homepage.repository.member.MemberHasCommentLikeRepository;
 import keeper.project.homepage.repository.posting.CommentRepository;
+import keeper.project.homepage.repository.posting.CommentSpec;
 import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.service.member.MemberHasCommentLikeService;
 import keeper.project.homepage.service.member.MemberService;
+import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,9 +32,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentService {
 
   public static final String DELETED_COMMENT_CONTENT = "(삭제된 댓글입니다)";
+  public static final Long VIRTUAL_PARENT_COMMENT_ID = 0L;
+
   private final CommentRepository commentRepository;
   private final PostingService postingService;
   private final MemberService memberService;
+  private final AuthService authService;
   private final MemberHasCommentLikeService memberHasCommentLikeService;
   private final MemberHasCommentDislikeService memberHasCommentDislikeService;
   private final MemberHasCommentLikeRepository memberHasCommentLikeRepository;
@@ -54,6 +61,14 @@ public class CommentService {
     }
   }
 
+  private boolean checkPushLike(MemberEntity member, CommentEntity comment) {
+    return memberHasCommentLikeService.findById(member, comment) == null ? false : true;
+  }
+
+  private boolean checkPushDislike(MemberEntity member, CommentEntity comment) {
+    return memberHasCommentDislikeService.findById(member, comment) == null ? false : true;
+  }
+
   @Transactional
   public CommentDto save(CommentDto commentDto, Long postId, Long memberId) {
     checkNotEmptyContent(commentDto);
@@ -75,14 +90,38 @@ public class CommentService {
     return commentDto;
   }
 
-  public List<CommentDto> findAllByPost(Long postId, Pageable pageable) {
+  // FIXME : service에서 jwt확인하면 service test가 모두 먹통이 됨
+//  private MemberEntity getMemberByJWT() {
+//    Long memberId = authService.getMemberIdByJWT();
+//    return memberService.findById(memberId);
+//  }
+
+  public List<CommentDto> findAllByPost(Long memberId, Long postId, Pageable pageable) {
+    MemberEntity member = memberService.findById(memberId);
     PostingEntity postingEntity = postingService.getPostingById(postId);
-    Page<CommentEntity> entityPage = commentRepository.findAllByPostingId(postingEntity, pageable);
+
+    // 조회 검색 조건
+    Specification<CommentEntity> commentSpec = CommentSpec.equalParentId(VIRTUAL_PARENT_COMMENT_ID);
+    commentSpec = commentSpec.and(CommentSpec.equalPosting(postingEntity));
+
+    List<CommentEntity> commentPage = new ArrayList<>();
+    List<CommentEntity> comments = commentRepository.findAll(commentSpec, pageable);
+
+    for (CommentEntity comment : comments) {
+      Specification<CommentEntity> replySpec = CommentSpec.equalParentId(comment.getId());
+      List<CommentEntity> replies = commentRepository.findAll(replySpec);
+      commentPage.add(comment);
+      commentPage.addAll(replies);
+    }
 
     List<CommentDto> dtoPage = new ArrayList<>();
-    for (CommentEntity comment : entityPage.getContent()) {
+    for (CommentEntity comment : commentPage) {
       CommentDto dto = CommentDto.builder().build();
       dto.initWithEntity(comment);
+      dto.setCheckedLike(false);
+      dto.setCheckedDislike(false);
+      dto.setCheckedLike(checkPushLike(member, comment));
+      dto.setCheckedDislike(checkPushDislike(member, comment));
       dtoPage.add(dto);
     }
 
