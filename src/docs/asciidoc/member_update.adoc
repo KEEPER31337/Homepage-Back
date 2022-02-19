@@ -154,25 +154,3 @@ include::{snippets}/member-update-rank/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/member-update-rank/response-fields.adoc[]
-
-== *회원 기수 변경*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/member-update-generation/http-request.adoc[]
-
-==== Request Fields
-
-include::{snippets}/member-update-generation/request-fields.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/member-update-generation/http-response.adoc[]
-
-==== Response Fields
-
-include::{snippets}/member-update-generation/response-fields.adoc[]
