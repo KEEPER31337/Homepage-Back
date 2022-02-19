@@ -16,6 +16,7 @@ import keeper.project.homepage.repository.member.MemberHasCommentDislikeReposito
 import keeper.project.homepage.repository.member.MemberHasCommentLikeRepository;
 import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.repository.posting.CommentSpec;
+import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.service.member.MemberHasCommentLikeService;
 import keeper.project.homepage.service.member.MemberService;
@@ -35,6 +36,7 @@ public class CommentService {
   public static final Long VIRTUAL_PARENT_COMMENT_ID = 0L;
 
   private final CommentRepository commentRepository;
+  private final PostingRepository postingRepository;
   private final PostingService postingService;
   private final MemberService memberService;
   private final AuthService authService;
@@ -87,6 +89,10 @@ public class CommentService {
         .postingId(postingEntity)
         .build());
     commentDto.initWithEntity(commentEntity);
+
+    // NOTE: comment 개수 증가
+    postingEntity.increaseCommentCount();
+    postingRepository.save(postingEntity);
     return commentDto;
   }
 
@@ -164,6 +170,11 @@ public class CommentService {
     MemberEntity virtual = memberService.findById(1L);
     comment.overwriteInfo(virtual, DELETED_COMMENT_CONTENT);
     commentRepository.save(comment);
+
+    PostingEntity postingEntity = postingRepository.findById(comment.getPostingId().getId())
+        .orElseThrow(() -> new CustomCommentNotFoundException("댓글에 해당하는 게시글이 존재하지 않습니다."));
+    postingEntity.increaseCommentCount();
+    postingRepository.save(postingEntity);
   }
 
   private void deleteCommentRow(Long commentId) {
