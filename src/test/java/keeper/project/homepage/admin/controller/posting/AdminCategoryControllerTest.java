@@ -60,6 +60,7 @@ public class AdminCategoryControllerTest extends ApiControllerTestSetUp {
         .emailAddress(emailAddress + epochTime)
         .studentId(studentId + epochTime)
         .point(point)
+        .generation(0F)
         .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
     memberRepository.save(memberEntity);
@@ -190,7 +191,7 @@ public class AdminCategoryControllerTest extends ApiControllerTestSetUp {
         .andDo(print())
         .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.msg").value("해당 카테고리가 존재하지 않습니다."));;
+        .andExpect(jsonPath("$.msg").value("해당 카테고리가 존재하지 않습니다."));
   }
 
   @Test
