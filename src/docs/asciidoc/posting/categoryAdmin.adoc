@@ -3,7 +3,7 @@ ifndef::snippets[]
 endif::[]
 // 자동으로 생성된 snippet 설정하는 부분
 
-= KEEPER API 문서
+= KEEPER API 관리자 문서
 :icons: font
 // NOTE, TIP, WARNING, CAUTION, IMPORTANT 같은 경고구들 아이콘화 해줌
 :source-highlighter: highlight.js
@@ -17,67 +17,7 @@ endif::[]
 
 == API 목록
 
-link:keeper.html[API 목록으로 돌아가기]
-
-== *카테고리 불러오기 (부모 카테고리 ID를 통해)*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/categories-getByParentId/http-request.adoc[]
-
-==== Path Parameters
-
-include::{snippets}/categories-getByParentId/path-parameters.adoc[]
-
-==== Request Body
-
-include::{snippets}/categories-getByParentId/request-body.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/categories-getByParentId/http-response.adoc[]
-
-==== Response Body
-
-include::{snippets}/categories-getByParentId/response-body.adoc[]
-
-==== Response Fields
-
-include::{snippets}/categories-getByParentId/response-fields.adoc[]
-
-== *카테고리 불러오기 (카테고리 이름을 통해)*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/categories-getByName/http-request.adoc[]
-
-==== Path Parameters
-
-include::{snippets}/categories-getByName/path-parameters.adoc[]
-
-==== Request Body
-
-include::{snippets}/categories-getByName/request-body.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/categories-getByName/http-response.adoc[]
-
-==== Response Body
-
-include::{snippets}/categories-getByName/response-body.adoc[]
-
-==== Response Fields
-
-include::{snippets}/categories-getByName/response-fields.adoc[]
+link:../admin.html[API 목록으로 돌아가기]
 
 == *카테고리 생성*
 
@@ -90,6 +30,10 @@ include::{snippets}/category-create/http-request.adoc[]
 ==== Request Body
 
 include::{snippets}/category-create/request-body.adoc[]
+
+==== Request Fields
+
+include::{snippets}/category-create/request-fields.adoc[]
 
 === 응답
 
@@ -113,13 +57,17 @@ include::{snippets}/category-create/response-fields.adoc[]
 
 include::{snippets}/category-modify/http-request.adoc[]
 
+==== Path Parameters
+
+include::{snippets}/category-modify/path-parameters.adoc[]
+
 ==== Request Body
 
 include::{snippets}/category-modify/request-body.adoc[]
 
-==== Path Parameters
+==== Request Fields
 
-include::{snippets}/category-modify/path-parameters.adoc[]
+include::{snippets}/category-modify/request-fields.adoc[]
 
 === 응답
 
@@ -133,7 +81,7 @@ include::{snippets}/category-modify/response-body.adoc[]
 
 ==== Response Fields
 
-include::{snippets}/category-modify/response-fields.adoc[]
+include::{snippets}/category-modify/request-fields.adoc[]
 
 == *카테고리 삭제*
 
