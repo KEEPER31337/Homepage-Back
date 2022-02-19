@@ -1,6 +1,7 @@
 package keeper.project.homepage.entity.member;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.LocalDate;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -34,6 +35,6 @@ public class FriendEntity {
   @JoinColumn(name = "followee")
   private MemberEntity followee;
   @Column
-  private Date registerDate;
+  private LocalDate registerDate;
 
 }

@@ -1,10 +1,13 @@
 package keeper.project.homepage.service.member;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import keeper.project.homepage.dto.member.MemberDemeritDto;
 import keeper.project.homepage.dto.member.MemberDto;
+import keeper.project.homepage.dto.member.MemberGenerationDto;
+import keeper.project.homepage.dto.member.MemberMeritDto;
 import keeper.project.homepage.dto.result.OtherMemberInfoResult;
 import keeper.project.homepage.entity.member.FriendEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -50,7 +53,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class MemberService {
 
-  private static final int AUTH_CODE_LENGTH = 10;
+  public static final int EMAIL_AUTH_CODE_LENGTH = 10;
+  public static final Long VIRTUAL_MEMBER_ID = 1L;
 
   private final MemberRepository memberRepository;
   private final FriendRepository friendRepository;
@@ -64,7 +68,6 @@ public class MemberService {
   private final FileService fileService;
   private final MailService mailService;
   private final DuplicateCheckService duplicateCheckService;
-
 
   public MemberEntity findById(Long id) {
     return memberRepository.findById(id).orElseThrow(CustomMemberNotFoundException::new);
@@ -93,11 +96,12 @@ public class MemberService {
     return memberRepository.findAll();
   }
 
-  public MemberDto updateMemberRank(MemberRankDto rankDto, String loginId) {
+  public MemberDto updateMemberRank(MemberRankDto rankDto) {
     if (rankDto.getName().isBlank()) {
       throw new CustomMemberEmptyFieldException("변경할 등급의 이름이 비어있습니다.");
     }
 
+    String loginId = rankDto.getMemberLoginId();
     MemberEntity updateEntity = findByLoginId(loginId);
     MemberRankEntity prevRank = updateEntity.getMemberRank();
     if (prevRank != null) {
@@ -112,11 +116,12 @@ public class MemberService {
     return result;
   }
 
-  public MemberDto updateMemberType(MemberTypeDto typeDto, String loginId) {
+  public MemberDto updateMemberType(MemberTypeDto typeDto) {
     if (typeDto.getName().isBlank()) {
       throw new CustomMemberEmptyFieldException("변경할 타입의 이름이 비어있습니다.");
     }
 
+    String loginId = typeDto.getMemberLoginId();
     MemberEntity updateEntity = findByLoginId(loginId);
     MemberTypeEntity prevType = updateEntity.getMemberType();
     if (prevType != null) {
@@ -142,18 +147,21 @@ public class MemberService {
     MemberJobEntity newJob = findJobByJobName(jobName);
 
     MemberHasMemberJobEntity newMJ = memberHasMemberJobRepository.save(
-        MemberHasMemberJobEntity.builder().memberEntity(member)
-            .memberJobEntity(newJob).build());
+        MemberHasMemberJobEntity.builder()
+            .memberEntity(member)
+            .memberJobEntity(newJob)
+            .build());
     newJob.getMembers().add(newMJ);
     member.getMemberJobs().add(newMJ);
     return member;
   }
 
-  public MemberDto updateMemberJobs(MemberJobDto jobDto, String loginId) {
+  public MemberDto updateMemberJobs(MemberJobDto jobDto) {
     if (jobDto.getNames().isEmpty()) {
       throw new CustomMemberEmptyFieldException("변경할 직책의 이름이 비어있습니다.");
     }
 
+    String loginId = jobDto.getMemberLoginId();
     MemberEntity updateMember = findByLoginId(loginId);
     List<MemberHasMemberJobEntity> prevMJList = memberHasMemberJobRepository.findAllByMemberEntity_Id(
         updateMember.getId());
@@ -178,7 +186,7 @@ public class MemberService {
     FriendEntity friend = FriendEntity.builder()
         .follower(me)
         .followee(followee)
-        .registerDate(new Date())
+        .registerDate(LocalDate.now())
         .build();
     friendRepository.save(friend);
 
@@ -247,7 +255,7 @@ public class MemberService {
   //TODO
   // Signup service와 중복되는 메소드, 리팩토링 필요
   public EmailAuthDto generateEmailAuth(EmailAuthDto emailAuthDto) {
-    String generatedAuthCode = generateRandomAuthCode(AUTH_CODE_LENGTH);
+    String generatedAuthCode = generateRandomAuthCode(EMAIL_AUTH_CODE_LENGTH);
     emailAuthDto.setAuthCode(generatedAuthCode);
     emailAuthRedisRepository.save(
         new EmailAuthRedisEntity(emailAuthDto.getEmailAddress(), emailAuthDto.getAuthCode()));
@@ -358,4 +366,69 @@ public class MemberService {
         .collect(Collectors.toList());
   }
 
+  public int updateSenderPoint(MemberEntity member, int point) {
+    int remainingPoint = member.getPoint();
+    member.updatePoint(remainingPoint - point);
+    memberRepository.save(member);
+
+    return member.getPoint();
+  }
+
+  public int updateReceiverPoint(MemberEntity member, int point) {
+    int remainingPoint = member.getPoint();
+    member.updatePoint(remainingPoint + point);
+    memberRepository.save(member);
+
+    return member.getPoint();
+  }
+
+  public MemberDto updateGeneration(MemberGenerationDto dto) {
+    if (dto.getGeneration() == null) {
+      throw new CustomMemberEmptyFieldException("변경할 기수가 비어있습니다.");
+    }
+
+    String loginId = dto.getMemberLoginId();
+    Float generation = dto.getGeneration();
+
+    MemberEntity member = findByLoginId(loginId);
+    member.changeGeneration(generation);
+    memberRepository.save(member);
+
+    MemberDto result = MemberDto.builder().build();
+    result.initWithEntity(member);
+    return result;
+  }
+
+  public MemberDto updateMerit(MemberMeritDto dto) {
+    if (dto.getMerit() == null) {
+      throw new CustomMemberEmptyFieldException("변경할 상점 값이 비어있습니다.");
+    }
+
+    String loginId = dto.getMemberLoginId();
+    Integer merit = dto.getMerit();
+
+    MemberEntity member = findByLoginId(loginId);
+    member.changeMerit(merit);
+    memberRepository.save(member);
+
+    MemberDto result = MemberDto.builder().build();
+    result.initWithEntity(member);
+    return result;
+  }
+
+  public MemberDto updateDemerit(MemberDemeritDto dto) {
+    if (dto.getDemerit() == null) {
+      throw new CustomMemberEmptyFieldException("변경할 벌점 값이 비어있습니다.");
+    }
+    String loginId = dto.getMemberLoginId();
+    Integer demerit = dto.getDemerit();
+
+    MemberEntity member = findByLoginId(loginId);
+    member.changeDemerit(demerit);
+    memberRepository.save(member);
+
+    MemberDto result = MemberDto.builder().build();
+    result.initWithEntity(member);
+    return result;
+  }
 }

@@ -31,6 +31,8 @@ public interface PostingRepository extends JpaRepository<PostingEntity, Long> {
   Page<PostingEntity> findAllByCategoryIdAndMemberIdAndIsTemp(CategoryEntity category,
       MemberEntity member, Integer isTemp, Pageable pageable);
 
+  List<PostingEntity> findAllByMemberId(MemberEntity member);
+
   boolean existsByMemberHasPostingLikeEntitiesContaining(
       MemberHasPostingLikeEntity memberHasPostingLikeEntity);
 

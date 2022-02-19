@@ -109,6 +109,7 @@ public class RankControllerTest extends ApiControllerTestHelper {
         .nickName(nickName + epochTime)
         .emailAddress(emailAddress + epochTime)
         .studentId(studentId + epochTime)
+        .generation(0F)
         .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .point(point)
         .build();
