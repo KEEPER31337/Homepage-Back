@@ -36,6 +36,7 @@ import org.springframework.util.Assert;
 @Builder
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "posting")

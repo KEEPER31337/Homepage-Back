@@ -17,6 +17,7 @@ import keeper.project.homepage.entity.member.MemberHasPostingLikeEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
+import keeper.project.homepage.mapper.PostingMapper;
 import keeper.project.homepage.repository.FileRepository;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.member.MemberHasPostingDislikeRepository;
@@ -26,6 +27,7 @@ import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.mapstruct.factory.Mappers;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +44,7 @@ public class PostingService {
   private final MemberHasPostingLikeRepository memberHasPostingLikeRepository;
   private final MemberHasPostingDislikeRepository memberHasPostingDislikeRepository;
   private final AuthService authService;
+  private final PostingMapper postingMapper = Mappers.getMapper(PostingMapper.class);
 
   public static final Integer isNotTempPosting = 0;
   public static final Integer isTempPosting = 1;
@@ -91,14 +94,11 @@ public class PostingService {
 
   public PostingEntity save(PostingDto dto) {
 
-    Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
-        Long.valueOf(dto.getCategoryId()));
-    Optional<ThumbnailEntity> thumbnailEntity = thumbnailRepository.findById(dto.getThumbnailId());
     MemberEntity memberEntity = getMemberEntityWithJWT();
+    dto.setMemberId(memberEntity);
     dto.setRegisterTime(LocalDateTime.now());
     dto.setUpdateTime(LocalDateTime.now());
-    PostingEntity postingEntity = dto.toEntity(categoryEntity.get(), memberEntity,
-        thumbnailEntity.get());
+    PostingEntity postingEntity = postingMapper.toEntity(dto);
 
     memberEntity.getPosting().add(postingEntity);
     return postingRepository.save(postingEntity);

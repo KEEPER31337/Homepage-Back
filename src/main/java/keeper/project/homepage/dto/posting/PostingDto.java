@@ -20,14 +20,18 @@ import lombok.Setter;
 @Builder
 public class PostingDto {
 
-  private Long memberId;
+  private MemberEntity memberId;
   private Long categoryId;
   private String title;
   private String content;
-  private Integer visitCount;
-  private Integer likeCount;
-  private Integer dislikeCount;
-  private Integer commentCount;
+  @Builder.Default
+  private Integer visitCount = 0;
+  @Builder.Default
+  private Integer likeCount = 0;
+  @Builder.Default
+  private Integer dislikeCount = 0;
+  @Builder.Default
+  private Integer commentCount = 0;
   private LocalDateTime registerTime;
   private LocalDateTime updateTime;
   private String ipAddress;
@@ -38,24 +42,9 @@ public class PostingDto {
   private String password;
   private Long thumbnailId;
 
-  public PostingEntity toEntity(CategoryEntity categoryEntity, MemberEntity memberEntity,
-      ThumbnailEntity thumbnailEntity) {
-    this.visitCount = 0;
-    this.likeCount = 0;
-    this.dislikeCount = 0;
-    this.commentCount = 0;
-
-    return PostingEntity.builder().title(title).content(content).visitCount(visitCount)
-        .likeCount(likeCount).dislikeCount(dislikeCount).commentCount(commentCount)
-        .registerTime(registerTime).updateTime(updateTime).ipAddress(ipAddress)
-        .allowComment(allowComment).isNotice(isNotice).isSecret(isSecret).isTemp(isTemp)
-        .password(password).categoryId(categoryEntity).memberId(memberEntity)
-        .thumbnail(thumbnailEntity).build();
-  }
-
   public static PostingDto create(PostingEntity postingEntity) {
     return PostingDto.builder()
-        .memberId(postingEntity.getMemberId().getId())
+        .memberId(postingEntity.getMemberId())
         .categoryId(postingEntity.getCategoryId().getId())
         .title(postingEntity.getTitle())
         .content(postingEntity.getContent())
