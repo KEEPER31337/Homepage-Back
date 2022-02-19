@@ -53,6 +53,7 @@ class AuthControllerTest extends ApiControllerTestSetUp {
         .nickName(nickName)
         .emailAddress(emailAddress)
         .studentId(studentId)
+        .generation(0F)
         .build();
     memberRepository.save(memberEntity);
 

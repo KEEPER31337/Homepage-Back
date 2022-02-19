@@ -18,6 +18,7 @@ import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberRankRepository;
 import keeper.project.homepage.repository.member.MemberTypeRepository;
+import keeper.project.homepage.repository.point.PointLogRepository;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.repository.FileRepository;
@@ -100,6 +101,9 @@ public abstract class ApiControllerTestSetUp {
 
   @Autowired
   protected StaticWriteContentRepository staticWriteContentRepository;
+
+  @Autowired
+  protected PointLogRepository pointLogRepository;
 
   /********* Service Start ********/
   @Autowired
