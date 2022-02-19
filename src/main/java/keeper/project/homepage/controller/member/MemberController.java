@@ -14,6 +14,7 @@ import keeper.project.homepage.dto.result.OtherMemberInfoResult;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.service.ResponseService;
+import keeper.project.homepage.service.member.MemberDeleteService;
 import keeper.project.homepage.service.member.MemberService;
 import keeper.project.homepage.service.posting.PostingService;
 import keeper.project.homepage.service.util.AuthService;
@@ -45,6 +46,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class MemberController {
 
   private final MemberService memberService;
+  private final MemberDeleteService memberDeleteService;
   private final ResponseService responseService;
   private final AuthService authService;
 
@@ -197,5 +199,13 @@ public class MemberController {
   ) {
     return responseService.getSuccessSingleResult(memberService.getOtherMemberInfo(id));
 
+  }
+
+  @Secured("ROLE_회원")
+  @DeleteMapping("/member/delete")
+  public CommonResult deleteMember(@RequestParam("password") String password) {
+    Long id = authService.getMemberIdByJWT();
+    memberDeleteService.deleteAccount(id, password);
+    return responseService.getSuccessResult();
   }
 }

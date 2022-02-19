@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -104,11 +105,11 @@ public class MemberEntity implements UserDetails, Serializable {
   // DEFAULT 1
   private ThumbnailEntity thumbnail;
 
-  @OneToMany(mappedBy = "follower")
+  @OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE)
   @Builder.Default
   private List<FriendEntity> follower = new ArrayList<>();
 
-  @OneToMany(mappedBy = "followee")
+  @OneToMany(mappedBy = "followee", cascade = CascadeType.REMOVE)
   @Builder.Default
   private List<FriendEntity> followee = new ArrayList<>();
 
@@ -144,7 +145,7 @@ public class MemberEntity implements UserDetails, Serializable {
     this.memberType = memberTypeEntity;
   }
 
-  @OneToMany(mappedBy = "memberEntity")
+  @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.REMOVE)
   @Builder.Default
   private List<MemberHasMemberJobEntity> memberJobs = new ArrayList<>();
 
