@@ -99,11 +99,12 @@ public class MemberService {
     return memberRepository.findAll();
   }
 
-  public MemberDto updateMemberRank(MemberRankDto rankDto, String loginId) {
+  public MemberDto updateMemberRank(MemberRankDto rankDto) {
     if (rankDto.getName().isBlank()) {
       throw new CustomMemberEmptyFieldException("변경할 등급의 이름이 비어있습니다.");
     }
 
+    String loginId = rankDto.getMemberLoginId();
     MemberEntity updateEntity = findByLoginId(loginId);
     MemberRankEntity prevRank = updateEntity.getMemberRank();
     if (prevRank != null) {
@@ -118,11 +119,12 @@ public class MemberService {
     return result;
   }
 
-  public MemberDto updateMemberType(MemberTypeDto typeDto, String loginId) {
+  public MemberDto updateMemberType(MemberTypeDto typeDto) {
     if (typeDto.getName().isBlank()) {
       throw new CustomMemberEmptyFieldException("변경할 타입의 이름이 비어있습니다.");
     }
 
+    String loginId = typeDto.getMemberLoginId();
     MemberEntity updateEntity = findByLoginId(loginId);
     MemberTypeEntity prevType = updateEntity.getMemberType();
     if (prevType != null) {
@@ -155,11 +157,12 @@ public class MemberService {
     return member;
   }
 
-  public MemberDto updateMemberJobs(MemberJobDto jobDto, String loginId) {
+  public MemberDto updateMemberJobs(MemberJobDto jobDto) {
     if (jobDto.getNames().isEmpty()) {
       throw new CustomMemberEmptyFieldException("변경할 직책의 이름이 비어있습니다.");
     }
 
+    String loginId = jobDto.getMemberLoginId();
     MemberEntity updateMember = findByLoginId(loginId);
     List<MemberHasMemberJobEntity> prevMJList = memberHasMemberJobRepository.findAllByMemberEntity_Id(
         updateMember.getId());

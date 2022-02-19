@@ -7,13 +7,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class MemberTypeDto {
 
-  private Long id;
   private String memberLoginId;
   private String name;
 }

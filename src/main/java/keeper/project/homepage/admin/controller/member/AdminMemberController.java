@@ -51,7 +51,6 @@ public class AdminMemberController {
 
   private final MemberService memberService;
   private final ResponseService responseService;
-  private final AuthService authService;
 
   @Secured("ROLE_회장") // 각 리소스별 권한 설정
   @GetMapping(value = "/members")
@@ -63,18 +62,14 @@ public class AdminMemberController {
   @Secured("ROLE_회장")
   @PutMapping("/member/update/rank")
   public SingleResult<MemberDto> updateMemberRank(@RequestBody MemberRankDto memberRankDto) {
-    // FIXME : Dto 인자로 넣으면서 loginId는 왜 뺐지;;; loginId 삭제하기
-    String loginId = memberRankDto.getMemberLoginId();
-    MemberDto update = memberService.updateMemberRank(memberRankDto, loginId);
+    MemberDto update = memberService.updateMemberRank(memberRankDto);
     return responseService.getSuccessSingleResult(update);
   }
 
   @Secured("ROLE_회장")
   @PutMapping("/member/update/type")
   public SingleResult<MemberDto> updateMemberType(@RequestBody MemberTypeDto memberTypeDto) {
-    // FIXME : Dto 인자로 넣으면서 loginId는 왜 뺐지;;; loginId 삭제하기
-    String loginId = memberTypeDto.getMemberLoginId();
-    MemberDto update = memberService.updateMemberType(memberTypeDto, loginId);
+    MemberDto update = memberService.updateMemberType(memberTypeDto);
     return responseService.getSuccessSingleResult(update);
   }
 
@@ -82,9 +77,7 @@ public class AdminMemberController {
   @PutMapping("/member/update/job")
   public SingleResult<MemberDto> updateMemberJob(@RequestBody MemberJobDto memberJobDto) {
 
-    // FIXME : Dto 인자로 넣으면서 loginId는 왜 뺐지;;; loginId 삭제하기
-    String loginId = memberJobDto.getMemberLoginId();
-    MemberDto update = memberService.updateMemberJobs(memberJobDto, loginId);
+    MemberDto update = memberService.updateMemberJobs(memberJobDto);
     return responseService.getSuccessSingleResult(update);
   }
 
