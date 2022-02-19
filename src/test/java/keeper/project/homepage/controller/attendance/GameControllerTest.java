@@ -253,7 +253,10 @@ public class GameControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.THIRD_POINT").description("3등 당첨액"),
                 fieldWithPath("data.FOURTH_POINT").description("4등 당첨액"),
                 fieldWithPath("data.FIFTH_POINT").description("5등 당첨액"),
-                fieldWithPath("data.LAST_POINT").description("6등 당첨액")
+                fieldWithPath("data.LAST_POINT").description("6등 당첨액"),
+                fieldWithPath("data.DICE_MAX_PLAYTIME").description("주사위 최대 플레이 횟수"),
+                fieldWithPath("data.ROULETTE_MAX_PLAYTIME").description("룰렛 최대 플레이 횟수"),
+                fieldWithPath("data.LOTTO_MAX_PLAYTIME").description("복권 최대 플레이 횟수")
             )));
   }
 

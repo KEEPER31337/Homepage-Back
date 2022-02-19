@@ -23,7 +23,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.common.FileConversion;
@@ -39,6 +38,7 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -54,6 +54,13 @@ import org.springframework.util.MultiValueMap;
 @Log4j2
 public class PostingControllerTest extends ApiControllerTestSetUp {
 
+  final private String adminLoginId = "hyeonmoAdmin";
+  final private String adminPassword = "keeper2";
+  final private String adminRealName = "JeongHyeonMo2";
+  final private String adminNickName = "JeongHyeonMo2";
+  final private String adminEmailAddress = "test2@k33p3r.com";
+  final private String adminStudentId = "201724580";
+
   final private String loginId = "hyeonmomo";
   final private String password = "keeper";
   final private String realName = "JeongHyeonMo";
@@ -64,17 +71,22 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   final private String ipAddress2 = "127.0.0.2";
 
   private String userToken;
+  private String adminToken;
 
   private MemberEntity memberEntity;
+  private MemberEntity adminEntity;
   private CategoryEntity categoryEntity;
   private PostingEntity postingGeneralTest;
   private PostingEntity postingDeleteTest;
+  private PostingEntity postingDeleteTest2;
   private PostingEntity postingModifyTest;
 
   private ThumbnailEntity generalThumbnail;
   private FileEntity generalImageFile;
   private ThumbnailEntity deleteThumbnail;
+  private ThumbnailEntity deleteThumbnail2;
   private FileEntity deleteImageFile;
+  private FileEntity deleteImageFile2;
   private ThumbnailEntity modifyThumbnail;
   private FileEntity modifyImageFile;
 
@@ -85,6 +97,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   private final String deleteTestImage = "keeper_files" + File.separator + "image2.jpg";
   private final String deleteThumbnailImage =
       "keeper_files" + File.separator + "thumbnail" + File.separator + "t_image2.jpg";
+  private final String deleteTestImage2 = "keeper_files" + File.separator + "image3.jpg";
+  private final String deleteThumbnailImage2 =
+      "keeper_files" + File.separator + "thumbnail" + File.separator + "t_image3.jpg";
   private final String createTestImage = "keeper_files" + File.separator + "createTest.jpg";
   private final String modifyBefTestImage = "keeper_files" + File.separator + "modifyBefTest.jpg";
   private final String modifyBefThumbnailImage =
@@ -106,6 +121,8 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
     final String generalThumbnail = thumbnailDirectoryPath + File.separator + "t_image.jpg";
     final String deleteTestImage = keeperFilesDirectoryPath + File.separator + "image2.jpg";
     final String deleteThumbnail = thumbnailDirectoryPath + File.separator + "t_image2.jpg";
+    final String deleteTestImage2 = keeperFilesDirectoryPath + File.separator + "image3.jpg";
+    final String deleteThumbnail2 = thumbnailDirectoryPath + File.separator + "t_image3.jpg";
     final String createTestImage = keeperFilesDirectoryPath + File.separator + "createTest.jpg";
     final String modifyBefTestImage =
         keeperFilesDirectoryPath + File.separator + "modifyBefTest.jpg";
@@ -129,6 +146,8 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
     createImageForTest(generalThumbnail);
     createImageForTest(deleteTestImage);
     createImageForTest(deleteThumbnail);
+    createImageForTest(deleteTestImage2);
+    createImageForTest(deleteThumbnail2);
     createImageForTest(createTestImage);
     createImageForTest(modifyBefTestImage);
     createImageForTest(modifyBefThumbnail);
@@ -144,8 +163,12 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   public void setUp() throws Exception {
 
     MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
+    MemberJobEntity adminJobEntity = memberJobRepository.findByName("ROLE_회장").get();
     MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
         .memberJobEntity(memberJobEntity)
+        .build();
+    MemberHasMemberJobEntity adminHasMemberJobEntity = MemberHasMemberJobEntity.builder()
+        .memberJobEntity(adminJobEntity)
         .build();
     memberEntity = MemberEntity.builder()
         .loginId(loginId)
@@ -179,6 +202,35 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
     });
     userToken = sign.getData().getToken();
 
+    adminEntity = memberRepository.save(MemberEntity.builder()
+        .loginId(adminLoginId)
+        .password(passwordEncoder.encode(adminPassword))
+        .realName(adminRealName)
+        .nickName(adminNickName)
+        .emailAddress(adminEmailAddress)
+        .studentId(adminStudentId)
+        .memberJobs(new ArrayList<>(List.of(adminHasMemberJobEntity)))
+        .build());
+    String adminContent = "{\n"
+        + "    \"loginId\": \"" + adminLoginId + "\",\n"
+        + "    \"password\": \"" + adminPassword + "\"\n"
+        + "}";
+    MvcResult adminResult = mockMvc.perform(post("/v1/signin")
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .content(adminContent))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").exists())
+        .andExpect(jsonPath("$.data").exists())
+        .andReturn();
+
+    String adminResultString = adminResult.getResponse().getContentAsString();
+    SingleResult<SignInDto> adminSign = mapper.readValue(adminResultString, new TypeReference<>() {
+    });
+    adminToken = adminSign.getData().getToken();
+
     categoryEntity = CategoryEntity.builder()
         .name("테스트 게시판").build();
     categoryRepository.save(categoryEntity);
@@ -208,6 +260,19 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .path(deleteThumbnailImage)
         .file(deleteImageFile).build();
     thumbnailRepository.save(deleteThumbnail);
+
+    deleteImageFile2 = FileEntity.builder()
+        .fileName(getFileName(deleteTestImage2))
+        .filePath(deleteTestImage2)
+        .fileSize(0L)
+        .ipAddress(ipAddress1)
+        .build();
+    fileRepository.save(deleteImageFile2);
+
+    deleteThumbnail2 = ThumbnailEntity.builder()
+        .path(deleteThumbnailImage2)
+        .file(deleteImageFile2).build();
+    thumbnailRepository.save(deleteThumbnail2);
 
     modifyImageFile = FileEntity.builder()
         .fileName(getFileName(modifyBefTestImage))
@@ -285,6 +350,27 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .build());
     memberEntity.getPosting().add(postingDeleteTest);
 
+    postingDeleteTest2 = postingRepository.save(PostingEntity.builder()
+        .title("test 게시판 제목33")
+        .content("test 게시판 제목 내용33")
+        .memberId(memberEntity)
+        .categoryId(categoryEntity)
+        .thumbnail(deleteThumbnail2)
+        .ipAddress("192.11.223")
+        .allowComment(0)
+        .isNotice(0)
+        .isSecret(0)
+        .isTemp(0)
+        .likeCount(0)
+        .dislikeCount(1)
+        .commentCount(0)
+        .visitCount(0)
+        .registerTime(LocalDateTime.now())
+        .updateTime(LocalDateTime.now())
+        .password("asd2")
+        .build());
+    memberEntity.getPosting().add(postingDeleteTest2);
+
     PostingEntity postingTempTest = postingRepository.save(PostingEntity.builder()
         .title("임시 게시글 제목")
         .content("임시 게시글 내용")
@@ -328,6 +414,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   }
 
   @Test
+  @DisplayName("최신 글 목록 불러오기")
   public void findAllPosting() throws Exception {
 
     ResultActions result = mockMvc.perform(
@@ -366,6 +453,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].isNotice").description("공지글?"),
                 fieldWithPath("list[].isSecret").description("비밀글?"),
                 fieldWithPath("list[].isTemp").description("임시저장?"),
+                fieldWithPath("list[].size").description("총 게시물 수"),
                 subsectionWithPath("list[].files").description(
                         "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
                     .optional(),
@@ -375,6 +463,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   }
 
   @Test
+  @DisplayName("카테고리별 글 목록 불러오기")
   public void findAllPostingByCategoryId() throws Exception {
 
     ResultActions result = mockMvc.perform(get("/v1/post/lists")
@@ -414,6 +503,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].isNotice").description("공지글?"),
                 fieldWithPath("list[].isSecret").description("비밀글?"),
                 fieldWithPath("list[].isTemp").description("임시저장?"),
+                fieldWithPath("list[].size").description("총 게시물 수"),
                 subsectionWithPath("list[].files").description(
                         "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
                     .optional(),
@@ -423,6 +513,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   }
 
   @Test
+  @DisplayName("게시글 하나 불러오기")
   public void getPosting() throws Exception {
     ResultActions result = mockMvc.perform(
         RestDocumentationRequestBuilders.get("/v1/post/{pid}", postingModifyTest.getId())
@@ -459,6 +550,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.isNotice").description("공지글?"),
                 fieldWithPath("data.isSecret").description("비밀글?"),
                 fieldWithPath("data.isTemp").description("임시저장?"),
+                fieldWithPath("data.size").description("총 게시물 수(getPosting 에선 1개)"),
                 subsectionWithPath("data.files").description(
                         "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
                     .optional(),
@@ -468,6 +560,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   }
 
   @Test
+  @DisplayName("게시글 하나 불러오기 - 비밀글")
   public void getPostingWithSecret() throws Exception {
     ResultActions result = mockMvc.perform(
         RestDocumentationRequestBuilders.get("/v1/post/{pid}", postingGeneralTest.getId())
@@ -505,6 +598,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.isNotice").description("공지글?"),
                 fieldWithPath("data.isSecret").description("비밀글?"),
                 fieldWithPath("data.isTemp").description("임시저장?"),
+                fieldWithPath("data.size").description("총 게시물 수(getPosting 에선 1개)"),
                 subsectionWithPath("data.files").description(
                         "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
                     .optional(),
@@ -514,6 +608,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   }
 
   @Test
+  @DisplayName("글의 첨부파일 목록 불러오기")
   public void getAttachList() throws Exception {
 
     ResultActions result = mockMvc.perform(
@@ -542,6 +637,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
 
 
   @Test
+  @DisplayName("파일 다운로드 테스트")
   public void downloadFile() throws Exception {
     ResultActions result = mockMvc.perform(
         RestDocumentationRequestBuilders.get("/v1/post/download/{fileId}",
@@ -557,6 +653,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   }
 
   @Test
+  @DisplayName("게시글 생성")
   public void createPosting() throws Exception {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     MockMultipartFile file = new MockMultipartFile("file", "image.png", "image/png",
@@ -615,6 +712,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
 
 
   @Test
+  @DisplayName("게시글 수정")
   public void modifyPosting() throws Exception {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     MockMultipartFile file = new MockMultipartFile("file", "modifyImage.png", "image/png",
@@ -680,6 +778,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   }
 
   @Test
+  @DisplayName("게시글 삭제")
   public void deletePosting() throws Exception {
     ResultActions result = mockMvc.perform(
         RestDocumentationRequestBuilders.delete("/v1/post/{pid}",
@@ -701,6 +800,29 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   }
 
   @Test
+  @DisplayName("관리자 권한 게시물 삭제")
+  public void adminDeletePosting() throws Exception {
+    ResultActions result = mockMvc.perform(
+        RestDocumentationRequestBuilders.delete("/v1/admin/post/{pid}",
+                postingDeleteTest2.getId().toString())
+            .header("Authorization", adminToken));
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(print())
+        .andDo(document("post-admin-delete",
+            pathParameters(
+                parameterWithName("pid").description("게시물 ID")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("성공 : 0, 실패 시 : -1")
+            )
+        ));
+  }
+
+  @Test
+  @DisplayName("카테고리별 게시글 검색")
   public void searchPosting() throws Exception {
     ResultActions result = mockMvc.perform(get("/v1/post/search")
         .param("type", "T")
@@ -743,6 +865,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].isNotice").description("공지글?"),
                 fieldWithPath("list[].isSecret").description("비밀글?"),
                 fieldWithPath("list[].isTemp").description("임시저장?"),
+                fieldWithPath("list[].size").description("총 게시물 수"),
                 subsectionWithPath("list[].files").description(
                         "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
                     .optional(),
@@ -752,7 +875,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   }
 
   @Test
-  @Transactional
+  @DisplayName("게시글 좋아요")
   public void likePosting() throws Exception {
 
     ResultActions result = mockMvc.perform(get("/v1/post/like")
@@ -779,6 +902,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   }
 
   @Test
+  @DisplayName("게시글 싫어요")
   public void dislikePosting() throws Exception {
     ResultActions result = mockMvc.perform(get("/v1/post/dislike")
         .param("postingId", postingGeneralTest.getId().toString())
@@ -802,6 +926,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   }
 
   @Test
+  @DisplayName("게시글 좋아요/싫어요 여부 확인")
   public void checkMemberLikedAndDisliked() throws Exception {
     ResultActions result = mockMvc.perform(get("/v1/post/check")
         .param("postingId", postingGeneralTest.getId().toString())

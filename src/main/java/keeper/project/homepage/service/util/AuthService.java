@@ -2,9 +2,12 @@ package keeper.project.homepage.service.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
+import keeper.project.homepage.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AuthService {
 
+  private final MemberRepository memberRepository;
   private final MemberHasMemberJobRepository hasMemberJobRepository;
 
   public List<String> getAuthByJWT() {
@@ -40,5 +44,14 @@ public class AuthService {
       throw new CustomMemberNotFoundException();
     }
     return memberId;
+  }
+
+  public MemberEntity getMemberEntityWithJWT() {
+    Long memberId = getMemberIdByJWT();
+    Optional<MemberEntity> member = memberRepository.findById(memberId);
+    if (member.isEmpty()) {
+      throw new CustomMemberNotFoundException();
+    }
+    return member.get();
   }
 }
