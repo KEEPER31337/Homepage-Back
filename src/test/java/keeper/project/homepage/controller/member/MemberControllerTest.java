@@ -445,7 +445,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.msg").value("보유한 권한으로 접근할수 없는 리소스 입니다"));
   }
-
+  
   @Test
   @DisplayName("회원 탈퇴하기")
   public void deleteAccount() throws Exception {

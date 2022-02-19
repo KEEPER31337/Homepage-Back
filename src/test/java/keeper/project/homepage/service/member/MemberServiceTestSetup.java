@@ -449,12 +449,14 @@ public class MemberServiceTestSetup {
     attendance = attendanceRepository.save(
         AttendanceEntity.builder()
             .point(10)
+            .continuousPoint(0)
             .continuousDay(0)
             .greetings("hi")
             .ipAddress("111.111.111.111")
             .time(Timestamp.valueOf(LocalDateTime.now()))
             .member(deletedMember)
             .rank(3)
+            .rankPoint(30)
             .randomPoint(random.nextInt(100, 1001)).build());
 
     // 다른 출석 기록에 영향을 안 끼치는 지 확인용
@@ -462,12 +464,14 @@ public class MemberServiceTestSetup {
     attendanceRepository.save(
         AttendanceEntity.builder()
             .point(10)
+            .continuousPoint(0)
             .continuousDay(0)
             .greetings("hi")
             .ipAddress("111.111.111.111")
             .time(Timestamp.valueOf(LocalDateTime.now()))
             .member(otherMember)
             .rank(3)
+            .rankPoint(30)
             .randomPoint(random.nextInt(100, 1001)).build());
   }
 
