@@ -76,6 +76,9 @@ public class RankControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].thumbnail").description("멤버 썸네일"),
                 fieldWithPath("list[].follower").description("팔로워"),
                 fieldWithPath("list[].followee").description("팔로잉"),
+                fieldWithPath("list[].merit").description("상점"),
+                fieldWithPath("list[].demerit").description("벌점"),
+                fieldWithPath("list[].generation").description("기수"),
                 subsectionWithPath("list[].memberJobs").description("멤버 직책"),
                 subsectionWithPath("list[].posting").description("작성한 게시물"),
                 subsectionWithPath("list[].authorities").description("멤버 권한")
@@ -95,6 +98,7 @@ public class RankControllerTest extends ApiControllerTestSetUp {
         .nickName(nickName + epochTime)
         .emailAddress(emailAddress + epochTime)
         .studentId(studentId + epochTime)
+        .generation(0F)
         .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .point(point)
         .build();

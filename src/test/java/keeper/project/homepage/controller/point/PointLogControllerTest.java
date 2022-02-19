@@ -79,6 +79,7 @@ public class PointLogControllerTest extends ApiControllerTestSetUp {
         .emailAddress(emailAddress + epochTime)
         .studentId(studentId + epochTime)
         .point(point)
+        .generation(0F)
         .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
     memberRepository.save(memberEntity);

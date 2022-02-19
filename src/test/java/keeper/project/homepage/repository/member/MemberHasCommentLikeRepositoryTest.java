@@ -88,6 +88,7 @@ public class MemberHasCommentLikeRepositoryTest {
         .nickName(nickName)
         .emailAddress(emailAddress)
         .studentId(studentId)
+        .generation(0F)
         .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
     memberRepository.save(memberEntity);
