@@ -10,14 +10,14 @@ endif::[]
 // source code 블럭에서 사용되는 highlighter 설정, 4개 정도 있던데 차이를 아직 잘 모르겠음.
 :toc: left
 // table of contents(toc) 왼쪽정렬하여 생성
-:toclevels: 3
+:toclevels: 1
 // default : 2 (==,  ===) 까지 toc에 보여줌.
 :sectlinks:
 // section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
 
 == API 목록
 
-link:keeper.html[API 목록으로 돌아가기]
+link:../keeper.html[API 목록으로 돌아가기]
 
 == *댓글 생성*
 
@@ -43,7 +43,7 @@ include::{snippets}/comment-create-fail/http-response.adoc[]
 
 include::{snippets}/comment-create/response-fields.adoc[]
 
-== * 댓글 조회 *
+== *댓글 조회*
 
 === 요청
 

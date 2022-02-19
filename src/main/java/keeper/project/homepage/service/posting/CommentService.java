@@ -1,23 +1,29 @@
 package keeper.project.homepage.service.posting;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.dto.posting.CommentDto;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.member.MemberHasCommentEntityPK;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.CustomAuthenticationEntryPointException;
 import keeper.project.homepage.exception.CustomNumberOverflowException;
 import keeper.project.homepage.exception.posting.CustomCommentEmptyFieldException;
 import keeper.project.homepage.exception.posting.CustomCommentNotFoundException;
+import keeper.project.homepage.repository.member.MemberHasCommentDislikeRepository;
+import keeper.project.homepage.repository.member.MemberHasCommentLikeRepository;
 import keeper.project.homepage.repository.posting.CommentRepository;
+import keeper.project.homepage.repository.posting.CommentSpec;
 import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.service.member.MemberHasCommentLikeService;
 import keeper.project.homepage.service.member.MemberService;
+import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,40 +31,54 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CommentService {
 
+  public static final String DELETED_COMMENT_CONTENT = "(삭제된 댓글입니다)";
+  public static final Long VIRTUAL_PARENT_COMMENT_ID = 0L;
+
   private final CommentRepository commentRepository;
   private final PostingService postingService;
   private final MemberService memberService;
+  private final AuthService authService;
   private final MemberHasCommentLikeService memberHasCommentLikeService;
   private final MemberHasCommentDislikeService memberHasCommentDislikeService;
+  private final MemberHasCommentLikeRepository memberHasCommentLikeRepository;
+  private final MemberHasCommentDislikeRepository memberHasCommentDislikeRepository;
 
   private CommentEntity getComment(Long commentId) {
     return commentRepository.findById(commentId)
         .orElseThrow(CustomCommentNotFoundException::new);
   }
 
-  private void isValidMember(Long commentId, Long memberId) {
+  private void checkCorrectWriter(Long commentId, Long memberId) {
     CommentEntity comment = getComment(commentId);
     if (comment.getMember().getId().equals(memberId) == false) {
       throw new CustomAuthenticationEntryPointException();
     }
   }
 
-  private void isNotEmptyContent(CommentDto commentDto) {
+  private void checkNotEmptyContent(CommentDto commentDto) {
     if (commentDto.getContent().isEmpty()) {
       throw new CustomCommentEmptyFieldException("댓글의 내용이 비어있습니다.");
     }
   }
 
+  private boolean checkPushLike(MemberEntity member, CommentEntity comment) {
+    return memberHasCommentLikeService.findById(member, comment) == null ? false : true;
+  }
+
+  private boolean checkPushDislike(MemberEntity member, CommentEntity comment) {
+    return memberHasCommentDislikeService.findById(member, comment) == null ? false : true;
+  }
+
   @Transactional
   public CommentDto save(CommentDto commentDto, Long postId, Long memberId) {
-    isNotEmptyContent(commentDto);
+    checkNotEmptyContent(commentDto);
 
     PostingEntity postingEntity = postingService.getPostingById(postId);
     MemberEntity memberEntity = memberService.findById(memberId);
     CommentEntity commentEntity = commentRepository.save(CommentEntity.builder()
         .content(commentDto.getContent())
-        .registerTime(LocalDate.now())
-        .updateTime(LocalDate.now())
+        .registerTime(LocalDateTime.now())
+        .updateTime(LocalDateTime.now())
         .ipAddress(commentDto.getIpAddress())
         .likeCount(0)
         .dislikeCount(0)
@@ -70,14 +90,38 @@ public class CommentService {
     return commentDto;
   }
 
-  public List<CommentDto> findAllByPost(Long postId, Pageable pageable) {
+  // FIXME : service에서 jwt확인하면 service test가 모두 먹통이 됨
+//  private MemberEntity getMemberByJWT() {
+//    Long memberId = authService.getMemberIdByJWT();
+//    return memberService.findById(memberId);
+//  }
+
+  public List<CommentDto> findAllByPost(Long memberId, Long postId, Pageable pageable) {
+    MemberEntity member = memberService.findById(memberId);
     PostingEntity postingEntity = postingService.getPostingById(postId);
-    Page<CommentEntity> entityPage = commentRepository.findAllByPostingId(postingEntity, pageable);
+
+    // 조회 검색 조건
+    Specification<CommentEntity> commentSpec = CommentSpec.equalParentId(VIRTUAL_PARENT_COMMENT_ID);
+    commentSpec = commentSpec.and(CommentSpec.equalPosting(postingEntity));
+
+    List<CommentEntity> commentPage = new ArrayList<>();
+    List<CommentEntity> comments = commentRepository.findAll(commentSpec, pageable);
+
+    for (CommentEntity comment : comments) {
+      Specification<CommentEntity> replySpec = CommentSpec.equalParentId(comment.getId());
+      List<CommentEntity> replies = commentRepository.findAll(replySpec);
+      commentPage.add(comment);
+      commentPage.addAll(replies);
+    }
 
     List<CommentDto> dtoPage = new ArrayList<>();
-    for (CommentEntity comment : entityPage.getContent()) {
+    for (CommentEntity comment : commentPage) {
       CommentDto dto = CommentDto.builder().build();
       dto.initWithEntity(comment);
+      dto.setCheckedLike(false);
+      dto.setCheckedDislike(false);
+      dto.setCheckedLike(checkPushLike(member, comment));
+      dto.setCheckedDislike(checkPushDislike(member, comment));
       dtoPage.add(dto);
     }
 
@@ -86,22 +130,46 @@ public class CommentService {
 
   @Transactional
   public CommentDto updateById(CommentDto commentDto, Long commentId, Long memberId) {
-    isValidMember(commentId, memberId);
-    isNotEmptyContent(commentDto);
+    checkCorrectWriter(commentId, memberId);
+    checkNotEmptyContent(commentDto);
 
     CommentEntity updated = getComment(commentId);
     updated.changeContent(commentDto.getContent());
-    updated.changeUpdateTime(LocalDate.now());
+    updated.changeUpdateTime(LocalDateTime.now());
     commentRepository.save(updated);
 
     commentDto.initWithEntity(updated);
     return commentDto;
   }
 
+  private void deleteCommentLike(CommentEntity comment) {
+    memberHasCommentLikeRepository.deleteByMemberHasCommentEntityPK_CommentEntity(comment);
+  }
+
+  private void deleteCommentDislike(CommentEntity comment) {
+    memberHasCommentDislikeRepository.deleteByMemberHasCommentEntityPK_CommentEntity(comment);
+  }
+
+  private void deleteComment(Long commentId) {
+    CommentEntity comment = commentRepository.findById(commentId)
+        .orElseThrow(CustomCommentNotFoundException::new);
+    MemberEntity virtual = memberService.findById(1L);
+
+    deleteCommentLike(comment);
+    deleteCommentDislike(comment);
+    comment.overwriteInfo(virtual, DELETED_COMMENT_CONTENT);
+    commentRepository.save(comment);
+  }
+
   @Transactional
-  public void deleteById(Long id, Long memberId) {
-    isValidMember(id, memberId);
-    commentRepository.deleteById(id);
+  public void deleteByWriter(Long memberId, Long commentId) {
+    checkCorrectWriter(commentId, memberId);
+    deleteComment(commentId);
+  }
+
+  @Transactional
+  public void deleteByAdmin(Long commentId) {
+    deleteComment(commentId);
   }
 
   @Transactional

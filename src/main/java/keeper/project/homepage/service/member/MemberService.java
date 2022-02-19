@@ -3,28 +3,15 @@ package keeper.project.homepage.service.member;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.dto.result.OtherMemberInfoResult;
-import keeper.project.homepage.entity.attendance.AttendanceEntity;
-import keeper.project.homepage.entity.library.BookBorrowEntity;
 import keeper.project.homepage.entity.member.FriendEntity;
-import keeper.project.homepage.dto.request.PointTransferRequest;
-import keeper.project.homepage.dto.result.PointTransferResult;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberHasCommentDislikeEntity;
-import keeper.project.homepage.entity.member.MemberHasCommentLikeEntity;
-import keeper.project.homepage.entity.member.MemberHasPostingDislikeEntity;
-import keeper.project.homepage.entity.member.MemberHasPostingLikeEntity;
-import keeper.project.homepage.entity.posting.CommentEntity;
-import keeper.project.homepage.entity.posting.PostingEntity;
-import keeper.project.homepage.exception.member.CustomAccountDeleteFailedException;
 import keeper.project.homepage.exception.member.CustomMemberDuplicateException;
 import keeper.project.homepage.exception.member.CustomMemberEmptyFieldException;
 import keeper.project.homepage.exception.member.CustomMemberInfoNotFoundException;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
-import keeper.project.homepage.exception.CustomTransferPointLackException;
-import keeper.project.homepage.repository.attendance.AttendanceRepository;
-import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.member.FriendRepository;
 import java.util.ArrayList;
 import java.util.Random;
@@ -42,29 +29,20 @@ import keeper.project.homepage.entity.member.MemberRankEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
 import keeper.project.homepage.exception.CustomAuthenticationEntryPointException;
 import keeper.project.homepage.repository.member.EmailAuthRedisRepository;
-import keeper.project.homepage.repository.member.MemberHasCommentDislikeRepository;
-import keeper.project.homepage.repository.member.MemberHasCommentLikeRepository;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
-import keeper.project.homepage.repository.member.MemberHasPostingDislikeRepository;
-import keeper.project.homepage.repository.member.MemberHasPostingLikeRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberRankRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.member.MemberTypeRepository;
-import keeper.project.homepage.repository.posting.CommentRepository;
-import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.ThumbnailService;
 import keeper.project.homepage.service.mail.MailService;
-import keeper.project.homepage.service.posting.PostingService;
-import keeper.project.homepage.service.sign.CustomPasswordService;
 import keeper.project.homepage.service.sign.DuplicateCheckService;
 import lombok.RequiredArgsConstructor;
 import keeper.project.homepage.dto.posting.PostingDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -332,7 +310,7 @@ public class MemberService {
 
     if (prevThumbnail != null) {
       thumbnailService.deleteById(prevThumbnail.getId());
-      fileService.deleteOriginalThumbnailById(prevThumbnail.getFile().getId());
+      fileService.deleteOriginalThumbnail(prevThumbnail);
     }
     return result;
   }
@@ -377,40 +355,9 @@ public class MemberService {
     return new OtherMemberInfoResult(memberEntity);
   }
 
-  public PointTransferResult transferPoint(Long senderId,
-      PointTransferRequest pointTransferRequest) {
-    MemberEntity senderMember = memberRepository.findById(senderId)
-        .orElseThrow(CustomMemberNotFoundException::new);
-    MemberEntity receiverMember = memberRepository.findById(pointTransferRequest.getReceiverId())
-        .orElseThrow(CustomMemberNotFoundException::new);
-
-    if (senderMember.getPoint() < pointTransferRequest.getTransmissionPoint()) {
-      throw new CustomTransferPointLackException("잔여 포인트가 부족합니다.");
-    }
-
-    int senderRemainingPoint = updateSenderPoint(senderMember,
-        pointTransferRequest.getTransmissionPoint());
-    int receiverRemainingPoint = updateReceiverPoint(receiverMember,
-        pointTransferRequest.getTransmissionPoint());
-
-    return new PointTransferResult(senderId, pointTransferRequest, senderRemainingPoint,
-        receiverRemainingPoint);
-  }
-
-  public int updateSenderPoint(MemberEntity member, int point) {
-    int remainingPoint = member.getPoint();
-    member.updatePoint(remainingPoint - point);
-    memberRepository.save(member);
-
-    return member.getPoint();
-  }
-
-  public int updateReceiverPoint(MemberEntity member, int point) {
-    int remainingPoint = member.getPoint();
-    member.updatePoint(remainingPoint + point);
-    memberRepository.save(member);
-
-    return member.getPoint();
+  public List<OtherMemberInfoResult> getAllGeneralMemberInfo() {
+    return memberRepository.findAll().stream().map(OtherMemberInfoResult::new)
+        .collect(Collectors.toList());
   }
 
 }

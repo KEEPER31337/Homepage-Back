@@ -143,11 +143,11 @@ public class MemberDeleteService {
   public void deleteThumbnail(MemberEntity member) {
     ThumbnailEntity deleteThumbnail = thumbnailService.findById(member.getThumbnail().getId());
     thumbnailService.deleteById(deleteThumbnail.getId());
-    fileService.deleteOriginalThumbnailById(deleteThumbnail.getFile().getId());
+    fileService.deleteOriginalThumbnail(deleteThumbnail);
   }
 
   public void deleteAttendance(MemberEntity member) {
-    List<AttendanceEntity> attendances = attendanceRepository.findAllByMemberId(member);
+    List<AttendanceEntity> attendances = attendanceRepository.findAllByMember(member);
     attendanceRepository.deleteAll(attendances);
   }
 

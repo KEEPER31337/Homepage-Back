@@ -1,6 +1,13 @@
 package keeper.project.homepage.controller.etc;
 
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -30,7 +37,6 @@ import org.springframework.http.MediaType;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -137,7 +143,20 @@ public class AboutTitleControllerTest extends ApiControllerTestSetUp {
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
-        .andExpect(jsonPath("$.success").value(true));
+        .andExpect(jsonPath("$.success").value(true))
+        .andDo(document("aboutTitle-ByType-lists",
+            pathParameters(
+                parameterWithName("type").description("찾고자 하는 타입의 이름")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("list[].id").description("해당 타입과 일치하는 데이터의 ID"),
+                fieldWithPath("list[].title").description("해당 타입과 일치하는 데이터의 메인 제목"),
+                fieldWithPath("list[].type").description("해당 타입과 일치하는 데이터의 타입"),
+                subsectionWithPath("list[].subtitleImageResults[]").description("해당 타입과 일치하는 데이터와 관련된 서브 타이틀 데이터")
+            )));
   }
 
   @Test
@@ -160,7 +179,20 @@ public class AboutTitleControllerTest extends ApiControllerTestSetUp {
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
-        .andExpect(jsonPath("$.success").value(true));
+        .andExpect(jsonPath("$.success").value(true))
+        .andDo(document("aboutTitle-ByTitle",
+            pathParameters(
+                parameterWithName("title").description("찾고자 하는 타이틀의 이름")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("data.id").description("해당 타이틀과 일치하는 데이터의 ID"),
+                fieldWithPath("data.title").description("해당 타이틀과 일치하는 데이터의 메인 제목"),
+                fieldWithPath("data.type").description("해당 타이틀과 일치하는 데이터의 타입"),
+                subsectionWithPath("data.subtitleImageResults[]").description("해당 타이틀과 일치하는 데이터와 관련된 서브 타이틀 데이터")
+            )));
   }
 
   @Test
@@ -191,7 +223,21 @@ public class AboutTitleControllerTest extends ApiControllerTestSetUp {
             .accept(MediaType.APPLICATION_JSON_VALUE))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true));
+        .andExpect(jsonPath("$.success").value(true))
+        .andDo(document("aboutTitle-create",
+            requestFields(
+                fieldWithPath("title").description("생성하고자 하는 페이지 블럭의 제목"),
+                fieldWithPath("type").description("생성하고자 하는 페이지 블럭의 타입")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("data.id").description("생성에 성공한 페이지 블럭 타이틀의 ID"),
+                fieldWithPath("data.title").description("생성에 성공한 페이지 블럭 타이틀의 제목"),
+                fieldWithPath("data.type").description("생성에 성공한 페이지 블럭 타이틀의 타입"),
+                fieldWithPath("data.subtitleImageResults[]").description("생성에 성공한 페이지 블럭 타이틀과 연결된 서브 타이틀 데이터")
+            )));
   }
 
   @Test
@@ -209,7 +255,24 @@ public class AboutTitleControllerTest extends ApiControllerTestSetUp {
             .accept(MediaType.APPLICATION_JSON_VALUE))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true));
+        .andExpect(jsonPath("$.success").value(true))
+        .andDo(document("aboutTitle-modify",
+            pathParameters(
+              parameterWithName("id").description("수정하고자 하는 페이지 블럭 타이틀의 ID")
+            ),
+            requestFields(
+                fieldWithPath("title").description("바꾸고자 하는 제목(기존에서 변경되지 않으면 기존의 제목)"),
+                fieldWithPath("type").description("바꾸고자 하는 타입(기존에서 변경되지 않으면 기존의 타입")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("data.id").description("수정에 성공한 페이지 블럭 타이틀의 ID"),
+                fieldWithPath("data.title").description("수정에 성공한 페이지 블럭 타이틀의 제목"),
+                fieldWithPath("data.type").description("수정에 성공한 페이지 블럭 타이틀의 타입"),
+                fieldWithPath("data.subtitleImageResults[]").description("수정에 성공한 페이지 블럭 타이틀과 연결된 서브 타이틀 데이터")
+            )));
   }
 
   @Test
@@ -238,7 +301,20 @@ public class AboutTitleControllerTest extends ApiControllerTestSetUp {
             .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true));
+        .andExpect(jsonPath("$.success").value(true))
+        .andDo(document("aboutTitle-delete",
+            pathParameters(
+                parameterWithName("id").description("삭제를 원하는 페이지 블럭 타이틀의 ID")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("data.id").description("삭제에 성공한 페이지 블럭 타이틀의 ID"),
+                fieldWithPath("data.title").description("삭제에 성공한 페이지 블럭 타이틀의 제목"),
+                fieldWithPath("data.type").description("삭제에 성공한 페이지 블럭 타이틀의 타입"),
+                fieldWithPath("data.subtitleImageResults[]").description("삭제에 성공한 페이지 블럭 타이틀과 연결된 서브 타이틀 데이터")
+            )));
   }
 
   @Test

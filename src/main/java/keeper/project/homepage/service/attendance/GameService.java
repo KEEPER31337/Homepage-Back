@@ -4,8 +4,9 @@ import static keeper.project.homepage.dto.attendance.GameInfoDto.*;
 import static keeper.project.homepage.service.attendance.DateUtils.isToday;
 
 import java.lang.reflect.Field;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -29,10 +30,10 @@ public class GameService {
   private final MemberRepository memberRepository;
   private final GameRepository gameRepository;
 
-  public Integer checkDiceTimes() {
+  public Boolean isOverDiceTimes() {
 
     GameEntity gameEntity = getOrResetGameEntity();
-    return gameEntity.getDicePerDay();
+    return gameEntity.getDicePerDay() > DICE_MAX_PLAYTIME;
   }
 
   @Transactional
@@ -45,7 +46,7 @@ public class GameService {
     MemberEntity memberEntity = getMemberEntityWithJWT();
     GameEntity gameEntity = getOrResetGameEntity();
     gameEntity.increaseDiceTimes();
-    gameEntity.setLastPlayTime(new Date());
+    gameEntity.setLastPlayTime(LocalDateTime.now());
     gameRepository.save(gameEntity);
     memberEntity.updatePoint(memberEntity.getPoint() - bettingPoint);
     memberRepository.save(memberEntity);
@@ -70,10 +71,10 @@ public class GameService {
     return true;
   }
 
-  public Integer checkRouletteTimes() {
+  public Boolean isOverRouletteTimes() {
 
     GameEntity gameEntity = getOrResetGameEntity();
-    return gameEntity.getRoulettePerDay();
+    return gameEntity.getRoulettePerDay() > ROULETTE_MAX_PLAYTIME;
   }
 
   @Transactional
@@ -84,7 +85,7 @@ public class GameService {
     GameEntity gameEntity = getOrResetGameEntity();
     gameEntity.increaseRouletteTimes();
     rouletteDto.setRoulettePerDay(gameEntity.getRoulettePerDay());
-    gameEntity.setLastPlayTime(new Date());
+    gameEntity.setLastPlayTime(LocalDateTime.now());
     gameRepository.save(gameEntity);
 
     List<Integer> points = new ArrayList<>();
@@ -114,10 +115,10 @@ public class GameService {
     return randomLists.get((int) (Math.random() * 5));
   }
 
-  public Integer checkLottoTimes() {
+  public Boolean checkLottoTimes() {
 
     GameEntity gameEntity = getOrResetGameEntity();
-    return gameEntity.getLottoPerDay();
+    return gameEntity.getLottoPerDay() > LOTTO_MAX_PLAYTIME;
   }
 
   @Transactional
@@ -126,7 +127,7 @@ public class GameService {
     MemberEntity memberEntity = getMemberEntityWithJWT();
     GameEntity gameEntity = getOrResetGameEntity();
     gameEntity.increaseLottoTimes();
-    gameEntity.setLastPlayTime(new Date());
+    gameEntity.setLastPlayTime(LocalDateTime.now());
     gameRepository.save(gameEntity);
 
     int result;
@@ -165,11 +166,11 @@ public class GameService {
 
     if (optionalGameEntity.isEmpty()) {
       GameEntity gameEntity = GameEntity.builder().member(memberEntity).dicePerDay(0).lottoPerDay(0)
-          .roulettePerDay(0).lastPlayTime(new Date()).build();
+          .roulettePerDay(0).lastPlayTime(LocalDateTime.now()).build();
       gameRepository.save(gameEntity);
       return gameEntity;
 
-    } else if (!(isToday(optionalGameEntity.get().getLastPlayTime()))) {
+    } else if (!(isToday(Timestamp.valueOf(optionalGameEntity.get().getLastPlayTime())))) {
       optionalGameEntity.get().reset();
       gameRepository.save(optionalGameEntity.get());
     }

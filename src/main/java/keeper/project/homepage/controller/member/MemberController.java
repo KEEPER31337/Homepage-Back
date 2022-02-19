@@ -8,11 +8,9 @@ import keeper.project.homepage.dto.member.MemberJobDto;
 import keeper.project.homepage.dto.member.MemberRankDto;
 import keeper.project.homepage.dto.member.MemberTypeDto;
 import keeper.project.homepage.dto.posting.PostingDto;
-import keeper.project.homepage.dto.request.PointTransferRequest;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.dto.result.OtherMemberInfoResult;
-import keeper.project.homepage.dto.result.PointTransferResult;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.service.ResponseService;
@@ -53,7 +51,7 @@ public class MemberController {
   private final AuthService authService;
 
   @Secured("ROLE_회장") // 각 리소스별 권한 설정
-  @GetMapping(value = "/members")
+  @GetMapping(value = "/admin/members")
   public ListResult<MemberEntity> findAllMember() {
     // 결과데이터가 여러건인경우 getSuccessListResult 이용해서 결과를 출력한다.
     return responseService.getSuccessListResult(memberService.findAll());
@@ -66,6 +64,12 @@ public class MemberController {
     Long id = authService.getMemberIdByJWT();
     // 결과데이터가 단일건인경우 getSuccessSingleResult 이용해서 결과를 출력한다.
     return responseService.getSuccessSingleResult(memberService.findById(id));
+  }
+
+  @Secured("ROLE_회원") // 각 리소스별 권한 설정
+  @GetMapping(value = "/members")
+  public ListResult<OtherMemberInfoResult> getAllGeneralMemberInfo() {
+    return responseService.getSuccessListResult(memberService.getAllGeneralMemberInfo());
   }
 
   @Secured("ROLE_회원")
@@ -229,23 +233,10 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @PutMapping("/member/update/point/transfer")
-  public SingleResult<PointTransferResult> transferPoint(
-      @RequestBody PointTransferRequest pointTransferRequest
-  ) {
-    Long senderId = authService.getMemberIdByJWT();
-    return responseService.getSuccessSingleResult(
-        memberService.transferPoint(senderId, pointTransferRequest));
-  }
-
-  @Secured("ROLE_회원")
   @DeleteMapping("/member/delete")
   public CommonResult deleteMember(@RequestParam("password") String password) {
     Long id = authService.getMemberIdByJWT();
-
     memberDeleteService.deleteAccount(id, password);
-
-    // 탈퇴 후 로그아웃 (세션 초기화)
     return responseService.getSuccessResult();
   }
 }

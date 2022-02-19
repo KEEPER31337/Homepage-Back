@@ -247,7 +247,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   @DisplayName("권한이 없을 때")
   public void accessDenied() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders
-            .get("/v1/members")
+            .get("/v1/admin/members")
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(jsonPath("$.success").value(false))
@@ -258,7 +258,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   @DisplayName("권한이 있을 때")
   public void accessAccept() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders
-            .get("/v1/members")
+            .get("/v1/admin/members")
             .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -270,7 +270,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   @DisplayName("ADMIN 권한으로 모든 멤버 열람하기")
   public void findAllMember() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders
-            .get("/v1/members")
+            .get("/v1/admin/members")
             .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -424,64 +424,26 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   }
 
   @Test
-  @DisplayName("포인트 선물하기 - 성공")
-  public void transferPoint() throws Exception {
-    MemberEntity receiver = memberRepository.findByLoginId("hyeonmoAdmin").orElseThrow(
-        CustomAboutFailedException::new);
-
-    String content = "{\n"
-        + "\"receiverId\":\"" + receiver.getId() + "\",\n"
-        + "\"transmissionPoint\":\"" + 20 + "\""
-        + "}";
-
+  @DisplayName("회원 정보 조회(민감한 정보 제외) - 성공")
+  public void getAllGeneralMemberInfoSuccess() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/member/update/point/transfer")
-            .header("Authorization", userToken)
-            .content(content)
-            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .get("/v1/members")
+            .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.data.senderRemainingPoint").value(point - 20))
-        .andExpect(jsonPath("$.data.receiverRemainingPoint").value(adminPoint + 20));
+        .andExpect(jsonPath("$.success").value(true));
   }
 
   @Test
-  @DisplayName("포인트 선물하기 - 실패(포인트 부족)")
-  public void transferPointFailByPointLack() throws Exception {
-    MemberEntity receiver = memberRepository.findByLoginId("hyeonmoAdmin").orElseThrow(
-        CustomAboutFailedException::new);
-
-    String content = "{\n"
-        + "\"receiverId\":\"" + receiver.getId() + "\",\n"
-        + "\"transmissionPoint\":\"" + 101 + "\""
-        + "}";
-
+  @DisplayName("회원 정보 조회(민감한 정보 제외) - 실패(회원 권한 X)")
+  public void getAllGeneralMemberInfoFail() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/member/update/point/transfer")
-            .header("Authorization", userToken)
-            .content(content)
-            .contentType(MediaType.APPLICATION_JSON_VALUE))
+            .get("/v1/members")
+            .header("Authorization", 1234))
         .andDo(print())
-        .andExpect(result -> assertTrue(
-            result.getResolvedException() instanceof CustomTransferPointLackException));
-  }
-
-  @Test
-  @DisplayName("포인트 선물하기 - 실패(멤버 존재 X)")
-  public void transferPointFailByNullMember() throws Exception {
-    String content = "{\n"
-        + "\"receiverId\":\"" + 0 + "\",\n"
-        + "\"transmissionPoint\":\"" + 20 + "\""
-        + "}";
-
-    mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/member/update/point/transfer")
-            .header("Authorization", userToken)
-            .content(content)
-            .contentType(MediaType.APPLICATION_JSON_VALUE))
-        .andDo(print())
-        .andExpect(result -> assertTrue(
-            result.getResolvedException() instanceof CustomMemberNotFoundException));
+        .andExpect(status().is4xxClientError())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.msg").value("보유한 권한으로 접근할수 없는 리소스 입니다"));
   }
 
   @Test
