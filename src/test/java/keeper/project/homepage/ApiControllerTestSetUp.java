@@ -6,6 +6,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import keeper.project.homepage.config.security.JwtTokenProvider;
 import keeper.project.homepage.exception.ExceptionAdvice;
 import keeper.project.homepage.repository.etc.StaticWriteContentRepository;
 import keeper.project.homepage.repository.etc.StaticWriteSubtitleImageRepository;
@@ -139,6 +140,9 @@ public abstract class ApiControllerTestSetUp {
 
   @Autowired
   protected ExceptionAdvice exceptionAdvice;
+
+  @Autowired
+  protected JwtTokenProvider jwtTokenProvider;
 
   @BeforeEach
   public void setUpAll(RestDocumentationContextProvider restDocumentation) throws Exception {
