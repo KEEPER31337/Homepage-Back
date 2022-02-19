@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import keeper.project.homepage.common.FileConversion;
+import keeper.project.homepage.dto.point.request.PointLogRequest;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.attendance.AttendanceEntity;
@@ -28,6 +29,7 @@ import keeper.project.homepage.entity.member.MemberHasPostingLikeEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.member.MemberRankEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
+import keeper.project.homepage.entity.point.PointLogEntity;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
@@ -46,11 +48,13 @@ import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberRankRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.member.MemberTypeRepository;
+import keeper.project.homepage.repository.point.PointLogRepository;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.service.posting.CommentService;
 import keeper.project.homepage.service.posting.PostingService;
+import keeper.project.homepage.user.service.point.PointLogService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,6 +117,9 @@ public class MemberServiceTestSetup {
   @Autowired
   public BookBorrowRepository bookBorrowRepository;
 
+  @Autowired
+  public PointLogRepository pointLogRepository;
+
   // service
   @Autowired
   public MemberService memberService;
@@ -125,6 +132,9 @@ public class MemberServiceTestSetup {
 
   @Autowired
   public PostingService postingService;
+
+  @Autowired
+  public PointLogService pointLogService;
 
   // etc
   @Autowired
@@ -161,6 +171,8 @@ public class MemberServiceTestSetup {
 
   public List<PostingEntity> virtualTestPosts = new ArrayList<>();
   public List<PostingEntity> removeTestTempPosts = new ArrayList<>();
+
+  public PointLogEntity pointLogTest;
 
   final private String loginId = "hyeonmomo";
   final private String password = "keeper";
@@ -200,8 +212,8 @@ public class MemberServiceTestSetup {
         .dislikeCount(1)
         .commentCount(0)
         .visitCount(0)
-        .registerTime(new Date())
-        .updateTime(new Date())
+        .registerTime(LocalDateTime.now())
+        .updateTime(LocalDateTime.now())
         .memberId(memberEntity)
         .password("pw" + numPreventDupl)
         .build());
@@ -211,8 +223,8 @@ public class MemberServiceTestSetup {
       PostingEntity postingEntity) {
     return commentRepository.save(CommentEntity.builder()
         .content("댓글 내용" + numPreventDupl)
-        .registerTime(LocalDate.now())
-        .updateTime(LocalDate.now())
+        .registerTime(LocalDateTime.now())
+        .updateTime(LocalDateTime.now())
         .ipAddress("111.111.111.111")
         .likeCount(0)
         .dislikeCount(0)
@@ -437,11 +449,11 @@ public class MemberServiceTestSetup {
     attendance = attendanceRepository.save(
         AttendanceEntity.builder()
             .point(10)
-            .continousDay(0)
+            .continuousDay(0)
             .greetings("hi")
             .ipAddress("111.111.111.111")
             .time(Timestamp.valueOf(LocalDateTime.now()))
-            .memberId(deletedMember)
+            .member(deletedMember)
             .rank(3)
             .randomPoint(random.nextInt(100, 1001)).build());
 
@@ -450,11 +462,11 @@ public class MemberServiceTestSetup {
     attendanceRepository.save(
         AttendanceEntity.builder()
             .point(10)
-            .continousDay(0)
+            .continuousDay(0)
             .greetings("hi")
             .ipAddress("111.111.111.111")
             .time(Timestamp.valueOf(LocalDateTime.now()))
-            .memberId(otherMember)
+            .member(otherMember)
             .rank(3)
             .randomPoint(random.nextInt(100, 1001)).build());
   }
@@ -466,5 +478,24 @@ public class MemberServiceTestSetup {
 
   public void generateCheckCorrectPasswordTestcase() {
     deletedMember = generateMemberEntity(1);
+  }
+
+  public void generatePointLogRemoveTestcase() {
+    deletedMember = generateMemberEntity(1);
+    PointLogRequest pointLog = new PointLogRequest();
+    pointLog.setTime(LocalDateTime.now());
+    pointLog.setPoint(10);
+    pointLog.setDetail("테스트 용 포인트 저장하기");
+
+    deletedMember.updatePoint(pointLog.getPoint());
+    memberRepository.save(deletedMember);
+    pointLogTest = pointLogRepository.save(pointLog.toEntity(deletedMember, 0));
+
+    // 다른 회원 로그는 삭제되지 않는지 테스트 용
+    MemberEntity another = generateMemberEntity(2);
+
+    another.updatePoint(pointLog.getPoint());
+    memberRepository.save(another);
+    pointLogRepository.save(pointLog.toEntity(another, 0));
   }
 }
