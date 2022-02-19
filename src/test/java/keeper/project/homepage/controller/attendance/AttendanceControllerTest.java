@@ -385,6 +385,7 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
         .nickName(nickName + epochTime)
         .emailAddress(emailAddress + epochTime)
         .studentId(studentId + epochTime)
+        .generation(0F)
         .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
     memberRepository.save(memberEntity);

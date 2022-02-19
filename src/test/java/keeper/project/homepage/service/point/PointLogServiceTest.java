@@ -60,6 +60,7 @@ public class PointLogServiceTest {
         .emailAddress(emailAddress)
         .studentId(studentId)
         .point(point)
+        .generation(0F)
         .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
     memberRepository.save(memberEntity);

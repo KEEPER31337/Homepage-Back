@@ -19,7 +19,7 @@ endif::[]
 
 link:keeper.html[API 목록으로 돌아가기]
 
-== 게시글 생성
+== 랭킹 생성
 
 === 요청
 
@@ -30,6 +30,8 @@ include::{snippets}/rank-list/http-request.adoc[]
 ==== Request Parameters
 
 include::{snippets}/rank-list/request-parameters.adoc[]
+
+NOTE: size가 null일 경우 모든 정보를 불러옵니다.
 
 === 응답
 

@@ -55,7 +55,7 @@ src/main/resources/application.properties
 **/._.DS_Store
 
 ### API 문서 ###
-src/main/resources/static/docs/*.html
+src/main/resources/static/docs/**/*.html
 
 ### 파일들 ###
 keeper_files

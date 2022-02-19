@@ -25,9 +25,9 @@ public class GameController {
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/dice/info")
-  public SingleResult<Integer> checkDiceInfo() {
+  public SingleResult<Boolean> checkDiceInfo() {
 
-    return responseService.getSuccessSingleResult(gameService.checkDiceTimes());
+    return responseService.getSuccessSingleResult(gameService.isOverDiceTimes());
   }
 
   @Secured("ROLE_회원")
@@ -53,7 +53,7 @@ public class GameController {
   @GetMapping(value = "/dice/check")
   public SingleResult<Boolean> validateDice() {
 
-    return gameService.checkDiceTimes() > 6 ? responseService.getSuccessSingleResult(true)
+    return gameService.isOverDiceTimes() ? responseService.getSuccessSingleResult(true)
         : responseService.getSuccessSingleResult(false);
   }
 
@@ -69,13 +69,12 @@ public class GameController {
   @GetMapping(value = "/roulette/check")
   public SingleResult<Boolean> validateRoulette() {
 
-    return gameService.checkRouletteTimes() > 3 ? responseService.getSuccessSingleResult(true)
-        : responseService.getSuccessSingleResult(false);
+    return responseService.getSuccessSingleResult(gameService.isOverRouletteTimes());
   }
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/lotto/info")
-  public SingleResult<Integer> checkLottoInfo() {
+  public SingleResult<Boolean> checkLottoInfo() {
 
     return responseService.getSuccessSingleResult(gameService.checkLottoTimes());
   }
@@ -91,8 +90,7 @@ public class GameController {
   @GetMapping(value = "/lotto/check")
   public SingleResult<Boolean> validateLotto() {
 
-    return gameService.checkLottoTimes() > 1 ? responseService.getSuccessSingleResult(true)
-        : responseService.getSuccessSingleResult(false);
+    return responseService.getSuccessSingleResult(gameService.checkLottoTimes());
   }
 
   @GetMapping(value = "/info")

@@ -1,5 +1,6 @@
 package keeper.project.homepage.service.sign;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,6 +31,8 @@ import org.springframework.stereotype.Service;
 public class SignUpService {
 
   private static final int AUTH_CODE_LENGTH = 10;
+  public final static Integer KEEPER_FOUNDING_YEAR = 2009;
+  public final static Integer HALF_GENERATION_MONTH = 7;
 
   private final MemberRepository memberRepository;
   private final MemberHasMemberJobRepository hasMemberJobRepository;
@@ -82,6 +85,7 @@ public class SignUpService {
         .studentId(memberDto.getStudentId())
         .memberType(memberTypeRepository.getById(1L))
         .memberRank(memberRankRepository.getById(1L))
+        .generation(getMemberGeneration())
         .build();
     memberRepository.save(memberEntity);
 
@@ -91,6 +95,15 @@ public class SignUpService {
         .memberJobEntity(memberJobEntity)
         .build();
     hasMemberJobRepository.save(hasMemberJobEntity);
+  }
+
+  private Float getMemberGeneration() {
+    LocalDate date = LocalDate.now();
+    Float generation = (float) (date.getYear() - KEEPER_FOUNDING_YEAR);
+    if (date.getMonthValue() >= HALF_GENERATION_MONTH) {
+      generation += 0.5F;
+    }
+    return generation;
   }
 
   private String generateRandomAuthCode(int targetStringLength) {

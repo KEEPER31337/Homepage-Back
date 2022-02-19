@@ -143,7 +143,7 @@ public class AttendanceService {
   }
 
   private void checkTodayAttend(List<AttendanceEntity> attendanceEntities) {
-    if (attendanceEntities.size() != 1) {
+    if (attendanceEntities.size() == 0) {
       throw new CustomAttendanceException("해당 날짜에 출석하지 않았습니다.");
     }
   }

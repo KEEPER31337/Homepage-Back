@@ -44,36 +44,12 @@ public class CommentControllerTest extends ApiControllerTestHelper {
 
   private String userToken;
   private String adminToken;
-  
-  public List<FieldDescriptor> generateCommonCommentResponse(ResponseType type, String docSuccess,
-      String docCode, String docMsg, FieldDescriptor... descriptors) {
-    String prefix = type.getReponseFieldPrefix();
-    List<FieldDescriptor> commonFields = new ArrayList<>();
-    commonFields.addAll(generateCommonResponseFields(docSuccess, docCode, docMsg));
-    commonFields.addAll(Arrays.asList(
-        fieldWithPath(prefix + ".id").description("댓글 id"),
-        fieldWithPath(prefix + ".content").description("댓글 내용"),
-        fieldWithPath(prefix + ".registerTime").description("댓글이 처음 등록된 시간"),
-        fieldWithPath(prefix + ".updateTime").description("댓글이 수정된 시간"),
-        fieldWithPath(prefix + ".ipAddress").description("댓글 작성자의 ip address"),
-        fieldWithPath(prefix + ".likeCount").description("좋아요 개수"),
-        fieldWithPath(prefix + ".dislikeCount").description("싫어요 개수"),
-        fieldWithPath(prefix + ".parentId").description("대댓글인 경우, 부모 댓글의 id"),
-        fieldWithPath(prefix + ".writer").optional().description("작성자 (탈퇴한 작성자일 경우 null)"),
-        fieldWithPath(prefix + ".writerId").optional().description("작성자 (탈퇴한 작성자일 경우 null)"),
-        fieldWithPath(prefix + ".writerThumbnailId").optional().type(Long.TYPE)
-            .description("작성자 (탈퇴했을 경우 / 썸네일을 등록하지 않았을 경우 null)")));
-    if (descriptors.length > 0) {
-      commonFields.addAll(Arrays.asList(descriptors));
-    }
-    return commonFields;
-  }
 
   @BeforeEach
   public void setUp() throws Exception {
-    userEntity = generateMemberEntity(MemberJobName.회원);
+    userEntity = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
     userToken = generateJWTToken(userEntity.getLoginId(), memberPassword);
-    adminEntity = generateMemberEntity(MemberJobName.회장);
+    adminEntity = generateMemberEntity(MemberJobName.회장, MemberTypeName.정회원, MemberRankName.우수회원);
     adminToken = generateJWTToken(adminEntity.getLoginId(), memberPassword);
 
     CategoryEntity categoryEntity = generateCategoryEntity();

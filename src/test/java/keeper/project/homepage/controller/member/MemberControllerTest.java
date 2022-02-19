@@ -2,11 +2,14 @@ package keeper.project.homepage.controller.member;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -15,9 +18,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.common.FileConversion;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.dto.sign.SignInDto;
@@ -27,10 +28,7 @@ import keeper.project.homepage.entity.member.FriendEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
-import keeper.project.homepage.exception.CustomAboutFailedException;
-import keeper.project.homepage.exception.ExceptionAdvice;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
-import keeper.project.homepage.exception.CustomTransferPointLackException;
 import keeper.project.homepage.entity.member.MemberRankEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
 import lombok.extern.log4j.Log4j2;
@@ -39,7 +37,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -135,6 +132,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
         .memberType(memberTypeEntity)
         .memberRank(memberRankEntity)
         .thumbnail(thumbnailEntity)
+        .generation(getMemberGeneration())
 //        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
     memberEntity = memberRepository.save(memberEntity);
@@ -188,6 +186,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
         .memberRank(memberRankEntity)
         .thumbnail(thumbnailEntity)
         .memberJobs(new ArrayList<>(List.of(hasMemberAdminJobEntity)))
+        .generation(getMemberGeneration())
         .build();
     memberRepository.save(memberAdmin);
 
@@ -306,7 +305,9 @@ public class MemberControllerTest extends MemberControllerTestSetup {
             requestFields(
                 fieldWithPath("followeeLoginId").description("팔로우할 회원의 로그인 아이디")
             ),
-            generateCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
+            responseFields(
+                generateCommonResponseFields("성공: true +\n실패: false", docCode, docMsg)
+            )
         ));
 
     MemberEntity memberEntity = memberRepository.findByLoginId(loginId).get();
@@ -345,7 +346,9 @@ public class MemberControllerTest extends MemberControllerTestSetup {
             requestFields(
                 fieldWithPath("followeeLoginId").description("팔로우한 회원의 로그인 아이디")
             ),
-            generateCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
+            responseFields(
+                generateCommonResponseFields("성공: true +\n실패: false", docCode, docMsg)
+            )
         ));
 
     assertTrue(friendRepository.findById(followee.getId()).isEmpty());
@@ -368,7 +371,10 @@ public class MemberControllerTest extends MemberControllerTestSetup {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.list[0].nickName").value(adminNickName))
         .andDo(document("member-show-followee",
-            generateMemberListCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
+            responseFields(
+                generateMemberCommonResponseFields(ResponseType.LIST,
+                    "성공: true +\n실패: false", docCode, docMsg)
+            )
         ));
   }
 
@@ -388,7 +394,10 @@ public class MemberControllerTest extends MemberControllerTestSetup {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.list[0].nickName").value(adminNickName))
         .andDo(document("member-show-follower",
-            generateMemberListCommonResponseField("성공: true +\n실패: false", docCode, docMsg)
+            responseFields(
+                generateMemberCommonResponseFields(ResponseType.LIST,
+                    "성공: true +\n실패: false", docCode, docMsg)
+            )
         ));
   }
 
@@ -443,4 +452,29 @@ public class MemberControllerTest extends MemberControllerTestSetup {
         .andExpect(jsonPath("$.msg").value("보유한 권한으로 접근할수 없는 리소스 입니다"));
   }
 
+  @Test
+  @DisplayName("회원 탈퇴하기")
+  public void deleteAccount() throws Exception {
+    String docMsg = "물품을 대여하고 미납한 기록이 남아있을 경우, 또는 입력한 비밀번호가 옳지 않은 경우 탈퇴가 실패합니다.";
+    String docCode =
+        "물품 미납 기록이 있거나 비밀번호가 틀린 경우: " + exceptionAdvice.getMessage("accountDeleteFailed.code")
+            + " +\n" + "그 외 실패한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+    mockMvc.perform(delete("/v1/member/delete")
+            .param("password", password)
+            .header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andDo(document("member-delete",
+            requestParameters(
+                parameterWithName("password").description("비밀번호")
+            ),
+            responseFields(
+                generateCommonResponseFields("성공 시: success, 실패 시: fail", docCode, docMsg)
+            )
+        ));
+
+    Assertions.assertThrows(CustomMemberNotFoundException.class, () -> {
+      memberService.findById(memberEntity.getId());
+    });
+  }
 }

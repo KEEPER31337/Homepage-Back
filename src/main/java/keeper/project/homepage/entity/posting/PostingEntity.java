@@ -123,6 +123,10 @@ public class PostingEntity {
     this.isSecret = isSecret;
   }
 
+  public void updateMemberId(MemberEntity memberId) {
+    this.memberId = memberId;
+  }
+
   public void increaseVisitCount() {
     Assert.isTrue(this.likeCount < Integer.MAX_VALUE, "like_count value will be overflow.");
     this.visitCount += 1;

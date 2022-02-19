@@ -8,10 +8,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PointLogRepository extends JpaRepository<PointLogEntity, Long> {
 
-  List<PointLogEntity> findAllByMemberAndPresentedMemberIsNull(MemberEntity memberEntity, Pageable pageable);
+  void deleteByMember(MemberEntity member);
+  
+  List<PointLogEntity> findAllByMemberAndPresentedMemberIsNull(MemberEntity memberEntity,
+      Pageable pageable);
 
-  List<PointLogEntity> findAllByMemberAndPresentedMemberIsNotNull(MemberEntity memberEntity, Pageable pageable);
+  List<PointLogEntity> findAllByMemberAndPresentedMemberIsNotNull(MemberEntity memberEntity,
+      Pageable pageable);
 
-  List<PointLogEntity> findAllByPresentedMemberAndMemberIsNotNull(MemberEntity memberEntity, Pageable pageable);
-
+  List<PointLogEntity> findAllByPresentedMemberAndMemberIsNotNull(MemberEntity memberEntity,
+      Pageable pageable);
 }
