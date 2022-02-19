@@ -26,6 +26,7 @@ import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberRankRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.member.MemberTypeRepository;
+import keeper.project.homepage.repository.point.PointLogRepository;
 import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.service.FileService;
@@ -51,6 +52,7 @@ public class MemberDeleteService {
   private final MemberHasPostingDislikeRepository memberHasPostingDislikeRepository;
   private final AttendanceRepository attendanceRepository;
   private final BookBorrowRepository bookBorrowRepository;
+  private final PointLogRepository pointLogRepository;
   private final PasswordEncoder passwordEncoder;
   private final CustomPasswordService customPasswordService;
 
@@ -177,6 +179,10 @@ public class MemberDeleteService {
     }
   }
 
+  public void deletePointLog(MemberEntity member) {
+    pointLogRepository.deleteByMember(member);
+  }
+
   public void deleteAccount(Long memberId, String password) {
     MemberEntity deleted = memberService.findById(memberId);
     // 동아리 물품, 책 미납한 기록 있으면 불가능
@@ -190,7 +196,7 @@ public class MemberDeleteService {
     decreasePostingsLike(deleted);
     decreasePostingsDislike(deleted);
     deleteAttendance(deleted);
-    // TODO : point_log 삭제 추가
+    deletePointLog(deleted);
 
     MemberEntity virtualMember = memberService.findById(MemberService.VIRTUAL_MEMBER_ID);
     commentChangeToVirtualMember(virtualMember, deleted);
