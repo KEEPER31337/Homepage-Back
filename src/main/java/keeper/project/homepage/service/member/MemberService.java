@@ -4,8 +4,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import keeper.project.homepage.dto.member.MemberDemeritDto;
 import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.dto.member.MemberGenerationDto;
+import keeper.project.homepage.dto.member.MemberMeritDto;
 import keeper.project.homepage.dto.result.OtherMemberInfoResult;
 import keeper.project.homepage.entity.member.FriendEntity;
 import keeper.project.homepage.dto.request.PointTransferRequest;
@@ -414,5 +416,37 @@ public class MemberService {
     result.initWithEntity(member);
     return result;
   }
-  // TODO : merit, demerit 관련 메소드 추가
+
+  public MemberDto updateMerit(MemberMeritDto dto) {
+    if (dto.getMerit() == null) {
+      throw new CustomMemberEmptyFieldException("변경할 상점 값이 비어있습니다.");
+    }
+
+    String loginId = dto.getMemberLoginId();
+    Integer merit = dto.getMerit();
+
+    MemberEntity member = findByLoginId(loginId);
+    member.changeMerit(merit);
+    memberRepository.save(member);
+
+    MemberDto result = MemberDto.builder().build();
+    result.initWithEntity(member);
+    return result;
+  }
+
+  public MemberDto updateDemerit(MemberDemeritDto dto) {
+    if (dto.getDemerit() == null) {
+      throw new CustomMemberEmptyFieldException("변경할 벌점 값이 비어있습니다.");
+    }
+    String loginId = dto.getMemberLoginId();
+    Integer demerit = dto.getDemerit();
+
+    MemberEntity member = findByLoginId(loginId);
+    member.changeDemerit(demerit);
+    memberRepository.save(member);
+
+    MemberDto result = MemberDto.builder().build();
+    result.initWithEntity(member);
+    return result;
+  }
 }

@@ -202,20 +202,12 @@ public class MemberEntity implements UserDetails, Serializable {
     this.point = point;
   }
 
-  public void increaseMerit(int point) {
-    this.merit += point;
+  public void changeMerit(int merit) {
+    this.merit = merit;
   }
 
-  public void decreaseMerit(int point) {
-    this.merit -= point;
-  }
-
-  public void increaseDemerit(int point) {
-    this.demerit += point;
-  }
-
-  public void decreaseDemerit(int point) {
-    this.demerit -= point;
+  public void changeDemerit(int demerit) {
+    this.demerit = demerit;
   }
 
   public void changeGeneration(float generation) {

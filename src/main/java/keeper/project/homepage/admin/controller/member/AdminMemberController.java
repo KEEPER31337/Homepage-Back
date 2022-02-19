@@ -3,9 +3,11 @@ package keeper.project.homepage.admin.controller.member;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import keeper.project.homepage.dto.EmailAuthDto;
+import keeper.project.homepage.dto.member.MemberDemeritDto;
 import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.dto.member.MemberGenerationDto;
 import keeper.project.homepage.dto.member.MemberJobDto;
+import keeper.project.homepage.dto.member.MemberMeritDto;
 import keeper.project.homepage.dto.member.MemberRankDto;
 import keeper.project.homepage.dto.member.MemberTypeDto;
 import keeper.project.homepage.dto.posting.PostingDto;
@@ -90,8 +92,23 @@ public class AdminMemberController {
   @PutMapping("/member/update/generation")
   public SingleResult<MemberDto> updateMemberGeneration(
       @RequestBody MemberGenerationDto memberGenerationDto) {
-    String loginId = memberGenerationDto.getMemberLoginId();
     MemberDto update = memberService.updateGeneration(memberGenerationDto);
+    return responseService.getSuccessSingleResult(update);
+  }
+
+  @Secured({"ROLE_회장", "ROLE_서기"})
+  @PutMapping("/member/update/merit")
+  public SingleResult<MemberDto> updateMemberMerit(@RequestBody MemberMeritDto memberMeritDto) {
+    MemberDto update = memberService.updateMerit(memberMeritDto);
+    return responseService.getSuccessSingleResult(update);
+  }
+
+
+  @Secured({"ROLE_회장", "ROLE_서기"})
+  @PutMapping("/member/update/demerit")
+  public SingleResult<MemberDto> updateMemberDemerit(
+      @RequestBody MemberDemeritDto memberDemeritDto) {
+    MemberDto update = memberService.updateDemerit(memberDemeritDto);
     return responseService.getSuccessSingleResult(update);
   }
 }
