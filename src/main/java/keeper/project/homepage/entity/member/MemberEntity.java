@@ -17,6 +17,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
@@ -85,10 +86,19 @@ public class MemberEntity implements UserDetails, Serializable {
   private MemberRankEntity memberRank;
 
   @Column(name = "point", nullable = false)
-  private int point;
+  private Integer point;
 
   @Column(name = "level", nullable = false)
-  private int level;
+  private Integer level;
+
+  @Column(name = "merit", nullable = false)
+  private Integer merit;
+
+  @Column(name = "demerit", nullable = false)
+  private Integer demerit;
+
+  @Column(name = "generation", nullable = false)
+  private Float generation;
 
   @OneToOne
   @JoinColumn(name = "thumbnail_id")
@@ -191,5 +201,25 @@ public class MemberEntity implements UserDetails, Serializable {
 
   public void updatePoint(int point) {
     this.point = point;
+  }
+
+  public void changeMerit(int merit) {
+    this.merit = merit;
+  }
+
+  public void changeDemerit(int demerit) {
+    this.demerit = demerit;
+  }
+
+  public void changeGeneration(float generation) {
+    this.generation = generation;
+  }
+
+  @PrePersist
+  private void prePersist() {
+    this.point = (this.point == null ? 0 : this.point);
+    this.level = (this.level == null ? 0 : this.level);
+    this.merit = (this.merit == null ? 0 : this.merit);
+    this.demerit = (this.demerit == null ? 0 : this.demerit);
   }
 }

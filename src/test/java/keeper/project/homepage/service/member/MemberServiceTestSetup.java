@@ -190,6 +190,7 @@ public class MemberServiceTestSetup {
         .nickName(nickName + numPreventDupl.toString())
         .emailAddress(emailAddress + numPreventDupl.toString())
         .studentId(studentId + numPreventDupl.toString())
+        .generation(0F)
         .build());
   }
 
