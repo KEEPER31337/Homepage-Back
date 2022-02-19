@@ -87,6 +87,7 @@ public class RankControllerTest extends ApiControllerTestHelper {
 
     ResultActions result = mockMvc.perform(
         MockMvcRequestBuilders.get("/v1/rank")
+            .header("Authorization", userToken)
 //            .param("page", "0")
 //            .param("size", "2")
     );
