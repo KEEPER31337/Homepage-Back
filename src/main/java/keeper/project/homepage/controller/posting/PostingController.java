@@ -21,6 +21,7 @@ import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.ResponseService;
 import keeper.project.homepage.service.ThumbnailService;
 import keeper.project.homepage.common.ImageCenterCrop;
+import keeper.project.homepage.service.posting.CommentService;
 import keeper.project.homepage.service.posting.PostingService;
 import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +58,7 @@ public class PostingController {
   private final FileService fileService;
   private final ThumbnailService thumbnailService;
   private final AuthService authService;
+  private final CommentService commentService;
 
   /* ex) http://localhost:8080/v1/posts?category=6&page=1
    * page default 0, size default 10
@@ -204,6 +206,10 @@ public class PostingController {
   public CommonResult removePosting(@PathVariable("pid") Long postingId) {
 
     PostingEntity postingEntity = postingService.getPostingById(postingId);
+
+    // NOTE: 게시글에 연결 된 댓글 FK 삭제
+    commentService.deleteByPostingId(postingEntity);
+
     ThumbnailEntity deleteThumbnail = null;
     if (postingEntity.getThumbnail() != null) {
       deleteThumbnail = thumbnailService.findById(

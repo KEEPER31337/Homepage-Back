@@ -150,15 +150,36 @@ public class CommentService {
     memberHasCommentDislikeRepository.deleteByMemberHasCommentEntityPK_CommentEntity(comment);
   }
 
-  private void deleteComment(Long commentId) {
-    CommentEntity comment = commentRepository.findById(commentId)
-        .orElseThrow(CustomCommentNotFoundException::new);
-    MemberEntity virtual = memberService.findById(1L);
+  private void deleteCommentFK(CommentEntity comment) {
 
     deleteCommentLike(comment);
     deleteCommentDislike(comment);
+  }
+
+  private void deleteComment(Long commentId) {
+    CommentEntity comment = commentRepository.findById(commentId)
+        .orElseThrow(CustomCommentNotFoundException::new);
+
+    deleteCommentFK(comment);
+    MemberEntity virtual = memberService.findById(1L);
     comment.overwriteInfo(virtual, DELETED_COMMENT_CONTENT);
     commentRepository.save(comment);
+  }
+
+  private void deleteCommentRow(Long commentId) {
+    CommentEntity comment = commentRepository.findById(commentId)
+        .orElseThrow(CustomCommentNotFoundException::new);
+
+    deleteCommentFK(comment);
+    commentRepository.delete(comment);
+  }
+
+  @Transactional
+  public void deleteByPostingId(PostingEntity posting) {
+    List<CommentEntity> commentEntities = commentRepository.findAllByPostingId(posting);
+    for (CommentEntity comment : commentEntities) {
+      deleteCommentRow(comment.getId());
+    }
   }
 
   @Transactional

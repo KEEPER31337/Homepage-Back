@@ -275,12 +275,14 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
   public void getAllAttendSuccess() throws Exception {
 
     LocalDate threeDaysAgoParam = LocalDate.now().minusDays(3);
+    int attendCount = attendanceService.getAllAttendance(threeDaysAgoParam).size();
+
     mockMvc.perform(MockMvcRequestBuilders
             .get("/v1/attend/all")
             .header("Authorization", userToken1)
             .param("date", String.valueOf(threeDaysAgoParam)))
         .andExpect(MockMvcResultMatchers.status().isOk())
-        .andExpect(jsonPath("$.list.length()").value(2))
+        .andExpect(jsonPath("$.list.length()").value(attendCount))
         .andDo(print())
         .andDo(document("attend-get-all",
             requestParameters(
