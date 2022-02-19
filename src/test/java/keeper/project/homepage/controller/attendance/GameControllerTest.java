@@ -96,7 +96,7 @@ public class GameControllerTest extends ApiControllerTestSetUp {
   public void saveResult() throws Exception {
 
     ResultActions result = mockMvc.perform(
-        MockMvcRequestBuilders.get("/v1/game/dice/play").header("Authorization", userToken1)
+        MockMvcRequestBuilders.get("/v1/game/dice/save").header("Authorization", userToken1)
             .param("bet", "1000")
             .param("result", "1"));
 
