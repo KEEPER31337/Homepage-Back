@@ -1,7 +1,5 @@
 package keeper.project.homepage.controller.attendance;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -23,7 +21,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.dto.attendance.AttendanceDto;
 import keeper.project.homepage.dto.result.SingleResult;
@@ -180,6 +177,31 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(Long.valueOf(attendanceFailedCode)))
         .andExpect(jsonPath("$.msg").value("출석을 하지 않았습니다."))
+        .andDo(print());
+  }
+
+  @Test
+  @DisplayName("출석 업데이트 출석 메시지 없음 실패")
+  public void updateAttendFailedBecauseGreetingEmpty() throws Exception {
+    generateNewAttendanceWithTime(now, memberEntity1);
+
+    String attendanceFailedCode = messageSource.getMessage("attendanceFailed.code", null,
+        LocaleContextHolder.getLocale());
+
+    String newGreeting = "";
+    AttendanceDto newAttendanceDto = AttendanceDto.builder()
+        .greetings(newGreeting)
+        .build();
+    String newContent = objectMapper.writeValueAsString(newAttendanceDto);
+    mockMvc.perform(MockMvcRequestBuilders
+            .patch("/v1/attend")
+            .header("Authorization", userToken1)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(newContent))
+        .andExpect(MockMvcResultMatchers.status().is5xxServerError())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(Long.valueOf(attendanceFailedCode)))
+        .andExpect(jsonPath("$.msg").value("출석 메시지가 비어있습니다."))
         .andDo(print());
   }
 
