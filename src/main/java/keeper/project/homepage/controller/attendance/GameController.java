@@ -80,7 +80,7 @@ public class GameController {
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/lotto/info")
-  public SingleResult<Boolean> checkLottoInfo() {
+  public SingleResult<Integer> checkLottoInfo() {
 
     return responseService.getSuccessSingleResult(gameService.checkLottoTimes());
   }
@@ -96,7 +96,7 @@ public class GameController {
   @GetMapping(value = "/lotto/check")
   public SingleResult<Boolean> validateLotto() {
 
-    return responseService.getSuccessSingleResult(gameService.checkLottoTimes());
+    return responseService.getSuccessSingleResult(gameService.isOverLottoTimes());
   }
 
   @GetMapping(value = "/info")
