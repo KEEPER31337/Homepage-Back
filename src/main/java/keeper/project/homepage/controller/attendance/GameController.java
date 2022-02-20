@@ -57,6 +57,12 @@ public class GameController {
         : responseService.getSuccessSingleResult(false);
   }
 
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/roulette/info")
+  public SingleResult<RouletteDto> checkRouletteInfo() {
+
+    return responseService.getSuccessSingleResult(gameService.checkRoulleteInfo());
+  }
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/roulette/play")

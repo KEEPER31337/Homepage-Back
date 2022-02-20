@@ -77,6 +77,14 @@ public class GameService {
     return gameEntity.getRoulettePerDay() > ROULETTE_MAX_PLAYTIME;
   }
 
+  public RouletteDto checkRoulleteInfo() {
+    RouletteDto rouletteDto = new RouletteDto();
+    GameEntity gameEntity = getOrResetGameEntity();
+    rouletteDto.setRoulettePerDay(gameEntity.getRoulettePerDay());
+
+    return rouletteDto;
+  }
+
   @Transactional
   public RouletteDto playRouletteGame() {
 
