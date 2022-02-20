@@ -1,13 +1,11 @@
 package keeper.project.homepage.repository.posting;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
-import keeper.project.homepage.entity.attendance.AttendanceEntity;
-import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasPostingDislikeEntity;
 import keeper.project.homepage.entity.member.MemberHasPostingLikeEntity;
+import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,8 +15,8 @@ public interface PostingRepository extends JpaRepository<PostingEntity, Long> {
 
   Page<PostingEntity> findAllByIsTemp(Integer isTemp, Pageable pageable);
 
-  Page<PostingEntity> findAllByCategoryIdAndIsTemp(CategoryEntity category, Integer isTemp,
-      Pageable pageable);
+  Page<PostingEntity> findAllByCategoryIdAndIsTempAndIsNotice(CategoryEntity category,
+      Integer isTemp, Integer isNotice, Pageable pageable);
 
   List<PostingEntity> findAllByCategoryIdAndIsTempAndIsNotice(CategoryEntity category,
       Integer isTemp, Integer isNotice);

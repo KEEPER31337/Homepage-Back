@@ -3,9 +3,6 @@ package keeper.project.homepage.service.posting;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.dto.posting.LikeAndDislikeDto;
@@ -100,8 +97,8 @@ public class PostingService {
 
     CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
         .orElseThrow(CustomCategoryNotFoundException::new);
-    Page<PostingEntity> postingEntities = postingRepository.findAllByCategoryIdAndIsTemp(
-        categoryEntity, isNotTempPosting, pageable);
+    Page<PostingEntity> postingEntities = postingRepository.findAllByCategoryIdAndIsTempAndIsNotice(
+        categoryEntity, isNotTempPosting, isNotNoticePosting, pageable);
     setAllInfo(postingEntities);
 
     return postingEntities.getContent();
