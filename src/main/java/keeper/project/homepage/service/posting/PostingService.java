@@ -123,16 +123,16 @@ public class PostingService {
     LocalDateTime startDate = LocalDate.now().minusWeeks(2).atStartOfDay();
     LocalDateTime endDate = LocalDate.now().plusDays(1).atStartOfDay();
     List<PostingEntity> postingEntities = postingRepository.findAllByIsTempAndIsSecretAndIsNoticeAndRegisterTimeBetween(
-        isNotTempPosting, isNotSecretPosting, isNoticePosting, startDate, endDate);
+        isNotTempPosting, isNotSecretPosting, isNotNoticePosting, startDate, endDate);
     setAllInfo(postingEntities);
 
-    postingEntities.sort((Comparator<PostingEntity>) (posting1, posting2) -> {
+    postingEntities.sort((posting1, posting2) -> {
       Integer posting1Score =
           posting1.getVisitCount() + posting1.getLikeCount() * 2 - posting1.getDislikeCount();
       Integer posting2Score =
           posting2.getVisitCount() + posting2.getLikeCount() * 2 - posting2.getDislikeCount();
 
-      return posting1Score.compareTo(posting2Score);
+      return posting2Score.compareTo(posting1Score);
     });
 
     List<PostingBestDto> postingBestDtos = new ArrayList<>();

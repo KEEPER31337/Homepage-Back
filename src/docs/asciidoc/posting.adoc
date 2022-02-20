@@ -210,10 +210,6 @@ include::{snippets}/post-getNotice/response-fields.adoc[]
 
 include::{snippets}/post-best/http-request.adoc[]
 
-==== Request Parameters
-
-include::{snippets}/post-best/request-parameters.adoc[]
-
 === 응답
 
 ==== Response
