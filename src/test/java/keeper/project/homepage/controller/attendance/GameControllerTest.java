@@ -173,6 +173,24 @@ public class GameControllerTest extends ApiControllerTestSetUp {
   }
 
   @Test
+  @DisplayName("룰렛 내 정보 출력")
+  public void checkRouletteInfo() throws Exception {
+
+    ResultActions result = mockMvc.perform(
+        MockMvcRequestBuilders.get("/v1/game/roulette/info").header("Authorization", userToken1));
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(print())
+        .andDo(document("game-rouletteInfo",
+            responseFields(
+                fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
+                fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
+                fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
+                fieldWithPath("data.roulettePerDay").description("하루 룰렛 게임 한 횟수")
+            )));
+  }
+
+  @Test
   @DisplayName("로또 게임 횟수 출력")
   public void checkLottoInfo() throws Exception {
 

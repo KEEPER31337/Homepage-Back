@@ -137,6 +137,28 @@ include::{snippets}/game-roulettePlay/response-body.adoc[]
 
 include::{snippets}/game-roulettePlay/response-fields.adoc[]
 
+== 룰렛 하루 플레이 정보
+
+=== 요청
+
+==== Request
+
+include::{snippets}/game-rouletteinfo/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/game-rouletteinfo/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/game-rouletteinfo/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/game-rouletteinfo/response-fields.adoc[]
+
 == 룰렛 게임 횟수 제한
 
 === 요청
