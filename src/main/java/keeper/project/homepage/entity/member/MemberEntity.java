@@ -97,7 +97,7 @@ public class MemberEntity implements UserDetails, Serializable {
   @Column(name = "demerit", nullable = false)
   private Integer demerit;
 
-  @Column(name = "generation", nullable = false)
+  @Column(name = "generation")
   private Float generation;
 
   @OneToOne
