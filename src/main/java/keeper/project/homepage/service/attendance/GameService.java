@@ -1,6 +1,23 @@
 package keeper.project.homepage.service.attendance;
 
-import static keeper.project.homepage.dto.attendance.GameInfoDto.*;
+import static keeper.project.homepage.dto.attendance.GameInfoDto.DICE_BET_MAX;
+import static keeper.project.homepage.dto.attendance.GameInfoDto.DICE_MAX_PLAYTIME;
+import static keeper.project.homepage.dto.attendance.GameInfoDto.FIFTH_POINT;
+import static keeper.project.homepage.dto.attendance.GameInfoDto.FIFTH_PROB;
+import static keeper.project.homepage.dto.attendance.GameInfoDto.FIRST_POINT;
+import static keeper.project.homepage.dto.attendance.GameInfoDto.FIRST_PROB;
+import static keeper.project.homepage.dto.attendance.GameInfoDto.FOURTH_POINT;
+import static keeper.project.homepage.dto.attendance.GameInfoDto.FOURTH_PROB;
+import static keeper.project.homepage.dto.attendance.GameInfoDto.LAST_POINT;
+import static keeper.project.homepage.dto.attendance.GameInfoDto.LOTTO_FEE;
+import static keeper.project.homepage.dto.attendance.GameInfoDto.LOTTO_MAX_PLAYTIME;
+import static keeper.project.homepage.dto.attendance.GameInfoDto.ROULETTE_FEE;
+import static keeper.project.homepage.dto.attendance.GameInfoDto.ROULETTE_LIST;
+import static keeper.project.homepage.dto.attendance.GameInfoDto.ROULETTE_MAX_PLAYTIME;
+import static keeper.project.homepage.dto.attendance.GameInfoDto.SECOND_POINT;
+import static keeper.project.homepage.dto.attendance.GameInfoDto.SECOND_PROB;
+import static keeper.project.homepage.dto.attendance.GameInfoDto.THIRD_POINT;
+import static keeper.project.homepage.dto.attendance.GameInfoDto.THIRD_PROB;
 import static keeper.project.homepage.service.attendance.DateUtils.isToday;
 
 import java.lang.reflect.Field;
@@ -123,10 +140,16 @@ public class GameService {
     return randomLists.get((int) (Math.random() * 5));
   }
 
-  public Boolean checkLottoTimes() {
+  public Boolean isOverLottoTimes() {
 
     GameEntity gameEntity = getOrResetGameEntity();
-    return gameEntity.getLottoPerDay() > LOTTO_MAX_PLAYTIME;
+    return gameEntity.getRoulettePerDay() > LOTTO_MAX_PLAYTIME;
+  }
+
+  public Integer checkLottoTimes() {
+
+    GameEntity gameEntity = getOrResetGameEntity();
+    return gameEntity.getLottoPerDay();
   }
 
   @Transactional
