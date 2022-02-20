@@ -15,6 +15,7 @@ import keeper.project.homepage.dto.result.OtherMemberInfoResult;
 import keeper.project.homepage.dto.result.PointTransferResult;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.service.ResponseService;
 import keeper.project.homepage.service.member.MemberService;
 import keeper.project.homepage.service.posting.PostingService;
@@ -135,24 +136,24 @@ public class MemberController {
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/member/post")
-  public ListResult<PostingDto> findAllPosting(
+  public ListResult<PostingEntity> findAllPosting(
       @SortDefault(sort = "registerDate", direction = Direction.ASC)
       @PageableDefault(page = 0, size = 10) Pageable pageable) {
     Long id = authService.getMemberIdByJWT();
 
-    Page<PostingDto> page = memberService.findAllPostingByIsTemp(id, pageable,
+    Page<PostingEntity> page = memberService.findAllPostingByIsTemp(id, pageable,
         PostingService.isNotTempPosting);
     return responseService.getSuccessListResult(page.getContent());
   }
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/member/temp_post")
-  public ListResult<PostingDto> findAllTempPosting(
+  public ListResult<PostingEntity> findAllTempPosting(
       @SortDefault(sort = "registerDate", direction = Direction.ASC)
       @PageableDefault(page = 0, size = 10) Pageable pageable) {
     Long id = authService.getMemberIdByJWT();
 
-    Page<PostingDto> page = memberService.findAllPostingByIsTemp(id, pageable,
+    Page<PostingEntity> page = memberService.findAllPostingByIsTemp(id, pageable,
         PostingService.isTempPosting);
     return responseService.getSuccessListResult(page.getContent());
   }

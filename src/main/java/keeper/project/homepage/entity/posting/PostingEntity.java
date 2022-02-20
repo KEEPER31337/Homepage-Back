@@ -36,7 +36,6 @@ import org.springframework.util.Assert;
 @Builder
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "posting")
@@ -70,9 +69,11 @@ public class PostingEntity {
   @Column
   private Integer commentCount;
   @Column
+  @Setter
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
   private LocalDateTime registerTime;
   @Column
+  @Setter
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss", timezone = "Asia/Seoul")
   private LocalDateTime updateTime;
   @Column

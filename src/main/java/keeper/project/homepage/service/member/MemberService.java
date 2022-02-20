@@ -10,6 +10,7 @@ import keeper.project.homepage.entity.member.FriendEntity;
 import keeper.project.homepage.dto.request.PointTransferRequest;
 import keeper.project.homepage.dto.result.PointTransferResult;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.member.CustomMemberDuplicateException;
 import keeper.project.homepage.exception.member.CustomMemberEmptyFieldException;
 import keeper.project.homepage.exception.member.CustomMemberInfoNotFoundException;
@@ -331,22 +332,18 @@ public class MemberService {
     // 출처: https://www.baeldung.com/java-random-string
   }
 
-  public Page<PostingDto> findAllPostingByIsTemp(Long id, Pageable pageable, Integer isTemp) {
+  public Page<PostingEntity> findAllPostingByIsTemp(Long id, Pageable pageable, Integer isTemp) {
     MemberEntity memberEntity = memberRepository.findById(id).orElseThrow(
         () -> new CustomMemberNotFoundException(id.toString() + "인 id를 가진 member가 존재하지 않습니다."));
 
-    List<PostingDto> postings = new ArrayList<>();
-    memberEntity.getPosting().forEach(posting -> {
-      if (posting.getIsTemp() == isTemp) {
-        postings.add(PostingDto.create(posting));
-      }
-    });
+    List<PostingEntity> postings = memberEntity.getPosting().stream()
+        .filter(postingEntity -> postingEntity.getIsTemp() == isTemp).toList();
     final int start = (int) pageable.getOffset();
     final int end = Math.min((start + pageable.getPageSize()), postings.size());
-    final Page<PostingDto> page = new PageImpl<>(postings.subList(start, end), pageable,
+    final Page<PostingEntity> pagePostings = new PageImpl<>(postings.subList(start, end), pageable,
         postings.size());
 
-    return page;
+    return pagePostings;
   }
 
   public OtherMemberInfoResult getOtherMemberInfo(Long otherMemberId) {

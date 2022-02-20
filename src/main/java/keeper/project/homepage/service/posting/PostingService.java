@@ -98,7 +98,7 @@ public class PostingService {
     dto.setMemberId(memberEntity);
     dto.setRegisterTime(LocalDateTime.now());
     dto.setUpdateTime(LocalDateTime.now());
-    PostingEntity postingEntity = postingMapper.toEntity(dto);
+    PostingEntity postingEntity = postingMapper.toEntity(dto, categoryRepository, thumbnailRepository);
 
     memberEntity.getPosting().add(postingEntity);
     return postingRepository.save(postingEntity);
