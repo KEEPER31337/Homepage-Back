@@ -13,12 +13,14 @@ import java.util.Optional;
 import keeper.project.homepage.dto.attendance.GameInfoDto;
 import keeper.project.homepage.dto.attendance.LottoDto;
 import keeper.project.homepage.dto.attendance.RouletteDto;
+import keeper.project.homepage.dto.point.request.PointLogRequest;
 import keeper.project.homepage.entity.attendance.GameEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.attendance.GameRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.service.util.AuthService;
+import keeper.project.homepage.user.service.point.PointLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,7 @@ public class GameService {
   private final AuthService authService;
   private final MemberRepository memberRepository;
   private final GameRepository gameRepository;
+  private final PointLogService pointLogService;
 
   public Boolean isOverDiceTimes() {
 
@@ -51,6 +54,8 @@ public class GameService {
     gameRepository.save(gameEntity);
     memberEntity.updatePoint(memberEntity.getPoint() - bettingPoint);
     memberRepository.save(memberEntity);
+    pointLogService.createPointUseLog(memberEntity,
+        new PointLogRequest(LocalDateTime.now(), bettingPoint, "주사위 게임 포인트 차감"));
     return true;
   }
 
@@ -78,6 +83,8 @@ public class GameService {
     gameRepository.save(gameEntity);
     memberEntity.updatePoint(memberEntity.getPoint() + updatePoint);
     memberRepository.save(memberEntity);
+    pointLogService.createPointSaveLog(memberEntity,
+        new PointLogRequest(LocalDateTime.now(), updatePoint, "주사위 게임 결과"));
     return gameEntity.getDiceDayPoint();
   }
 
@@ -105,6 +112,8 @@ public class GameService {
     rouletteDto.setRoulettePerDay(gameEntity.getRoulettePerDay());
     gameEntity.setLastPlayTime(LocalDateTime.now());
 
+    pointLogService.createPointUseLog(memberEntity,
+        new PointLogRequest(LocalDateTime.now(), ROULETTE_FEE, "룰렛 게임 포인트 차감"));
     List<Integer> points = new ArrayList<>();
     List<Integer> restricts = ROULETTE_LIST;
     for (int i = 0; i < restricts.size(); i += 2) {
@@ -118,6 +127,8 @@ public class GameService {
     memberEntity.updatePoint(memberEntity.getPoint() + points.get(idx) - ROULETTE_FEE);
     memberRepository.save(memberEntity);
 
+    pointLogService.createPointSaveLog(memberEntity,
+        new PointLogRequest(LocalDateTime.now(), points.get(idx), "룰렛 게임 결과"));
     rouletteDto.setTodayResult(gameEntity.getRouletteDayPoint());
     return rouletteDto;
   }
@@ -149,6 +160,9 @@ public class GameService {
     gameEntity.increaseLottoTimes();
     gameEntity.setLastPlayTime(LocalDateTime.now());
 
+    pointLogService.createPointUseLog(memberEntity,
+        new PointLogRequest(LocalDateTime.now(), LOTTO_FEE, "로또 게임 포인트 차감"));
+
     int result;
     int idx;
     final double prob = Math.random();
@@ -178,6 +192,8 @@ public class GameService {
     memberRepository.save(memberEntity);
 
     LottoDto lottoDto = new LottoDto(idx, gameEntity.getLottoDayPoint());
+    pointLogService.createPointSaveLog(memberEntity,
+        new PointLogRequest(LocalDateTime.now(), result, "로또 게임 결과"));
 
     return lottoDto;
   }

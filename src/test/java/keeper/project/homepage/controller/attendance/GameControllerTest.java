@@ -319,6 +319,7 @@ public class GameControllerTest extends ApiControllerTestSetUp {
         .nickName(nickName + epochTime)
         .emailAddress(emailAddress + epochTime)
         .studentId(studentId + epochTime)
+        .point(10000)
         .generation(0F)
         .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
