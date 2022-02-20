@@ -183,7 +183,7 @@ public class PostingEntity {
   }
 
   public void makeSecret() {
-    this.title = "비밀 게시글입니다.";
+//    this.title = "비밀 게시글입니다.";
     this.content = "비밀 게시글입니다.";
   }
 }

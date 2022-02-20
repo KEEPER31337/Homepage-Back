@@ -250,18 +250,19 @@ public class PostingService {
     Page<PostingEntity> postingEntities = null;
     switch (type) {
       case "T": {
-        postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingAndIsTemp(
-            categoryEntity, keyword, isNotTempPosting, pageable);
+        postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingAndIsTempAndIsNotice(
+            categoryEntity, keyword, isNotTempPosting, isNotNoticePosting, pageable);
         break;
       }
       case "C": {
-        postingEntities = postingRepository.findAllByCategoryIdAndContentContainingAndIsTemp(
-            categoryEntity, keyword, isNotTempPosting, pageable);
+        postingEntities = postingRepository.findAllByCategoryIdAndContentContainingAndIsTempAndIsNotice(
+            categoryEntity, keyword, isNotTempPosting, isNotNoticePosting, pageable);
         break;
       }
       case "TC": {
-        postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingOrCategoryIdAndContentContainingAndIsTemp(
-            categoryEntity, keyword, categoryEntity, keyword, isNotTempPosting, pageable);
+        postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingOrCategoryIdAndContentContainingAndIsTempAndIsNotice(
+            categoryEntity, keyword, categoryEntity, keyword, isNotTempPosting, isNotNoticePosting,
+            pageable);
         break;
       }
       case "W": {
@@ -269,8 +270,9 @@ public class PostingService {
         if (!memberEntity.isPresent()) {
           break;
         }
-        postingEntities = postingRepository.findAllByCategoryIdAndMemberIdAndIsTemp(categoryEntity,
-            memberEntity.get(), isNotTempPosting, pageable);
+        postingEntities = postingRepository.findAllByCategoryIdAndMemberIdAndIsTempAndIsNotice(
+            categoryEntity,
+            memberEntity.get(), isNotTempPosting, isNotNoticePosting, pageable);
         break;
       }
     }

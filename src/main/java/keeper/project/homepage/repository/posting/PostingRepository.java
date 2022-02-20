@@ -21,19 +21,20 @@ public interface PostingRepository extends JpaRepository<PostingEntity, Long> {
   List<PostingEntity> findAllByCategoryIdAndIsTempAndIsNotice(CategoryEntity category,
       Integer isTemp, Integer isNotice);
 
-  Page<PostingEntity> findAllByCategoryIdAndTitleContainingAndIsTemp(CategoryEntity category,
-      String title, Integer isTemp, Pageable pageable);
+  Page<PostingEntity> findAllByCategoryIdAndTitleContainingAndIsTempAndIsNotice(
+      CategoryEntity category,
+      String title, Integer isTemp, Integer isNotice, Pageable pageable);
 
-  Page<PostingEntity> findAllByCategoryIdAndContentContainingAndIsTemp(CategoryEntity category,
-      String content, Integer isTemp, Pageable pageable);
+  Page<PostingEntity> findAllByCategoryIdAndContentContainingAndIsTempAndIsNotice(
+      CategoryEntity category,
+      String content, Integer isTemp, Integer isNotice, Pageable pageable);
 
-  Page<PostingEntity> findAllByCategoryIdAndTitleContainingOrCategoryIdAndContentContainingAndIsTemp(
+  Page<PostingEntity> findAllByCategoryIdAndTitleContainingOrCategoryIdAndContentContainingAndIsTempAndIsNotice(
       CategoryEntity category1, String title, CategoryEntity category2, String content,
-      Integer isTemp,
-      Pageable pageable);
+      Integer isTemp, Integer isNotice, Pageable pageable);
 
-  Page<PostingEntity> findAllByCategoryIdAndMemberIdAndIsTemp(CategoryEntity category,
-      MemberEntity member, Integer isTemp, Pageable pageable);
+  Page<PostingEntity> findAllByCategoryIdAndMemberIdAndIsTempAndIsNotice(CategoryEntity category,
+      MemberEntity member, Integer isTemp,Integer isNotice, Pageable pageable);
 
   List<PostingEntity> findAllByMemberId(MemberEntity member);
 
