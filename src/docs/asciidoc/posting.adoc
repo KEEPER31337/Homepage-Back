@@ -180,6 +180,28 @@ include::{snippets}/post-getLatest/http-response.adoc[]
 
 include::{snippets}/post-getLatest/response-fields.adoc[]
 
+== 게시글 공지글 목록
+
+=== 요청
+
+==== Request
+
+include::{snippets}/post-getNotice/http-request.adoc[]
+
+==== Request Parameters
+
+include::{snippets}/post-getNotice/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/post-getNotice/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/post-getNotice/response-fields.adoc[]
+
 == 게시글 수정
 
 === 요청

@@ -17,6 +17,7 @@ import keeper.project.homepage.entity.member.MemberHasPostingLikeEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
+import keeper.project.homepage.exception.posting.CustomCategoryNotFoundException;
 import keeper.project.homepage.repository.FileRepository;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.member.MemberHasPostingDislikeRepository;
@@ -47,6 +48,8 @@ public class PostingService {
 
   public static final Integer isNotTempPosting = 0;
   public static final Integer isTempPosting = 1;
+  public static final Integer isNotNoticePosting = 0;
+  public static final Integer isNoticePosting = 1;
 
   public List<PostingEntity> findAll(Pageable pageable) {
 
@@ -69,25 +72,46 @@ public class PostingService {
     }
   }
 
+  private void setAllInfo(List<PostingEntity> postingEntities) {
+    setAllInfo(postingEntities, postingEntities.size());
+  }
+
   private void setAllInfo(Page<PostingEntity> postingEntities) {
+    setAllInfo(postingEntities.getContent(), (int) postingEntities.getTotalElements());
+  }
+
+  private void setAllInfo(List<PostingEntity> postingEntities, Integer totalSize) {
 
     for (PostingEntity postingEntity : postingEntities) {
       setWriterInfo(postingEntity);
-      postingEntity.setSize((int) postingEntities.getTotalElements());
+      postingEntity.setSize(totalSize);
       if (postingEntity.getIsSecret() == 1) {
         postingEntity.makeSecret();
       }
     }
   }
 
+
   public List<PostingEntity> findAllByCategoryId(Long categoryId, Pageable pageable) {
 
-    Optional<CategoryEntity> categoryEntity = categoryRepository.findById(Long.valueOf(categoryId));
+    CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
+        .orElseThrow(CustomCategoryNotFoundException::new);
     Page<PostingEntity> postingEntities = postingRepository.findAllByCategoryIdAndIsTemp(
-        categoryEntity.get(), isNotTempPosting, pageable);
+        categoryEntity, isNotTempPosting, pageable);
     setAllInfo(postingEntities);
 
     return postingEntities.getContent();
+  }
+
+  public List<PostingEntity> findAllNoticeByCategoryId(Long categoryId) {
+
+    CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
+        .orElseThrow(CustomCategoryNotFoundException::new);
+    List<PostingEntity> postingEntities = postingRepository.findAllByCategoryIdAndIsTempAndIsNotice(
+        categoryEntity, isNotTempPosting, isNoticePosting);
+    setAllInfo(postingEntities);
+
+    return postingEntities;
   }
 
   public PostingEntity save(PostingDto dto) {

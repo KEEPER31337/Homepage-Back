@@ -80,6 +80,8 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   private PostingEntity postingDeleteTest;
   private PostingEntity postingDeleteTest2;
   private PostingEntity postingModifyTest;
+  private PostingEntity postingNoticeTest;
+  private PostingEntity postingNoticeTest2;
 
   private ThumbnailEntity generalThumbnail;
   private FileEntity generalImageFile;
@@ -394,6 +396,48 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .build());
     memberEntity.getPosting().add(postingTempTest);
 
+    postingNoticeTest = postingRepository.save(PostingEntity.builder()
+        .title("test 공지 제목")
+        .content("test 공지 제목 내용")
+        .memberId(memberEntity)
+        .categoryId(categoryEntity)
+        .thumbnail(generalThumbnail)
+        .ipAddress("192.11.222.333")
+        .allowComment(0)
+        .isNotice(1)
+        .isTemp(0)
+        .isSecret(0)
+        .likeCount(0)
+        .dislikeCount(0)
+        .commentCount(0)
+        .visitCount(0)
+        .registerTime(LocalDateTime.now())
+        .updateTime(LocalDateTime.now())
+        .password("")
+        .build());
+    memberEntity.getPosting().add(postingNoticeTest);
+
+    postingNoticeTest2 = postingRepository.save(PostingEntity.builder()
+        .title("test 공지 제목2")
+        .content("test 공지 제목 내용2")
+        .memberId(memberEntity)
+        .categoryId(categoryEntity)
+        .thumbnail(generalThumbnail)
+        .ipAddress("192.11.222.333")
+        .allowComment(0)
+        .isNotice(1)
+        .isTemp(0)
+        .isSecret(0)
+        .likeCount(0)
+        .dislikeCount(0)
+        .commentCount(0)
+        .visitCount(0)
+        .registerTime(LocalDateTime.now())
+        .updateTime(LocalDateTime.now())
+        .password("")
+        .build());
+    memberEntity.getPosting().add(postingNoticeTest2);
+
     FileEntity generalTestFile = FileEntity.builder()
         .postingId(postingGeneralTest)
         .fileName("test file")
@@ -482,6 +526,51 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 parameterWithName("category").description("게시판 종류 ID"),
                 parameterWithName("page").optional().description("페이지 번호(default = 0)"),
                 parameterWithName("size").optional().description("한 페이지당 출력 수(default = 10)")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
+                fieldWithPath("list[].id").description("게시물 ID"),
+                fieldWithPath("list[].title").description("게시물 제목"),
+                fieldWithPath("list[].content").description("게시물 내용"),
+                fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
+                fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
+                fieldWithPath("list[].writerThumbnailId").optional()
+                    .description("작성자 (비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
+                fieldWithPath("list[].visitCount").description("조회 수"),
+                fieldWithPath("list[].likeCount").description("좋아요 수"),
+                fieldWithPath("list[].dislikeCount").description("싫어요 수"),
+                fieldWithPath("list[].commentCount").description("댓글 수"),
+                fieldWithPath("list[].registerTime").description("작성 시간"),
+                fieldWithPath("list[].updateTime").description("수정 시간"),
+                fieldWithPath("list[].ipAddress").description("IP 주소"),
+                fieldWithPath("list[].allowComment").description("댓글 허용?"),
+                fieldWithPath("list[].isNotice").description("공지글?"),
+                fieldWithPath("list[].isSecret").description("비밀글?"),
+                fieldWithPath("list[].isTemp").description("임시저장?"),
+                fieldWithPath("list[].size").description("총 게시물 수"),
+                subsectionWithPath("list[].files").description(
+                        "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
+                    .optional(),
+                subsectionWithPath("list[].thumbnail").description("게시글 썸네일 (.id)").optional()
+            )
+        ));
+  }
+
+  @Test
+  @DisplayName("카테고리별 공지글 목록 불러오기")
+  public void findAllNoticePostingByCategoryId() throws Exception {
+
+    ResultActions result = mockMvc.perform(get("/v1/post/notice")
+        .param("category", categoryEntity.getId().toString())
+        .contentType(MediaType.APPLICATION_JSON));
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(print())
+        .andDo(document("post-getNotice",
+            requestParameters(
+                parameterWithName("category").description("게시판 종류 ID")
             ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),

@@ -81,6 +81,14 @@ public class PostingController {
         pageable));
   }
 
+  @GetMapping(value = "/notice")
+  public ListResult<PostingEntity> findAllNoticePostingByCategoryId(
+      @RequestParam("category") Long categoryId) {
+
+    return responseService.getSuccessListResult(
+        postingService.findAllNoticeByCategoryId(categoryId));
+  }
+
   @PostMapping(value = "/new", consumes = "multipart/form-data", produces = {
       MediaType.APPLICATION_JSON_VALUE})
   public CommonResult createPosting(
