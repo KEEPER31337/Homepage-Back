@@ -41,7 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 //@Secured("ROLE_USER") // 모든 url에 공통 설정
 @Log4j2
 @RequiredArgsConstructor
-@RestController
+//@RestController // admin, user 분리 작업 중 중복 Bean 등록으로 인한 주석 처리
 @RequestMapping(value = "/v1")
 public class MemberController {
 
@@ -57,12 +57,6 @@ public class MemberController {
     Long id = authService.getMemberIdByJWT();
     // 결과데이터가 단일건인경우 getSuccessSingleResult 이용해서 결과를 출력한다.
     return responseService.getSuccessSingleResult(memberService.findById(id));
-  }
-
-  @Secured("ROLE_회원") // 각 리소스별 권한 설정
-  @GetMapping(value = "/members")
-  public ListResult<OtherMemberInfoResult> getAllGeneralMemberInfo() {
-    return responseService.getSuccessListResult(memberService.getAllGeneralMemberInfo());
   }
 
   @Secured("ROLE_회원")
@@ -190,15 +184,6 @@ public class MemberController {
     Long id = authService.getMemberIdByJWT();
     List<MemberDto> followeeList = memberService.showFollowee(id);
     return responseService.getSuccessListResult(followeeList);
-  }
-
-  @Secured("ROLE_회원")
-  @GetMapping(value = "/member/other/info/{id}")
-  public SingleResult<OtherMemberInfoResult> getOtherMemberInfo(
-      @PathVariable("id") Long id
-  ) {
-    return responseService.getSuccessSingleResult(memberService.getOtherMemberInfo(id));
-
   }
 
   @Secured("ROLE_회원")
