@@ -3,32 +3,34 @@ package keeper.project.homepage.service.posting;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import keeper.project.homepage.dto.posting.PostingDto;
 import keeper.project.homepage.dto.posting.LikeAndDislikeDto;
+import keeper.project.homepage.dto.posting.PostingBestDto;
+import keeper.project.homepage.dto.posting.PostingDto;
 import keeper.project.homepage.dto.result.PostingResult;
 import keeper.project.homepage.entity.FileEntity;
-import keeper.project.homepage.entity.posting.CategoryEntity;
+import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasPostingDislikeEntity;
 import keeper.project.homepage.entity.member.MemberHasPostingLikeEntity;
+import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
-import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.exception.posting.CustomCategoryNotFoundException;
 import keeper.project.homepage.repository.FileRepository;
-import keeper.project.homepage.repository.posting.CategoryRepository;
+import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.repository.member.MemberHasPostingDislikeRepository;
 import keeper.project.homepage.repository.member.MemberHasPostingLikeRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
+import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.posting.PostingRepository;
-import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,8 +50,11 @@ public class PostingService {
 
   public static final Integer isNotTempPosting = 0;
   public static final Integer isTempPosting = 1;
+  public static final Integer isNotSecretPosting = 0;
+  public static final Integer isSecretPosting = 1;
   public static final Integer isNotNoticePosting = 0;
   public static final Integer isNoticePosting = 1;
+  public static final Integer bestPostingCount = 10;
 
   public List<PostingEntity> findAll(Pageable pageable) {
 
@@ -91,7 +96,6 @@ public class PostingService {
     }
   }
 
-
   public List<PostingEntity> findAllByCategoryId(Long categoryId, Pageable pageable) {
 
     CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
@@ -112,6 +116,33 @@ public class PostingService {
     setAllInfo(postingEntities);
 
     return postingEntities;
+  }
+
+  public List<PostingBestDto> findAllBest() {
+
+    LocalDateTime startDate = LocalDate.now().minusWeeks(2).atStartOfDay();
+    LocalDateTime endDate = LocalDate.now().plusDays(1).atStartOfDay();
+    List<PostingEntity> postingEntities = postingRepository.findAllByIsTempAndIsSecretAndIsNoticeAndRegisterTimeBetween(
+        isNotTempPosting, isNotSecretPosting, isNoticePosting, startDate, endDate);
+    setAllInfo(postingEntities);
+
+    postingEntities.sort((Comparator<PostingEntity>) (posting1, posting2) -> {
+      Integer posting1Score =
+          posting1.getVisitCount() + posting1.getLikeCount() * 2 - posting1.getDislikeCount();
+      Integer posting2Score =
+          posting2.getVisitCount() + posting2.getLikeCount() * 2 - posting2.getDislikeCount();
+
+      return posting1Score.compareTo(posting2Score);
+    });
+
+    List<PostingBestDto> postingBestDtos = new ArrayList<>();
+    for (int i = 0; i < Math.min(postingEntities.size(), bestPostingCount); i++) {
+      PostingBestDto tempBestDto = new PostingBestDto();
+      tempBestDto.initWithEntity(postingEntities.get(i));
+      postingBestDtos.add(tempBestDto);
+    }
+
+    return postingBestDtos;
   }
 
   public PostingEntity save(PostingDto dto) {

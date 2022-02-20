@@ -35,6 +35,7 @@ import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.service.posting.PostingService;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -599,6 +600,32 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                         "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
                     .optional(),
                 subsectionWithPath("list[].thumbnail").description("게시글 썸네일 (.id)").optional()
+            )
+        ));
+  }
+
+  @Test
+  @DisplayName("메인페이지 글 목록 불러오기")
+  public void findAllBestPosting() throws Exception {
+
+    ResultActions result = mockMvc.perform(get("/v1/post/best")
+        .contentType(MediaType.APPLICATION_JSON));
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(jsonPath("$.list.length()", lessThanOrEqualTo(PostingService.bestPostingCount)))
+        .andDo(print())
+        .andDo(document("post-best",
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
+                fieldWithPath("list[].id").description("게시물 ID"),
+                fieldWithPath("list[].title").description("제목"),
+                fieldWithPath("list[].user").description("작성자"),
+                fieldWithPath("list[].dateTime").description("작성 시간"),
+                fieldWithPath("list[].watch").description("조회 수"),
+                fieldWithPath("list[].commentN").description("댓글 개수"),
+                fieldWithPath("list[].thumbnailId").description("게시글 썸네일 id").optional()
             )
         ));
   }

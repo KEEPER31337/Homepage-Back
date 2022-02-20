@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
 import keeper.project.homepage.dto.posting.LikeAndDislikeDto;
+import keeper.project.homepage.dto.posting.PostingBestDto;
 import keeper.project.homepage.dto.posting.PostingDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.ListResult;
@@ -87,6 +88,13 @@ public class PostingController {
 
     return responseService.getSuccessListResult(
         postingService.findAllNoticeByCategoryId(categoryId));
+  }
+
+  @GetMapping(value = "/best")
+  public ListResult<PostingBestDto> findAllBestPosting() {
+
+    return responseService.getSuccessListResult(
+        postingService.findAllBest());
   }
 
   @PostMapping(value = "/new", consumes = "multipart/form-data", produces = {
