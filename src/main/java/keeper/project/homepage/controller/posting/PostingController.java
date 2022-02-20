@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
+import keeper.project.homepage.common.MultipartFileWrapper;
 import keeper.project.homepage.dto.posting.LikeAndDislikeDto;
 import keeper.project.homepage.dto.posting.PostingDto;
 import keeper.project.homepage.dto.result.CommonResult;
@@ -21,6 +22,7 @@ import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.ResponseService;
 import keeper.project.homepage.service.ThumbnailService;
 import keeper.project.homepage.common.ImageCenterCrop;
+import keeper.project.homepage.service.ThumbnailService.ThumbnailSize;
 import keeper.project.homepage.service.posting.PostingService;
 import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -86,10 +88,8 @@ public class PostingController {
       @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
       PostingDto dto) {
 
-    ThumbnailEntity thumbnailEntity = null;
-    FileEntity fileEntity = fileService.saveOriginalThumbnail(thumbnail, dto.getIpAddress());
-    thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
-        thumbnail, fileEntity, "large");
+    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
+        thumbnail, ThumbnailSize.LARGE, dto.getIpAddress());
 
     if (thumbnailEntity == null) {
       return responseService.getFailResult();
@@ -179,13 +179,8 @@ public class PostingController {
   }
 
   private ThumbnailEntity saveThumbnail(MultipartFile thumbnail, PostingDto dto) {
-    ThumbnailEntity newThumbnail = null;
-    FileEntity fileEntity = fileService.saveOriginalThumbnail(thumbnail, dto.getIpAddress());
-    if (fileEntity == null) {
-      throw new CustomFileEntityNotFoundException("파일 저장 중에 에러가 발생했습니다.");
-    }
-    newThumbnail = thumbnailService.saveThumbnail(new ImageCenterCrop(),
-        thumbnail, fileEntity, "large");
+    ThumbnailEntity newThumbnail = thumbnailService.saveThumbnail(new ImageCenterCrop(), thumbnail,
+        ThumbnailSize.LARGE, dto.getIpAddress());
     if (newThumbnail == null) {
       throw new CustomThumbnailEntityNotFoundException("썸네일 저장 중에 에러가 발생했습니다.");
     }

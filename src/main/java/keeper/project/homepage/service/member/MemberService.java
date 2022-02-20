@@ -39,6 +39,7 @@ import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.member.MemberTypeRepository;
 import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.ThumbnailService;
+import keeper.project.homepage.service.ThumbnailService.ThumbnailSize;
 import keeper.project.homepage.service.mail.MailService;
 import keeper.project.homepage.service.sign.DuplicateCheckService;
 import lombok.RequiredArgsConstructor;
@@ -304,9 +305,8 @@ public class MemberService {
       prevThumbnail = thumbnailService.findById(memberEntity.getThumbnail().getId());
     }
 
-    FileEntity fileEntity = fileService.saveOriginalThumbnail(image, ipAddress);
-    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
-        image, fileEntity, "small");
+    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(), image,
+        ThumbnailSize.LARGE, ipAddress);
 
     memberEntity.changeThumbnail(thumbnailEntity);
     MemberDto result = new MemberDto();
