@@ -126,7 +126,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     return memberRepository.saveAndFlush(MemberEntity.builder()
         .loginId("LoginId" + epochTime)
         .password(passwordEncoder.encode(memberPassword))
-        .realName("RealName")
+        .realName("RealName" + epochTime)
         .nickName("NickName")
         .emailAddress("member" + epochTime + "@k33p3r.com")
         .studentId(epochTime)
