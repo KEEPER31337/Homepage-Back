@@ -1,6 +1,9 @@
 package keeper.project.homepage.repository.posting;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
+import keeper.project.homepage.entity.attendance.AttendanceEntity;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasPostingDislikeEntity;
@@ -17,6 +20,9 @@ public interface PostingRepository extends JpaRepository<PostingEntity, Long> {
   Page<PostingEntity> findAllByCategoryIdAndIsTemp(CategoryEntity category, Integer isTemp,
       Pageable pageable);
 
+  List<PostingEntity> findAllByCategoryIdAndIsTempAndIsNotice(CategoryEntity category,
+      Integer isTemp, Integer isNotice);
+
   Page<PostingEntity> findAllByCategoryIdAndTitleContainingAndIsTemp(CategoryEntity category,
       String title, Integer isTemp, Pageable pageable);
 
@@ -32,6 +38,9 @@ public interface PostingRepository extends JpaRepository<PostingEntity, Long> {
       MemberEntity member, Integer isTemp, Pageable pageable);
 
   List<PostingEntity> findAllByMemberId(MemberEntity member);
+
+  List<PostingEntity> findAllByIsTempAndIsSecretAndIsNoticeAndRegisterTimeBetween(Integer isTemp,
+      Integer isSecret, Integer isNotice, LocalDateTime registerTime, LocalDateTime registerTime2);
 
   boolean existsByMemberHasPostingLikeEntitiesContaining(
       MemberHasPostingLikeEntity memberHasPostingLikeEntity);
