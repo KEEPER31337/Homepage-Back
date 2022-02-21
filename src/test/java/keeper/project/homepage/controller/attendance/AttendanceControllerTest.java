@@ -61,10 +61,10 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
   private String userToken1, userToken2;
 
 
-  private final Date now = Timestamp.valueOf(LocalDateTime.now());
-  private final Date oneDayAgo = Timestamp.valueOf(LocalDateTime.now().minusDays(1));
-  private final Date twoDaysAgo = Timestamp.valueOf(LocalDateTime.now().minusDays(2));
-  private final Date threeDaysAgo = Timestamp.valueOf(LocalDateTime.now().minusDays(3));
+  private final LocalDateTime now = LocalDateTime.now();
+  private final LocalDateTime oneDayAgo = LocalDateTime.now().minusDays(1);
+  private final LocalDateTime twoDaysAgo = LocalDateTime.now().minusDays(2);
+  private final LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
 
   @BeforeEach
   public void setUp() throws Exception {
@@ -237,13 +237,13 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
   @DisplayName("내 출석 날짜 불러오기 실패(시작날짜 > 종료날짜)")
   public void getMyAttendDateListFailed() throws Exception {
 
-    LocalDate nowParam = LocalDate.now();
-    LocalDate twoDaysAgoParam = LocalDate.now().minusDays(2);
+    LocalDate twoDayAfterParam = LocalDate.now().plusDays(2);
+    LocalDate oneDayAfterParam = LocalDate.now().plusDays(1);
     mockMvc.perform(MockMvcRequestBuilders
             .get("/v1/attend/date")
             .header("Authorization", userToken1)
-            .param("startDate", String.valueOf(nowParam))
-            .param("endDate", String.valueOf(twoDaysAgoParam)))
+            .param("startDate", String.valueOf(twoDayAfterParam))
+            .param("endDate", String.valueOf(oneDayAfterParam)))
         .andExpect(MockMvcResultMatchers.status().is5xxServerError())
         .andDo(print());
   }
@@ -355,11 +355,12 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
             )));
   }
 
-  private void generateNewAttendanceWithTime(Date time, MemberEntity memberEntity)
+  private void generateNewAttendanceWithTime(LocalDateTime time, MemberEntity memberEntity)
       throws Exception {
     attendanceRepository.save(
         AttendanceEntity.builder()
             .time(time)
+            .date(time.toLocalDate())
             .point(10)
             .rankPoint(500)
             .continuousPoint(0)

@@ -32,7 +32,6 @@ import keeper.project.homepage.service.ThumbnailService;
 import keeper.project.homepage.service.posting.PostingService;
 import keeper.project.homepage.service.sign.CustomPasswordService;
 import keeper.project.homepage.service.sign.DuplicateCheckService;
-import keeper.project.homepage.user.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
