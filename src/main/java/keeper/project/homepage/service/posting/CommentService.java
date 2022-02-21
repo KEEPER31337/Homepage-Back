@@ -173,7 +173,7 @@ public class CommentService {
 
     PostingEntity postingEntity = postingRepository.findById(comment.getPostingId().getId())
         .orElseThrow(() -> new CustomCommentNotFoundException("댓글에 해당하는 게시글이 존재하지 않습니다."));
-    postingEntity.increaseCommentCount();
+    postingEntity.decreaseCommentCount();
     postingRepository.save(postingEntity);
   }
 
