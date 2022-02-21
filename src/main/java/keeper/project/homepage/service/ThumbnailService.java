@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
 import keeper.project.homepage.common.ImageFormatChecking;
+import keeper.project.homepage.common.MultipartFileWrapper;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.exception.file.CustomFileNotFoundException;
@@ -23,10 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class ThumbnailService {
 
   private final static String THUMBNAIL_FORMAT = "jpg";
-  private final static Integer SMALL_WIDTH = 30;
-  private final static Integer SMALL_HEIGHT = 30;
-  private final static Integer LARGE_WIDTH = 100;
-  private final static Integer LARGE_HEIGHT = 100;
 
   private final String relDirPath = "keeper_files" + File.separator + "thumbnail";
   private final String defaultImageName = "thumb_default.jpg"; // thumbnail delete시 파일명 비교
@@ -35,13 +32,22 @@ public class ThumbnailService {
   private final ThumbnailRepository thumbnailRepository;
   private final FileService fileService;
 
-  private Integer[] getThumbnailSize(String type) {
-    switch (type) {
-      case "small":
-        return new Integer[]{SMALL_WIDTH, SMALL_HEIGHT};
-      case "large":
-      default:
-        return new Integer[]{LARGE_WIDTH, LARGE_HEIGHT};
+  public enum ThumbnailSize {
+    SMALL(30, 30), LARGE(100, 100);
+    private Integer width;
+    private Integer height;
+
+    ThumbnailSize(int width, int height) {
+      this.width = width;
+      this.height = height;
+    }
+
+    public Integer getWidth() {
+      return this.width;
+    }
+
+    public Integer getHeight() {
+      return this.height;
     }
   }
 
@@ -54,18 +60,35 @@ public class ThumbnailService {
   }
 
   public ThumbnailEntity saveThumbnail(ImageProcessing imageProcessing, MultipartFile multipartFile,
-      FileEntity fileEntity, String sizeType) {
+      ThumbnailSize size, String ipAddress) {
+
+    FileEntity fileEntity = null;
     String fileName = "";
     if (multipartFile == null || multipartFile.isEmpty()) {
       fileName = this.defaultImageName;
+      File defaultFile = new File(FileService.fileRelDirPath + File.separator + defaultImageName);
+      fileEntity = fileService.saveFileEntity(
+          defaultFile, FileService.fileRelDirPath, ipAddress, null);
     } else {
-      imageFormatChecking.checkNormalImageFile(multipartFile);
+      MultipartFileWrapper multipartFileWrapper = new MultipartFileWrapper(multipartFile);
+      try {
+        imageFormatChecking.checkNormalImageFile(multipartFileWrapper);
 
-      File thumbnailImage = fileService.saveFileInServer(multipartFile, this.relDirPath);
-      Integer width = getThumbnailSize(sizeType.toLowerCase(Locale.ROOT))[0];
-      Integer height = getThumbnailSize(sizeType.toLowerCase(Locale.ROOT))[1];
-      imageProcessing.imageProcessing(thumbnailImage, width, height, THUMBNAIL_FORMAT);
-      fileName = thumbnailImage.getName();
+        // 원본 파일 저장
+        File file = fileService.saveFileInServer(multipartFileWrapper, FileService.fileRelDirPath);
+        fileEntity = fileService.saveFileEntity(file, FileService.fileRelDirPath, ipAddress, null);
+
+        // 썸네일 파일 저장
+        File thumbnailImage = fileService.saveFileInServer(multipartFileWrapper, this.relDirPath);
+        imageProcessing.imageProcessing(thumbnailImage, size.getWidth(), size.getHeight(),
+            THUMBNAIL_FORMAT);
+        fileName = thumbnailImage.getName();
+      } catch (Exception e) {
+        e.printStackTrace();
+      } finally {
+        // 업로드 임시 파일 삭제
+        multipartFileWrapper.transferFinish();
+      }
     }
     return thumbnailRepository.save(
         ThumbnailEntity.builder()

@@ -13,6 +13,7 @@ import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.ThumbnailService;
 import keeper.project.homepage.admin.service.library.BookManageService;
 import keeper.project.homepage.service.ResponseService;
+import keeper.project.homepage.service.ThumbnailService.ThumbnailSize;
 import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -64,10 +65,8 @@ public class BookManageController {
       ip = httpServletRequest.getRemoteAddr();
     }
 
-    ThumbnailEntity thumbnailEntity = null;
-    FileEntity fileEntity = fileService.saveOriginalThumbnail(thumbnail, ip);
-    thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(), thumbnail, fileEntity,
-        "large");
+    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
+        thumbnail, ThumbnailSize.LARGE, ip);
 
     if (thumbnailEntity == null) {
       throw new CustomAboutFailedException();

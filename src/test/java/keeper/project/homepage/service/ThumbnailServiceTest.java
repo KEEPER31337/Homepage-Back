@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
+import keeper.project.homepage.common.FileConversion;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -18,6 +19,7 @@ import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.common.ImageCenterCrop;
+import keeper.project.homepage.service.ThumbnailService.ThumbnailSize;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -111,10 +113,8 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
   }
 
   private static void createFileForTest(String filePath) throws IOException {
-    String str = "keeper is best dong-a-ri";
-    BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
-    writer.write(str);
-    writer.close();
+    FileConversion fileConversion = new FileConversion();
+    fileConversion.makeSampleJPEGImage(filePath);
   }
 
   @BeforeEach
@@ -225,47 +225,40 @@ public class ThumbnailServiceTest extends ApiControllerTestSetUp {
   @Test
   public void createTest() {
     Assertions.assertTrue(new File(originalFilePath).exists(), "test할 이미지 파일이 없습니다.");
+    ThumbnailEntity thumbnailEntity = null;
     try {
-//    FileEntity fileEntity = fileService.saveOriginalImage(originalImage, ipAddress);
-      ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
-          originalImage, fileEntity, "large");
-
-//    Assertions.assertTrue(
-//        new File(System.getProperty("user.dir") + File.separator + fileEntity.getFilePath()).exists(),
-//        "original file이 저장되지 않았습니다.");
-      Assertions.assertTrue(
-          new File(
-              System.getProperty("user.dir") + File.separator + thumbnailEntity.getPath()).exists(),
-          "thumbnail file이 저장되지 않았습니다.");
-      Assertions.assertNotNull(thumbnailService.findById(thumbnailEntity.getId()),
-          "thumbnail Entity가 저장되지 않았습니다.");
+      thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
+          originalImage, ThumbnailSize.LARGE, ipAddress);
 
     } catch (Exception e) {
       e.printStackTrace();
     }
+    Assertions.assertTrue(
+        new File(
+            System.getProperty("user.dir") + File.separator + thumbnailEntity.getPath()).exists(),
+        "thumbnail file이 저장되지 않았습니다.");
+    Assertions.assertNotNull(thumbnailService.findById(thumbnailEntity.getId()),
+        "thumbnail Entity가 저장되지 않았습니다.");
   }
 
   @Test
   public void createDefaultTest() {
+    ThumbnailEntity thumbnailEntity = null;
     try {
       Assertions.assertTrue(new File(defaultOriginalFilePath).exists(), "test할 이미지 파일이 없습니다.");
-//    FileEntity fileEntity = fileService.saveOriginalImage(defaultOriginalImage, ipAddress);
-      ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(), null,
-          fileEntity, "large");
+      thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
+          null, ThumbnailSize.LARGE, ipAddress);
 
-//    Assertions.assertTrue(
-//        new File(System.getProperty("user.dir") + File.separator + fileEntity.getFilePath()).exists(),
-//        "original file이 저장되지 않았습니다.");
       log.info(System.getProperty("user.dir") + File.separator + thumbnailEntity.getPath());
-      Assertions.assertTrue(
-          new File(
-              System.getProperty("user.dir") + File.separator + thumbnailEntity.getPath()).exists(),
-          "thumbnail file이 저장되지 않았습니다.");
-      Assertions.assertNotNull(thumbnailService.findById(thumbnailEntity.getId()),
-          "thumbnail Entity가 저장되지 않았습니다.");
     } catch (Exception e) {
       e.printStackTrace();
     }
+    Assertions.assertTrue(
+        new File(
+            System.getProperty("user.dir") + File.separator + thumbnailEntity.getPath()).exists(),
+        "thumbnail file이 저장되지 않았습니다.");
+    Assertions.assertNotNull(thumbnailService.findById(thumbnailEntity.getId()),
+        "thumbnail Entity가 저장되지 않았습니다.");
   }
 
   @Test
