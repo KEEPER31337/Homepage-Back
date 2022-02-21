@@ -36,7 +36,7 @@ public class AttendanceEntity {
   @Column(name = "time", nullable = false)
   private LocalDateTime time;
 
-  @Column(name = "date")
+  @Column(name = "date", nullable = false)
   private LocalDate date;
 
   @Setter

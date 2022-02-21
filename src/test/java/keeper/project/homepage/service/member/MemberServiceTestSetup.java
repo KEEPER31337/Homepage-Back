@@ -448,18 +448,23 @@ public class MemberServiceTestSetup {
   public void generateAttendanceRemoveTestcase() {
     deletedMember = generateMemberEntity(1);
     Random random = new Random();
+    System.out.println(LocalDateTime.now().toLocalDate());
+    System.out.println(LocalDate.now());
+    System.out.println("AAAAAAAAAAAAAAA");
     attendance = attendanceRepository.save(
         AttendanceEntity.builder()
-            .point(10)
-            .continuousPoint(0)
-            .continuousDay(0)
-            .greetings("hi")
-            .ipAddress("111.111.111.111")
             .time(LocalDateTime.now())
-            .member(deletedMember)
-            .rank(3)
+            .date(LocalDateTime.now().toLocalDate())
+            .point(10)
             .rankPoint(30)
-            .randomPoint(random.nextInt(100, 1001)).build());
+            .continuousPoint(0)
+            .randomPoint((int) (Math.random() * 900 + 100))
+            .ipAddress("111.111.111.111")
+            .greetings("hi")
+            .continuousDay(1)
+            .rank(3)
+            .member(deletedMember)
+            .build());
 
     // 다른 출석 기록에 영향을 안 끼치는 지 확인용
     MemberEntity otherMember = generateMemberEntity(2);
@@ -471,6 +476,7 @@ public class MemberServiceTestSetup {
             .greetings("hi")
             .ipAddress("111.111.111.111")
             .time(LocalDateTime.now())
+            .date(LocalDate.now())
             .member(otherMember)
             .rank(3)
             .rankPoint(30)
