@@ -51,6 +51,12 @@ public class GameService {
   private final GameRepository gameRepository;
   private final PointLogService pointLogService;
 
+  public Integer checkDiceTimes(){
+
+    GameEntity gameEntity = getOrResetGameEntity();
+    return gameEntity.getDicePerDay();
+  }
+
   public Boolean isOverDiceTimes() {
 
     GameEntity gameEntity = getOrResetGameEntity();

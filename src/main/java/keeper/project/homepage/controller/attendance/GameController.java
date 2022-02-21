@@ -26,9 +26,9 @@ public class GameController {
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/dice/info")
-  public SingleResult<Boolean> checkDiceInfo() {
+  public SingleResult<Integer> checkDiceInfo() {
 
-    return responseService.getSuccessSingleResult(gameService.isOverDiceTimes());
+    return responseService.getSuccessSingleResult(gameService.checkDiceTimes());
   }
 
   @Secured("ROLE_회원")
