@@ -6,6 +6,7 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.pr
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import keeper.project.homepage.config.security.JwtTokenProvider;
 import keeper.project.homepage.exception.ExceptionAdvice;
 import keeper.project.homepage.repository.etc.StaticWriteContentRepository;
 import keeper.project.homepage.repository.etc.StaticWriteSubtitleImageRepository;
@@ -26,6 +27,7 @@ import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.admin.service.library.BookManageService;
+import keeper.project.homepage.service.attendance.AttendanceService;
 import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.service.member.MemberHasCommentLikeService;
 import keeper.project.homepage.service.member.MemberService;
@@ -110,6 +112,9 @@ public abstract class ApiControllerTestSetUp {
   protected SignUpService signUpService;
 
   @Autowired
+  protected AttendanceService attendanceService;
+
+  @Autowired
   protected BookManageService bookManageService;
 
   @Autowired
@@ -139,6 +144,9 @@ public abstract class ApiControllerTestSetUp {
 
   @Autowired
   protected ExceptionAdvice exceptionAdvice;
+
+  @Autowired
+  protected JwtTokenProvider jwtTokenProvider;
 
   @BeforeEach
   public void setUpAll(RestDocumentationContextProvider restDocumentation) throws Exception {

@@ -1,6 +1,7 @@
 package keeper.project.homepage.controller.attendance;
 
 import java.util.HashMap;
+import keeper.project.homepage.dto.attendance.LottoDto;
 import keeper.project.homepage.dto.attendance.RouletteDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.SingleResult;
@@ -41,12 +42,12 @@ public class GameController {
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/dice/save")
-  public CommonResult saveResult(@RequestParam("result") Integer result,
+  public SingleResult<Integer> saveResult(@RequestParam("result") Integer result,
       @RequestParam("bet") Integer bettingPoint) {
 
-    boolean ret = gameService.saveDiceGame(result, bettingPoint);
-    return ret ? responseService.getSuccessResult()
-        : responseService.getFailResult(-1, "베팅 금액이 1000을 초과하였습니다.");
+    Integer ret = gameService.saveDiceGame(result, bettingPoint);
+    return ret != -9999 ? responseService.getSuccessSingleResult(ret)
+        : responseService.getFailSingleResult(ret, -1, "베팅 금액이 1000을 초과하였습니다.");
   }
 
   @Secured("ROLE_회원")
@@ -57,6 +58,12 @@ public class GameController {
         : responseService.getSuccessSingleResult(false);
   }
 
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/roulette/info")
+  public SingleResult<RouletteDto> checkRouletteInfo() {
+
+    return responseService.getSuccessSingleResult(gameService.checkRoulleteInfo());
+  }
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/roulette/play")
@@ -74,14 +81,14 @@ public class GameController {
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/lotto/info")
-  public SingleResult<Boolean> checkLottoInfo() {
+  public SingleResult<Integer> checkLottoInfo() {
 
     return responseService.getSuccessSingleResult(gameService.checkLottoTimes());
   }
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/lotto/play")
-  public SingleResult<Integer> playLotto() {
+  public SingleResult<LottoDto> playLotto() {
 
     return responseService.getSuccessSingleResult(gameService.playLottoGame());
   }
@@ -90,7 +97,7 @@ public class GameController {
   @GetMapping(value = "/lotto/check")
   public SingleResult<Boolean> validateLotto() {
 
-    return responseService.getSuccessSingleResult(gameService.checkLottoTimes());
+    return responseService.getSuccessSingleResult(gameService.isOverLottoTimes());
   }
 
   @GetMapping(value = "/info")

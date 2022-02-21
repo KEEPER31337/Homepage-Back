@@ -1,7 +1,16 @@
 package keeper.project.homepage.service.attendance;
 
 
-import static keeper.project.homepage.dto.attendance.AttendancePointDto.*;
+import static keeper.project.homepage.dto.attendance.AttendancePointDto.DAILY_ATTENDANCE_POINT;
+import static keeper.project.homepage.dto.attendance.AttendancePointDto.FIRST_PLACE_POINT;
+import static keeper.project.homepage.dto.attendance.AttendancePointDto.MONTH_ATTENDANCE;
+import static keeper.project.homepage.dto.attendance.AttendancePointDto.MONTH_ATTENDANCE_POINT;
+import static keeper.project.homepage.dto.attendance.AttendancePointDto.SECOND_PLACE_POINT;
+import static keeper.project.homepage.dto.attendance.AttendancePointDto.THIRD_PLACE_POINT;
+import static keeper.project.homepage.dto.attendance.AttendancePointDto.WEEK_ATTENDANCE;
+import static keeper.project.homepage.dto.attendance.AttendancePointDto.WEEK_ATTENDANCE_POINT;
+import static keeper.project.homepage.dto.attendance.AttendancePointDto.YEAR_ATTENDANCE;
+import static keeper.project.homepage.dto.attendance.AttendancePointDto.YEAR_ATTENDANCE_POINT;
 import static keeper.project.homepage.service.attendance.DateUtils.clearTime;
 import static keeper.project.homepage.service.attendance.DateUtils.isBeforeDay;
 import static keeper.project.homepage.service.attendance.DateUtils.isToday;
@@ -17,8 +26,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import keeper.project.homepage.dto.attendance.AttendanceDto;
-import keeper.project.homepage.dto.attendance.AttendanceResultDto;
 import keeper.project.homepage.dto.attendance.AttendancePointDto;
+import keeper.project.homepage.dto.attendance.AttendanceResultDto;
 import keeper.project.homepage.entity.attendance.AttendanceEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.CustomAttendanceException;
@@ -104,8 +113,8 @@ public class AttendanceService {
       throw new CustomAttendanceException("출석을 하지 않았습니다.");
     }
     String greeting = attendanceDto.getGreetings();
-    if (greeting == "" || greeting == null) {
-      greeting = DEFAULT_GREETINGS;
+    if (greeting.isEmpty()) {
+      throw new CustomAttendanceException("출석 메시지가 비어있습니다.");
     }
     attendanceEntity.setGreetings(greeting);
     attendanceRepository.save(attendanceEntity);
@@ -143,7 +152,7 @@ public class AttendanceService {
   }
 
   private void checkTodayAttend(List<AttendanceEntity> attendanceEntities) {
-    if (attendanceEntities.size() != 1) {
+    if (attendanceEntities.size() == 0) {
       throw new CustomAttendanceException("해당 날짜에 출석하지 않았습니다.");
     }
   }

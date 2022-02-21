@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.result;
+package keeper.project.homepage.dto.posting.category.result;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,14 +17,11 @@ public class CategoryResult {
 
   private String name;
 
-  private List<CategoryResult> children = new ArrayList<>();
+  private String href;
 
   public CategoryResult(CategoryEntity category) {
     this.id = category.getId();
     this.name = category.getName();
-    if(category.getChildren() != null) {
-      this.children = category.getChildren().stream().map(CategoryResult::new).collect(
-          Collectors.toList());
-    }
+    this.href = category.getHref();
   }
 }
