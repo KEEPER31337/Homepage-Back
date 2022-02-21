@@ -88,18 +88,7 @@ public class FileService {
     fileDto.setIpAddress(ipAddress);
     return fileRepository.save(fileDto.toEntity(postingEntity));
   }
-
-  public FileEntity saveOriginalThumbnail(MultipartFile multipartFile, String ipAddress) {
-    if (multipartFile == null || multipartFile.isEmpty()) {
-      File defaultFile = new File(fileRelDirPath + File.separator + defaultImageName);
-      return saveFileEntity(defaultFile, fileRelDirPath, ipAddress, null);
-    }
-    imageFormatChecking.checkImageFile(multipartFile);
-    imageFormatChecking.checkNormalImageFile(multipartFile);
-    File file = saveFileInServer(multipartFile, fileRelDirPath);
-    return saveFileEntity(file, fileRelDirPath, ipAddress, null);
-  }
-
+  
   @Transactional
   public void saveFiles(List<MultipartFile> multipartFiles, String ipAddress,
       @Nullable PostingEntity postingEntity) {
