@@ -17,9 +17,11 @@ import static keeper.project.homepage.service.attendance.DateUtils.isToday;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +49,13 @@ public class AttendanceService {
   private final AuthService authService;
 
   private static final String DEFAULT_GREETINGS = "자동 출석입니다.";
+  private List<Integer> DAY_OF_MONTH = new ArrayList<>();
+
+  public static boolean isLeapYear(int year) {
+    Calendar cal = Calendar.getInstance();
+    cal.set(Calendar.YEAR, year);
+    return cal.getActualMaximum(Calendar.DAY_OF_YEAR) > 365;
+  }
 
   public void save(AttendanceDto attendanceDto) {
 
@@ -56,8 +65,32 @@ public class AttendanceService {
     Date now = java.sql.Timestamp.valueOf(LocalDateTime.now());
 
     int point = 0;
-    int rank = getMyTodayRank(now);
-    // db변경되기전 미리 살짝 바꿔놓음
+    int continuousDay = getContinuousDay(now);
+    int continuousPoint = getContinuousPoint(continuousDay);
+    int randomPoint = (int) (Math.random() * 900 + 100);
+    point = continuousPoint + DAILY_ATTENDANCE_POINT + randomPoint;
+
+    MemberEntity memberEntity = getMemberEntityWithJWT();
+    String greeting = attendanceDto.getGreetings();
+    if (greeting == "" || greeting == null) {
+      greeting = DEFAULT_GREETINGS;
+    }
+
+    AttendanceEntity attendanceEntity = AttendanceEntity.builder()
+        .point(point)
+        .rankPoint(0)
+        .continuousPoint(continuousPoint)
+        .continuousDay(continuousDay)
+        .greetings(greeting)
+        .ipAddress(attendanceDto.getIpAddress())
+        .time(now)
+        .member(memberEntity)
+        .randomPoint(randomPoint)
+        .rank(0)
+        .build();
+    attendanceRepository.saveAndFlush(attendanceEntity);
+
+    int rank = getMyTodayRank(now, memberEntity);
     int rankPoint = 0;
     if (rank == 1) {
       rankPoint += FIRST_PLACE_POINT;
@@ -67,42 +100,42 @@ public class AttendanceService {
       rankPoint += THIRD_PLACE_POINT;
     }
 
-    int continuousDay = getContinuousDay(now);
+    attendanceEntity.setRank(rank);
+    attendanceEntity.setRankPoint(rankPoint);
+    attendanceEntity.setPoint(attendanceEntity.getPoint() + rankPoint);
+    attendanceRepository.save(attendanceEntity);
+  }
+
+  private int getContinuousPoint(int continuousDay) {
+    LocalDateTime date = LocalDateTime.now();
+
+    if (isLeapYear(date.getYear())) {
+      DAY_OF_MONTH.addAll(List.of(0, 31, 29, 31, 30, 31, 30, 31, 31, 30,
+          31, 30, 31));
+    } else {
+      DAY_OF_MONTH.addAll(List.of(0, 31, 28, 31, 30, 31, 30, 31, 31, 30,
+          31, 30, 31));
+    }
+
     int continuousPoint = 0;
-    if (continuousDay == WEEK_ATTENDANCE) {
+    if (date.getDayOfWeek() == DayOfWeek.SATURDAY && continuousDay >= WEEK_ATTENDANCE) {
       continuousPoint += WEEK_ATTENDANCE_POINT;
-    } else if (continuousDay == MONTH_ATTENDANCE) {
+    }
+    if (date.getDayOfMonth() == DAY_OF_MONTH.get(date.getMonthValue())
+        && continuousDay >= DAY_OF_MONTH.get(date.getMonthValue())) {
       continuousPoint += MONTH_ATTENDANCE_POINT;
-    } else if (continuousDay == YEAR_ATTENDANCE) {
+    }
+    if (date.getMonthValue() == 12 && date.getDayOfMonth() == 31
+        && continuousDay >= DAY_OF_MONTH.stream().mapToInt(Integer::intValue).sum()) {
       continuousPoint += YEAR_ATTENDANCE_POINT;
     }
 
-    int randomPoint = (int) (Math.random() * 900 + 100);
-    point = rankPoint + continuousPoint + DAILY_ATTENDANCE_POINT + randomPoint;
-
-    MemberEntity memberEntity = getMemberEntityWithJWT();
-    String greeting = attendanceDto.getGreetings();
-    if (greeting == "" || greeting == null) {
-      greeting = DEFAULT_GREETINGS;
-    }
-    attendanceRepository.save(
-        AttendanceEntity.builder()
-            .point(point)
-            .rankPoint(rankPoint)
-            .continuousPoint(continuousPoint)
-            .continuousDay(continuousDay)
-            .greetings(greeting)
-            .ipAddress(attendanceDto.getIpAddress())
-            .time(now)
-            .member(memberEntity)
-            .randomPoint(randomPoint)
-            .rank(rank)
-            .build());
+    return continuousPoint;
   }
 
-  private int getMyTodayRank(Date now) {
+  private int getMyTodayRank(Date now, MemberEntity memberEntity) {
     List<AttendanceEntity> attendanceEntitiesByDate = attendanceRepository
-        .findAllByTimeBetween(clearTime(now), now);
+        .findAllByTimeBetweenAndMemberNotLike(clearTime(now), now, memberEntity);
     return attendanceEntitiesByDate.size() + 1;
   }
 
