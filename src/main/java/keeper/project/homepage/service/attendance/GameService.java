@@ -135,7 +135,7 @@ public class GameService {
     rouletteDto.setRoulettePoints(points);
     int idx = (int) (Math.random() * 8);
     rouletteDto.setRoulettePointIdx(idx);
-    gameEntity.setRouletteDayPoint(gameEntity.getRouletteDayPoint() + points.get(idx));
+    gameEntity.setRouletteDayPoint(gameEntity.getRouletteDayPoint() + points.get(idx) - ROULETTE_FEE);
     gameRepository.save(gameEntity);
 
     pointLogService.createPointSaveLog(memberEntity,
