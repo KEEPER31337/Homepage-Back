@@ -15,6 +15,9 @@ public interface AttendanceRepository extends JpaRepository<AttendanceEntity, Lo
 
   List<AttendanceEntity> findAllByTimeBetween(Date date1, Date date2);
 
+  List<AttendanceEntity> findAllByTimeBetweenAndMemberNotLike(Date date1, Date date2,
+      MemberEntity memberEntity);
+
   List<AttendanceEntity> findByMemberAndTimeBetween(
       MemberEntity memberId, Date time, Date time2);
 

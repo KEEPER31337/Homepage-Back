@@ -56,16 +56,6 @@ public class AttendanceService {
     Date now = java.sql.Timestamp.valueOf(LocalDateTime.now());
 
     int point = 0;
-    int rank = getMyTodayRank(now);
-    // db변경되기전 미리 살짝 바꿔놓음
-    int rankPoint = 0;
-    if (rank == 1) {
-      rankPoint += FIRST_PLACE_POINT;
-    } else if (rank == 2) {
-      rankPoint += SECOND_PLACE_POINT;
-    } else if (rank == 3) {
-      rankPoint += THIRD_PLACE_POINT;
-    }
 
     int continuousDay = getContinuousDay(now);
     int continuousPoint = 0;
@@ -78,31 +68,47 @@ public class AttendanceService {
     }
 
     int randomPoint = (int) (Math.random() * 900 + 100);
-    point = rankPoint + continuousPoint + DAILY_ATTENDANCE_POINT + randomPoint;
+    point = continuousPoint + DAILY_ATTENDANCE_POINT + randomPoint;
 
     MemberEntity memberEntity = getMemberEntityWithJWT();
     String greeting = attendanceDto.getGreetings();
     if (greeting == "" || greeting == null) {
       greeting = DEFAULT_GREETINGS;
     }
-    attendanceRepository.save(
-        AttendanceEntity.builder()
-            .point(point)
-            .rankPoint(rankPoint)
-            .continuousPoint(continuousPoint)
-            .continuousDay(continuousDay)
-            .greetings(greeting)
-            .ipAddress(attendanceDto.getIpAddress())
-            .time(now)
-            .member(memberEntity)
-            .randomPoint(randomPoint)
-            .rank(rank)
-            .build());
+
+    AttendanceEntity attendanceEntity = AttendanceEntity.builder()
+        .point(point)
+        .rankPoint(0)
+        .continuousPoint(continuousPoint)
+        .continuousDay(continuousDay)
+        .greetings(greeting)
+        .ipAddress(attendanceDto.getIpAddress())
+        .time(now)
+        .member(memberEntity)
+        .randomPoint(randomPoint)
+        .rank(0)
+        .build();
+    attendanceRepository.saveAndFlush(attendanceEntity);
+
+    int rank = getMyTodayRank(now, memberEntity);
+    int rankPoint = 0;
+    if (rank == 1) {
+      rankPoint += FIRST_PLACE_POINT;
+    } else if (rank == 2) {
+      rankPoint += SECOND_PLACE_POINT;
+    } else if (rank == 3) {
+      rankPoint += THIRD_PLACE_POINT;
+    }
+
+    attendanceEntity.setRank(rank);
+    attendanceEntity.setRankPoint(rankPoint);
+    attendanceEntity.setPoint(attendanceEntity.getPoint() + rankPoint);
+    attendanceRepository.save(attendanceEntity);
   }
 
-  private int getMyTodayRank(Date now) {
+  private int getMyTodayRank(Date now, MemberEntity memberEntity) {
     List<AttendanceEntity> attendanceEntitiesByDate = attendanceRepository
-        .findAllByTimeBetween(clearTime(now), now);
+        .findAllByTimeBetweenAndMemberNotLike(clearTime(now), now, memberEntity);
     return attendanceEntitiesByDate.size() + 1;
   }
 
