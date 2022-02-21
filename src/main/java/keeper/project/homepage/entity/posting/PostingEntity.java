@@ -123,8 +123,22 @@ public class PostingEntity {
     this.isSecret = isSecret;
   }
 
+  public void updateMemberId(MemberEntity memberId) {
+    this.memberId = memberId;
+  }
+
+  public void increaseCommentCount() {
+    Assert.isTrue(this.commentCount < Integer.MAX_VALUE, "comment_count value will be overflow.");
+    this.commentCount += 1;
+  }
+
+  public void decreaseCommentCount() {
+    Assert.isTrue(this.commentCount >= 0, "comment_count value will be underflow.");
+    this.commentCount -= 1;
+  }
+
   public void increaseVisitCount() {
-    Assert.isTrue(this.likeCount < Integer.MAX_VALUE, "like_count value will be overflow.");
+    Assert.isTrue(this.visitCount < Integer.MAX_VALUE, "like_count value will be overflow.");
     this.visitCount += 1;
   }
 
@@ -169,7 +183,7 @@ public class PostingEntity {
   }
 
   public void makeSecret() {
-    this.title = "비밀 게시글입니다.";
+//    this.title = "비밀 게시글입니다.";
     this.content = "비밀 게시글입니다.";
   }
 }

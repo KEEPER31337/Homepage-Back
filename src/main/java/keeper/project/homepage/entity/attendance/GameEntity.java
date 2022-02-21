@@ -51,6 +51,18 @@ public class GameEntity {
   @Column(name = "last_play_time")
   private LocalDateTime lastPlayTime;
 
+  @Setter
+  @Column(name = "dice_day_point")
+  private Integer diceDayPoint;
+
+  @Setter
+  @Column(name = "roulette_day_point")
+  private Integer rouletteDayPoint;
+
+  @Setter
+  @Column(name = "lotto_day_point")
+  private Integer lottoDayPoint;
+
   public void increaseDiceTimes() {
     dicePerDay += 1;
   }
@@ -71,5 +83,8 @@ public class GameEntity {
     dicePerDay = 0;
     roulettePerDay = 0;
     lottoPerDay = 0;
+    diceDayPoint = 0;
+    rouletteDayPoint = 0;
+    lottoDayPoint = 0;
   }
 }

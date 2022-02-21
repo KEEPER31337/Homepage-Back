@@ -1,6 +1,6 @@
 package keeper.project.homepage.service.member;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -54,7 +54,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class MemberService {
 
-  private static final int AUTH_CODE_LENGTH = 10;
+  public static final int EMAIL_AUTH_CODE_LENGTH = 10;
+  public static final Long VIRTUAL_MEMBER_ID = 1L;
 
   private final MemberRepository memberRepository;
   private final FriendRepository friendRepository;
@@ -68,7 +69,6 @@ public class MemberService {
   private final FileService fileService;
   private final MailService mailService;
   private final DuplicateCheckService duplicateCheckService;
-
 
   public MemberEntity findById(Long id) {
     return memberRepository.findById(id).orElseThrow(CustomMemberNotFoundException::new);
@@ -148,8 +148,10 @@ public class MemberService {
     MemberJobEntity newJob = findJobByJobName(jobName);
 
     MemberHasMemberJobEntity newMJ = memberHasMemberJobRepository.save(
-        MemberHasMemberJobEntity.builder().memberEntity(member)
-            .memberJobEntity(newJob).build());
+        MemberHasMemberJobEntity.builder()
+            .memberEntity(member)
+            .memberJobEntity(newJob)
+            .build());
     newJob.getMembers().add(newMJ);
     member.getMemberJobs().add(newMJ);
     return member;
@@ -185,7 +187,7 @@ public class MemberService {
     FriendEntity friend = FriendEntity.builder()
         .follower(me)
         .followee(followee)
-        .registerDate(new Date())
+        .registerDate(LocalDate.now())
         .build();
     friendRepository.save(friend);
 
@@ -254,7 +256,7 @@ public class MemberService {
   //TODO
   // Signup service와 중복되는 메소드, 리팩토링 필요
   public EmailAuthDto generateEmailAuth(EmailAuthDto emailAuthDto) {
-    String generatedAuthCode = generateRandomAuthCode(AUTH_CODE_LENGTH);
+    String generatedAuthCode = generateRandomAuthCode(EMAIL_AUTH_CODE_LENGTH);
     emailAuthDto.setAuthCode(generatedAuthCode);
     emailAuthRedisRepository.save(
         new EmailAuthRedisEntity(emailAuthDto.getEmailAddress(), emailAuthDto.getAuthCode()));

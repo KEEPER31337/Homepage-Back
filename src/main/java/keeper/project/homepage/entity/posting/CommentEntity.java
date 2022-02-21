@@ -87,7 +87,11 @@ public class CommentEntity {
     this.updateTime = updateTime;
   }
 
-  public void overwriteInfo(MemberEntity virtual, String initContent){
+  public void changeMemberId(MemberEntity member) {
+    this.member = member;
+  }
+
+  public void overwriteInfo(MemberEntity virtual, String initContent) {
     this.member = virtual;
     this.content = initContent;
     this.likeCount = 0;

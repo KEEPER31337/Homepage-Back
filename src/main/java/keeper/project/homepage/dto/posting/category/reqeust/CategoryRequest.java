@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.posting;
+package keeper.project.homepage.dto.posting.category.reqeust;
 
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import lombok.AllArgsConstructor;
@@ -12,17 +12,20 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CategoryDto {
+public class CategoryRequest {
 
   private String name;
 
   private Long parentId;
+
+  private String href;
 
   public CategoryEntity toEntity() {
 
     return CategoryEntity.builder()
         .name(name)
         .parentId(parentId)
+        .href(href)
         .build();
   }
 

@@ -12,6 +12,7 @@ import keeper.project.homepage.exception.library.CustomBookBorrowNotFoundExcepti
 import keeper.project.homepage.exception.library.CustomBookDepartmentNotFoundException;
 import keeper.project.homepage.exception.library.CustomBookNotFoundException;
 import keeper.project.homepage.exception.library.CustomBookOverTheMaxException;
+import keeper.project.homepage.exception.member.CustomAccountDeleteFailedException;
 import keeper.project.homepage.exception.member.CustomMemberDuplicateException;
 import keeper.project.homepage.exception.member.CustomMemberEmptyFieldException;
 import keeper.project.homepage.exception.member.CustomMemberInfoNotFoundException;
@@ -243,6 +244,14 @@ public class ExceptionAdvice {
         getMessage("commentNotFound.msg"));
   }
 
+  @ExceptionHandler(CustomAccountDeleteFailedException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult accountDeleteFailedException(HttpServletRequest request,
+      CustomAccountDeleteFailedException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("accountDeleteFailed.code")),
+        getMessage("accountDeleteFailed.msg"));
+  }
+
   @ExceptionHandler(CustomCommentEmptyFieldException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult commentEmptyFieldException(HttpServletRequest request,
@@ -263,7 +272,7 @@ public class ExceptionAdvice {
 
   @ExceptionHandler(CustomCategoryNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  protected  CommonResult categoryNotFoundException(HttpServletRequest request,
+  protected CommonResult categoryNotFoundException(HttpServletRequest request,
       CustomCategoryNotFoundException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("categoryNotFound.code")),
         getMessage("categoryNotFound.msg"));
@@ -271,20 +280,21 @@ public class ExceptionAdvice {
 
   @ExceptionHandler(CustomParentCategoryNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  protected  CommonResult parentCategoryNotFoundException(HttpServletRequest request,
+  protected CommonResult parentCategoryNotFoundException(HttpServletRequest request,
       CustomParentCategoryNotFoundException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("parentCategoryNotFound.code")),
+    return responseService.getFailResult(
+        Integer.parseInt(getMessage("parentCategoryNotFound.code")),
         getMessage("parentCategoryNotFound.msg"));
   }
 
   @ExceptionHandler(CustomAccessRootCategoryException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  protected  CommonResult accessRootCategoryException(HttpServletRequest request,
+  protected CommonResult accessRootCategoryException(HttpServletRequest request,
       CustomAccessRootCategoryException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("accessRootCategory.code")),
         getMessage("accessRootCategory.msg"));
   }
-  
+
   @ExceptionHandler(CustomBookBorrowNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult bookBorrowNotFoundException(HttpServletRequest request,
