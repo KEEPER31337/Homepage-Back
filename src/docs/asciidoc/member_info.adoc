@@ -122,3 +122,76 @@ include::{snippets}/member-delete/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/member-delete/response-fields.adoc[]
+
+== *다른 회원 정보 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/member-otherInfo-lists/http-request.adoc[]
+
+==== Request Parameters
+
+include::{snippets}/member-otherInfo-lists/request-parameters.adoc[]
+
+==== Response
+
+include::{snippets}/member-otherInfo-lists/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/member-otherInfo-lists/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/member-otherInfo-lists/response-fields.adoc[]
+
+== *다른 회원 정보 조회 (ID를 통해)*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/member-otherInfo-ById/http-request.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/member-otherInfo-ById/path-parameters.adoc[]
+
+==== Response
+
+include::{snippets}/member-otherInfo-ById/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/member-otherInfo-ById/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/member-otherInfo-ById/response-fields.adoc[]
+
+== *다른 회원 정보 조회 (실제 이름을 통해)*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/member-otherInfo-ByRealName/http-request.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/member-otherInfo-ByRealName/path-parameters.adoc[]
+
+==== Response
+
+include::{snippets}/member-otherInfo-ByRealName/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/member-otherInfo-ByRealName/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/member-otherInfo-ByRealName/response-fields.adoc[]
+

@@ -1,12 +1,9 @@
-package keeper.project.homepage.controller.member;
+package keeper.project.homepage.user.controller.member;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import keeper.project.homepage.dto.EmailAuthDto;
 import keeper.project.homepage.dto.member.MemberDto;
-import keeper.project.homepage.dto.member.MemberJobDto;
-import keeper.project.homepage.dto.member.MemberRankDto;
-import keeper.project.homepage.dto.member.MemberTypeDto;
 import keeper.project.homepage.dto.posting.PostingDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.ListResult;
@@ -15,9 +12,9 @@ import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.service.ResponseService;
 import keeper.project.homepage.service.member.MemberDeleteService;
-import keeper.project.homepage.service.member.MemberService;
 import keeper.project.homepage.service.posting.PostingService;
 import keeper.project.homepage.service.util.AuthService;
+import keeper.project.homepage.user.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -38,10 +35,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-//@Secured("ROLE_USER") // 모든 url에 공통 설정
 @Log4j2
 @RequiredArgsConstructor
-//@RestController // admin, user 분리 작업 중 중복 Bean 등록으로 인한 주석 처리
+@RestController
 @RequestMapping(value = "/v1")
 public class MemberController {
 
@@ -49,6 +45,32 @@ public class MemberController {
   private final MemberDeleteService memberDeleteService;
   private final ResponseService responseService;
   private final AuthService authService;
+
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/members")
+  public ListResult<OtherMemberInfoResult> getAllOtherMemberInfo(
+      @PageableDefault(size = 20, sort = "registerDate", direction = Direction.DESC)Pageable pageable
+  ) {
+    return responseService.getSuccessListResult(memberService.getAllOtherMemberInfo(pageable));
+  }
+
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/member/other-id/{id}")
+  public SingleResult<OtherMemberInfoResult> getOtherMemberInfoById(
+      @PathVariable("id") Long otherMemberId
+  ) {
+    return responseService.getSuccessSingleResult(
+        memberService.getOtherMemberInfoById(otherMemberId));
+  }
+
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/member/other-name/{name}")
+  public SingleResult<OtherMemberInfoResult> getOtherMemberInfoByRealName(
+      @PathVariable("name") String realName
+  ) {
+    return responseService.getSuccessSingleResult(
+        memberService.getOtherMemberInfoByRealName(realName));
+  }
 
   @Secured("ROLE_회원") // 각 리소스별 권한 설정
   @GetMapping(value = "/member")

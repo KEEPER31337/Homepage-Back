@@ -402,34 +402,6 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   }
 
   @Test
-  @DisplayName("회원 권한으로 다른 회원 정보 조회 - 성공")
-  public void getOtherMemberInfoSuccess() throws Exception {
-    MemberEntity otherMember = memberRepository.findByLoginId("hyeonmoAdmin")
-        .orElseThrow(CustomMemberNotFoundException::new);
-
-    mockMvc.perform(get("/v1/member/other/info/{id}", otherMember.getId())
-            .header("Authorization", userToken))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true));
-  }
-
-
-  @Test
-  @DisplayName("회원 권한으로 다른 회원 정보 조회 - 실패(존재하지 않는 회원)")
-  public void getOtherMemberInfoFailByNullMember() throws Exception {
-    MemberEntity otherMember = memberRepository.findByLoginId("hyeonmoAdmin")
-        .orElseThrow(CustomMemberNotFoundException::new);
-
-    mockMvc.perform(get("/v1/member/other/info/{id}", 3001)
-            .header("Authorization", userToken))
-        .andDo(print())
-        .andExpect(result -> assertTrue(
-            result.getResolvedException() instanceof CustomMemberNotFoundException))
-        .andExpect(jsonPath("$.success").value(false));
-  }
-
-  @Test
   @DisplayName("회원 정보 조회(민감한 정보 제외) - 성공")
   public void getAllGeneralMemberInfoSuccess() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders

@@ -1,38 +1,41 @@
-package keeper.project.homepage.service.member;
+package keeper.project.homepage.user.service.member;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import keeper.project.homepage.dto.member.MemberDto;
-import keeper.project.homepage.entity.member.FriendEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.exception.member.CustomMemberDuplicateException;
-import keeper.project.homepage.exception.member.CustomMemberEmptyFieldException;
-import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
-import keeper.project.homepage.repository.member.FriendRepository;
-import java.util.ArrayList;
 import java.util.Random;
+import java.util.stream.Collectors;
 import keeper.project.homepage.common.ImageCenterCrop;
 import keeper.project.homepage.dto.EmailAuthDto;
+import keeper.project.homepage.dto.member.MemberDto;
+import keeper.project.homepage.dto.posting.PostingDto;
+import keeper.project.homepage.dto.result.OtherMemberInfoResult;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.EmailAuthRedisEntity;
+import keeper.project.homepage.entity.member.FriendEntity;
+import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.CustomAuthenticationEntryPointException;
+import keeper.project.homepage.exception.member.CustomMemberDuplicateException;
+import keeper.project.homepage.exception.member.CustomMemberEmptyFieldException;
+import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.member.EmailAuthRedisRepository;
+import keeper.project.homepage.repository.member.FriendRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.ThumbnailService;
 import keeper.project.homepage.service.mail.MailService;
 import keeper.project.homepage.service.sign.DuplicateCheckService;
 import lombok.RequiredArgsConstructor;
-import keeper.project.homepage.dto.posting.PostingDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-//@Service // admin, user 분리 작업 중 중복 Bean 등록으로 인한 주석 처리
+@Service
 @RequiredArgsConstructor
 public class MemberService {
 
@@ -54,6 +57,26 @@ public class MemberService {
 
   public MemberEntity findByLoginId(String loginId) {
     return memberRepository.findByLoginId(loginId).orElseThrow(CustomMemberNotFoundException::new);
+  }
+
+  public OtherMemberInfoResult getOtherMemberInfoById(Long otherMemberId) {
+    MemberEntity memberEntity = memberRepository.findById(otherMemberId)
+        .orElseThrow(CustomMemberNotFoundException::new);
+
+    return new OtherMemberInfoResult(memberEntity);
+  }
+
+  public OtherMemberInfoResult getOtherMemberInfoByRealName(String realName) {
+    MemberEntity memberEntity = memberRepository.findByRealName(realName)
+        .orElseThrow(CustomMemberNotFoundException::new);
+
+    return new OtherMemberInfoResult(memberEntity);
+  }
+
+  public List<OtherMemberInfoResult> getAllOtherMemberInfo(Pageable pageable) {
+    return memberRepository.findAll(pageable).stream().map(OtherMemberInfoResult::new)
+        .sorted(Comparator.comparing(OtherMemberInfoResult::getRegisterDate).reversed())
+        .collect(Collectors.toList());
   }
 
   public void follow(Long myId, String followLoginId) {
@@ -230,5 +253,4 @@ public class MemberService {
 
     return page;
   }
-
 }
