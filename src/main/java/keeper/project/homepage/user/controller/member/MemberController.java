@@ -11,7 +11,7 @@ import keeper.project.homepage.dto.result.OtherMemberInfoResult;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.service.ResponseService;
-import keeper.project.homepage.service.member.MemberDeleteService;
+import keeper.project.homepage.user.service.member.MemberDeleteService;
 import keeper.project.homepage.service.posting.PostingService;
 import keeper.project.homepage.service.util.AuthService;
 import keeper.project.homepage.user.service.member.MemberService;
