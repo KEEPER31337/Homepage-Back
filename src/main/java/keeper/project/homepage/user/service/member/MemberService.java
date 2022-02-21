@@ -12,7 +12,6 @@ import keeper.project.homepage.dto.EmailAuthDto;
 import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.dto.posting.PostingDto;
 import keeper.project.homepage.dto.result.OtherMemberInfoResult;
-import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.EmailAuthRedisEntity;
 import keeper.project.homepage.entity.member.FriendEntity;
@@ -33,6 +32,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -60,22 +61,61 @@ public class MemberService {
     return memberRepository.findByLoginId(loginId).orElseThrow(CustomMemberNotFoundException::new);
   }
 
+  private MemberEntity getMemberEntityByJWTToken() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null && authentication.isAuthenticated()) {
+      return findById(Long.valueOf(authentication.getName()));
+    }
+    return null;
+  }
+
+  private Boolean checkFollowing(MemberEntity other) {
+    MemberEntity me = getMemberEntityByJWTToken();
+    if (me == null) {
+      return false;
+    }
+    if (me.getFollowee().contains(other) == false) {
+      return false;
+    }
+    return true;
+  }
+
+  private Boolean checkFollower(MemberEntity other) {
+    MemberEntity me = getMemberEntityByJWTToken();
+    if (me == null) {
+      return false;
+    }
+    if (me.getFollower().contains(other) == false) {
+      return false;
+    }
+    return true;
+  }
+
   public OtherMemberInfoResult getOtherMemberInfoById(Long otherMemberId) {
     MemberEntity memberEntity = memberRepository.findById(otherMemberId)
         .orElseThrow(CustomMemberNotFoundException::new);
 
-    return new OtherMemberInfoResult(memberEntity);
+    OtherMemberInfoResult result = new OtherMemberInfoResult(memberEntity);
+    result.setCheckFollow(checkFollowing(memberEntity), checkFollower(memberEntity));
+    return result;
   }
 
   public OtherMemberInfoResult getOtherMemberInfoByRealName(String realName) {
     MemberEntity memberEntity = memberRepository.findByRealName(realName)
         .orElseThrow(CustomMemberNotFoundException::new);
 
-    return new OtherMemberInfoResult(memberEntity);
+    OtherMemberInfoResult result = new OtherMemberInfoResult(memberEntity);
+    result.setCheckFollow(checkFollowing(memberEntity), checkFollower(memberEntity));
+    return result;
   }
 
   public List<OtherMemberInfoResult> getAllOtherMemberInfo(Pageable pageable) {
-    return memberRepository.findAll(pageable).stream().map(OtherMemberInfoResult::new)
+    return memberRepository.findAll(pageable).stream()
+        .map(member -> {
+          OtherMemberInfoResult other = new OtherMemberInfoResult(member);
+          other.setCheckFollow(checkFollowing(member), checkFollower(member));
+          return other;
+        })
         .sorted(Comparator.comparing(OtherMemberInfoResult::getRegisterDate).reversed())
         .collect(Collectors.toList());
   }
