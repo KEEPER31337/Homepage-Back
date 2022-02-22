@@ -7,6 +7,8 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -27,14 +29,23 @@ public class RankService {
 
   private List<RankResult> getRankResults(Pageable pageable) {
     List<RankResult> results = new ArrayList<>();
-    List<MemberEntity> members = memberRepository.findAll(pageable).getContent();
+    List<MemberEntity> members;
+    if (pageable == Pageable.unpaged()) {
+      members = memberRepository.findAll(Sort.by(Direction.DESC, "point"));
+    } else {
+      members = memberRepository.findAll(pageable).getContent();
+    }
     int rank = 1;
     for (MemberEntity member : members) {
+      if (member.getId() == 1) {
+        continue;
+      }
       RankResult rankResult = new RankResult();
       rankResult.initWithEntity(member);
       rankResult.setRank(rank++);
       results.add(rankResult);
     }
+
     return results;
   }
 

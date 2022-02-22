@@ -93,7 +93,7 @@ public class RankControllerTest extends ApiControllerTestHelper {
     );
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
-        .andExpect(jsonPath("$.list.length()").value(memberCount));
+        .andExpect(jsonPath("$.list.length()").value(memberCount-1)); // virtual member제거
   }
 
   private MemberEntity generateTestMember(int point) throws Exception {
