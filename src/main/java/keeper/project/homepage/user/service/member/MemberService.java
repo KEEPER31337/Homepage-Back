@@ -28,6 +28,7 @@ import keeper.project.homepage.service.ThumbnailService;
 import keeper.project.homepage.service.ThumbnailService.ThumbnailSize;
 import keeper.project.homepage.service.mail.MailService;
 import keeper.project.homepage.service.sign.DuplicateCheckService;
+import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -52,6 +53,7 @@ public class MemberService {
   private final FileService fileService;
   private final MailService mailService;
   private final DuplicateCheckService duplicateCheckService;
+  private final AuthService authService;
 
   public MemberEntity findById(Long id) {
     return memberRepository.findById(id).orElseThrow(CustomMemberNotFoundException::new);
@@ -61,19 +63,8 @@ public class MemberService {
     return memberRepository.findByLoginId(loginId).orElseThrow(CustomMemberNotFoundException::new);
   }
 
-  private MemberEntity getMemberEntityByJWTToken() {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication != null && authentication.isAuthenticated()) {
-      return findById(Long.valueOf(authentication.getName()));
-    }
-    return null;
-  }
-
   private Boolean checkFollowing(MemberEntity other) {
-    MemberEntity me = getMemberEntityByJWTToken();
-    if (me == null) {
-      return false;
-    }
+    MemberEntity me = authService.getMemberEntityWithJWT();
     if (me.getFollowee().contains(other) == false) {
       return false;
     }
@@ -81,10 +72,7 @@ public class MemberService {
   }
 
   private Boolean checkFollower(MemberEntity other) {
-    MemberEntity me = getMemberEntityByJWTToken();
-    if (me == null) {
-      return false;
-    }
+    MemberEntity me = authService.getMemberEntityWithJWT();
     if (me.getFollower().contains(other) == false) {
       return false;
     }
