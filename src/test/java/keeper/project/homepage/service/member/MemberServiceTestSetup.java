@@ -1,8 +1,6 @@
 package keeper.project.homepage.service.member;
 
 import java.io.File;
-import java.sql.Timestamp;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import keeper.project.homepage.user.service.member.MemberDeleteService;
 import keeper.project.homepage.common.FileConversion;
 import keeper.project.homepage.dto.point.request.PointLogRequest;
 import keeper.project.homepage.entity.FileEntity;
@@ -56,7 +55,6 @@ import keeper.project.homepage.service.posting.CommentService;
 import keeper.project.homepage.service.posting.PostingService;
 import keeper.project.homepage.user.service.point.PointLogService;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import keeper.project.homepage.user.service.member.MemberService;
