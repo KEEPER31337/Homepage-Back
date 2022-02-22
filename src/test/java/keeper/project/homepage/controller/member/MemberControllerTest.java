@@ -49,166 +49,17 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   private String userToken;
   private String adminToken;
 
-  final private String loginId = "hyeonmomo";
-  final private String password = "keeper";
-  final private String realName = "JeongHyeonMo";
-  final private String nickName = "JeongHyeonMo";
-  final private String emailAddress = "test@k33p3r.com";
-  final private String studentId = "201724579";
-  final private int point = 100;
-
-  final private String adminLoginId = "hyeonmoAdmin";
-  final private String adminPassword = "keeper2";
-  final private String adminRealName = "JeongHyeonMo2";
-  final private String adminNickName = "JeongHyeonMo2";
-  final private String adminEmailAddress = "test2@k33p3r.com";
-  final private String adminStudentId = "201724580";
-  final private String adminPhoneNumber = "0100100101";
-  final private int adminPoint = 50;
-
-  final private String ipAddress1 = "127.0.0.1";
-
   private MemberEntity memberEntity;
-  private ThumbnailEntity thumbnailEntity;
-  private FileEntity imageEntity;
-
-  @BeforeAll
-  public static void createFile() {
-    final String keeperFilesDirectoryPath = System.getProperty("user.dir") + File.separator
-        + "keeper_files";
-    final String thumbnailDirectoryPath = System.getProperty("user.dir") + File.separator
-        + "keeper_files" + File.separator + "thumbnail";
-    final String befUpdateImage = keeperFilesDirectoryPath + File.separator + "bef.jpg";
-    final String befUpdateThumbnail = thumbnailDirectoryPath + File.separator + "thumb_bef.jpg";
-    final String aftUpdateImage = keeperFilesDirectoryPath + File.separator + "aft.jpg";
-
-    File keeperFilesDir = new File(keeperFilesDirectoryPath);
-    File thumbnailDir = new File(thumbnailDirectoryPath);
-
-    if (!keeperFilesDir.exists()) {
-      keeperFilesDir.mkdir();
-    }
-
-    if (!thumbnailDir.exists()) {
-      thumbnailDir.mkdir();
-    }
-
-    createImageForTest(befUpdateImage);
-    createImageForTest(befUpdateThumbnail);
-    createImageForTest(aftUpdateImage);
-  }
-
-  private static void createImageForTest(String filePath) {
-    FileConversion fileConversion = new FileConversion();
-    fileConversion.makeSampleJPEGImage(filePath);
-  }
+  private MemberEntity memberAdmin;
 
   @BeforeEach
   public void setUp() throws Exception {
-    imageEntity = FileEntity.builder()
-        .fileName("bef.jpg")
-        .filePath("keeper_files" + File.separator + "bef.jpg")
-        .fileSize(0L)
-        .ipAddress(ipAddress1)
-        .build();
-    fileRepository.save(imageEntity);
 
-    thumbnailEntity = ThumbnailEntity.builder()
-        .path("keeper_files" + File.separator + "thumbnail" + File.separator + "thumb_bef.jpg")
-        .file(imageEntity).build();
-    thumbnailRepository.save(thumbnailEntity);
+    memberEntity = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    userToken = generateJWTToken(memberEntity);
 
-    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
-    MemberTypeEntity memberTypeEntity = memberTypeRepository.findByName("정회원").get();
-    MemberRankEntity memberRankEntity = memberRankRepository.findByName("일반회원").get();
-    memberEntity = MemberEntity.builder()
-        .loginId(loginId)
-        .password(passwordEncoder.encode(password))
-        .realName(realName)
-        .nickName(nickName)
-        .emailAddress(emailAddress)
-        .studentId(studentId)
-        .point(point)
-        .memberType(memberTypeEntity)
-        .memberRank(memberRankEntity)
-        .thumbnail(thumbnailEntity)
-        .generation(getMemberGeneration())
-//        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
-        .build();
-    memberEntity = memberRepository.save(memberEntity);
-    memberTypeEntity.getMembers().add(memberEntity);
-    memberRankEntity.getMembers().add(memberEntity);
-
-    MemberHasMemberJobEntity mj = memberHasMemberJobRepository.save(
-        MemberHasMemberJobEntity.builder()
-            .memberJobEntity(memberJobEntity)
-            .memberEntity(memberEntity)
-            .build());
-    memberJobEntity.getMembers().add(mj);
-    memberJobRepository.save(memberJobEntity);
-    memberEntity.getMemberJobs().add(mj);
-    memberRepository.save(memberEntity);
-
-    String content = "{\n"
-        + "    \"loginId\": \"" + loginId + "\",\n"
-        + "    \"password\": \"" + password + "\"\n"
-        + "}";
-    MvcResult result = mockMvc.perform(post("/v1/signin")
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(content))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.code").value(0))
-        .andExpect(jsonPath("$.msg").exists())
-        .andExpect(jsonPath("$.data").exists())
-        .andReturn();
-
-    String resultString = result.getResponse().getContentAsString();
-    ObjectMapper mapper = new ObjectMapper();
-    SingleResult<SignInDto> sign = mapper.readValue(resultString, new TypeReference<>() {
-    });
-    userToken = sign.getData().getToken();
-
-    MemberJobEntity memberAdminJobEntity = memberJobRepository.findByName("ROLE_회장").get();
-    MemberHasMemberJobEntity hasMemberAdminJobEntity = MemberHasMemberJobEntity.builder()
-        .memberJobEntity(memberAdminJobEntity)
-        .build();
-    MemberEntity memberAdmin = MemberEntity.builder()
-        .loginId(adminLoginId)
-        .password(passwordEncoder.encode(adminPassword))
-        .realName(adminRealName)
-        .nickName(adminNickName)
-        .emailAddress(adminEmailAddress)
-        .studentId(adminStudentId)
-        .point(adminPoint)
-        .memberType(memberTypeEntity)
-        .memberRank(memberRankEntity)
-        .thumbnail(thumbnailEntity)
-        .memberJobs(new ArrayList<>(List.of(hasMemberAdminJobEntity)))
-        .generation(getMemberGeneration())
-        .build();
-    memberRepository.save(memberAdmin);
-
-    String adminContent = "{\n"
-        + "    \"loginId\": \"" + adminLoginId + "\",\n"
-        + "    \"password\": \"" + adminPassword + "\"\n"
-        + "}";
-    MvcResult adminResult = mockMvc.perform(post("/v1/signin")
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(adminContent))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.code").value(0))
-        .andExpect(jsonPath("$.msg").exists())
-        .andExpect(jsonPath("$.data").exists())
-        .andReturn();
-
-    String adminResultString = adminResult.getResponse().getContentAsString();
-    SingleResult<SignInDto> adminSign = mapper.readValue(adminResultString, new TypeReference<>() {
-    });
-    adminToken = adminSign.getData().getToken();
+    memberAdmin = generateMemberEntity(MemberJobName.회장, MemberTypeName.정회원, MemberRankName.우수회원);
+    adminToken = generateJWTToken(memberAdmin);
   }
 
   @Test
@@ -290,7 +141,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   @DisplayName("팔로우하기")
   public void follow() throws Exception {
     String content = "{"
-        + "\"followeeLoginId\" : \"" + adminLoginId + "\""
+        + "\"followeeLoginId\" : \"" + memberAdmin.getLoginId() + "\""
         + "}";
     String docMsg = "팔로우할 회원이 존재하지 않는다면 실패합니다.";
     String docCode = "회원이 존재하지 않을 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
@@ -310,8 +161,6 @@ public class MemberControllerTest extends MemberControllerTestSetup {
             )
         ));
 
-    MemberEntity memberEntity = memberRepository.findByLoginId(loginId).get();
-    MemberEntity memberAdmin = memberRepository.findByLoginId(adminLoginId).get();
     List<FriendEntity> followeeList = memberEntity.getFollowee();
     FriendEntity followee = followeeList.get(followeeList.size() - 1);
     // friend entity에 followee와 follower가 잘 들어갔는지 확인
@@ -323,12 +172,9 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   @DisplayName("언팔로우하기")
   public void unfollow() throws Exception {
     String content = "{"
-        + "\"followeeLoginId\" : \"" + adminLoginId + "\""
+        + "\"followeeLoginId\" : \"" + memberAdmin.getLoginId() + "\""
         + "}";
-    // follow
-    MemberEntity memberEntity = memberRepository.findByLoginId(loginId).get();
-    MemberEntity memberAdmin = memberRepository.findByLoginId(adminLoginId).get();
-    memberService.follow(memberEntity.getId(), adminLoginId);
+    memberService.follow(memberEntity.getId(), memberAdmin.getLoginId());
     List<FriendEntity> followeeList = memberEntity.getFollowee();
     FriendEntity followee = followeeList.get(followeeList.size() - 1);
 
@@ -360,8 +206,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   @DisplayName("내가 팔로우한 사람 조회하기")
   public void showFollowee() throws Exception {
     // follow: member -> admin(followee)
-    MemberEntity memberEntity = memberRepository.findByLoginId(loginId).get();
-    memberService.follow(memberEntity.getId(), adminLoginId);
+    memberService.follow(memberEntity.getId(), memberAdmin.getLoginId());
 
     String docMsg = "";
     String docCode = "에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
@@ -369,7 +214,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.list[0].nickName").value(adminNickName))
+        .andExpect(jsonPath("$.list[0].nickName").value(memberAdmin.getNickName()))
         .andDo(document("member-show-followee",
             responseFields(
                 generateMemberCommonResponseFields(ResponseType.LIST,
@@ -383,8 +228,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   @DisplayName("나를 팔로우한 사람 조회하기")
   public void showFollower() throws Exception {
     // follow: admin(follower) -> member
-    MemberEntity memberAdmin = memberRepository.findByLoginId(adminLoginId).get();
-    memberService.follow(memberAdmin.getId(), loginId);
+    memberService.follow(memberAdmin.getId(), memberEntity.getLoginId());
 
     String docMsg = "";
     String docCode = "에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
@@ -392,7 +236,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.list[0].nickName").value(adminNickName))
+        .andExpect(jsonPath("$.list[0].nickName").value(memberAdmin.getNickName()))
         .andDo(document("member-show-follower",
             responseFields(
                 generateMemberCommonResponseFields(ResponseType.LIST,
@@ -404,12 +248,24 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   @Test
   @DisplayName("회원 정보 조회(민감한 정보 제외) - 성공")
   public void getAllGeneralMemberInfoSuccess() throws Exception {
+    String docCode = "에러 발생 시: " + exceptionAdvice.getMessage("unKnown.code");
+    String docMsg = "민감한 정보를 제외한 다른 회원의 정보를 조회합니다. 한 페이지 당 최대 개수는 20개 입니다.";
     mockMvc.perform(MockMvcRequestBuilders
             .get("/v1/members")
+            .param("page", "0")
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true));
+        .andExpect(jsonPath("$.success").value(true))
+        .andDo(document("members-show",
+            requestParameters(
+                parameterWithName("page").description("페이지 번호")
+            ),
+            responseFields(
+                generateOtherMemberInfoCommonResponseFields(ResponseType.LIST,
+                    "성공: true +\n실패: false", docCode, docMsg)
+            )
+        ));
   }
 
   @Test
@@ -432,7 +288,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
         "물품 미납 기록이 있거나 비밀번호가 틀린 경우: " + exceptionAdvice.getMessage("accountDeleteFailed.code")
             + " +\n" + "그 외 실패한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(delete("/v1/member/delete")
-            .param("password", password)
+            .param("password", memberPassword)
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
