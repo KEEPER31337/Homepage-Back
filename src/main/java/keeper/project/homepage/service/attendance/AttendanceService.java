@@ -16,10 +16,14 @@ import static keeper.project.homepage.service.attendance.DateUtils.isBeforeDay;
 import static keeper.project.homepage.service.attendance.DateUtils.isToday;
 
 import java.lang.reflect.Field;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -47,17 +51,49 @@ public class AttendanceService {
   private final AuthService authService;
 
   private static final String DEFAULT_GREETINGS = "자동 출석입니다.";
+  private List<Integer> DAY_OF_MONTH = new ArrayList<>();
+
+  public static boolean isLeapYear(int year) {
+    Calendar cal = Calendar.getInstance();
+    cal.set(Calendar.YEAR, year);
+    return cal.getActualMaximum(Calendar.DAY_OF_YEAR) > 365;
+  }
 
   public void save(AttendanceDto attendanceDto) {
 
     if (isAlreadyAttendance()) {
       throw new CustomAttendanceException("이미 출석을 완료했습니다.");
     }
-    Date now = java.sql.Timestamp.valueOf(LocalDateTime.now());
+    LocalDateTime now = LocalDateTime.now();
 
     int point = 0;
-    int rank = getMyTodayRank(now);
-    // db변경되기전 미리 살짝 바꿔놓음
+    int continuousDay = getContinuousDay(Timestamp.valueOf(now));
+    int continuousPoint = getContinuousPoint(continuousDay);
+    int randomPoint = (int) (Math.random() * 900 + 100);
+    point = continuousPoint + DAILY_ATTENDANCE_POINT + randomPoint;
+
+    MemberEntity memberEntity = getMemberEntityWithJWT();
+    String greeting = attendanceDto.getGreetings();
+    if (greeting == "" || greeting == null) {
+      greeting = DEFAULT_GREETINGS;
+    }
+
+    AttendanceEntity attendanceEntity = AttendanceEntity.builder()
+        .point(point)
+        .rankPoint(0)
+        .continuousPoint(continuousPoint)
+        .continuousDay(continuousDay)
+        .greetings(greeting)
+        .ipAddress(attendanceDto.getIpAddress())
+        .time(now)
+        .date(now.toLocalDate())
+        .member(memberEntity)
+        .randomPoint(randomPoint)
+        .rank(0)
+        .build();
+    attendanceRepository.saveAndFlush(attendanceEntity);
+
+    int rank = getMyTodayRank(now, memberEntity);
     int rankPoint = 0;
     if (rank == 1) {
       rankPoint += FIRST_PLACE_POINT;
@@ -67,49 +103,49 @@ public class AttendanceService {
       rankPoint += THIRD_PLACE_POINT;
     }
 
-    int continuousDay = getContinuousDay(now);
+    attendanceEntity.setRank(rank);
+    attendanceEntity.setRankPoint(rankPoint);
+    attendanceEntity.setPoint(attendanceEntity.getPoint() + rankPoint);
+    attendanceRepository.save(attendanceEntity);
+  }
+
+  private int getContinuousPoint(int continuousDay) {
+    LocalDateTime date = LocalDateTime.now();
+
+    if (isLeapYear(date.getYear())) {
+      DAY_OF_MONTH.addAll(List.of(0, 31, 29, 31, 30, 31, 30, 31, 31, 30,
+          31, 30, 31));
+    } else {
+      DAY_OF_MONTH.addAll(List.of(0, 31, 28, 31, 30, 31, 30, 31, 31, 30,
+          31, 30, 31));
+    }
+
     int continuousPoint = 0;
-    if (continuousDay == WEEK_ATTENDANCE) {
+    if (date.getDayOfWeek() == DayOfWeek.SATURDAY && continuousDay >= WEEK_ATTENDANCE) {
       continuousPoint += WEEK_ATTENDANCE_POINT;
-    } else if (continuousDay == MONTH_ATTENDANCE) {
+    }
+    if (date.getDayOfMonth() == DAY_OF_MONTH.get(date.getMonthValue())
+        && continuousDay >= DAY_OF_MONTH.get(date.getMonthValue())) {
       continuousPoint += MONTH_ATTENDANCE_POINT;
-    } else if (continuousDay == YEAR_ATTENDANCE) {
+    }
+    if (date.getMonthValue() == 12 && date.getDayOfMonth() == 31
+        && continuousDay >= DAY_OF_MONTH.stream().mapToInt(Integer::intValue).sum()) {
       continuousPoint += YEAR_ATTENDANCE_POINT;
     }
 
-    int randomPoint = (int) (Math.random() * 900 + 100);
-    point = rankPoint + continuousPoint + DAILY_ATTENDANCE_POINT + randomPoint;
-
-    MemberEntity memberEntity = getMemberEntityWithJWT();
-    String greeting = attendanceDto.getGreetings();
-    if (greeting == "" || greeting == null) {
-      greeting = DEFAULT_GREETINGS;
-    }
-    attendanceRepository.save(
-        AttendanceEntity.builder()
-            .point(point)
-            .rankPoint(rankPoint)
-            .continuousPoint(continuousPoint)
-            .continuousDay(continuousDay)
-            .greetings(greeting)
-            .ipAddress(attendanceDto.getIpAddress())
-            .time(now)
-            .member(memberEntity)
-            .randomPoint(randomPoint)
-            .rank(rank)
-            .build());
+    return continuousPoint;
   }
 
-  private int getMyTodayRank(Date now) {
+  private int getMyTodayRank(LocalDateTime now, MemberEntity memberEntity) {
     List<AttendanceEntity> attendanceEntitiesByDate = attendanceRepository
-        .findAllByTimeBetween(clearTime(now), now);
+        .findAllByTimeBetweenAndMemberNotLike(now.toLocalDate().atStartOfDay(), now, memberEntity);
     return attendanceEntitiesByDate.size() + 1;
   }
 
   public void updateGreeting(AttendanceDto attendanceDto) {
     AttendanceEntity attendanceEntity = getMostRecentlyAttendance();
 
-    if (!isToday(attendanceEntity.getTime())) {
+    if (!isToday(Timestamp.valueOf(attendanceEntity.getTime()))) {
       throw new CustomAttendanceException("출석을 하지 않았습니다.");
     }
     String greeting = attendanceDto.getGreetings();
@@ -122,13 +158,13 @@ public class AttendanceService {
 
   public List<String> getMyAttendanceDateList(LocalDate startDate, LocalDate endDate) {
     List<AttendanceEntity> attendanceEntities = getAttendanceEntitiesInPeriodWithMemberId(
-        startDate, endDate);
+        startDate.atStartOfDay(), endDate.atStartOfDay());
 
     List<String> myAttendanceDateList = new ArrayList<>();
 
-    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA);
     for (AttendanceEntity attendance : attendanceEntities) {
-      myAttendanceDateList.add(dateFormat.format(attendance.getTime()));
+      myAttendanceDateList.add(attendance.getTime()
+          .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.KOREA)));
     }
     return myAttendanceDateList;
   }
@@ -140,11 +176,11 @@ public class AttendanceService {
     }
     MemberEntity member = getMemberEntityWithJWT();
 
-    LocalDate startDate = date.atStartOfDay().toLocalDate();
-    LocalDate endDate = date.plusDays(1).atStartOfDay().toLocalDate();
+    LocalDateTime startDate = date.atStartOfDay();
+    LocalDateTime endDate = date.plusDays(1).atStartOfDay();
 
     List<AttendanceEntity> attendanceEntities = attendanceRepository.findByMemberAndTimeBetween(
-        member, java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
+        member, startDate, endDate);
 
     checkTodayAttend(attendanceEntities);
 
@@ -161,11 +197,11 @@ public class AttendanceService {
     if (date == null) {
       throw new CustomAttendanceException("date를 입력하지 않았습니다.");
     }
-    LocalDate startDate = date.atStartOfDay().toLocalDate();
-    LocalDate endDate = date.plusDays(1).atStartOfDay().toLocalDate();
+    LocalDateTime startDate = date.atStartOfDay();
+    LocalDateTime endDate = date.plusDays(1).atStartOfDay();
 
     List<AttendanceEntity> attendanceEntities = attendanceRepository.findAllByTimeBetween(
-        java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
+        startDate, endDate);
 
     return getAttendanceResultDtoList(attendanceEntities);
   }
@@ -197,9 +233,9 @@ public class AttendanceService {
   }
 
   private List<AttendanceEntity> getAttendanceEntitiesInPeriodWithMemberId(
-      LocalDate startDate, LocalDate endDate) {
-    startDate = startDate == null ? LocalDate.EPOCH : startDate;
-    endDate = endDate == null ? LocalDate.now().plusDays(1).atStartOfDay().toLocalDate() : endDate;
+      LocalDateTime startDate, LocalDateTime endDate) {
+    startDate = startDate == null ? LocalDate.EPOCH.atStartOfDay() : startDate;
+    endDate = endDate == null ? LocalDate.now().plusDays(1).atStartOfDay() : endDate;
     System.out.println(startDate.toString() + ' ' + endDate);
     if (startDate.isAfter(endDate)) {
       throw new CustomAttendanceException("시작 날짜와 종료 날짜를 잘못 입력하였습니다.");
@@ -207,7 +243,7 @@ public class AttendanceService {
     MemberEntity member = getMemberEntityWithJWT();
 
     return attendanceRepository.findByMemberAndTimeBetween(
-        member, java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
+        member, startDate, endDate);
   }
 
   private AttendanceEntity getMostRecentlyAttendance() {
@@ -238,7 +274,7 @@ public class AttendanceService {
     }
 
     int continuousDay = 1;
-    if (isBeforeDay(recentAttendanceEntity.getTime(), now)) {
+    if (isBeforeDay(Timestamp.valueOf(recentAttendanceEntity.getTime()), now)) {
       continuousDay = recentAttendanceEntity.getContinuousDay() + 1;
     }
     return continuousDay;
@@ -250,6 +286,6 @@ public class AttendanceService {
       return false;
     }
 
-    return isToday(recentAttendanceEntity.getTime());
+    return isToday(Timestamp.valueOf(recentAttendanceEntity.getTime()));
   }
 }

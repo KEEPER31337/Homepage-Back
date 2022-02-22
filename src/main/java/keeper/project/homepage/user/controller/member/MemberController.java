@@ -1,12 +1,9 @@
-package keeper.project.homepage.controller.member;
+package keeper.project.homepage.user.controller.member;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import keeper.project.homepage.dto.EmailAuthDto;
 import keeper.project.homepage.dto.member.MemberDto;
-import keeper.project.homepage.dto.member.MemberJobDto;
-import keeper.project.homepage.dto.member.MemberRankDto;
-import keeper.project.homepage.dto.member.MemberTypeDto;
 import keeper.project.homepage.dto.posting.PostingDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.ListResult;
@@ -14,10 +11,10 @@ import keeper.project.homepage.dto.result.OtherMemberInfoResult;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.service.ResponseService;
-import keeper.project.homepage.service.member.MemberDeleteService;
-import keeper.project.homepage.service.member.MemberService;
+import keeper.project.homepage.user.service.member.MemberDeleteService;
 import keeper.project.homepage.service.posting.PostingService;
 import keeper.project.homepage.service.util.AuthService;
+import keeper.project.homepage.user.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -38,7 +35,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-//@Secured("ROLE_USER") // 모든 url에 공통 설정
 @Log4j2
 @RequiredArgsConstructor
 @RestController
@@ -50,6 +46,32 @@ public class MemberController {
   private final ResponseService responseService;
   private final AuthService authService;
 
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/members")
+  public ListResult<OtherMemberInfoResult> getAllOtherMemberInfo(
+      @PageableDefault(size = 20, sort = "registerDate", direction = Direction.DESC)Pageable pageable
+  ) {
+    return responseService.getSuccessListResult(memberService.getAllOtherMemberInfo(pageable));
+  }
+
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/member/other-id/{id}")
+  public SingleResult<OtherMemberInfoResult> getOtherMemberInfoById(
+      @PathVariable("id") Long otherMemberId
+  ) {
+    return responseService.getSuccessSingleResult(
+        memberService.getOtherMemberInfoById(otherMemberId));
+  }
+
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/member/other-name/{name}")
+  public SingleResult<OtherMemberInfoResult> getOtherMemberInfoByRealName(
+      @PathVariable("name") String realName
+  ) {
+    return responseService.getSuccessSingleResult(
+        memberService.getOtherMemberInfoByRealName(realName));
+  }
+
   @Secured("ROLE_회원") // 각 리소스별 권한 설정
   @GetMapping(value = "/member")
   public SingleResult<MemberEntity> findMember() {
@@ -57,12 +79,6 @@ public class MemberController {
     Long id = authService.getMemberIdByJWT();
     // 결과데이터가 단일건인경우 getSuccessSingleResult 이용해서 결과를 출력한다.
     return responseService.getSuccessSingleResult(memberService.findById(id));
-  }
-
-  @Secured("ROLE_회원") // 각 리소스별 권한 설정
-  @GetMapping(value = "/members")
-  public ListResult<OtherMemberInfoResult> getAllGeneralMemberInfo() {
-    return responseService.getSuccessListResult(memberService.getAllGeneralMemberInfo());
   }
 
   @Secured("ROLE_회원")
@@ -190,15 +206,6 @@ public class MemberController {
     Long id = authService.getMemberIdByJWT();
     List<MemberDto> followeeList = memberService.showFollowee(id);
     return responseService.getSuccessListResult(followeeList);
-  }
-
-  @Secured("ROLE_회원")
-  @GetMapping(value = "/member/other/info/{id}")
-  public SingleResult<OtherMemberInfoResult> getOtherMemberInfo(
-      @PathVariable("id") Long id
-  ) {
-    return responseService.getSuccessSingleResult(memberService.getOtherMemberInfo(id));
-
   }
 
   @Secured("ROLE_회원")

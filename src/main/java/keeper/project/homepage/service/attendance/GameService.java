@@ -51,6 +51,12 @@ public class GameService {
   private final GameRepository gameRepository;
   private final PointLogService pointLogService;
 
+  public Integer checkDiceTimes(){
+
+    GameEntity gameEntity = getOrResetGameEntity();
+    return gameEntity.getDicePerDay();
+  }
+
   public Boolean isOverDiceTimes() {
 
     GameEntity gameEntity = getOrResetGameEntity();
@@ -69,8 +75,6 @@ public class GameService {
     gameEntity.increaseDiceTimes();
     gameEntity.setLastPlayTime(LocalDateTime.now());
     gameRepository.save(gameEntity);
-    memberEntity.updatePoint(memberEntity.getPoint() - bettingPoint);
-    memberRepository.save(memberEntity);
     pointLogService.createPointUseLog(memberEntity,
         new PointLogRequest(LocalDateTime.now(), bettingPoint, "주사위 게임 포인트 차감"));
     return true;
@@ -98,8 +102,6 @@ public class GameService {
     GameEntity gameEntity = getOrResetGameEntity();
     gameEntity.setDiceDayPoint(gameEntity.getDiceDayPoint() + diceDayPoint);
     gameRepository.save(gameEntity);
-    memberEntity.updatePoint(memberEntity.getPoint() + updatePoint);
-    memberRepository.save(memberEntity);
     pointLogService.createPointSaveLog(memberEntity,
         new PointLogRequest(LocalDateTime.now(), updatePoint, "주사위 게임 결과"));
     return gameEntity.getDiceDayPoint();
@@ -139,10 +141,8 @@ public class GameService {
     rouletteDto.setRoulettePoints(points);
     int idx = (int) (Math.random() * 8);
     rouletteDto.setRoulettePointIdx(idx);
-    gameEntity.setRouletteDayPoint(gameEntity.getRouletteDayPoint() + points.get(idx));
+    gameEntity.setRouletteDayPoint(gameEntity.getRouletteDayPoint() + points.get(idx) - ROULETTE_FEE);
     gameRepository.save(gameEntity);
-    memberEntity.updatePoint(memberEntity.getPoint() + points.get(idx) - ROULETTE_FEE);
-    memberRepository.save(memberEntity);
 
     pointLogService.createPointSaveLog(memberEntity,
         new PointLogRequest(LocalDateTime.now(), points.get(idx), "룰렛 게임 결과"));
@@ -209,10 +209,8 @@ public class GameService {
       idx = 6;
     }
 
-    gameEntity.setLottoDayPoint(gameEntity.getLottoDayPoint() + result);
+    gameEntity.setLottoDayPoint(gameEntity.getLottoDayPoint() + result - LOTTO_FEE);
     gameRepository.save(gameEntity);
-    memberEntity.updatePoint(memberEntity.getPoint() + result - LOTTO_FEE);
-    memberRepository.save(memberEntity);
 
     LottoDto lottoDto = new LottoDto(idx, gameEntity.getLottoDayPoint());
     pointLogService.createPointSaveLog(memberEntity,

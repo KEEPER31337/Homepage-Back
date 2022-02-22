@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.dto.posting.CommentDto;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberHasCommentEntityPK;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.CustomAuthenticationEntryPointException;
@@ -19,10 +18,9 @@ import keeper.project.homepage.repository.posting.CommentSpec;
 import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.service.member.MemberHasCommentLikeService;
-import keeper.project.homepage.service.member.MemberService;
 import keeper.project.homepage.service.util.AuthService;
+import keeper.project.homepage.user.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -173,7 +171,7 @@ public class CommentService {
 
     PostingEntity postingEntity = postingRepository.findById(comment.getPostingId().getId())
         .orElseThrow(() -> new CustomCommentNotFoundException("댓글에 해당하는 게시글이 존재하지 않습니다."));
-    postingEntity.increaseCommentCount();
+    postingEntity.decreaseCommentCount();
     postingRepository.save(postingEntity);
   }
 

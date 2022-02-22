@@ -10,6 +10,7 @@ import keeper.project.homepage.entity.point.PointLogEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.member.CustomAccountDeleteFailedException;
 import keeper.project.homepage.repository.point.PointLogRepository;
+import keeper.project.homepage.user.service.member.MemberService;
 import keeper.project.homepage.user.service.point.PointLogService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

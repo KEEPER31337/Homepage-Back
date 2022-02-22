@@ -5,12 +5,16 @@ import static keeper.project.homepage.service.sign.SignUpService.KEEPER_FOUNDING
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -18,8 +22,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
+import keeper.project.homepage.common.FileConversion;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.dto.sign.SignInDto;
+import keeper.project.homepage.entity.FileEntity;
+import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
@@ -28,6 +35,7 @@ import keeper.project.homepage.entity.member.MemberTypeEntity;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
@@ -114,34 +122,89 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     return generation;
   }
 
+  private void createFileForTest(String filePath) {
+    FileConversion fileConversion = new FileConversion();
+    fileConversion.makeSampleJPEGImage(filePath);
+  }
+
+  public void deleteTestFile(FileEntity fileEntity) {
+    final String usrDir = System.getProperty("user.dir") + File.separator;
+    File file = new File(usrDir + fileEntity.getFilePath());
+    try {
+      Files.deleteIfExists(file.toPath());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void deleteTestThumbnailFile(ThumbnailEntity thumbnailEntity) {
+    final String usrDir = System.getProperty("user.dir") + File.separator;
+    File file = new File(usrDir + thumbnailEntity.getPath());
+    try {
+      Files.deleteIfExists(file.toPath());
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public ThumbnailEntity generateThumbnailEntity() {
+    final String usrDir = System.getProperty("user.dir") + File.separator;
+    final String fileRelDir = "keeper_files" + File.separator;
+    final String thumbRelDir = fileRelDir + "thumbnail" + File.separator;
+
+    final String epochTime = Long.toHexString(System.nanoTime());
+    final String fileName = epochTime + ".jpg";
+    final String thumbName = "thumb_" + epochTime + ".jpg";
+
+    createFileForTest(usrDir + fileRelDir + fileName);
+    createFileForTest(usrDir + thumbRelDir + thumbName);
+
+    FileEntity fileEntity = fileRepository.save(FileEntity.builder()
+        .fileName(fileName)
+        .filePath(fileRelDir + fileName)
+        .fileSize(0L)
+        .ipAddress("111.111.111.111")
+        .build());
+
+    return thumbnailRepository.save(ThumbnailEntity.builder()
+        .path(thumbRelDir + thumbName)
+        .file(fileEntity).build());
+  }
+
   public MemberEntity generateMemberEntity(MemberJobName jobName, MemberTypeName typeName,
       MemberRankName rankName) {
     final String epochTime = Long.toHexString(System.nanoTime());
+    ThumbnailEntity thumbnailEntity = generateThumbnailEntity();
     MemberJobEntity memberJob = memberJobRepository.findByName(jobName.getJobName()).get();
-    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
-        .memberJobEntity(memberJob)
-        .build();
     MemberTypeEntity memberType = memberTypeRepository.findByName(typeName.getTypeName()).get();
     MemberRankEntity memberRank = memberRankRepository.findByName(rankName.getRankName()).get();
-    return memberRepository.saveAndFlush(MemberEntity.builder()
+
+    MemberEntity memberEntity = memberRepository.save(MemberEntity.builder()
         .loginId("LoginId" + epochTime)
         .password(passwordEncoder.encode(memberPassword))
-        .realName("RealName")
+        .realName("RealName" + epochTime)
         .nickName("NickName")
         .emailAddress("member" + epochTime + "@k33p3r.com")
         .studentId(epochTime)
         .generation(getMemberGeneration())
-        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .memberType(memberType)
         .memberRank(memberRank)
+        .thumbnail(thumbnailEntity)
         .build());
+    memberType.getMembers().add(memberEntity);
+    memberRank.getMembers().add(memberEntity);
+
+    MemberHasMemberJobEntity hasMemberJobEntity = memberHasMemberJobRepository.save(
+        MemberHasMemberJobEntity.builder()
+            .memberJobEntity(memberJob)
+            .memberEntity(memberEntity)
+            .build());
+    memberJob.getMembers().add(hasMemberJobEntity);
+    memberEntity.getMemberJobs().add(hasMemberJobEntity);
+    return memberEntity;
   }
 
-  public String generateJWTToken(String loginId, String password) throws Exception {
-    String content = "{\n"
-        + "    \"loginId\": \"" + loginId + "\",\n"
-        + "    \"password\": \"" + password + "\"\n"
-        + "}";
+  private String memberLogin(String content) throws Exception {
     MvcResult result = mockMvc.perform(post("/v1/signin")
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .content(content))
@@ -160,6 +223,22 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     return sign.getData().getToken();
   }
 
+  public String generateJWTToken(MemberEntity member) throws Exception {
+    String content = "{\n"
+        + "    \"loginId\": \"" + member.getLoginId() + "\",\n"
+        + "    \"password\": \"" + memberPassword + "\"\n"
+        + "}";
+    return memberLogin(content);
+  }
+
+  public String generateJWTToken(String loginId, String password) throws Exception {
+    String content = "{\n"
+        + "    \"loginId\": \"" + loginId + "\",\n"
+        + "    \"password\": \"" + password + "\"\n"
+        + "}";
+    return memberLogin(content);
+  }
+
   public CategoryEntity generateCategoryEntity() {
     final String epochTime = Long.toHexString(System.nanoTime());
     return categoryRepository.save(
@@ -174,7 +253,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         .title("posting 제목 " + epochTime)
         .content("posting 내용 " + epochTime)
         .categoryId(category)
-        .ipAddress("192.111.222.333")
+        .ipAddress("111.111.111.111")
         .allowComment(0)
         .isNotice(isNotice)
         .isSecret(isSecret)
@@ -240,6 +319,34 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         fieldWithPath(prefix + ".jobs").description(
             "동아리 직책: null, ROLE_회장, ROLE_부회장, ROLE_대외부장, ROLE_학술부장, ROLE_전산관리자, ROLE_서기, ROLE_총무, ROLE_사서"))
     );
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
+    }
+    return commonFields;
+  }
+
+  public List<FieldDescriptor> generateOtherMemberInfoCommonResponseFields(ResponseType type,
+      String success, String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(Arrays.asList(
+        fieldWithPath(prefix + ".loginId").description("해당 유저의 로그인 아이디"),
+        fieldWithPath(prefix + ".realName").description("해당 유저의 실제 이름"),
+        fieldWithPath(prefix + ".nickName").description("해당 유저의 닉네임"),
+        fieldWithPath(prefix + ".birthday").description("해당 유저의 생일").type(Date.class).optional(),
+        fieldWithPath(prefix + ".registerDate").description("해당 유저의 회원가입 날짜 및 시간"),
+        fieldWithPath(prefix + ".checkFollowee").description(
+            "상대방을 팔로우 했는지 확인(팔로우: true, 아니면: false)"),
+        fieldWithPath(prefix + ".checkFollower").description(
+            "상대방이 나를 팔로우 했는지 확인(팔로우: true, 아니면: false)"),
+        fieldWithPath(prefix + ".generation").description("기수 (7월 이후는 N.5기)").optional(),
+        subsectionWithPath(prefix + ".thumbnailEntity").description("해당 유저의 썸네일 이미지").optional(),
+        subsectionWithPath(prefix + ".memberRankEntity").description(
+            "해당 유저의 등급(id): 일반회원(1), 우수회원(2)").optional(),
+        subsectionWithPath(prefix + ".memberTypeEntity").description(
+            "해당 유저의 유형(id): 비회원(1), 정회원(2), 휴면회원(3), 졸업(4), 탈퇴(5)").optional()
+    ));
     if (addDescriptors.length > 0) {
       commonFields.addAll(Arrays.asList(addDescriptors));
     }

@@ -1,6 +1,8 @@
 package keeper.project.homepage.entity.attendance;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,11 +34,16 @@ public class AttendanceEntity {
   private Long id;
 
   @Column(name = "time", nullable = false)
-  private Date time;
+  private LocalDateTime time;
 
+  @Column(name = "date", nullable = false)
+  private LocalDate date;
+
+  @Setter
   @Column(name = "point", nullable = false)
   private Integer point;
 
+  @Setter
   @Column(name = "rank_point", nullable = false)
   private Integer rankPoint;
 
@@ -58,6 +65,7 @@ public class AttendanceEntity {
 
   // 엔티티에 자바의 예약어와 동일한 컬럼이 있다면 같은 오류가 발생할 수 있다.
   // 위와 같은 경우는 ``로 감싸준다.
+  @Setter
   @Column(name = "`rank`")
   private Integer rank;
 

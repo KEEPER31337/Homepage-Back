@@ -77,10 +77,10 @@ public class FileService {
     return file;
   }
 
-  public FileEntity saveFileEntity(File file, String relDirPath, String ipAddress,
+  public FileEntity saveFileEntity(File file, String relDirPath, String ipAddress, String origName,
       @Nullable PostingEntity postingEntity) {
     FileDto fileDto = new FileDto();
-    fileDto.setFileName(file.getName());
+    fileDto.setFileName(origName);
     // DB엔 상대경로로 저장
     fileDto.setFilePath(relDirPath + File.separator + file.getName());
     fileDto.setFileSize(file.length());
@@ -88,7 +88,7 @@ public class FileService {
     fileDto.setIpAddress(ipAddress);
     return fileRepository.save(fileDto.toEntity(postingEntity));
   }
-  
+
   @Transactional
   public void saveFiles(List<MultipartFile> multipartFiles, String ipAddress,
       @Nullable PostingEntity postingEntity) {
@@ -98,7 +98,8 @@ public class FileService {
 
     for (MultipartFile multipartFile : multipartFiles) {
       File file = saveFileInServer(multipartFile, fileRelDirPath);
-      saveFileEntity(file, fileRelDirPath, ipAddress, postingEntity);
+      saveFileEntity(file, fileRelDirPath, ipAddress, multipartFile.getOriginalFilename(),
+          postingEntity);
     }
   }
 

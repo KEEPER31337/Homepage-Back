@@ -9,6 +9,7 @@ import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -23,9 +24,7 @@ public class AuthService {
   public List<String> getAuthByJWT() {
     List<String> roles = new ArrayList<>();
 
-    // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    Long memberId = Long.valueOf(authentication.getName());
+    Long memberId = getMemberIdByJWT();
     List<MemberHasMemberJobEntity> memberJobs = hasMemberJobRepository.findAllByMemberEntity_Id(
         memberId);
     for (MemberHasMemberJobEntity memberJob : memberJobs) {
@@ -40,8 +39,8 @@ public class AuthService {
     Long memberId;
     try {
       memberId = Long.valueOf(authentication.getName());
-    } catch (Exception e){
-      throw new CustomMemberNotFoundException();
+    } catch (Exception e) {
+      throw new AccessDeniedException("");
     }
     return memberId;
   }
@@ -50,7 +49,7 @@ public class AuthService {
     Long memberId = getMemberIdByJWT();
     Optional<MemberEntity> member = memberRepository.findById(memberId);
     if (member.isEmpty()) {
-      throw new CustomMemberNotFoundException();
+      throw new AccessDeniedException("");
     }
     return member.get();
   }

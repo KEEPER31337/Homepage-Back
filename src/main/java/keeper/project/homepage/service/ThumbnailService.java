@@ -68,7 +68,8 @@ public class ThumbnailService {
       fileName = this.defaultImageName;
       File defaultFile = new File(FileService.fileRelDirPath + File.separator + defaultImageName);
       fileEntity = fileService.saveFileEntity(
-          defaultFile, FileService.fileRelDirPath, ipAddress, null);
+          defaultFile, FileService.fileRelDirPath, ipAddress, multipartFile.getOriginalFilename(),
+          null);
     } else {
       MultipartFileWrapper multipartFileWrapper = new MultipartFileWrapper(multipartFile);
       try {
@@ -76,7 +77,8 @@ public class ThumbnailService {
 
         // 원본 파일 저장
         File file = fileService.saveFileInServer(multipartFileWrapper, FileService.fileRelDirPath);
-        fileEntity = fileService.saveFileEntity(file, FileService.fileRelDirPath, ipAddress, null);
+        fileEntity = fileService.saveFileEntity(file, FileService.fileRelDirPath, ipAddress,
+            multipartFile.getOriginalFilename(), null);
 
         // 썸네일 파일 저장
         File thumbnailImage = fileService.saveFileInServer(multipartFileWrapper, this.relDirPath);

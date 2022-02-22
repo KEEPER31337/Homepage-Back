@@ -1,5 +1,6 @@
 package keeper.project.homepage.admin.controller.member;
 
+import keeper.project.homepage.admin.service.member.AdminMemberService;
 import keeper.project.homepage.dto.member.MemberDemeritDto;
 import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.dto.member.MemberGenerationDto;
@@ -11,7 +12,6 @@ import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.service.ResponseService;
-import keeper.project.homepage.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.annotation.Secured;
@@ -27,27 +27,27 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/v1/admin")
 public class AdminMemberController {
 
-  private final MemberService memberService;
+  private final AdminMemberService adminMemberService;
   private final ResponseService responseService;
 
   @Secured("ROLE_회장") // 각 리소스별 권한 설정
   @GetMapping(value = "/members")
   public ListResult<MemberEntity> findAllMember() {
     // 결과데이터가 여러건인경우 getSuccessListResult 이용해서 결과를 출력한다.
-    return responseService.getSuccessListResult(memberService.findAll());
+    return responseService.getSuccessListResult(adminMemberService.findAll());
   }
 
   @Secured("ROLE_회장")
   @PutMapping("/member/update/rank")
   public SingleResult<MemberDto> updateMemberRank(@RequestBody MemberRankDto memberRankDto) {
-    MemberDto update = memberService.updateMemberRank(memberRankDto);
+    MemberDto update = adminMemberService.updateMemberRank(memberRankDto);
     return responseService.getSuccessSingleResult(update);
   }
 
   @Secured("ROLE_회장")
   @PutMapping("/member/update/type")
   public SingleResult<MemberDto> updateMemberType(@RequestBody MemberTypeDto memberTypeDto) {
-    MemberDto update = memberService.updateMemberType(memberTypeDto);
+    MemberDto update = adminMemberService.updateMemberType(memberTypeDto);
     return responseService.getSuccessSingleResult(update);
   }
 
@@ -55,7 +55,7 @@ public class AdminMemberController {
   @PutMapping("/member/update/job")
   public SingleResult<MemberDto> updateMemberJob(@RequestBody MemberJobDto memberJobDto) {
 
-    MemberDto update = memberService.updateMemberJobs(memberJobDto);
+    MemberDto update = adminMemberService.updateMemberJobs(memberJobDto);
     return responseService.getSuccessSingleResult(update);
   }
 
@@ -63,14 +63,14 @@ public class AdminMemberController {
   @PutMapping("/member/update/generation")
   public SingleResult<MemberDto> updateMemberGeneration(
       @RequestBody MemberGenerationDto memberGenerationDto) {
-    MemberDto update = memberService.updateGeneration(memberGenerationDto);
+    MemberDto update = adminMemberService.updateGeneration(memberGenerationDto);
     return responseService.getSuccessSingleResult(update);
   }
 
   @Secured({"ROLE_회장", "ROLE_서기"})
   @PutMapping("/member/update/merit")
   public SingleResult<MemberDto> updateMemberMerit(@RequestBody MemberMeritDto memberMeritDto) {
-    MemberDto update = memberService.updateMerit(memberMeritDto);
+    MemberDto update = adminMemberService.updateMerit(memberMeritDto);
     return responseService.getSuccessSingleResult(update);
   }
 
@@ -79,7 +79,7 @@ public class AdminMemberController {
   @PutMapping("/member/update/demerit")
   public SingleResult<MemberDto> updateMemberDemerit(
       @RequestBody MemberDemeritDto memberDemeritDto) {
-    MemberDto update = memberService.updateDemerit(memberDemeritDto);
+    MemberDto update = adminMemberService.updateDemerit(memberDemeritDto);
     return responseService.getSuccessSingleResult(update);
   }
 }
