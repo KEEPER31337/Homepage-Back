@@ -1,4 +1,4 @@
-package keeper.project.homepage.admin.service.member;
+package keeper.project.homepage.service.admin.service.member;
 
 import java.util.List;
 import keeper.project.homepage.dto.member.MemberDemeritDto;
