@@ -1,4 +1,4 @@
-package keeper.project.homepage.service.admin.service.posting;
+package keeper.project.homepage.admin.service.posting;
 
 import java.util.List;
 import keeper.project.homepage.entity.FileEntity;

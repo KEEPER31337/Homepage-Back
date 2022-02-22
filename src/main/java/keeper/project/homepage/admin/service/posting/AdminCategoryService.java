@@ -1,4 +1,4 @@
-package keeper.project.homepage.service.admin.service.posting;
+package keeper.project.homepage.admin.service.posting;
 
 import keeper.project.homepage.dto.posting.category.reqeust.CategoryRequest;
 import keeper.project.homepage.dto.posting.category.result.CategoryResult;

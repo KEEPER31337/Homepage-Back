@@ -1,4 +1,4 @@
-package keeper.project.homepage.service.admin.controller.posting;
+package keeper.project.homepage.admin.controller.posting;
 
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.service.ResponseService;

@@ -1,6 +1,6 @@
-package keeper.project.homepage.service.admin.controller.posting;
+package keeper.project.homepage.admin.controller.posting;
 
-import keeper.project.homepage.service.admin.service.posting.AdminCategoryService;
+import keeper.project.homepage.admin.service.posting.AdminCategoryService;
 import keeper.project.homepage.dto.posting.category.reqeust.CategoryRequest;
 import keeper.project.homepage.dto.posting.category.result.CategoryResult;
 import keeper.project.homepage.dto.result.SingleResult;
