@@ -24,14 +24,7 @@ public class AuthService {
   public List<String> getAuthByJWT() {
     List<String> roles = new ArrayList<>();
 
-    // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    Long memberId = null;
-    try {
-      memberId = Long.valueOf(authentication.getName());
-    } catch (Exception e) {
-      throw new AccessDeniedException("");
-    }
+    Long memberId = getMemberIdByJWT();
     List<MemberHasMemberJobEntity> memberJobs = hasMemberJobRepository.findAllByMemberEntity_Id(
         memberId);
     for (MemberHasMemberJobEntity memberJob : memberJobs) {

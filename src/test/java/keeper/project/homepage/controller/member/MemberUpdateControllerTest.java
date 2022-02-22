@@ -377,7 +377,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
   @Test
   @DisplayName("기본 권한으로 프로필 변경하기")
   public void updateProfile() throws Exception {
-    String newStudentId = "123456789";
+    String newStudentId = "53186487";
     String updateContent = "{"
         + "\"realName\":\"Changed\","
         + "\"nickName\":\"Changed Nick\","
@@ -539,10 +539,13 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
         "기존 파일이 서버에 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
             + "기존 파일을 삭제하는 데 실패한 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
             + "새 파일을 저장하는 데 실패한 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-            + "DB에 파일 레코드가 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-            + "DB에 썸네일 레코드가 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+            + "DB에 파일 레코드가 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberNotFound.code")
+            + " +\n"
+            + "DB에 썸네일 레코드가 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberNotFound.code")
+            + " +\n"
             + "이미지 파일 형식이 잘못된 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-            + "이미지 파일을 읽고 쓰는 것에 실패한 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+            + "이미지 파일을 읽고 쓰는 것에 실패한 경우: " + exceptionAdvice.getMessage("memberNotFound.code")
+            + " +\n"
             + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     // @formatter:on
     mockMvc.perform(RestDocumentationRequestBuilders.fileUpload("/v1/member/update/thumbnail")
