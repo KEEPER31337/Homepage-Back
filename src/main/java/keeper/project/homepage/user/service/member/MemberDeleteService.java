@@ -14,6 +14,7 @@ import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.member.CustomAccountDeleteFailedException;
 import keeper.project.homepage.repository.attendance.AttendanceRepository;
+import keeper.project.homepage.repository.attendance.GameRepository;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.member.MemberHasCommentDislikeRepository;
 import keeper.project.homepage.repository.member.MemberHasCommentLikeRepository;
@@ -31,6 +32,7 @@ import keeper.project.homepage.user.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +48,7 @@ public class MemberDeleteService {
   private final AttendanceRepository attendanceRepository;
   private final BookBorrowRepository bookBorrowRepository;
   private final PointLogRepository pointLogRepository;
+  private final GameRepository gameRepository;
   private final PasswordEncoder passwordEncoder;
   private final CustomPasswordService customPasswordService;
 
@@ -136,9 +139,11 @@ public class MemberDeleteService {
   }
 
   public void deleteThumbnail(MemberEntity member) {
-    ThumbnailEntity deleteThumbnail = thumbnailService.findById(member.getThumbnail().getId());
-    thumbnailService.deleteById(deleteThumbnail.getId());
-    fileService.deleteOriginalThumbnail(deleteThumbnail);
+    if (member.getThumbnail() != null) {
+      ThumbnailEntity deleteThumbnail = thumbnailService.findById(member.getThumbnail().getId());
+      thumbnailService.deleteById(deleteThumbnail.getId());
+      fileService.deleteOriginalThumbnail(deleteThumbnail);
+    }
   }
 
   public void deleteAttendance(MemberEntity member) {
@@ -176,6 +181,11 @@ public class MemberDeleteService {
     pointLogRepository.deleteByMember(member);
   }
 
+  public void deleteGameInfo(MemberEntity member) {
+    gameRepository.deleteByMember(member);
+  }
+
+  @Transactional
   public void deleteAccount(Long memberId, String password) {
     MemberEntity deleted = memberService.findById(memberId);
     // 동아리 물품, 책 미납한 기록 있으면 불가능
@@ -190,6 +200,7 @@ public class MemberDeleteService {
     decreasePostingsDislike(deleted);
     deleteAttendance(deleted);
     deletePointLog(deleted);
+    deleteGameInfo(deleted);
 
     MemberEntity virtualMember = memberService.findById(MemberService.VIRTUAL_MEMBER_ID);
     commentChangeToVirtualMember(virtualMember, deleted);

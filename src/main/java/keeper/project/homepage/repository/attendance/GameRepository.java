@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface GameRepository extends JpaRepository<GameEntity, Long> {
 
   Optional<GameEntity> findByMember(MemberEntity memberEntity);
+
+  void deleteByMember(MemberEntity member);
 }
