@@ -31,9 +31,9 @@ import reactor.util.annotation.Nullable;
 public class FileService {
 
   public static final String fileRelDirPath = "keeper_files"; // {user.dir}/keeper_files/
+  public static final String defaultImageFileName = "default.jpg";
 
   private final FileRepository fileRepository;
-  private final String defaultImageName = "default.jpg";
   private final ImageFormatChecking imageFormatChecking;
 
   private String encodeFileName(String fileName) {
@@ -134,12 +134,12 @@ public class FileService {
     Long deleteId = deleteThumbnail.getFile().getId();
     FileEntity deleted = fileRepository.findById(deleteId)
         .orElseThrow(CustomFileEntityNotFoundException::new);
-    if (!(fileRelDirPath + File.separator + defaultImageName).equals(
+    if (!(fileRelDirPath + File.separator + defaultImageFileName).equals(
         deleted.getFilePath())) { // 기본 이미지면 삭제 X
       File originalImageFile = new File(
           System.getProperty("user.dir") + File.separator + deleted.getFilePath());
       String originalImageFileName = originalImageFile.getName();
-      if (originalImageFileName.equals(defaultImageName) == false) {
+      if (originalImageFileName.equals(defaultImageFileName) == false) {
         if (originalImageFile.exists() == false) {
           throw new CustomFileNotFoundException();
         }

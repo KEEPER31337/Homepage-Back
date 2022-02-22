@@ -66,9 +66,10 @@ public class ThumbnailService {
     String fileName = "";
     if (multipartFile == null || multipartFile.isEmpty()) {
       fileName = this.defaultImageName;
-      File defaultFile = new File(FileService.fileRelDirPath + File.separator + defaultImageName);
+      File defaultFile = new File(
+          FileService.fileRelDirPath + File.separator + FileService.defaultImageFileName);
       fileEntity = fileService.saveFileEntity(
-          defaultFile, FileService.fileRelDirPath, ipAddress, multipartFile.getOriginalFilename(),
+          defaultFile, FileService.fileRelDirPath, ipAddress, FileService.defaultImageFileName,
           null);
     } else {
       MultipartFileWrapper multipartFileWrapper = new MultipartFileWrapper(multipartFile);
