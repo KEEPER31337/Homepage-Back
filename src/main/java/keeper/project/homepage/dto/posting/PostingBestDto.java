@@ -23,6 +23,7 @@ public class PostingBestDto {
   private LocalDateTime dateTime;
   private Integer watch;
   private Integer commentN;
+  private Long categoryId;
   private Long ThumbnailId;
 
   public void initWithEntity(PostingEntity postingEntity) {
@@ -32,6 +33,7 @@ public class PostingBestDto {
     this.dateTime = postingEntity.getRegisterTime();
     this.watch = postingEntity.getVisitCount();
     this.commentN = postingEntity.getCommentCount();
+    this.categoryId = postingEntity.getCategoryId().getId();
     if (postingEntity.getThumbnail() != null) {
       this.ThumbnailId = postingEntity.getThumbnail().getId();
     }

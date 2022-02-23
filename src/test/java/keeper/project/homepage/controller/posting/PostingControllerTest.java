@@ -625,6 +625,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].dateTime").description("작성 시간"),
                 fieldWithPath("list[].watch").description("조회 수"),
                 fieldWithPath("list[].commentN").description("댓글 개수"),
+                fieldWithPath("list[].categoryId").description("카테고리 ID"),
                 fieldWithPath("list[].thumbnailId").description("게시글 썸네일 id").optional()
             )
         ));
