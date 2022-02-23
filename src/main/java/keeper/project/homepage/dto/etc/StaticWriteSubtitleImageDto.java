@@ -19,7 +19,6 @@ public class StaticWriteSubtitleImageDto {
 
   private String subtitle;
   private Long staticWriteTitleId;
-  private Long thumbnailId;
   private Integer displayOrder;
 
   public StaticWriteSubtitleImageEntity toEntity(StaticWriteTitleEntity staticWriteTitleEntity,
