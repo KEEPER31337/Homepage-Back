@@ -166,7 +166,7 @@ public class GameService {
   public Boolean isOverLottoTimes() {
 
     GameEntity gameEntity = getOrResetGameEntity();
-    return gameEntity.getRoulettePerDay() > LOTTO_MAX_PLAYTIME;
+    return gameEntity.getLottoPerDay() > LOTTO_MAX_PLAYTIME;
   }
 
   public Integer checkLottoTimes() {
