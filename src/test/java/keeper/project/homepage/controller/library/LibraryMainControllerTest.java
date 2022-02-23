@@ -257,4 +257,40 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.department").description("도서 분류 코드")
             )));
   }
+
+  //-------------------------------대여 메시지 전달-----------------------------------
+  @Test
+  @DisplayName("대여 메시지 전달")
+  public void sendBorrowMessage() throws Exception {
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    params.add("title", bookTitle1);
+    params.add("author", bookAuthor1);
+    params.add("quantity", String.valueOf(1L));
+
+    mockMvc.perform(get("/v1/selectedbook/borrow")
+            .params(params)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andDo(document("send-borrowMessage",
+            requestParameters(
+                parameterWithName("title").description("책 제목"),
+                parameterWithName("author").description("책 저자"),
+                parameterWithName("quantity").description("대여 수")
+            ),
+            responseFields(
+                fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
+                fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
+                fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
+                fieldWithPath("data.id").description("책 ID"),
+                fieldWithPath("data.title").description("책 제목"),
+                fieldWithPath("data.author").description("책 저자"),
+                fieldWithPath("data.information").description("책 정보"),
+                fieldWithPath("data.total").description("전체 수"),
+                fieldWithPath("data.borrow").description("대여 중인 수"),
+                fieldWithPath("data.enable").description("대여 가능한 수"),
+                fieldWithPath("data.registerDate").description("등록된 날짜"),
+                fieldWithPath("data.department").description("도서 분류 코드")
+            )));
+  }
 }

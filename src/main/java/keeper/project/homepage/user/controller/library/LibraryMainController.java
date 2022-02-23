@@ -1,5 +1,6 @@
 package keeper.project.homepage.user.controller.library;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.entity.library.BookEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.Exceptions;
 
 @RequestMapping("/v1")
 @RestController
@@ -39,8 +41,16 @@ public class LibraryMainController {
   }
 
   @GetMapping(value = "/selectedbook/information")
-  public SingleResult<BookEntity> sendBookInformation(@RequestParam String title, @RequestParam String author) {
+  public SingleResult<BookEntity> sendBookInformation(@RequestParam String title,
+      @RequestParam String author) {
 
     return responseService.getSuccessSingleResult(libraryMainService.selectedBook(title, author));
+  }
+
+  @GetMapping(value = "/selectedbook/borrow")
+  public void sendBorrowMessage(@RequestParam String title, @RequestParam String author,
+      @RequestParam Long qunatity) throws JsonProcessingException {
+
+    libraryMainService.sendBorrowMessage(title, author, qunatity);
   }
 }
