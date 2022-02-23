@@ -458,7 +458,7 @@ public class MemberServiceTestSetup {
             .member(deletedMember)
             .rank(3)
             .rankPoint(30)
-            .randomPoint(random.nextInt(100, 1001)).build());
+            .randomPoint((int) (Math.random() * 900 + 100)).build());
 
     // 다른 출석 기록에 영향을 안 끼치는 지 확인용
     MemberEntity otherMember = generateMemberEntity(2);
@@ -473,7 +473,7 @@ public class MemberServiceTestSetup {
             .member(otherMember)
             .rank(3)
             .rankPoint(30)
-            .randomPoint(random.nextInt(100, 1001)).build());
+            .randomPoint((int) (Math.random() * 900 + 100)).build());
   }
 
   public void generateCheckRemainBorrowInfoTestcase() {
