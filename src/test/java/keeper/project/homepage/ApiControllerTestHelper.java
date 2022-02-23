@@ -378,6 +378,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         fieldWithPath(prefix + ".password").description("비밀번호").optional(),
         fieldWithPath(prefix + ".memberId").description("작성자 아이디"),
         fieldWithPath(prefix + ".categoryId").description("카테고리 아이디"),
+        fieldWithPath(prefix + ".category").description("카테고리 이름"),
         fieldWithPath(prefix + ".thumbnailId").description("게시글 썸네일 아이디")
     ));
     if (addDescriptors.length > 0) {

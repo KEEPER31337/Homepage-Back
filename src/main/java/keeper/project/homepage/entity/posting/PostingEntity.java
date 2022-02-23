@@ -94,6 +94,9 @@ public class PostingEntity {
   @JoinColumn(name = "category_id")
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private CategoryEntity categoryId;
+  @Setter
+  @Transient
+  private String category;
   @OneToOne
   @JoinColumn(name = "thumbnail_id")
   @Setter
