@@ -51,7 +51,7 @@ public class GameService {
   private final GameRepository gameRepository;
   private final PointLogService pointLogService;
 
-  public Integer checkDiceTimes(){
+  public Integer checkDiceTimes() {
 
     GameEntity gameEntity = getOrResetGameEntity();
     return gameEntity.getDicePerDay();
@@ -117,6 +117,7 @@ public class GameService {
     RouletteDto rouletteDto = new RouletteDto();
     GameEntity gameEntity = getOrResetGameEntity();
     rouletteDto.setRoulettePerDay(gameEntity.getRoulettePerDay());
+    rouletteDto.setTodayResult(gameEntity.getRouletteDayPoint());
 
     return rouletteDto;
   }
@@ -141,12 +142,12 @@ public class GameService {
     rouletteDto.setRoulettePoints(points);
     int idx = (int) (Math.random() * 8);
     rouletteDto.setRoulettePointIdx(idx);
-    gameEntity.setRouletteDayPoint(gameEntity.getRouletteDayPoint() + points.get(idx) - ROULETTE_FEE);
+    gameEntity.setRouletteDayPoint(
+        gameEntity.getRouletteDayPoint() + points.get(idx) - ROULETTE_FEE);
     gameRepository.save(gameEntity);
 
     pointLogService.createPointSaveLog(memberEntity,
         new PointLogRequest(LocalDateTime.now(), points.get(idx), "룰렛 게임 결과"));
-    rouletteDto.setTodayResult(gameEntity.getRouletteDayPoint());
     return rouletteDto;
   }
 
