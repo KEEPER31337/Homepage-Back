@@ -83,13 +83,13 @@ public class PostingService {
   }
 
   private void setAllInfo(List<PostingEntity> postingEntities, Integer totalSize) {
-
     for (PostingEntity postingEntity : postingEntities) {
       setWriterInfo(postingEntity);
       postingEntity.setSize(totalSize);
       if (postingEntity.getIsSecret() == 1) {
         postingEntity.makeSecret();
       }
+      postingEntity.setCategory(postingEntity.getCategoryId().getName());
     }
   }
 

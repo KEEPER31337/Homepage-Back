@@ -12,7 +12,6 @@ import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.service.ResponseService;
-import keeper.project.homepage.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.annotation.Secured;

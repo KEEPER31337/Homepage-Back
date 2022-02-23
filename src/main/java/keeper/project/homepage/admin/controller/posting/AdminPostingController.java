@@ -3,7 +3,6 @@ package keeper.project.homepage.admin.controller.posting;
 
 import java.util.List;
 import keeper.project.homepage.admin.service.posting.AdminPostingService;
-import keeper.project.homepage.dto.posting.PostingDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;

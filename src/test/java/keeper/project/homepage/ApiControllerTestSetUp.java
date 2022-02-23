@@ -5,7 +5,6 @@ import static org.springframework.restdocs.operation.preprocess.Preprocessors.mo
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.prettyPrint;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import keeper.project.homepage.config.security.JwtTokenProvider;
 import keeper.project.homepage.exception.ExceptionAdvice;
 import keeper.project.homepage.repository.etc.StaticWriteContentRepository;

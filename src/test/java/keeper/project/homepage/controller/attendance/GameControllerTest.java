@@ -151,8 +151,7 @@ public class GameControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.roulettePoints").description(
                     "룰렛판에 들어갈 랜덤으로 생성된 포인트 배열 (length:8)"),
                 fieldWithPath("data.roulettePointIdx").description(
-                    "랜덤으로 하나 뽑은 포인트의 index (0~7중 랜덤 한 숫자)"),
-                fieldWithPath("data.todayResult").description("오늘 포인트 총 결과")
+                    "랜덤으로 하나 뽑은 포인트의 index (0~7중 랜덤 한 숫자)")
             )));
   }
 
@@ -188,7 +187,8 @@ public class GameControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
                 fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
                 fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
-                fieldWithPath("data.roulettePerDay").description("하루 룰렛 게임 한 횟수")
+                fieldWithPath("data.roulettePerDay").description("하루 룰렛 게임 한 횟수"),
+                fieldWithPath("data.todayResult").description("오늘 포인트 총 결과")
             )));
   }
 

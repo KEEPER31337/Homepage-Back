@@ -22,6 +22,7 @@ public class PostingDto {
 
   private Long memberId;
   private Long categoryId;
+  private String category;
   private String title;
   private String content;
   private Integer visitCount;
@@ -57,6 +58,7 @@ public class PostingDto {
     return PostingDto.builder()
         .memberId(postingEntity.getMemberId().getId())
         .categoryId(postingEntity.getCategoryId().getId())
+        .category(postingEntity.getCategoryId().getName())
         .title(postingEntity.getTitle())
         .content(postingEntity.getContent())
         .visitCount(postingEntity.getVisitCount())

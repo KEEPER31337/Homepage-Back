@@ -32,6 +32,10 @@ public class OtherMemberInfoResult {
 
   private Float generation;
 
+  private Boolean checkFollowee;
+
+  private Boolean checkFollower;
+
   public OtherMemberInfoResult(MemberEntity memberEntity) {
     this.loginId = memberEntity.getLoginId();
     this.realName = memberEntity.getRealName();
@@ -42,5 +46,10 @@ public class OtherMemberInfoResult {
     this.memberRankEntity = memberEntity.getMemberRank();
     this.thumbnailEntity = memberEntity.getThumbnail();
     this.generation = memberEntity.getGeneration();
+  }
+
+  public void setCheckFollow(Boolean checkFollowee, Boolean checkFollower) {
+    this.checkFollowee = checkFollowee;
+    this.checkFollower = checkFollower;
   }
 }

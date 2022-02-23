@@ -232,7 +232,7 @@ public class ExceptionAdvice {
       CustomMemberDuplicateException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(Integer.parseInt(getMessage("memberDuplicate.code")),
-        getMessage("memberDuplicate.msg"));
+        e.getMessage() == null ? getMessage("memberDuplicate.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomCommentNotFoundException.class)

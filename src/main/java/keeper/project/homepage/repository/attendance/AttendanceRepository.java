@@ -1,5 +1,6 @@
 package keeper.project.homepage.repository.attendance;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -13,12 +14,12 @@ public interface AttendanceRepository extends JpaRepository<AttendanceEntity, Lo
 
   List<AttendanceEntity> findAllByMember(MemberEntity memberEntity);
 
-  List<AttendanceEntity> findAllByTimeBetween(Date date1, Date date2);
+  List<AttendanceEntity> findAllByTimeBetween(LocalDateTime time, LocalDateTime time2);
 
-  List<AttendanceEntity> findAllByTimeBetweenAndMemberNotLike(Date date1, Date date2,
-      MemberEntity memberEntity);
+  List<AttendanceEntity> findAllByTimeBetweenAndMemberNotLike(LocalDateTime time,
+      LocalDateTime time2, MemberEntity member);
 
   List<AttendanceEntity> findByMemberAndTimeBetween(
-      MemberEntity memberId, Date time, Date time2);
+      MemberEntity member, LocalDateTime time, LocalDateTime time2);
 
 }

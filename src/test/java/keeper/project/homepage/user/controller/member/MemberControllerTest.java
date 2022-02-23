@@ -33,9 +33,9 @@ public class MemberControllerTest extends ApiControllerTestHelper {
   @BeforeEach
   public void setUp() throws Exception {
     userEntity = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
-    userToken = generateJWTToken(userEntity.getLoginId(), memberPassword);
+    userToken = generateJWTToken(userEntity);
     adminEntity = generateMemberEntity(MemberJobName.회장, MemberTypeName.정회원, MemberRankName.우수회원);
-    adminToken = generateJWTToken(adminEntity.getLoginId(), memberPassword);
+    adminToken = generateJWTToken(adminEntity);
     for (int i = 0; i < 22; i++) {
       generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
     }
@@ -56,19 +56,8 @@ public class MemberControllerTest extends ApiControllerTestHelper {
                 parameterWithName("size").optional().description("한 페이지당 출력 수(default = 20)")
             ),
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("성공 시 0을 반환"),
-                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("list[].loginId").description("해당 유저의 로그인 아이디"),
-                fieldWithPath("list[].realName").description("해당 유저의 실제 이름"),
-                fieldWithPath("list[].nickName").description("해당 유저의 닉네임"),
-                fieldWithPath("list[].birthday").description("해당 유저의 생일"),
-                fieldWithPath("list[].registerDate").description("해당 유저의 회원가입 날짜 및 시간"),
-                subsectionWithPath("list[].memberTypeEntity").description("해당 유저의 회원 타입"),
-                subsectionWithPath("list[].memberRankEntity").description("해당 유저의 회원 랭크"),
-                fieldWithPath("list[].thumbnailEntity").description("해당 유저의 썸네일"),
-                fieldWithPath("list[].generation").description("해당 유저의 회원 기수")
-
+                generateOtherMemberInfoCommonResponseFields(ResponseType.LIST,
+                    "성공: true +\n실패: false", "성공 시 0을 반환", "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
             )));
   }
 
@@ -97,18 +86,8 @@ public class MemberControllerTest extends ApiControllerTestHelper {
                 parameterWithName("id").description("찾고자 하는 다른 유저의 데이터베이스 상의 ID")
             ),
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("성공 시 0을 반환"),
-                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("data.loginId").description("해당 유저의 로그인 아이디"),
-                fieldWithPath("data.realName").description("해당 유저의 실제 이름"),
-                fieldWithPath("data.nickName").description("해당 유저의 닉네임"),
-                fieldWithPath("data.birthday").description("해당 유저의 생일"),
-                fieldWithPath("data.registerDate").description("해당 유저의 회원가입 날짜 및 시간"),
-                subsectionWithPath("data.memberTypeEntity").description("해당 유저의 회원 타입"),
-                subsectionWithPath("data.memberRankEntity").description("해당 유저의 회원 랭크"),
-                fieldWithPath("data.thumbnailEntity").description("해당 유저의 썸네일"),
-                fieldWithPath("data.generation").description("해당 유저의 회원 기수")
+                generateOtherMemberInfoCommonResponseFields(ResponseType.SINGLE,
+                    "성공: true +\n실패: false", "성공 시 0을 반환", "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
             )));
   }
 
@@ -146,18 +125,8 @@ public class MemberControllerTest extends ApiControllerTestHelper {
                 parameterWithName("name").description("찾고자 하는 다른 유저의 실제 이름")
             ),
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("성공 시 0을 반환"),
-                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("data.loginId").description("해당 유저의 로그인 아이디"),
-                fieldWithPath("data.realName").description("해당 유저의 실제 이름"),
-                fieldWithPath("data.nickName").description("해당 유저의 닉네임"),
-                fieldWithPath("data.birthday").description("해당 유저의 생일"),
-                fieldWithPath("data.registerDate").description("해당 유저의 회원가입 날짜 및 시간"),
-                subsectionWithPath("data.memberTypeEntity").description("해당 유저의 회원 타입"),
-                subsectionWithPath("data.memberRankEntity").description("해당 유저의 회원 랭크"),
-                fieldWithPath("data.thumbnailEntity").description("해당 유저의 썸네일"),
-                fieldWithPath("data.generation").description("해당 유저의 회원 기수")
+                generateOtherMemberInfoCommonResponseFields(ResponseType.SINGLE,
+                    "성공: true +\n실패: false", "성공 시 0을 반환", "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
             )));
 
   }

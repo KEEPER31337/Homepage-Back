@@ -485,6 +485,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].id").description("게시물 ID"),
                 fieldWithPath("list[].title").description("게시물 제목"),
                 fieldWithPath("list[].content").description("게시물 내용"),
+                fieldWithPath("list[].category").description("카테고리 이름"),
                 fieldWithPath("list[].writer").optional().description("작성자 (비밀 게시글일 경우 익명)"),
                 fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
                 fieldWithPath("list[].writerThumbnailId").optional()
@@ -535,6 +536,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].id").description("게시물 ID"),
                 fieldWithPath("list[].title").description("게시물 제목"),
                 fieldWithPath("list[].content").description("게시물 내용"),
+                fieldWithPath("list[].category").description("카테고리 이름"),
                 fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
                 fieldWithPath("list[].writerThumbnailId").optional()
@@ -580,6 +582,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].id").description("게시물 ID"),
                 fieldWithPath("list[].title").description("게시물 제목"),
                 fieldWithPath("list[].content").description("게시물 내용"),
+                fieldWithPath("list[].category").description("카테고리 이름"),
                 fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
                 fieldWithPath("list[].writerThumbnailId").optional()
@@ -621,10 +624,13 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
                 fieldWithPath("list[].id").description("게시물 ID"),
                 fieldWithPath("list[].title").description("제목"),
+                fieldWithPath("list[].userThumbnailID").description("작성자 썸네일 ID").optional(),
                 fieldWithPath("list[].user").description("작성자"),
                 fieldWithPath("list[].dateTime").description("작성 시간"),
                 fieldWithPath("list[].watch").description("조회 수"),
                 fieldWithPath("list[].commentN").description("댓글 개수"),
+                fieldWithPath("list[].categoryId").description("카테고리 ID"),
+                fieldWithPath("list[].category").description("카테고리명"),
                 fieldWithPath("list[].thumbnailId").description("게시글 썸네일 id").optional()
             )
         ));
@@ -653,6 +659,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.id").description("게시물 ID"),
                 fieldWithPath("data.title").description("게시물 제목"),
                 fieldWithPath("data.content").description("게시물 내용"),
+                fieldWithPath("data.category").description("카테고리 이름"),
                 fieldWithPath("data.writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("data.writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
                 fieldWithPath("data.writerThumbnailId").optional()
@@ -701,6 +708,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.id").description("게시물 ID"),
                 fieldWithPath("data.title").description("게시물 제목"),
                 fieldWithPath("data.content").description("게시물 내용"),
+                fieldWithPath("data.category").description("카테고리 이름"),
                 fieldWithPath("data.writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("data.writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
                 fieldWithPath("data.writerThumbnailId").optional()
@@ -968,6 +976,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].id").description("게시물 ID"),
                 fieldWithPath("list[].title").description("게시물 제목"),
                 fieldWithPath("list[].content").description("게시물 내용"),
+                fieldWithPath("list[].category").description("카테고리 이름"),
                 fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
                 fieldWithPath("list[].writerThumbnailId").optional()

@@ -48,9 +48,9 @@ public class CommentControllerTest extends ApiControllerTestHelper {
   @BeforeEach
   public void setUp() throws Exception {
     userEntity = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
-    userToken = generateJWTToken(userEntity.getLoginId(), memberPassword);
+    userToken = generateJWTToken(userEntity);
     adminEntity = generateMemberEntity(MemberJobName.회장, MemberTypeName.정회원, MemberRankName.우수회원);
-    adminToken = generateJWTToken(adminEntity.getLoginId(), memberPassword);
+    adminToken = generateJWTToken(adminEntity);
 
     CategoryEntity categoryEntity = generateCategoryEntity();
     postingEntity = generatePostingEntity(userEntity, categoryEntity, 0, 1, 0);

@@ -12,7 +12,6 @@ import keeper.project.homepage.dto.EmailAuthDto;
 import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.dto.posting.PostingDto;
 import keeper.project.homepage.dto.result.OtherMemberInfoResult;
-import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.EmailAuthRedisEntity;
 import keeper.project.homepage.entity.member.FriendEntity;
@@ -26,12 +25,16 @@ import keeper.project.homepage.repository.member.FriendRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.ThumbnailService;
+import keeper.project.homepage.service.ThumbnailService.ThumbnailSize;
 import keeper.project.homepage.service.mail.MailService;
 import keeper.project.homepage.service.sign.DuplicateCheckService;
+import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -50,6 +53,7 @@ public class MemberService {
   private final FileService fileService;
   private final MailService mailService;
   private final DuplicateCheckService duplicateCheckService;
+  private final AuthService authService;
 
   public MemberEntity findById(Long id) {
     return memberRepository.findById(id).orElseThrow(CustomMemberNotFoundException::new);
@@ -59,22 +63,47 @@ public class MemberService {
     return memberRepository.findByLoginId(loginId).orElseThrow(CustomMemberNotFoundException::new);
   }
 
+  private Boolean checkFollowing(MemberEntity other) {
+    MemberEntity me = authService.getMemberEntityWithJWT();
+    if (me.getFollowee().contains(other) == false) {
+      return false;
+    }
+    return true;
+  }
+
+  private Boolean checkFollower(MemberEntity other) {
+    MemberEntity me = authService.getMemberEntityWithJWT();
+    if (me.getFollower().contains(other) == false) {
+      return false;
+    }
+    return true;
+  }
+
   public OtherMemberInfoResult getOtherMemberInfoById(Long otherMemberId) {
     MemberEntity memberEntity = memberRepository.findById(otherMemberId)
         .orElseThrow(CustomMemberNotFoundException::new);
 
-    return new OtherMemberInfoResult(memberEntity);
+    OtherMemberInfoResult result = new OtherMemberInfoResult(memberEntity);
+    result.setCheckFollow(checkFollowing(memberEntity), checkFollower(memberEntity));
+    return result;
   }
 
   public OtherMemberInfoResult getOtherMemberInfoByRealName(String realName) {
     MemberEntity memberEntity = memberRepository.findByRealName(realName)
         .orElseThrow(CustomMemberNotFoundException::new);
 
-    return new OtherMemberInfoResult(memberEntity);
+    OtherMemberInfoResult result = new OtherMemberInfoResult(memberEntity);
+    result.setCheckFollow(checkFollowing(memberEntity), checkFollower(memberEntity));
+    return result;
   }
 
   public List<OtherMemberInfoResult> getAllOtherMemberInfo(Pageable pageable) {
-    return memberRepository.findAll(pageable).stream().map(OtherMemberInfoResult::new)
+    return memberRepository.findAll(pageable).stream()
+        .map(member -> {
+          OtherMemberInfoResult other = new OtherMemberInfoResult(member);
+          other.setCheckFollow(checkFollowing(member), checkFollower(member));
+          return other;
+        })
         .sorted(Comparator.comparing(OtherMemberInfoResult::getRegisterDate).reversed())
         .collect(Collectors.toList());
   }
@@ -206,9 +235,8 @@ public class MemberService {
       prevThumbnail = thumbnailService.findById(memberEntity.getThumbnail().getId());
     }
 
-    FileEntity fileEntity = fileService.saveOriginalThumbnail(image, ipAddress);
-    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
-        image, fileEntity, "small");
+    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(), image,
+        ThumbnailSize.LARGE, ipAddress);
 
     memberEntity.changeThumbnail(thumbnailEntity);
     MemberDto result = new MemberDto();
