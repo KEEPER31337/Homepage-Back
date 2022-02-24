@@ -1,0 +1,116 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+// 자동으로 생성된 snippet 설정하는 부분
+
+= KEEPER API 문서
+:icons: font
+// NOTE, TIP, WARNING, CAUTION, IMPORTANT 같은 경고구들 아이콘화 해줌
+:source-highlighter: highlight.js
+// source code 블럭에서 사용되는 highlighter 설정, 4개 정도 있던데 차이를 아직 잘 모르겠음.
+:toc: left
+// table of contents(toc) 왼쪽정렬하여 생성
+:toclevels: 1
+// default : 2 (==,  ===) 까지 toc에 보여줌.
+:sectlinks:
+// section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== *최상위 카테고리 불러오기 (자식 카테고리 포함)*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/category-headCategories-withChild/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/category-headCategories-withChild/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/category-headCategories-withChild/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/category-headCategories-withChild/response-fields.adoc[]
+
+== *최상위 카테고리 불러오기 (자식 카테고리 포함 X)*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/category-headCategories/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/category-headCategories/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/category-headCategories/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/category-headCategories/response-fields.adoc[]
+
+== *부모 ID로 자식 카테고리 불러오기 (자식 카테고리 포함)*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/category-lists-withChild-ByParentId/http-request.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/category-lists-withChild-ByParentId/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/category-lists-withChild-ByParentId/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/category-lists-withChild-ByParentId/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/category-lists-withChild-ByParentId/response-fields.adoc[]
+
+== *부모 ID로 자식 카테고리 불러오기 (자식 카테고리 포함 X)*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/category-lists-ByParentId/http-request.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/category-lists-ByParentId/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/category-lists-ByParentId/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/category-lists-ByParentId/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/category-lists-ByParentId/response-fields.adoc[]

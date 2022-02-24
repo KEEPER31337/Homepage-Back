@@ -46,7 +46,6 @@ src/main/resources/application.properties
 
 ### frontend code ###
 /frontend
-/src/main/resources/static
 
 ### Mac ###
 .DS_Store
@@ -54,3 +53,21 @@ src/main/resources/application.properties
 ._.DS_Store
 **/.DS_Store
 **/._.DS_Store
+
+### API 문서 ###
+src/main/resources/static/docs/**/*.html
+
+### 파일들 ###
+keeper_files
+
+### Log ###
+logs
+
+### env ###
+.env
+
+### local environment test files ###
+docker/config
+docker/app.jar
+docker/ESSENTIAL
+docker/ESSENTIAL.zip

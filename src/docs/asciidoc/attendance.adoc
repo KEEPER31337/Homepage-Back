@@ -1,0 +1,162 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+// 자동으로 생성된 snippet 설정하는 부분
+
+= KEEPER API 문서
+:icons: font
+// NOTE, TIP, WARNING, CAUTION, IMPORTANT 같은 경고구들 아이콘화 해줌
+:source-highlighter: highlight.js
+// source code 블럭에서 사용되는 highlighter 설정, 4개 정도 있던데 차이를 아직 잘 모르겠음.
+:toc: left
+// table of contents(toc) 왼쪽정렬하여 생성
+:toclevels: 1
+// default : 2 (==,  ===) 까지 toc에 보여줌.
+:sectlinks:
+// section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
+
+== API 목록
+
+link:keeper.html[API 목록으로 돌아가기]
+
+== 출석 생성
+
+=== 요청
+
+==== Request
+
+include::{snippets}/attend-create/http-request.adoc[]
+
+==== Request Parameters
+
+include::{snippets}/attend-create/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/attend-create/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/attend-create/response-body.adoc[]
+
+== 출석 메시지 업데이트
+
+=== 요청
+
+==== Request
+
+include::{snippets}/attend-update/http-request.adoc[]
+
+NOTE: Bearer JWT 토큰이 필요합니다.
+
+==== Request Parameters
+
+include::{snippets}/attend-update/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/attend-update/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/attend-update/response-fields.adoc[]
+
+== 내 출석날짜 확인
+
+=== 요청
+
+==== Request
+
+include::{snippets}/attend-get-my-date-list/http-request.adoc[]
+
+NOTE: Bearer JWT 토큰이 필요합니다.
+
+==== Request Parameters
+
+include::{snippets}/attend-get-my-date-list/request-parameters.adoc[]
+
+NOTE: startDate가 null일 경우 처음부터 endDate까지 받아옵니다.
+
+NOTE: endDate가 null일 경우 startDate부터 최근 데이터까지 받아옵니다.
+
+NOTE: 모두 null일 경우 모든 데이터를 받아옵니다.
+
+=== 응답
+
+==== Response
+
+include::{snippets}/attend-get-my-date-list/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/attend-get-my-date-list/response-fields.adoc[]
+
+== 내 출석정보 확인
+
+=== 요청
+
+==== Request
+
+include::{snippets}/attend-get-info/http-request.adoc[]
+
+NOTE: Bearer JWT 토큰이 필요합니다.
+
+==== Request Parameters
+
+include::{snippets}/attend-get-info/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/attend-get-info/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/attend-get-info/response-fields.adoc[]
+
+== 모든 출석정보 확인
+
+=== 요청
+
+==== Request
+
+include::{snippets}/attend-get-all/http-request.adoc[]
+
+NOTE: Bearer JWT 토큰이 필요합니다.
+
+==== Request Parameters
+
+include::{snippets}/attend-get-all/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/attend-get-all/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/attend-get-all/response-fields.adoc[]
+
+== 보너스 포인트 정보 불러오기
+
+=== 요청
+
+==== Request
+
+include::{snippets}/attend-get-point-info/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/attend-get-point-info/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/attend-get-point-info/response-fields.adoc[]

@@ -1,0 +1,75 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+// 자동으로 생성된 snippet 설정하는 부분
+
+= KEEPER API 문서
+:icons: font
+// NOTE, TIP, WARNING, CAUTION, IMPORTANT 같은 경고구들 아이콘화 해줌
+:source-highlighter: highlight.js
+// source code 블럭에서 사용되는 highlighter 설정, 4개 정도 있던데 차이를 아직 잘 모르겠음.
+:toc: left
+// table of contents(toc) 왼쪽정렬하여 생성
+:toclevels: 1
+// default : 2 (==,  ===) 까지 toc에 보여줌.
+:sectlinks:
+// section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
+
+== API 목록
+
+link:keeper.html[API 목록으로 돌아가기]
+
+== *로그인*
+
+=== 요청
+
+include::{snippets}/sign-in/http-request.adoc[]
+include::{snippets}/sign-in/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/sign-in/http-response.adoc[]
+include::{snippets}/sign-in/response-fields.adoc[]
+
+== *아이디 찾기*
+
+NOTE: 성공 시 이메일로 유저의 아이디를 전송
+
+=== 요청
+
+include::{snippets}/find-id/http-request.adoc[]
+include::{snippets}/find-id/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/find-id/http-response.adoc[]
+include::{snippets}/find-id/response-fields.adoc[]
+
+== *비밀번호 찾기*
+
+NOTE: 성공 시 이메일로 유저의 임시 비밀번호를 전송
+
+=== 요청
+
+include::{snippets}/find-password/http-request.adoc[]
+include::{snippets}/find-password/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/find-password/http-response.adoc[]
+include::{snippets}/find-password/response-fields.adoc[]
+
+== *비밀번호 변경하기*
+
+=== 요청
+
+include::{snippets}/change-password/http-request.adoc[]
+
+NOTE: Bearer JWT 토큰이 필요합니다.
+
+include::{snippets}/change-password/request-fields.adoc[]
+
+=== 응답
+
+include::{snippets}/change-password/http-response.adoc[]
+include::{snippets}/change-password/response-fields.adoc[]
