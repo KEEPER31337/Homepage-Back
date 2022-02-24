@@ -79,7 +79,7 @@ public class BookManageController {
   public CommonResult remove(@RequestBody String title, @RequestBody String author,
       @RequestBody Long quantity) {
 
-    return bookManageService.doDelete(title, author, quantity);
+    return bookManageService.doRemove(title, author, quantity);
 
   }
 

@@ -97,7 +97,7 @@ public class BookManageService {
   /**
    * 도서 삭제가 가능한지 체크
    */
-  public CommonResult doDelete(String title, String author, Long quantity) {
+  public CommonResult doRemove(String title, String author, Long quantity) {
 
     if (!bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
       throw new CustomBookNotFoundException("책이 존재하지 않습니다.");
@@ -110,7 +110,7 @@ public class BookManageService {
     } else if (numOfBooks - quantity < 0) {
       throw new CustomBookOverTheMaxException("수량 초과입니다.");
     } else {
-      updateDeleteInformation(title, author, quantity);
+      updateRemoveInformation(title, author, quantity);
     }
     return responseService.getSuccessResult();
   }
@@ -118,7 +118,7 @@ public class BookManageService {
   /**
    * 도서 삭제 업데이트
    */
-  public void updateDeleteInformation(String title, String author, Long quantity) {
+  public void updateRemoveInformation(String title, String author, Long quantity) {
     String information = bookRepository.findByTitleAndAuthor(title, author).get().getInformation();
     Long borrow = bookRepository.findByTitleAndAuthor(title, author).get().getBorrow();
     Long total = bookRepository.findByTitleAndAuthor(title, author).get().getTotal();
