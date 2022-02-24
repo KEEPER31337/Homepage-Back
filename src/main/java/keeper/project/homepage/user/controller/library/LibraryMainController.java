@@ -49,7 +49,7 @@ public class LibraryMainController {
 
   @GetMapping(value = "/selectedbook/borrow")
   public void sendBorrowMessage(@RequestParam String title, @RequestParam String author,
-      @RequestParam Long qunatity) throws JsonProcessingException {
+      @RequestParam Long qunatity) throws Exception {
 
     libraryMainService.sendBorrowMessage(title, author, qunatity);
   }

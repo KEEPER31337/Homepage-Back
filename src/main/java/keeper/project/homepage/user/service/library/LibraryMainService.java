@@ -2,6 +2,11 @@ package keeper.project.homepage.user.service.library;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpClient.Version;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -60,10 +65,10 @@ public class LibraryMainService {
   }
 
   public void sendBorrowMessage(String title, String author, Long quantity)
-      throws JsonProcessingException {
+      throws Exception {
 
     String apiKey = "0e34aed4f97818cc672325fe03160328";
-    String code = "EahWBD0mQAODxCPs8X52d-dpqxvSxXWnq-GFj6mGfQ5uSCYmYWdfUAuC4WaV_FXeemBnewo9dRsAAAF_JWREWQ";
+    String code = getLoginCode();
 
     HttpHeaders httpHeaders = new HttpHeaders();
     httpHeaders.setContentType(
@@ -86,5 +91,19 @@ public class LibraryMainService {
     System.out.println(responseEntity.getStatusCode());
     System.out.println(responseEntity.getBody());
 
+  }
+
+  private String getLoginCode() throws Exception{
+      HttpClient httpClient = HttpClient.newBuilder().version(Version.HTTP_1_1).build();
+      String result = httpClient.sendAsync(
+          HttpRequest.newBuilder(
+              new URI(
+                  "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=0e34aed4f97818cc672325fe03160328&redirect_uri=https://localhost:8080/v1/selectedbook/borrow")
+          ).GET().build(),
+          HttpResponse.BodyHandlers.ofString()
+      ).thenApply(HttpResponse::body).get();
+    System.out.println(result);
+
+    return result;
   }
 }
