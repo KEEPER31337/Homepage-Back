@@ -35,13 +35,13 @@ include::{snippets}/add-book/response-fields.adoc[]
 
 === 요청
 
-include::{snippets}/delete-book/http-request.adoc[]
-include::{snippets}/delete-book/request-parameters.adoc[]
+include::{snippets}/remove-book/http-request.adoc[]
+include::{snippets}/remove-book/request-parameters.adoc[]
 
 === 응답
 
-include::{snippets}/delete-book/http-response.adoc[]
-include::{snippets}/delete-book/response-fields.adoc[]
+include::{snippets}/remove-book/http-response.adoc[]
+include::{snippets}/remove-book/response-fields.adoc[]
 
 == *도서대여*
 
