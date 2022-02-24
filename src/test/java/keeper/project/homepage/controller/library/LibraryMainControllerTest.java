@@ -24,6 +24,7 @@ import javax.transaction.Transactional;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.dto.sign.SignInDto;
+import keeper.project.homepage.entity.library.BookDepartmentEntity;
 import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
@@ -184,7 +185,8 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].borrow").description("대여 중인 수"),
                 fieldWithPath("list[].enable").description("대여 가능한 수"),
                 fieldWithPath("list[].registerDate").description("등록된 날짜"),
-                fieldWithPath("list[].department").description("도서 분류 코드")
+                fieldWithPath("list[].department").description("도서 분류 코드").optional(),
+                fieldWithPath("list[].thumbnailId").description("썸네일 ID").optional()
             )));
   }
 
@@ -220,7 +222,8 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].borrow").description("대여 중인 수"),
                 fieldWithPath("list[].enable").description("대여 가능한 수"),
                 fieldWithPath("list[].registerDate").description("등록된 날짜"),
-                fieldWithPath("list[].department").description("도서 분류 코드")
+                fieldWithPath("list[].department").description("도서 분류 코드").optional(),
+                fieldWithPath("list[].thumbnailId").description("썸네일 ID").optional()
             )));
   }
 
@@ -254,7 +257,8 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.borrow").description("대여 중인 수"),
                 fieldWithPath("data.enable").description("대여 가능한 수"),
                 fieldWithPath("data.registerDate").description("등록된 날짜"),
-                fieldWithPath("data.department").description("도서 분류 코드")
+                fieldWithPath("data.department").description("도서 분류 코드").optional(),
+                fieldWithPath("data.thumbnailId").description("썸네일 ID").optional()
             )));
   }
 }

@@ -12,6 +12,7 @@ import keeper.project.homepage.repository.etc.StaticWriteSubtitleImageRepository
 import keeper.project.homepage.repository.etc.StaticWriteTitleRepository;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.attendance.AttendanceRepository;
+import keeper.project.homepage.repository.library.BookDepartmentRepository;
 import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.member.FriendRepository;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
@@ -66,6 +67,9 @@ public abstract class ApiControllerTestSetUp {
 
   @Autowired
   protected BookBorrowRepository bookBorrowRepository;
+
+  @Autowired
+  protected BookDepartmentRepository bookDepartmentRepository;
 
   @Autowired
   protected CategoryRepository categoryRepository;
