@@ -75,9 +75,9 @@ public class BookManageController {
     return bookManageService.doAdd(bookDto, thumbnailEntity);
   }
 
-  @PostMapping(value = "/delete")
-  public CommonResult delete(@RequestBody String title, @RequestBody String author,
-      @RequestParam Long quantity) {
+  @PostMapping(value = "/remove")
+  public CommonResult remove(@RequestBody String title, @RequestBody String author,
+      @RequestBody Long quantity) {
 
     return bookManageService.doDelete(title, author, quantity);
 
