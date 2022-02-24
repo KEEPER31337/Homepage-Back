@@ -23,6 +23,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,7 +32,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
 
-@RequestMapping("/v1/admin")
+@RequestMapping("/v1/admin/book")
 @RestController
 @RequiredArgsConstructor
 @Log4j2
@@ -44,7 +45,7 @@ public class BookManageController {
   private final ThumbnailService thumbnailService;
   private final ResponseService responseService;
 
-  @GetMapping(value = "/overduebooks")
+  @GetMapping(value = "/overdue")
   public ListResult<BookBorrowEntity> sendOverdueBooks(
       @PageableDefault(size = 10, sort = "expireDate", direction = Direction.ASC)
           Pageable pageable) {
@@ -52,7 +53,7 @@ public class BookManageController {
     return responseService.getSuccessListResult(bookManageService.sendOverdueBooks(pageable));
   }
 
-  @PostMapping(value = "/addbook", consumes = "multipart/form-data", produces = {
+  @PostMapping(value = "/add", consumes = "multipart/form-data", produces = {
       MediaType.APPLICATION_JSON_VALUE})
   public CommonResult add(
       @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
@@ -74,29 +75,29 @@ public class BookManageController {
     return bookManageService.doAdd(bookDto, thumbnailEntity);
   }
 
-  @PostMapping(value = "/deletebook")
-  public CommonResult delete(@RequestParam String title, @RequestParam String author,
+  @PostMapping(value = "/delete")
+  public CommonResult delete(@RequestBody String title, @RequestBody String author,
       @RequestParam Long quantity) {
 
     return bookManageService.doDelete(title, author, quantity);
 
   }
 
-  @PostMapping(value = "/borrowbook")
+  @PostMapping(value = "/borrow")
   public CommonResult borrow(
-      @RequestParam String title,
-      @RequestParam String author,
-      @RequestParam Long quantity) {
+      @RequestBody String title,
+      @RequestBody String author,
+      @RequestBody Long quantity) {
 
     Long borrowMemberId = authService.getMemberIdByJWT();
     return bookManageService.doBorrow(title, author, borrowMemberId, quantity);
   }
 
-  @PostMapping(value = "/returnbook")
+  @PostMapping(value = "/return")
   public CommonResult returnBook(
-      @RequestParam String title,
-      @RequestParam String author,
-      @RequestParam Long quantity) {
+      @RequestBody String title,
+      @RequestBody String author,
+      @RequestBody Long quantity) {
 
     Long returnMemberId = authService.getMemberIdByJWT();
     return bookManageService.doReturn(title, author, returnMemberId, quantity);
