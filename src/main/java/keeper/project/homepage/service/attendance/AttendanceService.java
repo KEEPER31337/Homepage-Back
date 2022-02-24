@@ -32,6 +32,7 @@ import java.util.Optional;
 import keeper.project.homepage.dto.attendance.AttendanceDto;
 import keeper.project.homepage.dto.attendance.AttendancePointDto;
 import keeper.project.homepage.dto.attendance.AttendanceResultDto;
+import keeper.project.homepage.dto.point.request.PointLogRequest;
 import keeper.project.homepage.entity.attendance.AttendanceEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.CustomAttendanceException;
@@ -39,6 +40,7 @@ import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.attendance.AttendanceRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.service.util.AuthService;
+import keeper.project.homepage.user.service.point.PointLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -49,6 +51,7 @@ public class AttendanceService {
   private final AttendanceRepository attendanceRepository;
   private final MemberRepository memberRepository;
   private final AuthService authService;
+  private final PointLogService pointLogService;
 
   private static final String DEFAULT_GREETINGS = "자동 출석입니다.";
   private List<Integer> DAY_OF_MONTH = new ArrayList<>();
@@ -103,10 +106,14 @@ public class AttendanceService {
       rankPoint += THIRD_PLACE_POINT;
     }
 
+    point = attendanceEntity.getPoint() + rankPoint;
     attendanceEntity.setRank(rank);
     attendanceEntity.setRankPoint(rankPoint);
-    attendanceEntity.setPoint(attendanceEntity.getPoint() + rankPoint);
+    attendanceEntity.setPoint(point);
     attendanceRepository.save(attendanceEntity);
+
+    pointLogService.createPointSaveLog(memberEntity,
+        new PointLogRequest(LocalDateTime.now(), point, "출석 포인트"));
   }
 
   private int getContinuousPoint(int continuousDay) {
