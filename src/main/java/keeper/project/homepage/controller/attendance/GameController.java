@@ -81,7 +81,7 @@ public class GameController {
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/lotto/info")
-  public SingleResult<Integer> checkLottoInfo() {
+  public SingleResult<LottoDto> checkLottoInfo() {
 
     return responseService.getSuccessSingleResult(gameService.checkLottoTimes());
   }

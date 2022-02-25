@@ -14,6 +14,7 @@ import lombok.Setter;
 @JsonInclude(Include.NON_NULL)
 public class LottoDto {
 
+  private Integer lottoPerDay;
   private Integer lottoPointIdx;
   private Integer todayResult;
 }

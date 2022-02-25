@@ -170,10 +170,13 @@ public class GameService {
     return gameEntity.getLottoPerDay() > LOTTO_MAX_PLAYTIME;
   }
 
-  public Integer checkLottoTimes() {
+  public LottoDto checkLottoTimes() {
 
+    LottoDto lottoDto = new LottoDto();
     GameEntity gameEntity = getOrResetGameEntity();
-    return gameEntity.getLottoPerDay();
+    lottoDto.setLottoPerDay(gameEntity.getLottoPerDay());
+    lottoDto.setTodayResult(gameEntity.getLottoDayPoint());
+    return lottoDto;
   }
 
   @Transactional
@@ -213,7 +216,7 @@ public class GameService {
     gameEntity.setLottoDayPoint(gameEntity.getLottoDayPoint() + result - LOTTO_FEE);
     gameRepository.save(gameEntity);
 
-    LottoDto lottoDto = new LottoDto(idx, gameEntity.getLottoDayPoint());
+    LottoDto lottoDto = new LottoDto(null, idx, gameEntity.getLottoDayPoint());
     pointLogService.createPointSaveLog(memberEntity,
         new PointLogRequest(LocalDateTime.now(), result, "로또 게임 결과"));
 

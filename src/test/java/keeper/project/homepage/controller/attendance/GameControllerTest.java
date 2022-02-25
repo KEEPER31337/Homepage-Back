@@ -206,7 +206,8 @@ public class GameControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
                 fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
                 fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
-                fieldWithPath("data").description("로또 게임 한 횟수")
+                fieldWithPath("data.lottoPerDay").description("로또 게임 한 횟수"),
+                fieldWithPath("data.todayResult").description("오늘 포인트 총 결과")
             )));
   }
 
