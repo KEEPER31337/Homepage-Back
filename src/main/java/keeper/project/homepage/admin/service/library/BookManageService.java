@@ -119,24 +119,16 @@ public class BookManageService {
    * 도서 삭제 업데이트
    */
   public void updateDeleteInformation(String title, String author, Long quantity) {
-    String information = bookRepository.findByTitleAndAuthor(title, author).get().getInformation();
+
+    BookEntity updateBookEntity = bookRepository.findByTitleAndAuthor(title, author).get();
     Long borrow = bookRepository.findByTitleAndAuthor(title, author).get().getBorrow();
     Long total = bookRepository.findByTitleAndAuthor(title, author).get().getTotal();
     Long enable = bookRepository.findByTitleAndAuthor(title, author).get().getEnable();
-    BookDepartmentEntity department = bookRepository.findByTitleAndAuthor(title, author).get()
-        .getDepartment();
 
-    bookRepository.save(
-        BookEntity.builder()
-            .title(title)
-            .author(author)
-            .information(information)
-            .department(department)
-            .total(total - quantity)
-            .borrow(borrow)
-            .enable(enable - quantity)
-            .registerDate(new Date())
-            .build());
+    updateBookEntity.setTotal(total - quantity);
+    updateBookEntity.setEnable(enable - quantity);
+
+    bookRepository.save(updateBookEntity);
   }
 
   /**
@@ -189,24 +181,13 @@ public class BookManageService {
             .build());
 
     BookEntity nowBookEntity = bookRepository.findByTitleAndAuthor(title, author).get();
-    String infromation = nowBookEntity.getInformation();
-    Long total = nowBookEntity.getTotal();
-    Long borrow = nowBookEntity.getBorrow() + quantity;
-    Long enable = nowBookEntity.getEnable() - quantity;
-    Date registerDate = nowBookEntity.getRegisterDate();
-    BookDepartmentEntity bookDepartment = nowBookEntity.getDepartment();
+    Long nowBorrow = nowBookEntity.getBorrow();
+    Long nowEnable = nowBookEntity.getEnable();
 
-    bookRepository.save(
-        BookEntity.builder()
-            .title(title)
-            .author(author)
-            .information(infromation)
-            .total(total)
-            .borrow(borrow)
-            .enable(enable)
-            .registerDate(registerDate)
-            .build()
-    );
+    nowBookEntity.setBorrow(nowBorrow + quantity);
+    nowBookEntity.setEnable(nowEnable - quantity);
+
+    bookRepository.save(nowBookEntity);
   }
 
   /**
@@ -292,24 +273,12 @@ public class BookManageService {
             .build());
 
     BookEntity nowBookEntity = bookRepository.findByTitleAndAuthor(title, author).get();
-    String infromation = nowBookEntity.getInformation();
-    Long total = nowBookEntity.getTotal();
-    Long borrow = nowBookEntity.getBorrow() - quantity;
-    Long enable = nowBookEntity.getEnable() + quantity;
-    Date registerDate = nowBookEntity.getRegisterDate();
-    BookDepartmentEntity department = nowBookEntity.getDepartment();
+    Long borrow = nowBookEntity.getBorrow();
+    Long enable = nowBookEntity.getEnable();
 
-    bookRepository.save(
-        BookEntity.builder()
-            .title(title)
-            .author(author)
-            .information(infromation)
-            .department(department)
-            .total(total)
-            .borrow(borrow)
-            .enable(enable)
-            .registerDate(registerDate)
-            .build()
-    );
+    nowBookEntity.setBorrow(borrow - quantity);
+    nowBookEntity.setEnable(enable + quantity);
+
+    bookRepository.save(nowBookEntity);
   }
 }
