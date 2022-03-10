@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import keeper.project.homepage.util.ImageCenterCrop;
 import keeper.project.homepage.common.dto.sign.EmailAuthDto;
 import keeper.project.homepage.dto.member.MemberDto;
-import keeper.project.homepage.dto.posting.PostingDto;
+import keeper.project.homepage.common.dto.posting.PostingDto;
 import keeper.project.homepage.dto.result.OtherMemberInfoResult;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.EmailAuthRedisEntity;

@@ -1,13 +1,13 @@
 package keeper.project.homepage.admin.service.posting;
 
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.posting.CommentEntity;
-import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.common.entity.posting.CommentEntity;
+import keeper.project.homepage.common.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.posting.CustomCommentNotFoundException;
 import keeper.project.homepage.repository.member.MemberHasCommentDislikeRepository;
 import keeper.project.homepage.repository.member.MemberHasCommentLikeRepository;
-import keeper.project.homepage.repository.posting.CommentRepository;
-import keeper.project.homepage.repository.posting.PostingRepository;
+import keeper.project.homepage.common.repository.posting.CommentRepository;
+import keeper.project.homepage.common.repository.posting.PostingRepository;
 import keeper.project.homepage.user.service.member.MemberService;
 import keeper.project.homepage.user.service.posting.CommentService;
 import lombok.RequiredArgsConstructor;

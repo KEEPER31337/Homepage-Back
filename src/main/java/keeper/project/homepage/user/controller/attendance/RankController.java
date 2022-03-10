@@ -1,6 +1,6 @@
 package keeper.project.homepage.user.controller.attendance;
 
-import keeper.project.homepage.dto.rank.RankResult;
+import keeper.project.homepage.common.dto.attendance.RankDto;
 import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.user.service.attendance.RankService;
@@ -25,7 +25,7 @@ public class RankController {
 
   @Secured("ROLE_회원")
   @GetMapping(value = "")
-  public ListResult<RankResult> showRanking(
+  public ListResult<RankDto> showRanking(
       @PageableDefault(page = 0, size = RankService.DEFAULT_SIZE, sort = "point", direction = Direction.DESC)
           Pageable pageable) {
 

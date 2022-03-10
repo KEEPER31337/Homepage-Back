@@ -1,7 +1,7 @@
 package keeper.project.homepage.service.member;
 
 import java.util.Optional;
-import keeper.project.homepage.entity.posting.CommentEntity;
+import keeper.project.homepage.common.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasCommentEntityPK;
 import keeper.project.homepage.entity.member.MemberHasCommentLikeEntity;
