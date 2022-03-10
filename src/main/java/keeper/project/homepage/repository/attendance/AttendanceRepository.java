@@ -1,9 +1,9 @@
-package keeper.project.homepage.common.repository.attendance;
+package keeper.project.homepage.repository.attendance;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import keeper.project.homepage.common.entity.attendance.AttendanceEntity;
+import keeper.project.homepage.entity.attendance.AttendanceEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,4 +1,4 @@
-package keeper.project.homepage.common.entity.posting;
+package keeper.project.homepage.entity.posting;
 
 import com.sun.istack.NotNull;
 import java.time.LocalDateTime;

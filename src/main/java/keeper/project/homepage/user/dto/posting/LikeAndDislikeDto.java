@@ -1,4 +1,4 @@
-package keeper.project.homepage.common.dto.posting;
+package keeper.project.homepage.user.dto.posting;
 
 import keeper.project.homepage.dto.result.CommonResult;
 import lombok.AllArgsConstructor;

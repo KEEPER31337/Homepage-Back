@@ -1,6 +1,6 @@
 package keeper.project.homepage.dto.result;
 
-import keeper.project.homepage.common.entity.posting.PostingEntity;
+import keeper.project.homepage.entity.posting.PostingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,4 +1,4 @@
-package keeper.project.homepage.common.entity.attendance;
+package keeper.project.homepage.entity.attendance;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.Instant;

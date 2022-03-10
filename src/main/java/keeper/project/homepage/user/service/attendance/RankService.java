@@ -2,7 +2,7 @@ package keeper.project.homepage.user.service.attendance;
 
 import java.util.ArrayList;
 import java.util.List;
-import keeper.project.homepage.common.dto.attendance.RankDto;
+import keeper.project.homepage.user.dto.attendance.RankDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;

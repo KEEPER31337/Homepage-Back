@@ -1,4 +1,4 @@
-package keeper.project.homepage.service;
+package keeper.project.homepage.util.service;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,10 +10,10 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 import keeper.project.homepage.util.ImageFormatChecking;
-import keeper.project.homepage.dto.FileDto;
+import keeper.project.homepage.util.dto.FileDto;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
-import keeper.project.homepage.common.entity.posting.PostingEntity;
+import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.file.CustomFileNotFoundException;
 import keeper.project.homepage.exception.file.CustomFileDeleteFailedException;
 import keeper.project.homepage.exception.file.CustomFileEntityNotFoundException;
