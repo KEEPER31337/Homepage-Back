@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.library;
+package keeper.project.homepage.user.dto.library;
 
 import java.time.LocalDateTime;
 import java.util.Date;
