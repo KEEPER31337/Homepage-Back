@@ -1,4 +1,4 @@
-package keeper.project.homepage.controller.attendance;
+package keeper.project.homepage.user.controller.attendance;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -8,7 +8,7 @@ import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.service.ResponseService;
-import keeper.project.homepage.service.attendance.AttendanceService;
+import keeper.project.homepage.user.service.attendance.AttendanceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.format.annotation.DateTimeFormat;

@@ -1,4 +1,4 @@
-package keeper.project.homepage.service.attendance;
+package keeper.project.homepage.user.service.attendance;
 
 import static keeper.project.homepage.dto.attendance.GameInfoDto.DICE_BET_MAX;
 import static keeper.project.homepage.dto.attendance.GameInfoDto.DICE_MAX_PLAYTIME;
@@ -18,7 +18,7 @@ import static keeper.project.homepage.dto.attendance.GameInfoDto.SECOND_POINT;
 import static keeper.project.homepage.dto.attendance.GameInfoDto.SECOND_PROB;
 import static keeper.project.homepage.dto.attendance.GameInfoDto.THIRD_POINT;
 import static keeper.project.homepage.dto.attendance.GameInfoDto.THIRD_PROB;
-import static keeper.project.homepage.service.attendance.DateUtils.isToday;
+import static keeper.project.homepage.user.service.attendance.DateUtils.isToday;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;

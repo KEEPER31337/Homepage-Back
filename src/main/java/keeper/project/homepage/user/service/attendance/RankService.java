@@ -1,4 +1,4 @@
-package keeper.project.homepage.service.attendance;
+package keeper.project.homepage.user.service.attendance;
 
 import java.util.ArrayList;
 import java.util.List;

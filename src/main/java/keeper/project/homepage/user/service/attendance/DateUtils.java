@@ -1,6 +1,6 @@
 // http://www.java2s.com/Code/Java/Data-Type/Checksifacalendardateistoday.htm
 
-package keeper.project.homepage.service.attendance;
+package keeper.project.homepage.user.service.attendance;
 
 import java.util.Calendar;
 import java.util.Date;
