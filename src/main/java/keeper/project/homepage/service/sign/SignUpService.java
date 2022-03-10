@@ -12,7 +12,7 @@ import keeper.project.homepage.entity.member.EmailAuthRedisEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
-import keeper.project.homepage.exception.CustomSignUpFailedException;
+import keeper.project.homepage.exception.sign.CustomSignUpFailedException;
 import keeper.project.homepage.repository.member.EmailAuthRedisRepository;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;

@@ -1,4 +1,4 @@
-package keeper.project.homepage.exception;
+package keeper.project.homepage.exception.sign;
 
 public class CustomAuthenticationEntryPointException extends RuntimeException {
 

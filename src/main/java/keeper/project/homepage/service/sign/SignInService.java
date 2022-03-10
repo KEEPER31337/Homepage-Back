@@ -11,7 +11,7 @@ import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.dto.sign.SignInDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
-import keeper.project.homepage.exception.CustomLoginIdSigninFailedException;
+import keeper.project.homepage.exception.sign.CustomLoginIdSigninFailedException;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.service.mail.MailService;
 import lombok.RequiredArgsConstructor;

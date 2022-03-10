@@ -1,4 +1,4 @@
-package keeper.project.homepage.exception;
+package keeper.project.homepage.exception.sign;
 
 public class CustomLoginIdSigninFailedException extends RuntimeException {
   public CustomLoginIdSigninFailedException(String msg, Throwable t) {
