@@ -186,30 +186,6 @@ public class CommentControllerTest extends ApiControllerTestHelper {
   }
 
   @Test
-  @DisplayName("관리자 권한 댓글 삭제 - 성공")
-  public void adminCommentDeleteTest() throws Exception {
-    String docSuccess = "성공: true +\n실패: false";
-    String docCode =
-        "존재하지 않는 댓글인 경우: " + exceptionAdvice.getMessage("commentNotFound.code") + " +\n"
-            + "삭제 중 에러가 난 경우: " + exceptionAdvice.getMessage("unKnown.code");
-    String docMsg = "댓글 기록을 완전히 삭제하지 않고 작성자와 댓글 내용, 좋아요와 싫어요 수를 초기화합니다.";
-    Long commentId = replyEntity.getId();
-    mockMvc.perform(
-            RestDocumentationRequestBuilders.delete("/v1/admin/comment/{commentId}", commentId)
-                .header("Authorization", adminToken))
-        .andExpect(status().isOk())
-        .andDo(print())
-        .andDo(document("admin-comment-delete",
-            pathParameters(
-                parameterWithName("commentId").description("삭제할 댓글의 id")
-            ),
-            responseFields(
-                generateCommonResponseFields(docSuccess, docCode, docMsg)
-            )
-        ));
-  }
-
-  @Test
   @DisplayName("댓글 수정")
   public void commentUpdateTest() throws Exception {
     Long updateId = replyEntity.getId();
