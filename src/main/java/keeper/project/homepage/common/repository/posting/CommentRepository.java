@@ -1,9 +1,9 @@
-package keeper.project.homepage.repository.posting;
+package keeper.project.homepage.common.repository.posting;
 
 import java.util.List;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.posting.CommentEntity;
-import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.common.entity.posting.CommentEntity;
+import keeper.project.homepage.common.entity.posting.PostingEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;

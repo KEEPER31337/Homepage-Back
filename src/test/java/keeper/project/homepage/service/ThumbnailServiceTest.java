@@ -1,13 +1,10 @@
 package keeper.project.homepage.service;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.common.FileConversion;
@@ -16,8 +13,8 @@ import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
-import keeper.project.homepage.entity.posting.CategoryEntity;
-import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.common.entity.posting.CategoryEntity;
+import keeper.project.homepage.common.entity.posting.PostingEntity;
 import keeper.project.homepage.common.ImageCenterCrop;
 import keeper.project.homepage.service.ThumbnailService.ThumbnailSize;
 import lombok.extern.log4j.Log4j2;

@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.rank;
+package keeper.project.homepage.common.dto.attendance;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -17,7 +17,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RankResult {
+public class RankDto {
 
   private Long id;
   private String nickName;

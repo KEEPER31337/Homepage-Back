@@ -1,4 +1,4 @@
-package keeper.project.homepage.entity.posting;
+package keeper.project.homepage.common.entity.posting;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.attendance;
+package keeper.project.homepage.common.dto.attendance;
 
 import java.util.List;
 import lombok.Getter;

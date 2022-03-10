@@ -13,7 +13,7 @@ import keeper.project.homepage.common.ImageFormatChecking;
 import keeper.project.homepage.dto.FileDto;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
-import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.common.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.file.CustomFileNotFoundException;
 import keeper.project.homepage.exception.file.CustomFileDeleteFailedException;
 import keeper.project.homepage.exception.file.CustomFileEntityNotFoundException;

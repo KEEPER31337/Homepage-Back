@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.attendance;
+package keeper.project.homepage.common.dto.attendance;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

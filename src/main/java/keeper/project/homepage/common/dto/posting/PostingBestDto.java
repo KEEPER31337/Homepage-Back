@@ -1,9 +1,7 @@
-package keeper.project.homepage.dto.posting;
+package keeper.project.homepage.common.dto.posting;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.common.entity.posting.PostingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

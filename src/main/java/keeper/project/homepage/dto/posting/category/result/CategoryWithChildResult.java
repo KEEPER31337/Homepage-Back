@@ -3,7 +3,7 @@ package keeper.project.homepage.dto.posting.category.result;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import keeper.project.homepage.entity.posting.CategoryEntity;
+import keeper.project.homepage.common.entity.posting.CategoryEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

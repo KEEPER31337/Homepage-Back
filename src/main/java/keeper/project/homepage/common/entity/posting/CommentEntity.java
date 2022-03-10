@@ -1,7 +1,6 @@
-package keeper.project.homepage.entity.posting;
+package keeper.project.homepage.common.entity.posting;
 
 import com.sun.istack.NotNull;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;

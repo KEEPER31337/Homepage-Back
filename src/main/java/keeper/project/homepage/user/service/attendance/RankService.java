@@ -2,7 +2,7 @@ package keeper.project.homepage.user.service.attendance;
 
 import java.util.ArrayList;
 import java.util.List;
-import keeper.project.homepage.dto.rank.RankResult;
+import keeper.project.homepage.common.dto.attendance.RankDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class RankService {
   private final MemberRepository memberRepository;
   public static final int DEFAULT_SIZE = 2000; // MAXIMUM PAGE SIZE
 
-  public List<RankResult> getRankList(Pageable pageable) {
+  public List<RankDto> getRankList(Pageable pageable) {
 
     if (isGetAll(pageable)) {
       pageable = Pageable.unpaged(); // 모든 정보 불러오기
@@ -27,8 +27,8 @@ public class RankService {
     return getRankResults(pageable);
   }
 
-  private List<RankResult> getRankResults(Pageable pageable) {
-    List<RankResult> results = new ArrayList<>();
+  private List<RankDto> getRankResults(Pageable pageable) {
+    List<RankDto> results = new ArrayList<>();
     List<MemberEntity> members;
     if (pageable == Pageable.unpaged()) {
       members = memberRepository.findAll(Sort.by(Direction.DESC, "point"));
@@ -40,10 +40,10 @@ public class RankService {
       if (member.getId() == 1) {
         continue;
       }
-      RankResult rankResult = new RankResult();
-      rankResult.initWithEntity(member);
-      rankResult.setRank(rank++);
-      results.add(rankResult);
+      RankDto rankDto = new RankDto();
+      rankDto.initWithEntity(member);
+      rankDto.setRank(rank++);
+      results.add(rankDto);
     }
 
     return results;

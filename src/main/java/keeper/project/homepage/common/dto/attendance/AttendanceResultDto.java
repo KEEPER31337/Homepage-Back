@@ -1,9 +1,7 @@
-package keeper.project.homepage.dto.attendance;
+package keeper.project.homepage.common.dto.attendance;
 
-import java.util.ArrayList;
-import java.util.List;
 import keeper.project.homepage.entity.ThumbnailEntity;
-import keeper.project.homepage.entity.attendance.AttendanceEntity;
+import keeper.project.homepage.common.entity.attendance.AttendanceEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

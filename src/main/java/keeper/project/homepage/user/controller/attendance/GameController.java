@@ -1,8 +1,8 @@
 package keeper.project.homepage.user.controller.attendance;
 
 import java.util.HashMap;
-import keeper.project.homepage.dto.attendance.LottoDto;
-import keeper.project.homepage.dto.attendance.RouletteDto;
+import keeper.project.homepage.common.dto.attendance.LottoDto;
+import keeper.project.homepage.common.dto.attendance.RouletteDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.service.ResponseService;

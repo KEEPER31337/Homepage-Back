@@ -6,7 +6,7 @@ import keeper.project.homepage.admin.service.posting.AdminPostingService;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
-import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.common.entity.posting.PostingEntity;
 import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.ResponseService;
 import keeper.project.homepage.service.ThumbnailService;

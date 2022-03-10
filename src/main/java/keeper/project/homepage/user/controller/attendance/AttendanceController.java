@@ -2,8 +2,8 @@ package keeper.project.homepage.user.controller.attendance;
 
 import java.time.LocalDate;
 import java.util.HashMap;
-import keeper.project.homepage.dto.attendance.AttendanceDto;
-import keeper.project.homepage.dto.attendance.AttendanceResultDto;
+import keeper.project.homepage.common.dto.attendance.AttendanceDto;
+import keeper.project.homepage.common.dto.attendance.AttendanceResultDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.dto.result.SingleResult;
