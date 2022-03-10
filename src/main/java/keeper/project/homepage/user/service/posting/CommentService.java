@@ -1,9 +1,9 @@
-package keeper.project.homepage.service.posting;
+package keeper.project.homepage.user.service.posting;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import keeper.project.homepage.dto.posting.CommentDto;
+import keeper.project.homepage.user.dto.posting.CommentDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
@@ -18,7 +18,7 @@ import keeper.project.homepage.repository.posting.CommentSpec;
 import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.service.member.MemberHasCommentLikeService;
-import keeper.project.homepage.service.util.AuthService;
+import keeper.project.homepage.service.posting.PostingService;
 import keeper.project.homepage.user.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +37,6 @@ public class CommentService {
   private final PostingRepository postingRepository;
   private final PostingService postingService;
   private final MemberService memberService;
-  private final AuthService authService;
   private final MemberHasCommentLikeService memberHasCommentLikeService;
   private final MemberHasCommentDislikeService memberHasCommentDislikeService;
   private final MemberHasCommentLikeRepository memberHasCommentLikeRepository;
@@ -194,11 +193,6 @@ public class CommentService {
   @Transactional
   public void deleteByWriter(Long memberId, Long commentId) {
     checkCorrectWriter(commentId, memberId);
-    deleteComment(commentId);
-  }
-
-  @Transactional
-  public void deleteByAdmin(Long commentId) {
     deleteComment(commentId);
   }
 

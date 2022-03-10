@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.posting;
+package keeper.project.homepage.user.dto.posting;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
