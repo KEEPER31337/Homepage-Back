@@ -1,10 +1,9 @@
-package keeper.project.homepage.controller.attendance;
+package keeper.project.homepage.user.controller.attendance;
 
 import keeper.project.homepage.dto.rank.RankResult;
 import keeper.project.homepage.dto.result.ListResult;
-import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.service.ResponseService;
-import keeper.project.homepage.service.attendance.RankService;
+import keeper.project.homepage.user.service.attendance.RankService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Pageable;

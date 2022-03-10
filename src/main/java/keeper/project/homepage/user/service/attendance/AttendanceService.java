@@ -1,23 +1,19 @@
-package keeper.project.homepage.service.attendance;
+package keeper.project.homepage.user.service.attendance;
 
 
 import static keeper.project.homepage.dto.attendance.AttendancePointDto.DAILY_ATTENDANCE_POINT;
 import static keeper.project.homepage.dto.attendance.AttendancePointDto.FIRST_PLACE_POINT;
-import static keeper.project.homepage.dto.attendance.AttendancePointDto.MONTH_ATTENDANCE;
 import static keeper.project.homepage.dto.attendance.AttendancePointDto.MONTH_ATTENDANCE_POINT;
 import static keeper.project.homepage.dto.attendance.AttendancePointDto.SECOND_PLACE_POINT;
 import static keeper.project.homepage.dto.attendance.AttendancePointDto.THIRD_PLACE_POINT;
 import static keeper.project.homepage.dto.attendance.AttendancePointDto.WEEK_ATTENDANCE;
 import static keeper.project.homepage.dto.attendance.AttendancePointDto.WEEK_ATTENDANCE_POINT;
-import static keeper.project.homepage.dto.attendance.AttendancePointDto.YEAR_ATTENDANCE;
 import static keeper.project.homepage.dto.attendance.AttendancePointDto.YEAR_ATTENDANCE_POINT;
-import static keeper.project.homepage.service.attendance.DateUtils.clearTime;
-import static keeper.project.homepage.service.attendance.DateUtils.isBeforeDay;
-import static keeper.project.homepage.service.attendance.DateUtils.isToday;
+import static keeper.project.homepage.user.service.attendance.DateUtils.isBeforeDay;
+import static keeper.project.homepage.user.service.attendance.DateUtils.isToday;
 
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
