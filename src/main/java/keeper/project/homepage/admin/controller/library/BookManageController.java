@@ -3,7 +3,7 @@ package keeper.project.homepage.admin.controller.library;
 import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.admin.service.library.BookManageService;
 import keeper.project.homepage.common.ImageCenterCrop;
-import keeper.project.homepage.dto.library.BookDto;
+import keeper.project.homepage.admin.dto.library.BookDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.dto.result.ListResult;
