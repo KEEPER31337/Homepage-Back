@@ -2,7 +2,7 @@ package keeper.project.homepage.user.controller.posting;
 
 import keeper.project.homepage.admin.dto.category.result.CategoryResult;
 import keeper.project.homepage.admin.dto.category.result.CategoryWithChildResult;
-import keeper.project.homepage.dto.result.ListResult;
+import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.user.service.posting.CategoryService;
 import lombok.RequiredArgsConstructor;

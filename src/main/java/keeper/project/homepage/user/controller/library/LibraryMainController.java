@@ -1,8 +1,8 @@
 package keeper.project.homepage.user.controller.library;
 
 import keeper.project.homepage.dto.library.BookResult;
-import keeper.project.homepage.dto.result.ListResult;
-import keeper.project.homepage.dto.result.SingleResult;
+import keeper.project.homepage.common.dto.result.ListResult;
+import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.user.service.library.LibraryMainService;
 import lombok.RequiredArgsConstructor;

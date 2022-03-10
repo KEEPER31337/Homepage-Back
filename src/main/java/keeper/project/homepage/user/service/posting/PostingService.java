@@ -8,7 +8,7 @@ import java.util.Optional;
 import keeper.project.homepage.user.dto.posting.LikeAndDislikeDto;
 import keeper.project.homepage.user.dto.posting.PostingBestDto;
 import keeper.project.homepage.user.dto.posting.PostingDto;
-import keeper.project.homepage.dto.result.PostingResult;
+import keeper.project.homepage.common.dto.result.PostingResult;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;

@@ -1,6 +1,6 @@
 package keeper.project.homepage.exception;
 
-import keeper.project.homepage.dto.result.CommonResult;
+import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.exception.file.CustomFileDeleteFailedException;
 import keeper.project.homepage.exception.file.CustomFileEntityNotFoundException;
 import keeper.project.homepage.exception.file.CustomFileNotFoundException;

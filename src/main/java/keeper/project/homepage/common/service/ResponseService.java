@@ -1,8 +1,8 @@
 package keeper.project.homepage.common.service;
 
-import keeper.project.homepage.dto.result.CommonResult;
-import keeper.project.homepage.dto.result.ListResult;
-import keeper.project.homepage.dto.result.SingleResult;
+import keeper.project.homepage.common.dto.result.CommonResult;
+import keeper.project.homepage.common.dto.result.ListResult;
+import keeper.project.homepage.common.dto.result.SingleResult;
 import java.util.List;
 import org.springframework.stereotype.Service;
 

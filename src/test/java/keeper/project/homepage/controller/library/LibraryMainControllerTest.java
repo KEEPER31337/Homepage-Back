@@ -21,7 +21,7 @@ import java.util.Date;
 import java.util.List;
 import javax.transaction.Transactional;
 import keeper.project.homepage.ApiControllerTestSetUp;
-import keeper.project.homepage.dto.result.SingleResult;
+import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.dto.sign.SignInDto;
 import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.entity.member.MemberEntity;

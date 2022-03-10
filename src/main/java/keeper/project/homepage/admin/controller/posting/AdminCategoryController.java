@@ -3,7 +3,7 @@ package keeper.project.homepage.admin.controller.posting;
 import keeper.project.homepage.admin.service.posting.AdminCategoryService;
 import keeper.project.homepage.admin.dto.category.reqeust.CategoryRequest;
 import keeper.project.homepage.admin.dto.category.result.CategoryResult;
-import keeper.project.homepage.dto.result.SingleResult;
+import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

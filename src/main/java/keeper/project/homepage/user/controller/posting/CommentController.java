@@ -2,9 +2,9 @@ package keeper.project.homepage.user.controller.posting;
 
 import java.util.List;
 import keeper.project.homepage.user.dto.posting.CommentDto;
-import keeper.project.homepage.dto.result.CommonResult;
-import keeper.project.homepage.dto.result.ListResult;
-import keeper.project.homepage.dto.result.SingleResult;
+import keeper.project.homepage.common.dto.result.CommonResult;
+import keeper.project.homepage.common.dto.result.ListResult;
+import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.user.service.posting.CommentService;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.common.service.util.AuthService;

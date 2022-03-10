@@ -19,7 +19,7 @@ import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.util.FileConversion;
-import keeper.project.homepage.dto.result.SingleResult;
+import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.dto.sign.SignInDto;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;

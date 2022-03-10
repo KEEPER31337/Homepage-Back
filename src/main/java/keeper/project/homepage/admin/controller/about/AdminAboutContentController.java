@@ -2,7 +2,7 @@ package keeper.project.homepage.admin.controller.about;
 
 import keeper.project.homepage.admin.service.about.AdminAboutContentService;
 import keeper.project.homepage.admin.dto.etc.StaticWriteContentDto;
-import keeper.project.homepage.dto.result.SingleResult;
+import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.service.etc.AboutContentService;
 import keeper.project.homepage.admin.dto.etc.StaticWriteContentResult;

@@ -18,7 +18,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
-import keeper.project.homepage.dto.result.SingleResult;
+import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.dto.sign.SignInDto;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;

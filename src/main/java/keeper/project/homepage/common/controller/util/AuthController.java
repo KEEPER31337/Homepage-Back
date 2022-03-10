@@ -1,6 +1,6 @@
 package keeper.project.homepage.common.controller.util;
 
-import keeper.project.homepage.dto.result.ListResult;
+import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.common.service.util.AuthService;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.result;
+package keeper.project.homepage.common.dto.result;
 
 import lombok.Getter;
 import lombok.Setter;

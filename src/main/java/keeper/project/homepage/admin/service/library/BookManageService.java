@@ -5,7 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.admin.dto.library.BookDto;
-import keeper.project.homepage.dto.result.CommonResult;
+import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.library.BookBorrowEntity;
 import keeper.project.homepage.entity.library.BookDepartmentEntity;

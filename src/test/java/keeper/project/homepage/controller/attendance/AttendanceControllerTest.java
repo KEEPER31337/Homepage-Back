@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.user.dto.attendance.AttendanceDto;
-import keeper.project.homepage.dto.result.SingleResult;
+import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.entity.attendance.AttendanceEntity;
 import keeper.project.homepage.common.dto.sign.SignInDto;
 import keeper.project.homepage.entity.member.MemberEntity;

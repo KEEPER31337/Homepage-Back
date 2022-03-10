@@ -2,10 +2,9 @@ package keeper.project.homepage.admin.controller.about;
 
 import keeper.project.homepage.admin.service.about.AdminAboutSubtitleService;
 import keeper.project.homepage.admin.dto.etc.StaticWriteSubtitleImageDto;
-import keeper.project.homepage.dto.result.SingleResult;
+import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.service.etc.AboutSubtitleService;
-import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.admin.dto.etc.StaticWriteSubtitleImageResult;
 import keeper.project.homepage.util.service.ThumbnailService;
 import lombok.RequiredArgsConstructor;
