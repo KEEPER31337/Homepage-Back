@@ -3,6 +3,7 @@ package keeper.project.homepage.entity.etc;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -35,7 +36,8 @@ public class StaticWriteTitleEntity {
   @Column(length = 40)
   private String type;
 
-  @OneToMany(mappedBy = "staticWriteTitle")
+  @OneToMany(mappedBy = "staticWriteTitle", cascade = CascadeType.REMOVE)
+  @Builder.Default
   private List<StaticWriteSubtitleImageEntity> staticWriteSubtitleImages = new ArrayList<>();
 
   // type명이 바뀌면 혼란스러울 수 있으므로 type명은 안바뀐다고 가정.

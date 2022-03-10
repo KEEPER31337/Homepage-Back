@@ -1,9 +1,8 @@
-package keeper.project.homepage.service.etc;
+package keeper.project.homepage.user.service.about;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import keeper.project.homepage.dto.etc.StaticWriteTitleDto;
 import keeper.project.homepage.dto.result.StaticWriteTitleResult;
 import keeper.project.homepage.entity.etc.StaticWriteTitleEntity;
 import keeper.project.homepage.exception.CustomAboutFailedException;
@@ -32,30 +31,6 @@ public class AboutTitleService {
       throw new CustomAboutFailedException("존재하지 않는 제목입니다.");
     }
     return new StaticWriteTitleResult(staticWriteTitleEntity.get());
-  }
-
-  public StaticWriteTitleResult createTitle(StaticWriteTitleDto titleDto) {
-
-    StaticWriteTitleEntity staticWriteTitleEntity = staticWriteTitleRepository.save(
-        titleDto.toEntity());
-    return new StaticWriteTitleResult(staticWriteTitleEntity);
-  }
-
-  public StaticWriteTitleResult modifyTitleById(StaticWriteTitleDto titleDto, Long id) {
-
-    StaticWriteTitleEntity staticWriteTitleEntity = staticWriteTitleRepository.findById(id)
-        .orElseThrow(() -> new CustomAboutFailedException("존재하지 않는 ID입니다."));
-    String title = titleDto.getTitle();
-    staticWriteTitleEntity.updateInfo(title);
-    staticWriteTitleRepository.save(staticWriteTitleEntity);
-    return new StaticWriteTitleResult(staticWriteTitleEntity);
-  }
-
-  public StaticWriteTitleResult deleteTitleById(Long id) {
-    StaticWriteTitleEntity staticWriteTitleEntity = staticWriteTitleRepository.findById(id)
-        .orElseThrow(() -> new CustomAboutFailedException("존재하지 않는 ID입니다."));
-    staticWriteTitleRepository.delete(staticWriteTitleEntity);
-    return new StaticWriteTitleResult(staticWriteTitleEntity);
   }
 
 }

@@ -1,12 +1,10 @@
-package keeper.project.homepage.controller.etc;
+package keeper.project.homepage.admin.controller.about;
 
+import keeper.project.homepage.admin.service.about.AdminAboutContentService;
 import keeper.project.homepage.dto.etc.StaticWriteContentDto;
-import keeper.project.homepage.dto.etc.StaticWriteSubtitleImageDto;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.dto.result.StaticWriteContentResult;
-import keeper.project.homepage.dto.result.StaticWriteSubtitleImageResult;
 import keeper.project.homepage.service.ResponseService;
-import keeper.project.homepage.service.etc.AboutContentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
@@ -22,20 +20,20 @@ import org.springframework.web.bind.annotation.RestController;
 @Log4j2
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/about/content")
-public class AboutContentController {
+@RequestMapping("/v1/admin/about/content")
+public class AdminAboutContentController {
 
-  private final AboutContentService aboutContentService;
+  private final AdminAboutContentService adminAboutContentService;
   private final ResponseService responseService;
 
   @Secured("ROLE_회장")
-  @PostMapping(value = "/new")
+  @PostMapping(value = "/create")
   public SingleResult<StaticWriteContentResult> createContent(
       @RequestBody StaticWriteContentDto staticWriteContentDto
   ) {
 
     return responseService.getSuccessSingleResult(
-        aboutContentService.createContent(staticWriteContentDto));
+        adminAboutContentService.createContent(staticWriteContentDto));
   }
 
   @Secured("ROLE_회장")
@@ -45,7 +43,7 @@ public class AboutContentController {
   ) {
 
     return responseService.getSuccessSingleResult(
-        aboutContentService.deleteContentById(id)
+        adminAboutContentService.deleteContentById(id)
     );
   }
 
@@ -60,7 +58,7 @@ public class AboutContentController {
   ) {
 
     return responseService.getSuccessSingleResult(
-        aboutContentService.modifyContentById(staticWriteContentDto, id)
+        adminAboutContentService.modifyContentById(staticWriteContentDto, id)
     );
   }
 

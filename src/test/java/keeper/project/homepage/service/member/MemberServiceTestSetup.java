@@ -461,6 +461,8 @@ public class MemberServiceTestSetup {
             .greetings("hi")
             .continuousDay(1)
             .rank(3)
+            .rankPoint(30)
+            .randomPoint((int) (Math.random() * 900 + 100)).build());
             .member(deletedMember)
             .build());
 
@@ -478,7 +480,7 @@ public class MemberServiceTestSetup {
             .member(otherMember)
             .rank(3)
             .rankPoint(30)
-            .randomPoint(random.nextInt(100, 1001)).build());
+            .randomPoint((int) (Math.random() * 900 + 100)).build());
   }
 
   public void generateCheckRemainBorrowInfoTestcase() {
