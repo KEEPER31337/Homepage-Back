@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.library;
+package keeper.project.homepage.admin.dto.library;
 
 import java.sql.Date;
 import keeper.project.homepage.entity.library.BookBorrowEntity;

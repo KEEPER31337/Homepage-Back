@@ -1,17 +1,17 @@
-package keeper.project.homepage.controller.etc;
+package keeper.project.homepage.admin.controller.about;
 
+import keeper.project.homepage.admin.service.about.AdminAboutTitleService;
 import keeper.project.homepage.dto.etc.StaticWriteTitleDto;
 import keeper.project.homepage.dto.result.ListResult;
-import keeper.project.homepage.dto.result.SingleResult;
-import keeper.project.homepage.dto.result.StaticWriteTitleResult;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.service.etc.AboutTitleService;
+import keeper.project.homepage.dto.result.SingleResult;
+import keeper.project.homepage.dto.result.StaticWriteTitleResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,31 +22,17 @@ import org.springframework.web.bind.annotation.RestController;
 @Log4j2
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/about/title")
-public class AboutTitleController {
+@RequestMapping("/v1/admin/about/title")
+public class AdminAboutTitleController {
 
-  private final AboutTitleService aboutTitleService;
+  private final AdminAboutTitleService adminAboutTitleService;
   private final ResponseService responseService;
 
-  @GetMapping(value = "type/{type}")
-  public ListResult<StaticWriteTitleResult> findAllByType(
-      @PathVariable("type") String type) {
-
-    return responseService.getSuccessListResult(aboutTitleService.findAllByType(type));
-  }
-
-  @GetMapping(value = "/{title}")
-  public SingleResult<StaticWriteTitleResult> findByTitle(
-      @PathVariable("title") String title) {
-
-    return responseService.getSuccessSingleResult(aboutTitleService.findByTitle(title));
-  }
-
   @Secured("ROLE_회장")
-  @PostMapping(value = "/new")
+  @PostMapping(value = "/create")
   public SingleResult<StaticWriteTitleResult> createTitle(@RequestBody StaticWriteTitleDto titleDto) {
 
-    return responseService.getSuccessSingleResult(aboutTitleService.createTitle(titleDto));
+    return responseService.getSuccessSingleResult(adminAboutTitleService.createTitle(titleDto));
   }
 
   @Secured("ROLE_회장")
@@ -58,7 +44,7 @@ public class AboutTitleController {
       @PathVariable("id") Long id,
       @RequestBody StaticWriteTitleDto titleDto) {
 
-    return responseService.getSuccessSingleResult(aboutTitleService.modifyTitleById(titleDto, id));
+    return responseService.getSuccessSingleResult(adminAboutTitleService.modifyTitleById(titleDto, id));
   }
 
   @Secured("ROLE_회장")
@@ -66,6 +52,7 @@ public class AboutTitleController {
   public SingleResult<StaticWriteTitleResult> deleteTitleById(
       @PathVariable("id") Long id
   ) {
-    return responseService.getSuccessSingleResult(aboutTitleService.deleteTitleById(id));
+    return responseService.getSuccessSingleResult(adminAboutTitleService.deleteTitleById(id));
   }
+
 }

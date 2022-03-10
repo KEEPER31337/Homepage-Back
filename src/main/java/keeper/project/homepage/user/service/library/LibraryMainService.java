@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import keeper.project.homepage.dto.library.BookResult;
+import keeper.project.homepage.user.dto.library.BookResult;
 import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.exception.library.CustomBookNotFoundException;
 import keeper.project.homepage.repository.library.BookRepository;

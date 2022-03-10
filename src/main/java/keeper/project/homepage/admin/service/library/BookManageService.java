@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import keeper.project.homepage.dto.library.BookDto;
+import keeper.project.homepage.admin.dto.library.BookDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.library.BookBorrowEntity;

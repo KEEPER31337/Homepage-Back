@@ -1,10 +1,11 @@
-package keeper.project.homepage.controller.etc;
+package keeper.project.homepage.admin.controller.about;
 
-import keeper.project.homepage.dto.etc.StaticWriteSubtitleImageDto;
+import keeper.project.homepage.admin.service.about.AdminAboutContentService;
+import keeper.project.homepage.dto.etc.StaticWriteContentDto;
 import keeper.project.homepage.dto.result.SingleResult;
-import keeper.project.homepage.dto.result.StaticWriteSubtitleImageResult;
+import keeper.project.homepage.dto.result.StaticWriteContentResult;
 import keeper.project.homepage.common.service.ResponseService;
-import keeper.project.homepage.service.etc.AboutSubtitleService;
+import keeper.project.homepage.service.etc.AboutContentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
@@ -20,30 +21,30 @@ import org.springframework.web.bind.annotation.RestController;
 @Log4j2
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/about/sub-tittle")
-public class AboutSubtitleController {
+@RequestMapping("/v1/admin/about/content")
+public class AdminAboutContentController {
 
-  private final AboutSubtitleService aboutSubtitleService;
+  private final AdminAboutContentService adminAboutContentService;
   private final ResponseService responseService;
 
   @Secured("ROLE_회장")
-  @PostMapping(value = "/new")
-  public SingleResult<StaticWriteSubtitleImageResult> createSubtitle(
-      @RequestBody StaticWriteSubtitleImageDto staticWriteSubtitleImageDto
+  @PostMapping(value = "/create")
+  public SingleResult<StaticWriteContentResult> createContent(
+      @RequestBody StaticWriteContentDto staticWriteContentDto
   ) {
 
     return responseService.getSuccessSingleResult(
-        aboutSubtitleService.createSubtitle(staticWriteSubtitleImageDto));
+        adminAboutContentService.createContent(staticWriteContentDto));
   }
 
   @Secured("ROLE_회장")
   @DeleteMapping(value = "/delete/{id}")
-  public SingleResult<StaticWriteSubtitleImageResult> deleteSubtitleById(
+  public SingleResult<StaticWriteContentResult> deleteContentById(
       @PathVariable("id") Long id
   ) {
 
     return responseService.getSuccessSingleResult(
-        aboutSubtitleService.deleteSubtitleById(id)
+        adminAboutContentService.deleteContentById(id)
     );
   }
 
@@ -52,13 +53,14 @@ public class AboutSubtitleController {
       method = {RequestMethod.PUT, RequestMethod.PATCH},
       value = "/modify/{id}",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public SingleResult<StaticWriteSubtitleImageResult> modifySubtitleById(
+  public SingleResult<StaticWriteContentResult> modifyContentById(
       @PathVariable("id") Long id,
-      @RequestBody StaticWriteSubtitleImageDto staticWriteSubtitleImageDto
+      @RequestBody StaticWriteContentDto staticWriteContentDto
   ) {
 
     return responseService.getSuccessSingleResult(
-        aboutSubtitleService.modifySubtitleById(staticWriteSubtitleImageDto, id));
+        adminAboutContentService.modifyContentById(staticWriteContentDto, id)
+    );
   }
 
 }

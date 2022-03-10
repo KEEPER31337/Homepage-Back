@@ -22,8 +22,7 @@ import reactor.util.annotation.Nullable;
 public class StaticWriteTitleDto {
 
   private String title;
-  // type은 Path로 들어오기 때문에 Request Body로 들어 올 필요가 없다.
-  @JsonProperty(access = Access.READ_ONLY)
+
   private String type;
 
   public StaticWriteTitleEntity toEntity() {
