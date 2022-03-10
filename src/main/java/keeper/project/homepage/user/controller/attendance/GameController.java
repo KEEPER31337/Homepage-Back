@@ -1,4 +1,4 @@
-package keeper.project.homepage.controller.attendance;
+package keeper.project.homepage.user.controller.attendance;
 
 import java.util.HashMap;
 import keeper.project.homepage.dto.attendance.LottoDto;
@@ -6,7 +6,7 @@ import keeper.project.homepage.dto.attendance.RouletteDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.service.ResponseService;
-import keeper.project.homepage.service.attendance.GameService;
+import keeper.project.homepage.user.service.attendance.GameService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.annotation.Secured;

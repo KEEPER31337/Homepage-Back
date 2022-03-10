@@ -27,7 +27,7 @@ import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.admin.service.library.BookManageService;
-import keeper.project.homepage.service.attendance.AttendanceService;
+import keeper.project.homepage.user.service.attendance.AttendanceService;
 import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.service.member.MemberHasCommentLikeService;
 import keeper.project.homepage.service.posting.CommentService;
