@@ -3,7 +3,7 @@ package keeper.project.homepage.controller.etc;
 import keeper.project.homepage.dto.etc.StaticWriteSubtitleImageDto;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.dto.result.StaticWriteSubtitleImageResult;
-import keeper.project.homepage.service.ResponseService;
+import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.service.etc.AboutSubtitleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

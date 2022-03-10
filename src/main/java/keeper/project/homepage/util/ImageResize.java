@@ -1,9 +1,8 @@
-package keeper.project.homepage.common;
+package keeper.project.homepage.util;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import javax.imageio.ImageIO;
 import keeper.project.homepage.exception.file.CustomImageIOException;
 import lombok.extern.log4j.Log4j2;

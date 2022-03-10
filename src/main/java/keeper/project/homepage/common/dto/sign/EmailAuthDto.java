@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto;
+package keeper.project.homepage.common.dto.sign;
 
 
 import lombok.AllArgsConstructor;

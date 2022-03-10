@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.dto.result.SingleResult;
-import keeper.project.homepage.dto.sign.SignInDto;
+import keeper.project.homepage.common.dto.sign.SignInDto;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.etc.StaticWriteSubtitleImageEntity;

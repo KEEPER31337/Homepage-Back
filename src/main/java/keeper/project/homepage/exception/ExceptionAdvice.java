@@ -25,7 +25,7 @@ import keeper.project.homepage.exception.posting.CustomParentCategoryNotFoundExc
 import keeper.project.homepage.exception.sign.CustomAuthenticationEntryPointException;
 import keeper.project.homepage.exception.sign.CustomLoginIdSigninFailedException;
 import keeper.project.homepage.exception.sign.CustomSignUpFailedException;
-import keeper.project.homepage.service.ResponseService;
+import keeper.project.homepage.common.service.ResponseService;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

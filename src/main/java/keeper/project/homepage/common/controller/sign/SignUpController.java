@@ -1,12 +1,12 @@
-package keeper.project.homepage.controller.sign;
+package keeper.project.homepage.common.controller.sign;
 
 import keeper.project.homepage.dto.result.CommonResult;
-import keeper.project.homepage.dto.EmailAuthDto;
+import keeper.project.homepage.common.dto.sign.EmailAuthDto;
 import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.dto.result.SingleResult;
-import keeper.project.homepage.service.sign.DuplicateCheckService;
-import keeper.project.homepage.service.ResponseService;
-import keeper.project.homepage.service.sign.SignUpService;
+import keeper.project.homepage.common.service.sign.DuplicateCheckService;
+import keeper.project.homepage.common.service.ResponseService;
+import keeper.project.homepage.common.service.sign.SignUpService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.web.bind.annotation.GetMapping;

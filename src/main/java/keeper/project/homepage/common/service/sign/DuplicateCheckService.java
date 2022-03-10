@@ -1,4 +1,4 @@
-package keeper.project.homepage.service.sign;
+package keeper.project.homepage.common.service.sign;
 
 import keeper.project.homepage.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;

@@ -13,7 +13,7 @@ import keeper.project.homepage.exception.CustomTransferPointLackException;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.point.PointLogRepository;
-import keeper.project.homepage.service.util.AuthService;
+import keeper.project.homepage.common.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

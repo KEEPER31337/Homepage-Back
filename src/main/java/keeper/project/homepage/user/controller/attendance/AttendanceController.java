@@ -7,7 +7,7 @@ import keeper.project.homepage.dto.attendance.AttendanceResultDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.dto.result.SingleResult;
-import keeper.project.homepage.service.ResponseService;
+import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.user.service.attendance.AttendanceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

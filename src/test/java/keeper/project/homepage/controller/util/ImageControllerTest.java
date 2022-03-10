@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 
 import java.io.File;
 import keeper.project.homepage.ApiControllerTestSetUp;
-import keeper.project.homepage.common.FileConversion;
+import keeper.project.homepage.util.FileConversion;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import org.junit.jupiter.api.BeforeAll;

@@ -1,4 +1,4 @@
-package keeper.project.homepage.service;
+package keeper.project.homepage.common.service;
 
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.ListResult;

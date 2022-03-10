@@ -1,4 +1,4 @@
-package keeper.project.homepage.controller;
+package keeper.project.homepage.common.controller.sign;
 
 import keeper.project.homepage.exception.sign.CustomAuthenticationEntryPointException;
 import keeper.project.homepage.dto.result.CommonResult;

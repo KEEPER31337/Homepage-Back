@@ -1,4 +1,4 @@
-package keeper.project.homepage.service.redis;
+package keeper.project.homepage.util.redis;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -9,7 +9,7 @@ import java.time.Duration;
 
 @RequiredArgsConstructor
 @Component
-public class RedisUtilService {
+public class RedisUtil {
 
   private final StringRedisTemplate redisTemplate;
 

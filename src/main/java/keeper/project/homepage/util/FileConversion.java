@@ -1,4 +1,4 @@
-package keeper.project.homepage.common;
+package keeper.project.homepage.util;
 
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;

@@ -1,8 +1,8 @@
-package keeper.project.homepage.controller.util;
+package keeper.project.homepage.common.controller.util;
 
 import keeper.project.homepage.dto.result.ListResult;
-import keeper.project.homepage.service.ResponseService;
-import keeper.project.homepage.service.util.AuthService;
+import keeper.project.homepage.common.service.ResponseService;
+import keeper.project.homepage.common.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

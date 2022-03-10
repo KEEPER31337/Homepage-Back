@@ -9,7 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
-import keeper.project.homepage.common.ImageFormatChecking;
+import keeper.project.homepage.util.ImageFormatChecking;
 import keeper.project.homepage.dto.FileDto;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;

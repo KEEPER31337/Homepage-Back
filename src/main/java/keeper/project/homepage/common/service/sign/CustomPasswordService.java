@@ -1,4 +1,4 @@
-package keeper.project.homepage.service.sign;
+package keeper.project.homepage.common.service.sign;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

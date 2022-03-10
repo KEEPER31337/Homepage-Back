@@ -1,4 +1,4 @@
-package keeper.project.homepage.service.sign;
+package keeper.project.homepage.common.service.sign;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,14 +6,14 @@ import java.util.Optional;
 import java.util.Random;
 import javax.transaction.Transactional;
 import keeper.project.homepage.config.security.JwtTokenProvider;
-import keeper.project.homepage.dto.EmailAuthDto;
+import keeper.project.homepage.common.dto.sign.EmailAuthDto;
 import keeper.project.homepage.dto.member.MemberDto;
-import keeper.project.homepage.dto.sign.SignInDto;
+import keeper.project.homepage.common.dto.sign.SignInDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.exception.sign.CustomLoginIdSigninFailedException;
 import keeper.project.homepage.repository.member.MemberRepository;
-import keeper.project.homepage.service.mail.MailService;
+import keeper.project.homepage.common.service.mail.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;

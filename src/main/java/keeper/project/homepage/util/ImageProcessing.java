@@ -1,7 +1,6 @@
-package keeper.project.homepage.common;
+package keeper.project.homepage.util;
 
 import java.io.File;
-import java.io.IOException;
 
 public interface ImageProcessing {
 

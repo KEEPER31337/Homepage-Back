@@ -1,4 +1,4 @@
-package keeper.project.homepage.service.util;
+package keeper.project.homepage.common.service.util;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.sign;
+package keeper.project.homepage.common.dto.sign;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;

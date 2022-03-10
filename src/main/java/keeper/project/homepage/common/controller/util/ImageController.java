@@ -1,4 +1,4 @@
-package keeper.project.homepage.controller.util;
+package keeper.project.homepage.common.controller.util;
 
 
 import java.io.IOException;
