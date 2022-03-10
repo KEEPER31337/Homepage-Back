@@ -120,8 +120,8 @@ public class BookManageService {
    */
   public void updateDeleteInformation(String title, String author, Long quantity) {
 
-    BookEntity updateBookEntity = bookRepository.findByTitleAndAuthor(title, author).get();
-    Long borrow = bookRepository.findByTitleAndAuthor(title, author).get().getBorrow();
+    BookEntity updateBookEntity = bookRepository.findByTitleAndAuthor(title, author)
+        .orElseThrow(() -> new CustomBookNotFoundException());
     Long total = bookRepository.findByTitleAndAuthor(title, author).get().getTotal();
     Long enable = bookRepository.findByTitleAndAuthor(title, author).get().getEnable();
 
@@ -166,8 +166,10 @@ public class BookManageService {
    * 도서 대여
    */
   public void borrowBook(String title, String author, Long borrowMemberId, Long quantity) {
-    BookEntity bookId = bookRepository.findByTitleAndAuthor(title, author).get();
-    MemberEntity memberId = memberRepository.findById(borrowMemberId).get();
+    BookEntity bookId = bookRepository.findByTitleAndAuthor(title, author)
+        .orElseThrow(() -> new CustomBookNotFoundException());
+    MemberEntity memberId = memberRepository.findById(borrowMemberId)
+        .orElseThrow(() -> new CustomMemberNotFoundException());
     String borrowDate = transferFormat(new Date());
     String expireDate = getExpireDate(14);
 
@@ -180,7 +182,8 @@ public class BookManageService {
             .expireDate(java.sql.Date.valueOf(expireDate))
             .build());
 
-    BookEntity nowBookEntity = bookRepository.findByTitleAndAuthor(title, author).get();
+    BookEntity nowBookEntity = bookRepository.findByTitleAndAuthor(title, author)
+        .orElseThrow(() -> new CustomBookNotFoundException());
     Long nowBorrow = nowBookEntity.getBorrow();
     Long nowEnable = nowBookEntity.getEnable();
 
@@ -272,7 +275,8 @@ public class BookManageService {
             .expireDate(java.sql.Date.valueOf(expireDate))
             .build());
 
-    BookEntity nowBookEntity = bookRepository.findByTitleAndAuthor(title, author).get();
+    BookEntity nowBookEntity = bookRepository.findByTitleAndAuthor(title, author)
+        .orElseThrow(() -> new CustomBookNotFoundException());
     Long borrow = nowBookEntity.getBorrow();
     Long enable = nowBookEntity.getEnable();
 
