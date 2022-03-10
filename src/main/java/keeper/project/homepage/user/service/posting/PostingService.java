@@ -1,4 +1,4 @@
-package keeper.project.homepage.service.posting;
+package keeper.project.homepage.user.service.posting;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

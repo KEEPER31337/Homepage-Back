@@ -1,4 +1,4 @@
-package keeper.project.homepage.controller.posting;
+package keeper.project.homepage.user.controller.posting;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,7 +23,7 @@ import keeper.project.homepage.service.ThumbnailService;
 import keeper.project.homepage.common.ImageCenterCrop;
 import keeper.project.homepage.service.ThumbnailService.ThumbnailSize;
 import keeper.project.homepage.user.service.posting.CommentService;
-import keeper.project.homepage.service.posting.PostingService;
+import keeper.project.homepage.user.service.posting.PostingService;
 import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

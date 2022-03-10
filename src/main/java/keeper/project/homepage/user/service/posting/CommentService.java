@@ -20,6 +20,7 @@ import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.service.member.MemberHasCommentLikeService;
 import keeper.project.homepage.service.posting.PostingService;
 import keeper.project.homepage.user.service.member.MemberService;
+import keeper.project.homepage.user.service.posting.PostingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
