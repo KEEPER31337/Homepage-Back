@@ -7,7 +7,7 @@ import keeper.project.homepage.user.dto.posting.CommentDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.common.entity.posting.CommentEntity;
 import keeper.project.homepage.common.entity.posting.PostingEntity;
-import keeper.project.homepage.exception.CustomAuthenticationEntryPointException;
+import keeper.project.homepage.exception.sign.CustomAuthenticationEntryPointException;
 import keeper.project.homepage.exception.CustomNumberOverflowException;
 import keeper.project.homepage.exception.posting.CustomCommentEmptyFieldException;
 import keeper.project.homepage.exception.posting.CustomCommentNotFoundException;

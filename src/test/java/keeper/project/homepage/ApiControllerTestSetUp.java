@@ -31,7 +31,7 @@ import keeper.project.homepage.user.service.attendance.AttendanceService;
 import keeper.project.homepage.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.service.member.MemberHasCommentLikeService;
 import keeper.project.homepage.user.service.posting.CommentService;
-import keeper.project.homepage.service.sign.SignUpService;
+import keeper.project.homepage.common.service.sign.SignUpService;
 import keeper.project.homepage.user.service.member.MemberService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;

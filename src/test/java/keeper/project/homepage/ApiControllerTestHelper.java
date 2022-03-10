@@ -1,7 +1,7 @@
 package keeper.project.homepage;
 
-import static keeper.project.homepage.service.sign.SignUpService.HALF_GENERATION_MONTH;
-import static keeper.project.homepage.service.sign.SignUpService.KEEPER_FOUNDING_YEAR;
+import static keeper.project.homepage.common.service.sign.SignUpService.HALF_GENERATION_MONTH;
+import static keeper.project.homepage.common.service.sign.SignUpService.KEEPER_FOUNDING_YEAR;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -21,9 +21,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import keeper.project.homepage.common.FileConversion;
+import keeper.project.homepage.util.FileConversion;
 import keeper.project.homepage.dto.result.SingleResult;
-import keeper.project.homepage.dto.sign.SignInDto;
+import keeper.project.homepage.common.dto.sign.SignInDto;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;

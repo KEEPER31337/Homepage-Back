@@ -4,7 +4,7 @@ import keeper.project.homepage.admin.service.posting.AdminCategoryService;
 import keeper.project.homepage.dto.posting.category.reqeust.CategoryRequest;
 import keeper.project.homepage.dto.posting.category.result.CategoryResult;
 import keeper.project.homepage.dto.result.SingleResult;
-import keeper.project.homepage.service.ResponseService;
+import keeper.project.homepage.common.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;

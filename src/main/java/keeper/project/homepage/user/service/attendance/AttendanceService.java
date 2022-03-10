@@ -35,7 +35,7 @@ import keeper.project.homepage.exception.CustomAttendanceException;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.common.repository.attendance.AttendanceRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
-import keeper.project.homepage.service.util.AuthService;
+import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.user.service.point.PointLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

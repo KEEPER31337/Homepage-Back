@@ -27,7 +27,7 @@ import keeper.project.homepage.common.repository.posting.PostingRepository;
 import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.ThumbnailService;
 import keeper.project.homepage.user.service.posting.PostingService;
-import keeper.project.homepage.service.sign.CustomPasswordService;
+import keeper.project.homepage.common.service.sign.CustomPasswordService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

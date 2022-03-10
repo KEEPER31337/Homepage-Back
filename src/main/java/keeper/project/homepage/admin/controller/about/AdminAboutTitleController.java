@@ -2,9 +2,11 @@ package keeper.project.homepage.admin.controller.about;
 
 import keeper.project.homepage.admin.service.about.AdminAboutTitleService;
 import keeper.project.homepage.dto.etc.StaticWriteTitleDto;
+import keeper.project.homepage.dto.result.ListResult;
+import keeper.project.homepage.common.service.ResponseService;
+import keeper.project.homepage.service.etc.AboutTitleService;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.dto.result.StaticWriteTitleResult;
-import keeper.project.homepage.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
