@@ -1,6 +1,6 @@
 package keeper.project.homepage.admin.dto.category.reqeust;
 
-import keeper.project.homepage.common.entity.posting.CategoryEntity;
+import keeper.project.homepage.entity.posting.CategoryEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

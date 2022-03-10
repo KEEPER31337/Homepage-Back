@@ -1,8 +1,7 @@
-package keeper.project.homepage.common.dto.attendance;
+package keeper.project.homepage.user.dto.attendance;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,10 +12,9 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @JsonInclude(Include.NON_NULL)
-public class RouletteDto {
+public class LottoDto {
 
-  private Integer roulettePerDay;
-  private List<Integer> roulettePoints;
-  private Integer roulettePointIdx;
+  private Integer lottoPerDay;
+  private Integer lottoPointIdx;
   private Integer todayResult;
 }

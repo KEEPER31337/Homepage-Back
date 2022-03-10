@@ -2,10 +2,10 @@ package keeper.project.homepage.user.service.posting;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import keeper.project.homepage.common.entity.posting.CategoryEntity;
-import keeper.project.homepage.common.repository.posting.CategoryRepository;
 import keeper.project.homepage.admin.dto.category.result.CategoryResult;
 import keeper.project.homepage.admin.dto.category.result.CategoryWithChildResult;
+import keeper.project.homepage.entity.posting.CategoryEntity;
+import keeper.project.homepage.repository.posting.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

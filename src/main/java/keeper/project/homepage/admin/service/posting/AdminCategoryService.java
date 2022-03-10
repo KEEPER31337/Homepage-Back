@@ -6,7 +6,7 @@ import keeper.project.homepage.admin.dto.category.result.CategoryResult;
 import keeper.project.homepage.exception.posting.CustomAccessRootCategoryException;
 import keeper.project.homepage.exception.posting.CustomCategoryNotFoundException;
 import keeper.project.homepage.exception.posting.CustomParentCategoryNotFoundException;
-import keeper.project.homepage.common.repository.posting.CategoryRepository;
+import keeper.project.homepage.repository.posting.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

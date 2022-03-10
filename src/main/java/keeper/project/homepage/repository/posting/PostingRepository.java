@@ -1,12 +1,12 @@
-package keeper.project.homepage.common.repository.posting;
+package keeper.project.homepage.repository.posting;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasPostingDislikeEntity;
 import keeper.project.homepage.entity.member.MemberHasPostingLikeEntity;
-import keeper.project.homepage.common.entity.posting.CategoryEntity;
-import keeper.project.homepage.common.entity.posting.PostingEntity;
+import keeper.project.homepage.entity.posting.CategoryEntity;
+import keeper.project.homepage.entity.posting.PostingEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

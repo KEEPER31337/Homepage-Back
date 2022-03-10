@@ -1,4 +1,4 @@
-package keeper.project.homepage.common.dto.attendance;
+package keeper.project.homepage.user.dto.attendance;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;

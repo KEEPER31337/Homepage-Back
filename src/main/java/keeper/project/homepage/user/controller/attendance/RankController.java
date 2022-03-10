@@ -1,6 +1,6 @@
 package keeper.project.homepage.user.controller.attendance;
 
-import keeper.project.homepage.common.dto.attendance.RankDto;
+import keeper.project.homepage.user.dto.attendance.RankDto;
 import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.user.service.attendance.RankService;

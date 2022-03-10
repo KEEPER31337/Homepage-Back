@@ -3,7 +3,7 @@ package keeper.project.homepage.service.member;
 import java.io.File;
 import java.util.Optional;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.common.entity.posting.PostingEntity;
+import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.member.CustomAccountDeleteFailedException;
 import keeper.project.homepage.user.service.member.MemberService;
 import org.junit.jupiter.api.Assertions;

@@ -7,7 +7,7 @@ import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.service.etc.AboutSubtitleService;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.admin.dto.etc.StaticWriteSubtitleImageResult;
-import keeper.project.homepage.service.ThumbnailService;
+import keeper.project.homepage.util.service.ThumbnailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
