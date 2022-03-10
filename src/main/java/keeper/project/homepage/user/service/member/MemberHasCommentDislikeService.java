@@ -1,4 +1,4 @@
-package keeper.project.homepage.service.member;
+package keeper.project.homepage.user.service.member;
 
 import java.util.Optional;
 import keeper.project.homepage.common.entity.posting.CommentEntity;

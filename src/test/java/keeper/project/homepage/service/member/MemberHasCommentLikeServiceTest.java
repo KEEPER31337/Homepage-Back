@@ -17,6 +17,7 @@ import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.common.repository.posting.CategoryRepository;
 import keeper.project.homepage.common.repository.posting.CommentRepository;
 import keeper.project.homepage.common.repository.posting.PostingRepository;
+import keeper.project.homepage.user.service.member.MemberHasCommentLikeService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

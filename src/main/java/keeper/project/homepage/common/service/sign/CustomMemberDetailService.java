@@ -1,4 +1,4 @@
-package keeper.project.homepage.service.member;
+package keeper.project.homepage.common.service.sign;
 
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.member.MemberRepository;
