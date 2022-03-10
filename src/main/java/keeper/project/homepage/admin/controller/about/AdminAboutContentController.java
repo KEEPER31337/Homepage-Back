@@ -1,9 +1,9 @@
 package keeper.project.homepage.admin.controller.about;
 
 import keeper.project.homepage.admin.service.about.AdminAboutContentService;
-import keeper.project.homepage.dto.etc.StaticWriteContentDto;
+import keeper.project.homepage.admin.dto.etc.StaticWriteContentDto;
 import keeper.project.homepage.dto.result.SingleResult;
-import keeper.project.homepage.dto.result.StaticWriteContentResult;
+import keeper.project.homepage.admin.dto.etc.StaticWriteContentResult;
 import keeper.project.homepage.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

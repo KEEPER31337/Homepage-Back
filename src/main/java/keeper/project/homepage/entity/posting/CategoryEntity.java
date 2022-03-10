@@ -9,7 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import keeper.project.homepage.dto.posting.category.reqeust.CategoryRequest;
+import keeper.project.homepage.admin.dto.category.reqeust.CategoryRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

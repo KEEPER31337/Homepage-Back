@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.member;
+package keeper.project.homepage.admin.dto.member;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberTypeDto {
+public class MemberRankDto {
 
   private String memberLoginId;
   private String name;

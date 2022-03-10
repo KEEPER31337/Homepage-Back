@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.posting.category.result;
+package keeper.project.homepage.admin.dto.category.result;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class CategoryWithChildResult {
+public class CategoryResult {
 
   private Long id;
 
@@ -19,16 +19,9 @@ public class CategoryWithChildResult {
 
   private String href;
 
-  private List<CategoryWithChildResult> children = new ArrayList<>();
-
-  public CategoryWithChildResult(CategoryEntity category) {
+  public CategoryResult(CategoryEntity category) {
     this.id = category.getId();
     this.name = category.getName();
     this.href = category.getHref();
-    if(category.getChildren() != null) {
-      this.children = category.getChildren().stream().map(CategoryWithChildResult::new).collect(
-          Collectors.toList());
-    }
   }
-
 }

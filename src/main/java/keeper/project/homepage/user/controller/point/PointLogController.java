@@ -1,9 +1,9 @@
 package keeper.project.homepage.user.controller.point;
 
-import keeper.project.homepage.dto.point.request.PointGiftLogRequest;
+import keeper.project.homepage.user.dto.point.request.PointGiftLogRequest;
 import keeper.project.homepage.dto.result.ListResult;
-import keeper.project.homepage.dto.point.result.PointGiftLogResult;
-import keeper.project.homepage.dto.point.result.PointLogResult;
+import keeper.project.homepage.user.dto.point.result.PointGiftLogResult;
+import keeper.project.homepage.user.dto.point.result.PointLogResult;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.service.ResponseService;
 

@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.result;
+package keeper.project.homepage.admin.dto.etc;
 
 import keeper.project.homepage.entity.etc.StaticWriteContentEntity;
 import lombok.AllArgsConstructor;

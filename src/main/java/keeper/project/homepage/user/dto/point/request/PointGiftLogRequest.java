@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.point.request;
+package keeper.project.homepage.user.dto.point.request;
 
 import java.time.LocalDateTime;
 import keeper.project.homepage.entity.member.MemberEntity;

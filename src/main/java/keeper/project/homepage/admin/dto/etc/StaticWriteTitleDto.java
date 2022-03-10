@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.etc;
+package keeper.project.homepage.admin.dto.etc;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;

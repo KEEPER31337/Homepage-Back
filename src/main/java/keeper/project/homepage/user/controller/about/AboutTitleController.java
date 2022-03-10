@@ -2,7 +2,7 @@ package keeper.project.homepage.user.controller.about;
 
 import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.dto.result.SingleResult;
-import keeper.project.homepage.dto.result.StaticWriteTitleResult;
+import keeper.project.homepage.admin.dto.etc.StaticWriteTitleResult;
 import keeper.project.homepage.service.ResponseService;
 import keeper.project.homepage.user.service.about.AboutTitleService;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
 package keeper.project.homepage.admin.service.about;
 
-import keeper.project.homepage.dto.etc.StaticWriteTitleDto;
-import keeper.project.homepage.dto.result.StaticWriteTitleResult;
+import keeper.project.homepage.admin.dto.etc.StaticWriteTitleDto;
+import keeper.project.homepage.admin.dto.etc.StaticWriteTitleResult;
 import keeper.project.homepage.entity.etc.StaticWriteTitleEntity;
 import keeper.project.homepage.exception.CustomAboutFailedException;
 import keeper.project.homepage.repository.etc.StaticWriteTitleRepository;

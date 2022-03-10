@@ -28,7 +28,7 @@ import java.util.Optional;
 import keeper.project.homepage.dto.attendance.AttendanceDto;
 import keeper.project.homepage.dto.attendance.AttendancePointDto;
 import keeper.project.homepage.dto.attendance.AttendanceResultDto;
-import keeper.project.homepage.dto.point.request.PointLogRequest;
+import keeper.project.homepage.user.dto.point.request.PointLogRequest;
 import keeper.project.homepage.entity.attendance.AttendanceEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.CustomAttendanceException;

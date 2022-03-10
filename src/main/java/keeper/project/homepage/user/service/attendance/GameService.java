@@ -30,7 +30,7 @@ import java.util.Optional;
 import keeper.project.homepage.dto.attendance.GameInfoDto;
 import keeper.project.homepage.dto.attendance.LottoDto;
 import keeper.project.homepage.dto.attendance.RouletteDto;
-import keeper.project.homepage.dto.point.request.PointLogRequest;
+import keeper.project.homepage.user.dto.point.request.PointLogRequest;
 import keeper.project.homepage.entity.attendance.GameEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
