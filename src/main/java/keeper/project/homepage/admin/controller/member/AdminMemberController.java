@@ -1,13 +1,13 @@
 package keeper.project.homepage.admin.controller.member;
 
 import keeper.project.homepage.admin.service.member.AdminMemberService;
-import keeper.project.homepage.dto.member.MemberDemeritDto;
+import keeper.project.homepage.admin.dto.member.MemberDemeritDto;
 import keeper.project.homepage.dto.member.MemberDto;
-import keeper.project.homepage.dto.member.MemberGenerationDto;
-import keeper.project.homepage.dto.member.MemberJobDto;
-import keeper.project.homepage.dto.member.MemberMeritDto;
-import keeper.project.homepage.dto.member.MemberRankDto;
-import keeper.project.homepage.dto.member.MemberTypeDto;
+import keeper.project.homepage.admin.dto.member.MemberGenerationDto;
+import keeper.project.homepage.admin.dto.member.MemberJobDto;
+import keeper.project.homepage.admin.dto.member.MemberMeritDto;
+import keeper.project.homepage.admin.dto.member.MemberRankDto;
+import keeper.project.homepage.admin.dto.member.MemberTypeDto;
 import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.entity.member.MemberEntity;

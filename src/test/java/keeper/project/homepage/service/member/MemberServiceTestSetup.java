@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Random;
 import keeper.project.homepage.user.service.member.MemberDeleteService;
 import keeper.project.homepage.util.FileConversion;
-import keeper.project.homepage.dto.point.request.PointLogRequest;
+import keeper.project.homepage.user.dto.point.request.PointLogRequest;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.common.entity.attendance.AttendanceEntity;

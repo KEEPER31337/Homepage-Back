@@ -1,8 +1,8 @@
 package keeper.project.homepage.admin.service.posting;
 
-import keeper.project.homepage.dto.posting.category.reqeust.CategoryRequest;
-import keeper.project.homepage.dto.posting.category.result.CategoryResult;
 import keeper.project.homepage.common.entity.posting.CategoryEntity;
+import keeper.project.homepage.admin.dto.category.reqeust.CategoryRequest;
+import keeper.project.homepage.admin.dto.category.result.CategoryResult;
 import keeper.project.homepage.exception.posting.CustomAccessRootCategoryException;
 import keeper.project.homepage.exception.posting.CustomCategoryNotFoundException;
 import keeper.project.homepage.exception.posting.CustomParentCategoryNotFoundException;

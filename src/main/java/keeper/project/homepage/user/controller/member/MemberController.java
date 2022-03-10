@@ -7,7 +7,7 @@ import keeper.project.homepage.dto.member.MemberDto;
 import keeper.project.homepage.common.dto.posting.PostingDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.ListResult;
-import keeper.project.homepage.dto.result.OtherMemberInfoResult;
+import keeper.project.homepage.user.dto.member.OtherMemberInfoResult;
 import keeper.project.homepage.dto.result.SingleResult;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.common.service.ResponseService;

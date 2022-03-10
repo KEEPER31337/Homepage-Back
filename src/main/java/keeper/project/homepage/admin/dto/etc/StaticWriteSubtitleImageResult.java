@@ -1,8 +1,9 @@
-package keeper.project.homepage.dto.result;
+package keeper.project.homepage.admin.dto.etc;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import keeper.project.homepage.admin.dto.etc.StaticWriteContentResult;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.etc.StaticWriteSubtitleImageEntity;
 import lombok.AllArgsConstructor;

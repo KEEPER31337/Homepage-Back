@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.point.result;
+package keeper.project.homepage.user.dto.point.result;
 
 import java.time.LocalDateTime;
 import keeper.project.homepage.entity.point.PointLogEntity;

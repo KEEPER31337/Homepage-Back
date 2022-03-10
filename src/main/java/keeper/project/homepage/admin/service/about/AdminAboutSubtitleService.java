@@ -1,8 +1,8 @@
 package keeper.project.homepage.admin.service.about;
 
 import keeper.project.homepage.common.ImageCenterCrop;
-import keeper.project.homepage.dto.etc.StaticWriteSubtitleImageDto;
-import keeper.project.homepage.dto.result.StaticWriteSubtitleImageResult;
+import keeper.project.homepage.admin.dto.etc.StaticWriteSubtitleImageDto;
+import keeper.project.homepage.admin.dto.etc.StaticWriteSubtitleImageResult;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.etc.StaticWriteSubtitleImageEntity;
 import keeper.project.homepage.entity.etc.StaticWriteTitleEntity;

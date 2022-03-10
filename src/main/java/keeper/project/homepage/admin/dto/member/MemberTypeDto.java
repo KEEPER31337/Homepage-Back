@@ -1,6 +1,5 @@
-package keeper.project.homepage.dto.member;
+package keeper.project.homepage.admin.dto.member;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,8 +10,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberGenerationDto {
+public class MemberTypeDto {
 
   private String memberLoginId;
-  private Float generation;
+  private String name;
 }

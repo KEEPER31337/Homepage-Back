@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.posting.category.result;
+package keeper.project.homepage.admin.dto.category.result;
 
 import java.util.ArrayList;
 import java.util.List;

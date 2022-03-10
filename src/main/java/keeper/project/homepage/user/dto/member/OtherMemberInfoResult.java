@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.result;
+package keeper.project.homepage.user.dto.member;
 
 import java.util.Date;
 import keeper.project.homepage.entity.ThumbnailEntity;

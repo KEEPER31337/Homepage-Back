@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.etc;
+package keeper.project.homepage.admin.dto.etc;
 
 import javax.persistence.Column;
 import keeper.project.homepage.entity.etc.StaticWriteContentEntity;

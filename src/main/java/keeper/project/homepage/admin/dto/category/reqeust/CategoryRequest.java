@@ -1,4 +1,4 @@
-package keeper.project.homepage.dto.posting.category.reqeust;
+package keeper.project.homepage.admin.dto.category.reqeust;
 
 import keeper.project.homepage.common.entity.posting.CategoryEntity;
 import lombok.AllArgsConstructor;

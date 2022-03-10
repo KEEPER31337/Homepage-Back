@@ -3,7 +3,7 @@ package keeper.project.homepage.user.service.about;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import keeper.project.homepage.dto.result.StaticWriteTitleResult;
+import keeper.project.homepage.admin.dto.etc.StaticWriteTitleResult;
 import keeper.project.homepage.entity.etc.StaticWriteTitleEntity;
 import keeper.project.homepage.exception.CustomAboutFailedException;
 import keeper.project.homepage.repository.etc.StaticWriteTitleRepository;
