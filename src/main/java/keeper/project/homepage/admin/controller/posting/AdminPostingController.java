@@ -10,7 +10,7 @@ import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.service.FileService;
 import keeper.project.homepage.service.ResponseService;
 import keeper.project.homepage.service.ThumbnailService;
-import keeper.project.homepage.service.posting.PostingService;
+import keeper.project.homepage.user.service.posting.PostingService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
