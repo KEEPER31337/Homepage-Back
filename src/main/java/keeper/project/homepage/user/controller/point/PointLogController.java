@@ -5,7 +5,7 @@ import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.dto.point.result.PointGiftLogResult;
 import keeper.project.homepage.dto.point.result.PointLogResult;
 import keeper.project.homepage.dto.result.SingleResult;
-import keeper.project.homepage.service.ResponseService;
+import keeper.project.homepage.common.service.ResponseService;
 
 import keeper.project.homepage.user.service.point.PointLogService;
 import lombok.RequiredArgsConstructor;

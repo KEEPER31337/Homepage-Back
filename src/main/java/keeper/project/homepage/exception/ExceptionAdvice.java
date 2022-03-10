@@ -22,7 +22,10 @@ import keeper.project.homepage.exception.posting.CustomCategoryNotFoundException
 import keeper.project.homepage.exception.posting.CustomCommentEmptyFieldException;
 import keeper.project.homepage.exception.posting.CustomCommentNotFoundException;
 import keeper.project.homepage.exception.posting.CustomParentCategoryNotFoundException;
-import keeper.project.homepage.service.ResponseService;
+import keeper.project.homepage.exception.sign.CustomAuthenticationEntryPointException;
+import keeper.project.homepage.exception.sign.CustomLoginIdSigninFailedException;
+import keeper.project.homepage.exception.sign.CustomSignUpFailedException;
+import keeper.project.homepage.common.service.ResponseService;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -79,10 +82,10 @@ public class ExceptionAdvice {
         e.getMessage() == null ? getMessage("SigninFailed.msg") : e.getMessage());
   }
 
-  @ExceptionHandler(keeper.project.homepage.exception.CustomAuthenticationEntryPointException.class)
+  @ExceptionHandler(CustomAuthenticationEntryPointException.class)
   @ResponseStatus(HttpStatus.UNAUTHORIZED)
   public CommonResult authenticationEntryPointException(HttpServletRequest request,
-      keeper.project.homepage.exception.CustomAuthenticationEntryPointException e) {
+      CustomAuthenticationEntryPointException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("entryPointException.code")),
         getMessage("entryPointException.msg"));
   }
