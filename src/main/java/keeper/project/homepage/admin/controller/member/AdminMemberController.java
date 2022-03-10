@@ -2,7 +2,7 @@ package keeper.project.homepage.admin.controller.member;
 
 import keeper.project.homepage.admin.service.member.AdminMemberService;
 import keeper.project.homepage.admin.dto.member.MemberDemeritDto;
-import keeper.project.homepage.dto.member.MemberDto;
+import keeper.project.homepage.admin.dto.member.MemberDto;
 import keeper.project.homepage.admin.dto.member.MemberGenerationDto;
 import keeper.project.homepage.admin.dto.member.MemberJobDto;
 import keeper.project.homepage.admin.dto.member.MemberMeritDto;

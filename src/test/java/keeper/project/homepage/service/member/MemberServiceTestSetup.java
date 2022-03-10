@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import keeper.project.homepage.user.service.member.MemberDeleteService;
+import keeper.project.homepage.user.service.posting.CommentService;
 import keeper.project.homepage.util.FileConversion;
 import keeper.project.homepage.user.dto.point.request.PointLogRequest;
 import keeper.project.homepage.entity.FileEntity;
@@ -51,7 +52,6 @@ import keeper.project.homepage.repository.point.PointLogRepository;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.repository.posting.PostingRepository;
-import keeper.project.homepage.service.posting.CommentService;
 import keeper.project.homepage.user.service.posting.PostingService;
 import keeper.project.homepage.user.service.point.PointLogService;
 import org.junit.jupiter.api.Assertions;
@@ -462,7 +462,7 @@ public class MemberServiceTestSetup {
             .continuousDay(1)
             .rank(3)
             .rankPoint(30)
-            .randomPoint((int) (Math.random() * 900 + 100)).build());
+            .randomPoint((int) (Math.random() * 900 + 100))
             .member(deletedMember)
             .build());
 

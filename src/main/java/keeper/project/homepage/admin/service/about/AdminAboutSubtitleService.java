@@ -1,6 +1,5 @@
 package keeper.project.homepage.admin.service.about;
 
-import keeper.project.homepage.common.ImageCenterCrop;
 import keeper.project.homepage.admin.dto.etc.StaticWriteSubtitleImageDto;
 import keeper.project.homepage.admin.dto.etc.StaticWriteSubtitleImageResult;
 import keeper.project.homepage.entity.ThumbnailEntity;
@@ -9,6 +8,7 @@ import keeper.project.homepage.entity.etc.StaticWriteTitleEntity;
 import keeper.project.homepage.exception.CustomAboutFailedException;
 import keeper.project.homepage.repository.etc.StaticWriteSubtitleImageRepository;
 import keeper.project.homepage.repository.etc.StaticWriteTitleRepository;
+import keeper.project.homepage.util.ImageCenterCrop;
 import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.util.service.ThumbnailService;
 import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;
@@ -38,7 +38,7 @@ public class AdminAboutSubtitleService {
   }
 
   private void deleteRelatedThumbnail(ThumbnailEntity thumbnailEntity) {
-    if(thumbnailEntity != null) {
+    if (thumbnailEntity != null) {
       thumbnailService.deleteById(thumbnailEntity.getId());
       fileService.deleteOriginalThumbnail(thumbnailEntity);
     }

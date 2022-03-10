@@ -1,6 +1,6 @@
 package keeper.project.homepage.admin.service.posting;
 
-import keeper.project.homepage.common.entity.posting.CategoryEntity;
+import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.admin.dto.category.reqeust.CategoryRequest;
 import keeper.project.homepage.admin.dto.category.result.CategoryResult;
 import keeper.project.homepage.exception.posting.CustomAccessRootCategoryException;
@@ -47,13 +47,13 @@ public class AdminCategoryService {
   }
 
   private void checkRootCategory(Long categoryId) {
-    if(categoryId == 0) {
+    if (categoryId == 0) {
       throw new CustomAccessRootCategoryException();
     }
   }
 
   private void checkParentCategoryNotFound(CategoryRequest categoryRequest) {
-    if(categoryRequest.getParentId() != null && categoryRequest.getParentId() != 0) {
+    if (categoryRequest.getParentId() != null && categoryRequest.getParentId() != 0) {
       CategoryEntity categoryEntity = categoryRepository.findById(categoryRequest.getParentId())
           .orElseThrow(CustomParentCategoryNotFoundException::new);
     }

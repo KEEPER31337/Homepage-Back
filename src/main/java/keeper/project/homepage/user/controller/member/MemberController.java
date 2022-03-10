@@ -3,7 +3,7 @@ package keeper.project.homepage.user.controller.member;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 import keeper.project.homepage.common.dto.sign.EmailAuthDto;
-import keeper.project.homepage.dto.member.MemberDto;
+import keeper.project.homepage.user.dto.member.MemberDto;
 import keeper.project.homepage.user.dto.posting.PostingDto;
 import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.common.dto.result.ListResult;
@@ -49,7 +49,7 @@ public class MemberController {
   @Secured("ROLE_회원")
   @GetMapping(value = "/members")
   public ListResult<OtherMemberInfoResult> getAllOtherMemberInfo(
-      @PageableDefault(size = 20, sort = "registerDate", direction = Direction.DESC)Pageable pageable
+      @PageableDefault(size = 20, sort = "registerDate", direction = Direction.DESC) Pageable pageable
   ) {
     return responseService.getSuccessListResult(memberService.getAllOtherMemberInfo(pageable));
   }

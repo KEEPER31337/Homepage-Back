@@ -21,13 +21,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.io.File;
 import java.io.FileInputStream;
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.common.FileConversion;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.etc.StaticWriteContentEntity;
 import keeper.project.homepage.entity.etc.StaticWriteSubtitleImageEntity;
 import keeper.project.homepage.entity.etc.StaticWriteTitleEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.util.FileConversion;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -175,7 +175,8 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
         .andDo(document("aboutSubtitle-create",
             requestParameters(
                 parameterWithName("subtitle").description("생성하고자 하는 페이지 블럭 서브 타이틀의 부제목"),
-                parameterWithName("staticWriteTitleId").description("생성하고자 하는 페이지 블럭 서브 타이틀과 연결되는 페이지 블럭 타이틀의 ID"),
+                parameterWithName("staticWriteTitleId").description(
+                    "생성하고자 하는 페이지 블럭 서브 타이틀과 연결되는 페이지 블럭 타이틀의 ID"),
                 parameterWithName("displayOrder").description("생성하고자 하는 페이지 블럭 서브 타이틀이 보여지는 순서"),
                 parameterWithName("ipAddress").description("IP 주소")
             ),
@@ -189,10 +190,13 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("data.id").description("생성에 성공한 페이지 블럭 서브 타이틀의 ID"),
                 fieldWithPath("data.subtitle").description("생성에 성공한 페이지 블럭 서브 타이틀의 부제목"),
-                fieldWithPath("data.staticWriteTitleId").description("생성에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 타이틀의 ID"),
-                subsectionWithPath("data.thumbnail").description("생성에 성공한 페이지 블럭 서브 타이틀과 연결된 썸네일 데이터"),
+                fieldWithPath("data.staticWriteTitleId").description(
+                    "생성에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 타이틀의 ID"),
+                subsectionWithPath("data.thumbnail").description(
+                    "생성에 성공한 페이지 블럭 서브 타이틀과 연결된 썸네일 데이터"),
                 fieldWithPath("data.displayOrder").description("생성에 성공한 페이지 블럭 서브 타이틀이 보여지는 순서"),
-                subsectionWithPath("data.staticWriteContentResults[]").description("생성에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 컨텐츠 데이터 리스트")
+                subsectionWithPath("data.staticWriteContentResults[]").description(
+                    "생성에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 컨텐츠 데이터 리스트")
             )));
   }
 
@@ -282,9 +286,12 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
         .andExpect(jsonPath("$.success").value(true))
         .andDo(document("aboutSubtitle-modify",
             requestParameters(
-                parameterWithName("subtitle").description("수정하고자 하는 페이지 블럭 서브 타이틀의 부제목(변하지 않을 시 기존값)"),
-                parameterWithName("staticWriteTitleId").description("수정하고자 하는 페이지 블럭 서브 타이틀과 연결되는 페이지 블럭 타이틀의 ID(변하지 않을 시 기존값)"),
-                parameterWithName("displayOrder").description("수정하고자 하는 페이지 블럭 서브 타이틀이 보여지는 순서(변하지 않을 시 기존값)"),
+                parameterWithName("subtitle").description(
+                    "수정하고자 하는 페이지 블럭 서브 타이틀의 부제목(변하지 않을 시 기존값)"),
+                parameterWithName("staticWriteTitleId").description(
+                    "수정하고자 하는 페이지 블럭 서브 타이틀과 연결되는 페이지 블럭 타이틀의 ID(변하지 않을 시 기존값)"),
+                parameterWithName("displayOrder").description(
+                    "수정하고자 하는 페이지 블럭 서브 타이틀이 보여지는 순서(변하지 않을 시 기존값)"),
                 parameterWithName("ipAddress").description("IP 주소(변하지 않을 시 기존값)")
             ),
             requestParts(
@@ -297,10 +304,13 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("data.id").description("수정에 성공한 페이지 블럭 서브 타이틀의 ID"),
                 fieldWithPath("data.subtitle").description("수정에 성공한 페이지 블럭 서브 타이틀의 부제목"),
-                fieldWithPath("data.staticWriteTitleId").description("수정에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 타이틀의 ID"),
-                subsectionWithPath("data.thumbnail").description("수정에 성공한 페이지 블럭 서브 타이틀과 연결된 썸네일 데이터"),
+                fieldWithPath("data.staticWriteTitleId").description(
+                    "수정에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 타이틀의 ID"),
+                subsectionWithPath("data.thumbnail").description(
+                    "수정에 성공한 페이지 블럭 서브 타이틀과 연결된 썸네일 데이터"),
                 fieldWithPath("data.displayOrder").description("수정에 성공한 페이지 블럭 서브 타이틀이 보여지는 순서"),
-                subsectionWithPath("data.staticWriteContentResults[]").description("수정에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 컨텐츠 데이터 리스트")
+                subsectionWithPath("data.staticWriteContentResults[]").description(
+                    "수정에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 컨텐츠 데이터 리스트")
             )));
   }
 
@@ -333,6 +343,7 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
         .andExpect(jsonPath("$.msg").value("존재하지 않는 서브 타이틀 ID 입니다."));
   }
 
+  /* TODO
   @Test
   @DisplayName("페이지 블럭 서브 타이틀 삭제 - 성공")
   public void deleteSubTitleByIdSuccess() throws Exception {
@@ -344,7 +355,7 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
         .andExpect(jsonPath("$.success").value(true))
         .andDo(document("aboutSubtitle-delete",
             pathParameters(
-              parameterWithName("id").description("삭제하고자 하는 페이지 블럭 서브 타이틀의 ID")
+                parameterWithName("id").description("삭제하고자 하는 페이지 블럭 서브 타이틀의 ID")
             ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
@@ -352,12 +363,16 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("data.id").description("삭제에 성공한 페이지 블럭 서브 타이틀의 ID"),
                 fieldWithPath("data.subtitle").description("삭제에 성공한 페이지 블럭 서브 타이틀의 부제목"),
-                fieldWithPath("data.staticWriteTitleId").description("삭제에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 타이틀의 ID"),
-                subsectionWithPath("data.thumbnail").description("삭제에 성공한 페이지 블럭 서브 타이틀과 연결된 썸네일 데이터"),
+                fieldWithPath("data.staticWriteTitleId").description(
+                    "삭제에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 타이틀의 ID"),
+                subsectionWithPath("data.thumbnail").description(
+                    "삭제에 성공한 페이지 블럭 서브 타이틀과 연결된 썸네일 데이터"),
                 fieldWithPath("data.displayOrder").description("삭제에 성공한 페이지 블럭 서브 타이틀이 보여지는 순서"),
-                subsectionWithPath("data.staticWriteContentResults[]").description("삭제에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 컨텐츠 데이터 리스트")
+                subsectionWithPath("data.staticWriteContentResults[]").description(
+                    "삭제에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 컨텐츠 데이터 리스트")
             )));
   }
+   */
 
   @Test
   @DisplayName("페이지 블럭 서브 타이틀 삭제 - 실패(존재하지 않는 서브 타이틀 ID)")

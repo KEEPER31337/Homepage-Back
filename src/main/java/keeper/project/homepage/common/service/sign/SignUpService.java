@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.regex.Pattern;
 import keeper.project.homepage.common.dto.sign.EmailAuthDto;
-import keeper.project.homepage.dto.member.MemberDto;
+import keeper.project.homepage.user.dto.member.MemberDto;
 import keeper.project.homepage.entity.member.EmailAuthRedisEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;

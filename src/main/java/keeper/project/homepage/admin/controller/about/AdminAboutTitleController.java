@@ -2,7 +2,6 @@ package keeper.project.homepage.admin.controller.about;
 
 import keeper.project.homepage.admin.service.about.AdminAboutTitleService;
 import keeper.project.homepage.common.service.ResponseService;
-import keeper.project.homepage.service.etc.AboutTitleService;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.admin.dto.etc.StaticWriteTitleDto;
 import keeper.project.homepage.admin.dto.etc.StaticWriteTitleResult;
@@ -29,7 +28,8 @@ public class AdminAboutTitleController {
 
   @Secured("ROLE_회장")
   @PostMapping(value = "/create")
-  public SingleResult<StaticWriteTitleResult> createTitle(@RequestBody StaticWriteTitleDto titleDto) {
+  public SingleResult<StaticWriteTitleResult> createTitle(
+      @RequestBody StaticWriteTitleDto titleDto) {
 
     return responseService.getSuccessSingleResult(adminAboutTitleService.createTitle(titleDto));
   }
@@ -43,7 +43,8 @@ public class AdminAboutTitleController {
       @PathVariable("id") Long id,
       @RequestBody StaticWriteTitleDto titleDto) {
 
-    return responseService.getSuccessSingleResult(adminAboutTitleService.modifyTitleById(titleDto, id));
+    return responseService.getSuccessSingleResult(
+        adminAboutTitleService.modifyTitleById(titleDto, id));
   }
 
   @Secured("ROLE_회장")

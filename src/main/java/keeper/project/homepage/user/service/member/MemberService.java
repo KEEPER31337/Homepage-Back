@@ -9,7 +9,7 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import keeper.project.homepage.util.ImageCenterCrop;
 import keeper.project.homepage.common.dto.sign.EmailAuthDto;
-import keeper.project.homepage.dto.member.MemberDto;
+import keeper.project.homepage.user.dto.member.MemberDto;
 import keeper.project.homepage.user.dto.member.OtherMemberInfoResult;
 import keeper.project.homepage.user.dto.posting.PostingDto;
 import keeper.project.homepage.entity.ThumbnailEntity;

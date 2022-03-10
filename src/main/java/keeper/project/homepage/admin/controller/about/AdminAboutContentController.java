@@ -4,7 +4,6 @@ import keeper.project.homepage.admin.service.about.AdminAboutContentService;
 import keeper.project.homepage.admin.dto.etc.StaticWriteContentDto;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.service.ResponseService;
-import keeper.project.homepage.service.etc.AboutContentService;
 import keeper.project.homepage.admin.dto.etc.StaticWriteContentResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

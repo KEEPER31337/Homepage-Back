@@ -18,7 +18,6 @@ import keeper.project.homepage.repository.posting.CommentSpec;
 import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.user.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.user.service.member.MemberHasCommentLikeService;
-import keeper.project.homepage.service.posting.PostingService;
 import keeper.project.homepage.user.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;

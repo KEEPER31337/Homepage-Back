@@ -4,7 +4,6 @@ import keeper.project.homepage.admin.service.about.AdminAboutSubtitleService;
 import keeper.project.homepage.admin.dto.etc.StaticWriteSubtitleImageDto;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.service.ResponseService;
-import keeper.project.homepage.service.etc.AboutSubtitleService;
 import keeper.project.homepage.admin.dto.etc.StaticWriteSubtitleImageResult;
 import keeper.project.homepage.util.service.ThumbnailService;
 import lombok.RequiredArgsConstructor;
@@ -67,7 +66,8 @@ public class AdminAboutSubtitleController {
   ) {
 
     return responseService.getSuccessSingleResult(
-        adminAboutSubtitleService.modifySubtitleById(staticWriteSubtitleImageDto, id, image, ipAddress));
+        adminAboutSubtitleService.modifySubtitleById(staticWriteSubtitleImageDto, id, image,
+            ipAddress));
   }
 
 }
