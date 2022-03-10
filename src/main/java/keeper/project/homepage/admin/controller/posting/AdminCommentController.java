@@ -1,9 +1,8 @@
 package keeper.project.homepage.admin.controller.posting;
 
+import keeper.project.homepage.admin.service.posting.AdminCommentService;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.service.ResponseService;
-import keeper.project.homepage.service.posting.CommentService;
-import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -20,15 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/v1/admin/comment")
 public class AdminCommentController {
 
-  private final CommentService commentService;
+  private final AdminCommentService adminCommentService;
 
   private final ResponseService responseService;
 
-  private final AuthService authService;
-
   @DeleteMapping("/{commentId}")
   public ResponseEntity<CommonResult> deleteComment(@PathVariable("commentId") Long commentId) {
-    commentService.deleteByAdmin(commentId);
+    adminCommentService.deleteByAdmin(commentId);
     return ResponseEntity.ok().body(responseService.getSuccessResult());
   }
 }

@@ -1,11 +1,11 @@
-package keeper.project.homepage.controller.posting;
+package keeper.project.homepage.user.controller.posting;
 
 import java.util.List;
-import keeper.project.homepage.dto.posting.CommentDto;
+import keeper.project.homepage.user.dto.posting.CommentDto;
 import keeper.project.homepage.dto.result.CommonResult;
 import keeper.project.homepage.dto.result.ListResult;
 import keeper.project.homepage.dto.result.SingleResult;
-import keeper.project.homepage.service.posting.CommentService;
+import keeper.project.homepage.user.service.posting.CommentService;
 import keeper.project.homepage.service.ResponseService;
 import keeper.project.homepage.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/v1/comment")
+@Secured("ROLE_회원")
 public class CommentController {
 
   private final CommentService commentService;
@@ -40,7 +41,6 @@ public class CommentController {
 
   private final AuthService authService;
 
-  @Secured("ROLE_회원")
   @PostMapping(value = "/{postId}", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<CommonResult> createComment(
       @PathVariable("postId") Long postId,
@@ -50,7 +50,6 @@ public class CommentController {
     return ResponseEntity.ok().body(responseService.getSuccessResult());
   }
 
-  @Secured("ROLE_회원")
   @GetMapping(value = "/{postId}")
   public ResponseEntity<ListResult<CommentDto>> showCommentByPostId(
       @PathVariable("postId") Long postId,
@@ -63,7 +62,6 @@ public class CommentController {
     return ResponseEntity.ok().body(responseService.getSuccessListResult(dtoPage));
   }
 
-  @Secured("ROLE_회원")
   @DeleteMapping("/{commentId}")
   public ResponseEntity<CommonResult> deleteComment(@PathVariable("commentId") Long commentId) {
     Long memberId = authService.getMemberIdByJWT();
@@ -71,7 +69,6 @@ public class CommentController {
     return ResponseEntity.ok().body(responseService.getSuccessResult());
   }
 
-  @Secured("ROLE_회원")
   @PutMapping(value = "/{commentId}", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<SingleResult<CommentDto>> updateComment(
       @PathVariable("commentId") Long commentId,
