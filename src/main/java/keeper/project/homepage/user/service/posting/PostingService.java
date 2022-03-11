@@ -8,7 +8,6 @@ import java.util.Optional;
 import keeper.project.homepage.user.dto.posting.LikeAndDislikeDto;
 import keeper.project.homepage.user.dto.posting.PostingBestDto;
 import keeper.project.homepage.user.dto.posting.PostingDto;
-import keeper.project.homepage.common.dto.result.PostingResult;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -166,26 +165,6 @@ public class PostingService {
     postingEntity.setSize(1);
 
     return postingEntity;
-  }
-
-  public PostingResult getSuccessPostingResult(PostingEntity postingEntity) {
-
-    PostingResult postingResult = new PostingResult(postingEntity);
-    postingResult.setSuccess(true);
-    postingResult.setCode(0);
-    postingResult.setMsg("성공하였습니다.");
-
-    return postingResult;
-  }
-
-  public PostingResult getFailPostingResult(String msg) {
-
-    PostingResult postingResult = new PostingResult(null);
-    postingResult.setSuccess(false);
-    postingResult.setCode(-1);
-    postingResult.setMsg(msg);
-
-    return postingResult;
   }
 
   @Transactional

@@ -11,7 +11,6 @@ import keeper.project.homepage.user.dto.posting.PostingBestDto;
 import keeper.project.homepage.user.dto.posting.PostingDto;
 import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.common.dto.result.ListResult;
-import keeper.project.homepage.common.dto.result.PostingResult;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
@@ -120,7 +119,7 @@ public class PostingController {
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/{pid}")
-  public PostingResult getPosting(@PathVariable("pid") Long postingId,
+  public SingleResult<PostingEntity> getPosting(@PathVariable("pid") Long postingId,
       @RequestParam(value = "password", required = false) String password) {
 
     PostingEntity postingEntity = postingService.getPostingById(postingId);
@@ -128,18 +127,18 @@ public class PostingController {
 
     if (postingEntity.getIsSecret() == 1) {
       if (!(postingEntity.getPassword().equals(password))) {
-        return postingService.getFailPostingResult("비밀번호가 일치하지 않습니다.");
+        return responseService.getFailSingleResult(null, -11000, "비밀번호가 일치하지 않습니다.");
       }
     }
     if (visitMemberId != postingEntity.getMemberId().getId()) {
       if (postingEntity.getIsTemp() == PostingService.isTempPosting) {
-        return postingService.getFailPostingResult("임시저장 게시물입니다.");
+        return responseService.getFailSingleResult(null, -11100,"임시저장 게시물입니다.");
       }
       postingEntity.increaseVisitCount();
       postingService.updateInfoById(postingEntity, postingId);
     }
 
-    return postingService.getSuccessPostingResult(postingEntity);
+    return responseService.getSuccessSingleResult(postingEntity);
   }
 
   @GetMapping(value = "/attach/{pid}")
