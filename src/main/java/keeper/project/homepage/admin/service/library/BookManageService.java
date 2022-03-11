@@ -122,11 +122,11 @@ public class BookManageService {
 
     BookEntity updateBookEntity = bookRepository.findByTitleAndAuthor(title, author)
         .orElseThrow(() -> new CustomBookNotFoundException());
-    Long total = bookRepository.findByTitleAndAuthor(title, author).get().getTotal();
-    Long enable = bookRepository.findByTitleAndAuthor(title, author).get().getEnable();
+    Long nowTotal = bookRepository.findByTitleAndAuthor(title, author).get().getTotal();
+    Long nowEnable = bookRepository.findByTitleAndAuthor(title, author).get().getEnable();
 
-    updateBookEntity.setTotal(total - quantity);
-    updateBookEntity.setEnable(enable - quantity);
+    updateBookEntity.setTotal(nowTotal - quantity);
+    updateBookEntity.setEnable(nowEnable - quantity);
 
     bookRepository.save(updateBookEntity);
   }
@@ -277,11 +277,11 @@ public class BookManageService {
 
     BookEntity nowBookEntity = bookRepository.findByTitleAndAuthor(title, author)
         .orElseThrow(() -> new CustomBookNotFoundException());
-    Long borrow = nowBookEntity.getBorrow();
-    Long enable = nowBookEntity.getEnable();
+    Long nowBorrow = nowBookEntity.getBorrow();
+    Long nowEnable = nowBookEntity.getEnable();
 
-    nowBookEntity.setBorrow(borrow - quantity);
-    nowBookEntity.setEnable(enable + quantity);
+    nowBookEntity.setBorrow(nowBorrow - quantity);
+    nowBookEntity.setEnable(nowEnable + quantity);
 
     bookRepository.save(nowBookEntity);
   }
