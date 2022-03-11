@@ -398,10 +398,10 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         fieldWithPath(prefix + ".likeCount").description("좋아요 개수"),
         fieldWithPath(prefix + ".dislikeCount").description("싫어요 개수"),
         fieldWithPath(prefix + ".parentId").description("대댓글인 경우, 부모 댓글의 id"),
-        fieldWithPath(prefix + ".writer").optional().description("작성자 (탈퇴한 작성자일 경우 null)"),
-        fieldWithPath(prefix + ".writerId").optional().description("작성자 (탈퇴한 작성자일 경우 null)"),
-        fieldWithPath(prefix + ".writerThumbnailId").optional().type(Long.TYPE)
-            .description("작성자 (탈퇴했을 경우 / 썸네일을 등록하지 않았을 경우 null)")));
+        fieldWithPath(prefix + ".writer").optional().description("작성자의 닉네임 (탈퇴한 작성자일 경우 null)"),
+        fieldWithPath(prefix + ".writerId").optional().description("작성자 id (탈퇴한 작성자일 경우 null)"),
+        fieldWithPath(prefix + ".writerThumbnailPath").optional().type(String.class)
+            .description("작성자의 썸네일 조회 api 경로 (탈퇴했을 경우 / 썸네일을 등록하지 않았을 경우 null)")));
     if (descriptors.length > 0) {
       commonFields.addAll(Arrays.asList(descriptors));
     }
