@@ -51,15 +51,6 @@ public class PostingEntity {
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private MemberEntity memberId;
   // DB 테이블과 별도의 변수 - Transient Annotation
-  @Transient
-  private String writer;
-  @Transient
-  private Long writerId;
-  @Transient
-  private Long writerThumbnailId;
-  @Setter
-  @Transient
-  private Integer size;
   @Column
   private Integer visitCount;
   @Column
@@ -91,9 +82,6 @@ public class PostingEntity {
   @JoinColumn(name = "category_id")
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private CategoryEntity categoryId;
-  @Setter
-  @Transient
-  private String category;
   @OneToOne
   @JoinColumn(name = "thumbnail_id")
   @Setter
@@ -168,22 +156,5 @@ public class PostingEntity {
   public void decreaseDislikeCount() {
     Assert.isTrue(this.dislikeCount > 0, "dislike_count mush be bigger than zero");
     this.dislikeCount -= 1;
-  }
-
-  public void setWriter(String writer) {
-    this.writer = writer;
-  }
-
-  public void setWriterId(Long writerId) {
-    this.writerId = writerId;
-  }
-
-  public void setWriterThumbnailId(Long writerThumbnailId) {
-    this.writerThumbnailId = writerThumbnailId;
-  }
-
-  public void makeSecret() {
-//    this.title = "비밀 게시글입니다.";
-    this.content = "비밀 게시글입니다.";
   }
 }
