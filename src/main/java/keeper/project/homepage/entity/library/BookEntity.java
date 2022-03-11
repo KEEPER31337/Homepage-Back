@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @Entity
@@ -41,10 +42,13 @@ public class BookEntity {
   @JoinColumn(name = "department")
   private BookDepartmentEntity department;
   @Column(name = "total", nullable = false)
+  @Setter
   private Long total;
   @Column(name = "borrow", nullable = false)
+  @Setter
   private Long borrow;
   @Column(name = "enable", nullable = false)
+  @Setter
   private Long enable;
   @Column(name = "register_date", nullable = false)
   @Temporal(TemporalType.TIMESTAMP)
