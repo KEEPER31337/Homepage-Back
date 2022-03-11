@@ -624,14 +624,16 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
                 fieldWithPath("list[].id").description("게시물 ID"),
                 fieldWithPath("list[].title").description("제목"),
-                fieldWithPath("list[].userThumbnailID").description("작성자 썸네일 ID").optional(),
+                fieldWithPath("list[].userThumbnailPath").description("작성자 썸네일 이미지 조회 api path")
+                    .optional(),
                 fieldWithPath("list[].user").description("작성자"),
                 fieldWithPath("list[].dateTime").description("작성 시간"),
                 fieldWithPath("list[].watch").description("조회 수"),
                 fieldWithPath("list[].commentN").description("댓글 개수"),
                 fieldWithPath("list[].categoryId").description("카테고리 ID"),
                 fieldWithPath("list[].category").description("카테고리명"),
-                fieldWithPath("list[].thumbnailId").description("게시글 썸네일 id").optional()
+                fieldWithPath("list[].thumbnailPath").description("게시글 썸네일 이미지 조회 api path")
+                    .optional()
             )
         ));
   }
