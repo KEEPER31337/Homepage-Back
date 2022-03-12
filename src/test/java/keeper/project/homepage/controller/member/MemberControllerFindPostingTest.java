@@ -245,7 +245,7 @@ public class MemberControllerFindPostingTest extends MemberControllerTestSetup {
             .param("password", "asd"))
         .andDo(print())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(-1))
+        .andExpect(jsonPath("$.code").value(-11100))
         .andExpect(jsonPath("$.msg").value("임시저장 게시물입니다."))
         .andExpect(jsonPath("$.data").isEmpty())
         .andExpect(status().isOk());
