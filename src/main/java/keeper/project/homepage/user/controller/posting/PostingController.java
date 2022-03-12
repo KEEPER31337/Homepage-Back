@@ -17,6 +17,7 @@ import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
+import keeper.project.homepage.user.dto.posting.PostingResponseDto;
 import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.util.service.ThumbnailService;
@@ -64,7 +65,7 @@ public class PostingController {
    * page default 0, size default 10
    */
   @GetMapping(value = "/latest")
-  public ListResult<PostingEntity> findAllPosting(
+  public ListResult<PostingResponseDto> findAllPosting(
       @PageableDefault(size = 10, sort = "registerTime", direction = Direction.DESC)
           Pageable pageable) {
 
@@ -72,7 +73,7 @@ public class PostingController {
   }
 
   @GetMapping(value = "/lists")
-  public ListResult<PostingEntity> findAllPostingByCategoryId(
+  public ListResult<PostingResponseDto> findAllPostingByCategoryId(
       @RequestParam("category") Long categoryId,
       @PageableDefault(size = 10, sort = "registerTime", direction = Direction.DESC)
           Pageable pageable) {
@@ -82,7 +83,7 @@ public class PostingController {
   }
 
   @GetMapping(value = "/notice")
-  public ListResult<PostingEntity> findAllNoticePostingByCategoryId(
+  public ListResult<PostingResponseDto> findAllNoticePostingByCategoryId(
       @RequestParam("category") Long categoryId) {
 
     return responseService.getSuccessListResult(
@@ -120,7 +121,7 @@ public class PostingController {
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/{pid}")
-  public PostingResult getPosting(@PathVariable("pid") Long postingId,
+  public SingleResult<PostingResponseDto> getPosting(@PathVariable("pid") Long postingId,
       @RequestParam(value = "password", required = false) String password) {
 
     PostingEntity postingEntity = postingService.getPostingById(postingId);
@@ -128,18 +129,19 @@ public class PostingController {
 
     if (postingEntity.getIsSecret() == 1) {
       if (!(postingEntity.getPassword().equals(password))) {
-        return postingService.getFailPostingResult("비밀번호가 일치하지 않습니다.");
+        return responseService.getFailSingleResult(null, -11000, "비밀번호가 일치하지 않습니다.");
       }
     }
     if (visitMemberId != postingEntity.getMemberId().getId()) {
       if (postingEntity.getIsTemp() == PostingService.isTempPosting) {
-        return postingService.getFailPostingResult("임시저장 게시물입니다.");
+        return responseService.getFailSingleResult(null, -11100, "임시저장 게시물입니다.");
       }
       postingEntity.increaseVisitCount();
       postingService.updateInfoById(postingEntity, postingId);
     }
 
-    return postingService.getSuccessPostingResult(postingEntity);
+    return responseService.getSuccessSingleResult(
+        new PostingResponseDto().initWithEntity(postingEntity, 1));
   }
 
   @GetMapping(value = "/attach/{pid}")
@@ -236,15 +238,13 @@ public class PostingController {
 
 
   @GetMapping(value = "/search")
-  public ListResult<PostingEntity> searchPosting(@RequestParam("type") String type,
+  public ListResult<PostingResponseDto> searchPosting(@RequestParam("type") String type,
       @RequestParam("keyword") String keyword, @RequestParam("category") Long categoryId,
       @PageableDefault(size = 10, sort = "registerTime", direction = Direction.DESC)
           Pageable pageable) {
 
-    List<PostingEntity> postingEntities = postingService.searchPosting(type, keyword,
-        categoryId, pageable);
-
-    return responseService.getSuccessListResult(postingEntities);
+    return responseService.getSuccessListResult(postingService.searchPosting(type, keyword,
+        categoryId, pageable));
   }
 
   @GetMapping(value = "/like")

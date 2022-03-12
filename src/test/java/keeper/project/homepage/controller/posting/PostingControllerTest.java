@@ -44,6 +44,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -488,8 +490,10 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].category").description("카테고리 이름"),
                 fieldWithPath("list[].writer").optional().description("작성자 (비밀 게시글일 경우 익명)"),
                 fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
-                fieldWithPath("list[].writerThumbnailId").optional()
-                    .description("작성자 (비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
+                fieldWithPath("list[].writerThumbnailPath").optional().type(JsonFieldType.STRING)
+                    .description("작성자 썸네일 경로(비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
+                fieldWithPath("list[].thumbnailPath").optional().type(JsonFieldType.STRING)
+                    .description("게시물 썸네일 경로 / 썸네일 등록하지 않았을 경우 null"),
                 fieldWithPath("list[].visitCount").description("조회 수"),
                 fieldWithPath("list[].likeCount").description("좋아요 수"),
                 fieldWithPath("list[].dislikeCount").description("싫어요 수"),
@@ -504,8 +508,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].size").description("총 게시물 수"),
                 subsectionWithPath("list[].files").description(
                         "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
-                    .optional(),
-                subsectionWithPath("list[].thumbnail").description("게시글 썸네일 (.id)").optional()
+                    .optional()
             )
         ));
   }
@@ -539,8 +542,10 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].category").description("카테고리 이름"),
                 fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
-                fieldWithPath("list[].writerThumbnailId").optional()
-                    .description("작성자 (비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
+                fieldWithPath("list[].writerThumbnailPath").optional().type(JsonFieldType.STRING)
+                    .description("작성자 썸네일 경로(비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
+                fieldWithPath("list[].thumbnailPath").optional().type(JsonFieldType.STRING)
+                    .description("게시물 썸네일 경로 / 썸네일 등록하지 않았을 경우 null"),
                 fieldWithPath("list[].visitCount").description("조회 수"),
                 fieldWithPath("list[].likeCount").description("좋아요 수"),
                 fieldWithPath("list[].dislikeCount").description("싫어요 수"),
@@ -555,8 +560,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].size").description("총 게시물 수"),
                 subsectionWithPath("list[].files").description(
                         "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
-                    .optional(),
-                subsectionWithPath("list[].thumbnail").description("게시글 썸네일 (.id)").optional()
+                    .optional()
             )
         ));
   }
@@ -585,8 +589,10 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].category").description("카테고리 이름"),
                 fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
-                fieldWithPath("list[].writerThumbnailId").optional()
-                    .description("작성자 (비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
+                fieldWithPath("list[].writerThumbnailPath").optional().type(JsonFieldType.STRING)
+                    .description("작성자 썸네일 경로(비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
+                fieldWithPath("list[].thumbnailPath").optional().type(JsonFieldType.STRING)
+                    .description("게시물 썸네일 경로 / 썸네일 등록하지 않았을 경우 null"),
                 fieldWithPath("list[].visitCount").description("조회 수"),
                 fieldWithPath("list[].likeCount").description("좋아요 수"),
                 fieldWithPath("list[].dislikeCount").description("싫어요 수"),
@@ -601,8 +607,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].size").description("총 게시물 수"),
                 subsectionWithPath("list[].files").description(
                         "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
-                    .optional(),
-                subsectionWithPath("list[].thumbnail").description("게시글 썸네일 (.id)").optional()
+                    .optional()
             )
         ));
   }
@@ -664,8 +669,10 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.category").description("카테고리 이름"),
                 fieldWithPath("data.writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("data.writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
-                fieldWithPath("data.writerThumbnailId").optional()
-                    .description("작성자 (비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
+                fieldWithPath("data.writerThumbnailPath").optional().type(JsonFieldType.STRING)
+                    .description("작성자 썸네일 경로(비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
+                fieldWithPath("data.thumbnailPath").optional().type(JsonFieldType.STRING)
+                    .description("게시물 썸네일 경로 / 썸네일 등록하지 않았을 경우 null"),
                 fieldWithPath("data.visitCount").description("조회 수"),
                 fieldWithPath("data.likeCount").description("좋아요 수"),
                 fieldWithPath("data.dislikeCount").description("싫어요 수"),
@@ -680,8 +687,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.size").description("총 게시물 수(getPosting 에선 1개)"),
                 subsectionWithPath("data.files").description(
                         "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
-                    .optional(),
-                subsectionWithPath("data.thumbnail").description("게시글 썸네일 (.id)").optional()
+                    .optional()
             )
         ));
   }
@@ -713,8 +719,10 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.category").description("카테고리 이름"),
                 fieldWithPath("data.writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("data.writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
-                fieldWithPath("data.writerThumbnailId").optional()
-                    .description("작성자 (비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
+                fieldWithPath("data.writerThumbnailPath").optional().type(JsonFieldType.STRING)
+                    .description("작성자 썸네일 경로(비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
+                fieldWithPath("data.thumbnailPath").optional().type(JsonFieldType.STRING)
+                    .description("게시물 썸네일 경로 / 썸네일 등록하지 않았을 경우 null"),
                 fieldWithPath("data.visitCount").description("조회 수"),
                 fieldWithPath("data.likeCount").description("좋아요 수"),
                 fieldWithPath("data.dislikeCount").description("싫어요 수"),
@@ -729,8 +737,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.size").description("총 게시물 수(getPosting 에선 1개)"),
                 subsectionWithPath("data.files").description(
                         "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
-                    .optional(),
-                subsectionWithPath("data.thumbnail").description("게시글 썸네일 (.id)").optional()
+                    .optional()
             )
         ));
   }
@@ -981,8 +988,10 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].category").description("카테고리 이름"),
                 fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
-                fieldWithPath("list[].writerThumbnailId").optional()
-                    .description("작성자 (비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
+                fieldWithPath("list[].writerThumbnailPath").optional().type(JsonFieldType.STRING)
+                    .description("작성자 썸네일 경로(비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
+                fieldWithPath("list[].thumbnailPath").optional().type(JsonFieldType.STRING)
+                    .description("게시물 썸네일 경로 / 썸네일 등록하지 않았을 경우 null"),
                 fieldWithPath("list[].visitCount").description("조회 수"),
                 fieldWithPath("list[].likeCount").description("좋아요 수"),
                 fieldWithPath("list[].dislikeCount").description("싫어요 수"),
@@ -997,8 +1006,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].size").description("총 게시물 수"),
                 subsectionWithPath("list[].files").description(
                         "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
-                    .optional(),
-                subsectionWithPath("list[].thumbnail").description("게시글 썸네일 (.id)").optional()
+                    .optional()
             )
         ));
   }

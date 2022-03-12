@@ -19,6 +19,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import lombok.AllArgsConstructor;
@@ -213,6 +214,24 @@ public class MemberEntity implements UserDetails, Serializable {
 
   public void changeGeneration(float generation) {
     this.generation = generation;
+  }
+
+  public List<String> getJobs() {
+    List<String> jobs = new ArrayList<>();
+    if (getMemberJobs() != null || getMemberJobs().isEmpty() == false) {
+      getMemberJobs()
+          .forEach(job ->
+              jobs.add(job.getMemberJobEntity().getName()));
+    }
+    return jobs;
+  }
+
+  public String getThumbnailPath() {
+    String thumbnailApiPath = "/v1/util/thumbnail/";
+    if (getThumbnail() == null) {
+      return thumbnailApiPath + 0;
+    }
+    return thumbnailApiPath + getThumbnail().getId();
   }
 
   @PrePersist
