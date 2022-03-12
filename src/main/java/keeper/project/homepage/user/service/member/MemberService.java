@@ -262,6 +262,8 @@ public class MemberService {
     // 출처: https://www.baeldung.com/java-random-string
   }
 
+  // TODO : 모든 PostingDto -> PostingResponseDto 로 변경하기
+  // TODO : return type : List<PostingDto> & return page.getContent(); 로 수정
   public Page<PostingDto> findAllPostingByIsTemp(Long id, Pageable pageable, Integer isTemp) {
     MemberEntity memberEntity = memberRepository.findById(id).orElseThrow(
         () -> new CustomMemberNotFoundException(id.toString() + "인 id를 가진 member가 존재하지 않습니다."));
