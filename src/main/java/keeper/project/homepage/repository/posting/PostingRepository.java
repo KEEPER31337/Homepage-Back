@@ -34,9 +34,12 @@ public interface PostingRepository extends JpaRepository<PostingEntity, Long> {
       Integer isTemp, Integer isNotice, Pageable pageable);
 
   Page<PostingEntity> findAllByCategoryIdAndMemberIdAndIsTempAndIsNotice(CategoryEntity category,
-      MemberEntity member, Integer isTemp,Integer isNotice, Pageable pageable);
+      MemberEntity member, Integer isTemp, Integer isNotice, Pageable pageable);
 
   List<PostingEntity> findAllByMemberId(MemberEntity member);
+
+  Page<PostingEntity> findAllByMemberIdAndIsTempAndIsSecret(
+      MemberEntity member, Integer isTemp, Integer isSecret, Pageable pageable);
 
   List<PostingEntity> findAllByIsTempAndIsSecretAndIsNoticeAndRegisterTimeBetween(Integer isTemp,
       Integer isSecret, Integer isNotice, LocalDateTime registerTime, LocalDateTime registerTime2);
