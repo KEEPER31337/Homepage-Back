@@ -329,7 +329,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         fieldWithPath(prefix + ".merit").description("상점"),
         fieldWithPath(prefix + ".demerit").description("벌점"),
         fieldWithPath(prefix + ".generation").description("기수 (7월 이후는 N.5기)"),
-        fieldWithPath(prefix + ".thumbnailId").description("회원의 썸네일 이미지 아이디"),
+        fieldWithPath(prefix + ".thumbnailPath").description("회원의 썸네일 이미지 조회 api path"),
         fieldWithPath(prefix + ".rank").description("회원 등급: null, 우수회원, 일반회원"),
         fieldWithPath(prefix + ".type").description("회원 상태: null, 비회원, 정회원, 휴면회원, 졸업회원, 탈퇴"),
         fieldWithPath(prefix + ".jobs").description(
@@ -357,7 +357,8 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         fieldWithPath(prefix + ".checkFollower").description(
             "상대방이 나를 팔로우 했는지 확인(팔로우: true, 아니면: false)"),
         fieldWithPath(prefix + ".generation").description("기수 (7월 이후는 N.5기)").optional(),
-        subsectionWithPath(prefix + ".thumbnailEntity").description("해당 유저의 썸네일 이미지").optional(),
+        fieldWithPath(prefix + ".thumbnailPath").description("해당 유저의 썸네일 이미지 조회 api path")
+            .optional(),
         subsectionWithPath(prefix + ".memberRankEntity").description(
             "해당 유저의 등급(id): 일반회원(1), 우수회원(2)").optional(),
         subsectionWithPath(prefix + ".memberTypeEntity").description(
@@ -417,10 +418,10 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         fieldWithPath(prefix + ".likeCount").description("좋아요 개수"),
         fieldWithPath(prefix + ".dislikeCount").description("싫어요 개수"),
         fieldWithPath(prefix + ".parentId").description("대댓글인 경우, 부모 댓글의 id"),
-        fieldWithPath(prefix + ".writer").optional().description("작성자 (탈퇴한 작성자일 경우 null)"),
-        fieldWithPath(prefix + ".writerId").optional().description("작성자 (탈퇴한 작성자일 경우 null)"),
-        fieldWithPath(prefix + ".writerThumbnailId").optional().type(Long.TYPE)
-            .description("작성자 (탈퇴했을 경우 / 썸네일을 등록하지 않았을 경우 null)")));
+        fieldWithPath(prefix + ".writer").optional().description("작성자의 닉네임 (탈퇴한 작성자일 경우 null)"),
+        fieldWithPath(prefix + ".writerId").optional().description("작성자 id (탈퇴한 작성자일 경우 null)"),
+        fieldWithPath(prefix + ".writerThumbnailPath").optional().type(String.class)
+            .description("작성자의 썸네일 조회 api 경로 (탈퇴했을 경우 / 썸네일을 등록하지 않았을 경우 null)")));
     if (descriptors.length > 0) {
       commonFields.addAll(Arrays.asList(descriptors));
     }

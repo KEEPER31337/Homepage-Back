@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/v1/util")
 public class ImageController {
 
+  public final static String THUMBNAIL_PATH = "/v1/util/thumbnail/";
+
   private final FileService fileService;
   private final ThumbnailService thumbnailService;
 
