@@ -1,4 +1,4 @@
-package keeper.project.homepage.exception;
+package keeper.project.homepage.exception.point;
 
 public class CustomPointLogRequestNullException extends RuntimeException {
 
