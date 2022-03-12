@@ -33,6 +33,7 @@ import keeper.project.homepage.user.service.member.MemberHasCommentLikeService;
 import keeper.project.homepage.user.service.posting.CommentService;
 import keeper.project.homepage.common.service.sign.SignUpService;
 import keeper.project.homepage.user.service.member.MemberService;
+import keeper.project.homepage.user.service.posting.PostingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,6 +132,9 @@ public abstract class ApiControllerTestSetUp {
 
   @Autowired
   protected CommentService commentService;
+
+  @Autowired
+  protected PostingService postingService;
 
   /********* Others Start ********/
   @Autowired

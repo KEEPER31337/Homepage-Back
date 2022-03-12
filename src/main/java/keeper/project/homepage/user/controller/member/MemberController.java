@@ -46,6 +46,7 @@ public class MemberController {
   private final MemberDeleteService memberDeleteService;
   private final ResponseService responseService;
   private final AuthService authService;
+  private final PostingService postingService;
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/members")
@@ -215,5 +216,26 @@ public class MemberController {
     Long id = authService.getMemberIdByJWT();
     memberDeleteService.deleteAccount(id, password);
     return responseService.getSuccessResult();
+  }
+
+  @Secured("ROLE_회원")
+  @GetMapping("/member/{memberId}/posts")
+  public ListResult<PostingResponseDto> findPostingListOfOther(
+      @PathVariable("memberId") Long memberId,
+      @PageableDefault(size = 10, page = 0, sort = "registerTime", direction = Direction.DESC) Pageable pageable
+  ) {
+    MemberEntity other = memberService.findById(memberId);
+    List<PostingResponseDto> postingList = postingService.findAllByMemberId(other, pageable);
+    return responseService.getSuccessListResult(postingList);
+  }
+
+  @Secured("ROLE_회원")
+  @GetMapping("/member/{memberId}/posts/{postId}")
+  public SingleResult<PostingResponseDto> findSinglePostingOfOther(
+      @PathVariable("memberId") Long memberId,
+      @PathVariable("postId") Long postId) {
+    PostingResponseDto posting = postingService.findByPostId(postId);
+    System.out.println("In Controller : " + posting.getId());
+    return responseService.getSuccessSingleResult(posting);
   }
 }
