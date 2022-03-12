@@ -122,7 +122,7 @@ public class MemberController {
   @Secured("ROLE_회원")
   @GetMapping(value = "/member/post")
   public ListResult<PostingResponseDto> findAllPosting(
-      @SortDefault(sort = "registerDate", direction = Direction.ASC)
+      @SortDefault(sort = "registerTime", direction = Direction.DESC)
       @PageableDefault(page = 0, size = 10) Pageable pageable) {
     Long id = authService.getMemberIdByJWT();
 
@@ -134,7 +134,7 @@ public class MemberController {
   @Secured("ROLE_회원")
   @GetMapping(value = "/member/temp_post")
   public ListResult<PostingResponseDto> findAllTempPosting(
-      @SortDefault(sort = "registerDate", direction = Direction.ASC)
+      @SortDefault(sort = "registerTime", direction = Direction.DESC)
       @PageableDefault(page = 0, size = 10) Pageable pageable) {
     Long id = authService.getMemberIdByJWT();
 
