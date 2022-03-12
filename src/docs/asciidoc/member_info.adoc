@@ -71,17 +71,17 @@ include::{snippets}/member-unfollow/response-fields.adoc[]
 
 ==== Request
 
-include::{snippets}/friend-show-followee/http-request.adoc[]
+include::{snippets}/member-show-followee/http-request.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/friend-show-followee/http-response.adoc[]
+include::{snippets}/member-show-followee/http-response.adoc[]
 
 ==== Response Fields
 
-include::{snippets}/friend-show-followee/response-fields.adoc[]
+include::{snippets}/member-show-followee/response-fields.adoc[]
 
 == *팔로워 조회*
 
@@ -89,17 +89,35 @@ include::{snippets}/friend-show-followee/response-fields.adoc[]
 
 ==== Request
 
-include::{snippets}/friend-show-follower/http-request.adoc[]
+include::{snippets}/member-show-follower/http-request.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/friend-show-follower/http-response.adoc[]
+include::{snippets}/member-show-follower/http-response.adoc[]
 
 ==== Response Fields
 
-include::{snippets}/friend-show-follower/response-fields.adoc[]
+include::{snippets}/member-show-follower/response-fields.adoc[]
+
+== *팔로우, 팔로워 숫자 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/member-follow-number/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/member-follow-number/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/member-follow-number/response-fields.adoc[]
 
 == *회원 탈퇴*
 
