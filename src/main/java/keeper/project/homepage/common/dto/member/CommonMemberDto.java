@@ -12,6 +12,6 @@ public class CommonMemberDto {
   private Long id;
   private String nickName;
   private List<String> jobs;
-  private Long thumbnailId;
+  private String thumbnailPath;
   private Float generation;
 }

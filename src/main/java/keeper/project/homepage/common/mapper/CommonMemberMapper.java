@@ -2,8 +2,6 @@ package keeper.project.homepage.common.mapper;
 
 import keeper.project.homepage.common.dto.member.CommonMemberDto;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.repository.ThumbnailRepository;
-import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
@@ -13,9 +11,8 @@ import org.mapstruct.ReportingPolicy;
 public abstract class CommonMemberMapper {
 
   @Mapping(target = "jobs", expression = "java(memberEntity.getJobs())")
+  @Mapping(target = "thumbnailPath", expression = "java(memberEntity.getThumbnailPath())")
   public abstract CommonMemberDto toDto(MemberEntity memberEntity);
 
-  @Mapping(target = "thumbnail", expression = "java(thumbnailRepository.findById(memberDto.getThumbnailId()).get())")
-  public abstract MemberEntity toEntity(CommonMemberDto memberDto,
-      @Context ThumbnailRepository thumbnailRepository);
+  public abstract MemberEntity toEntity(CommonMemberDto memberDto);
 }

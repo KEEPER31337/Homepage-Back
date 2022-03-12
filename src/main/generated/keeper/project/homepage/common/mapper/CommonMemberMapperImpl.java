@@ -4,12 +4,11 @@ import javax.annotation.processing.Generated;
 import keeper.project.homepage.common.dto.member.CommonMemberDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberEntity.MemberEntityBuilder;
-import keeper.project.homepage.repository.ThumbnailRepository;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2022-03-12T09:23:05+0900",
+    date = "2022-03-12T10:42:03+0900",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 17.0.2 (Oracle Corporation)"
 )
 @Component
@@ -28,12 +27,13 @@ public class CommonMemberMapperImpl extends CommonMemberMapper {
         commonMemberDto.setGeneration( memberEntity.getGeneration() );
 
         commonMemberDto.setJobs( memberEntity.getJobs() );
+        commonMemberDto.setThumbnailPath( memberEntity.getThumbnailPath() );
 
         return commonMemberDto;
     }
 
     @Override
-    public MemberEntity toEntity(CommonMemberDto memberDto, ThumbnailRepository thumbnailRepository) {
+    public MemberEntity toEntity(CommonMemberDto memberDto) {
         if ( memberDto == null ) {
             return null;
         }
@@ -43,8 +43,6 @@ public class CommonMemberMapperImpl extends CommonMemberMapper {
         memberEntity.id( memberDto.getId() );
         memberEntity.nickName( memberDto.getNickName() );
         memberEntity.generation( memberDto.getGeneration() );
-
-        memberEntity.thumbnail( thumbnailRepository.findById(memberDto.getThumbnailId()).get() );
 
         return memberEntity.build();
     }

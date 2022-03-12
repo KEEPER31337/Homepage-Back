@@ -226,6 +226,14 @@ public class MemberEntity implements UserDetails, Serializable {
     return jobs;
   }
 
+  public String getThumbnailPath() {
+    String thumbnailApiPath = "/v1/util/thumbnail/";
+    if (getThumbnail() == null) {
+      return thumbnailApiPath + 0;
+    }
+    return thumbnailApiPath + getThumbnail().getId();
+  }
+
   @PrePersist
   private void prePersist() {
     this.point = (this.point == null ? 0 : this.point);

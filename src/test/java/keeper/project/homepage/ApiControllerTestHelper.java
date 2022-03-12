@@ -294,6 +294,25 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     return commonFields;
   }
 
+  public List<FieldDescriptor> generateCommonMemberCommonResponseFields(ResponseType type,
+      String success, String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(Arrays.asList(
+        fieldWithPath(prefix + ".id").description("아이디"),
+        fieldWithPath(prefix + ".nickName").description("닉네임"),
+        fieldWithPath(prefix + ".generation").description("기수 (7월 이후는 N.5기)"),
+        fieldWithPath(prefix + ".thumbnailPath").description("회원의 썸네일 이미지 주소"),
+        fieldWithPath(prefix + ".jobs").description(
+            "동아리 직책: null, ROLE_회장, ROLE_부회장, ROLE_대외부장, ROLE_학술부장, ROLE_전산관리자, ROLE_서기, ROLE_총무, ROLE_사서"))
+    );
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
+    }
+    return commonFields;
+  }
+
   public List<FieldDescriptor> generateMemberCommonResponseFields(ResponseType type,
       String success, String code, String msg, FieldDescriptor... addDescriptors) {
     String prefix = type.getReponseFieldPrefix();

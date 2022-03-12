@@ -1,6 +1,10 @@
 package keeper.project.homepage.common.controller;
 
+import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -26,8 +30,16 @@ public class MemberControllerTest extends ApiControllerTestHelper {
   @Test
   @DisplayName("전체 회원 정보 불러오기")
   public void getAllCommonMembersInfo() throws Exception {
+    String docMsg = "";
+    String docCode = "";
     mockMvc.perform(get("/v1/common/members"))
         .andDo(print())
-        .andExpect(jsonPath("$.success").value(true));
+        .andExpect(jsonPath("$.success").value(true))
+        .andDo(document("common-members",
+            responseFields(
+                generateCommonMemberCommonResponseFields(ResponseType.LIST,
+                "성공: true +\n실패: false", docCode, docMsg)
+            )
+        ));
   }
 }
