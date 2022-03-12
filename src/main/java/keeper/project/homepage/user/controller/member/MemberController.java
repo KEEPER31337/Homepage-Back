@@ -119,6 +119,7 @@ public class MemberController {
     return responseService.getSuccessSingleResult(updated);
   }
 
+  // TODO : registerTime 기준으로 정렬이 제대로 안됨.
   @Secured("ROLE_회원")
   @GetMapping(value = "/member/post")
   public ListResult<PostingResponseDto> findAllPosting(
@@ -131,6 +132,7 @@ public class MemberController {
     return responseService.getSuccessListResult(page.getContent());
   }
 
+  // TODO : registerTime 기준으로 정렬이 제대로 안됨.
   @Secured("ROLE_회원")
   @GetMapping(value = "/member/temp_post")
   public ListResult<PostingResponseDto> findAllTempPosting(
