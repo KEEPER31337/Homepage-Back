@@ -13,18 +13,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import keeper.project.homepage.ApiControllerTestHelper;
+import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.user.dto.posting.CommentDto;
+import keeper.project.homepage.util.ImageFormatChecking;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -117,6 +125,8 @@ public class CommentControllerTest extends ApiControllerTestHelper {
   @Test
   @DisplayName("댓글 페이징")
   public void showCommentByPostIdTest() throws Exception {
+    // 1. 작성자 썸네일이 이미지 api 조회 uri를 담고 있는지 확인
+    // 2. 작성자 썸네일을 호출했을 때, 이미지 파일이 정상적으로 나오는 지 확인
     CommentEntity anotherComment = generateCommentEntity(postingEntity, userEntity, 0L);
     Long commentId = anotherComment.getId();
     for (int i = 0; i < 5; i++) {
@@ -156,6 +166,43 @@ public class CommentControllerTest extends ApiControllerTestHelper {
                         "싫어요 눌렀는지 확인 (눌렀으면 true, 아니면 false)"))
             )
         ));
+  }
+
+  @Test
+  @DisplayName("댓글의 작성자 썸네일 조회 테스트 - 이미지 파일이 정상적으로 나오는 지 확인")
+  public void displayThumbnailOfWriterTest() throws Exception {
+    Long postId = postingEntity.getId();
+    MvcResult result = mockMvc.perform(
+            RestDocumentationRequestBuilders.get("/v1/comment/{postId}", postId)
+                .param("page", "0")
+                .param("size", "10")
+                .header("Authorization", userToken))
+        .andReturn();
+
+    String resultString = result.getResponse().getContentAsString();
+    ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    ListResult<CommentDto> commentDtoList = mapper.readValue(resultString, new TypeReference<>() {
+    });
+
+    for (CommentDto commentDto : commentDtoList.getList()) {
+      String writerThumbnailUri = commentDto.getWriterThumbnailPath();
+
+      MvcResult resultImage = mockMvc.perform(
+              RestDocumentationRequestBuilders.get(writerThumbnailUri))
+          .andDo(print())
+          .andExpect(status().isOk())
+          .andReturn();
+
+      byte[] imageArray = resultImage.getResponse().getContentAsByteArray();
+      MockMultipartFile imageMultipartFile = new MockMultipartFile("testImage.jpg", "testImage.jpg",
+          "image/jpeg", imageArray);
+
+      ImageFormatChecking imageFormatChecking = new ImageFormatChecking();
+      Assertions.assertDoesNotThrow(() -> {
+        imageFormatChecking.checkImageFile(imageMultipartFile);
+      });
+    }
+
   }
 
   @Test

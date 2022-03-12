@@ -84,6 +84,20 @@ public class PostingService {
     return postingResponseDtos;
   }
 
+  public List<PostingResponseDto> findAllNotice() {
+
+    List<PostingEntity> postingEntities = postingRepository.findAllByIsNoticeAndIsTemp(
+        isNoticePosting, isNotTempPosting);
+    List<PostingResponseDto> postingResponseDtos = new ArrayList<>();
+
+    for (PostingEntity postingEntity : postingEntities) {
+      postingResponseDtos.add(new PostingResponseDto().initWithEntity(postingEntity,
+          postingEntities.size()));
+    }
+
+    return postingResponseDtos;
+  }
+
   public List<PostingResponseDto> findAllNoticeByCategoryId(Long categoryId) {
 
     CategoryEntity categoryEntity = categoryRepository.findById(categoryId)

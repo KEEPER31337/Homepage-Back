@@ -183,7 +183,7 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].enable").description("대여 가능한 수"),
                 fieldWithPath("list[].registerDate").description("등록된 날짜"),
                 fieldWithPath("list[].department").description("도서 분류 코드").optional(),
-                fieldWithPath("list[].thumbnailId").description("썸네일 ID").optional()
+                fieldWithPath("list[].thumbnailPath").description("썸네일 조회 api path").optional()
             )));
   }
 
@@ -220,7 +220,7 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].enable").description("대여 가능한 수"),
                 fieldWithPath("list[].registerDate").description("등록된 날짜"),
                 fieldWithPath("list[].department").description("도서 분류 코드").optional(),
-                fieldWithPath("list[].thumbnailId").description("썸네일 ID").optional()
+                fieldWithPath("list[].thumbnailPath").description("썸네일 조회 api path").optional()
             )));
   }
 
@@ -255,7 +255,7 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.enable").description("대여 가능한 수"),
                 fieldWithPath("data.registerDate").description("등록된 날짜"),
                 fieldWithPath("data.department").description("도서 분류 코드").optional(),
-                fieldWithPath("data.thumbnailId").description("썸네일 ID").optional()
+                fieldWithPath("data.thumbnailPath").description("썸네일 조회 api path").optional()
             )));
   }
 }

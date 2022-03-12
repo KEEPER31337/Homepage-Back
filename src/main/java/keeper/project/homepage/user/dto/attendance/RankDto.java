@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import keeper.project.homepage.common.controller.util.ImageController;
 import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,7 +22,7 @@ public class RankDto {
 
   private Long id;
   private String nickName;
-  private Long thumbnailId;
+  private String thumbnailPath;
   private List<String> jobs;
   private Integer point;
   private Integer rank;
@@ -32,7 +33,7 @@ public class RankDto {
     this.nickName = memberEntity.getNickName();
     this.point = memberEntity.getPoint();
     if (memberEntity.getThumbnail() != null) {
-      this.thumbnailId = memberEntity.getThumbnail().getId();
+      this.thumbnailPath = ImageController.THUMBNAIL_PATH + memberEntity.getThumbnail().getId();
     }
     if (memberEntity.getMemberJobs() != null || memberEntity.getMemberJobs().isEmpty() == false) {
       this.jobs = new ArrayList<>();

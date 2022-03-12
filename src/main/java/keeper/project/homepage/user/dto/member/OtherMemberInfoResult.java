@@ -1,6 +1,7 @@
 package keeper.project.homepage.user.dto.member;
 
 import java.util.Date;
+import keeper.project.homepage.common.controller.util.ImageController;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberRankEntity;
@@ -28,7 +29,7 @@ public class OtherMemberInfoResult {
 
   private MemberRankEntity memberRankEntity;
 
-  private ThumbnailEntity thumbnailEntity;
+  private String thumbnailPath;
 
   private Float generation;
 
@@ -44,7 +45,9 @@ public class OtherMemberInfoResult {
     this.registerDate = memberEntity.getRegisterDate();
     this.memberTypeEntity = memberEntity.getMemberType();
     this.memberRankEntity = memberEntity.getMemberRank();
-    this.thumbnailEntity = memberEntity.getThumbnail();
+    if (memberEntity.getThumbnail() != null) {
+      this.thumbnailPath = ImageController.THUMBNAIL_PATH + memberEntity.getThumbnail().getId();
+    }
     this.generation = memberEntity.getGeneration();
   }
 

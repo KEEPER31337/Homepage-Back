@@ -290,4 +290,36 @@ public class MemberControllerTest extends MemberControllerTestSetup {
       memberService.findById(memberEntity.getId());
     });
   }
+
+  @Test
+  @DisplayName("팔로워, 팔로우 숫자 조회하기")
+  public void getFollowerAndFolloweeCount() throws Exception {
+    int followerNum = 3;
+    int followeeNum = 2;
+    for (int i = 0; i < followerNum; i++) {
+      MemberEntity follower = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원,
+          MemberRankName.일반회원);
+      memberService.follow(follower.getId(), memberEntity.getLoginId());
+    }
+    for (int i = 0; i < followeeNum; i++) {
+      MemberEntity followee = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원,
+          MemberRankName.일반회원);
+      memberService.follow(memberEntity.getId(), followee.getLoginId());
+    }
+
+    // TODO : 예외 처리 & doc 메세지 채우기 (회원 관리 전체적으로 예외 수정할 예정)
+    String docMsg = "";
+    String docCode = "실패한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+    mockMvc.perform(get("/v1/member/follow-number")
+            .header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.followerNumber").value(followerNum))
+        .andExpect(jsonPath("$.data.followeeNumber").value(followeeNum))
+        .andDo(document("member-follow-number",
+            responseFields(
+                generateCommonFollowResponse(ResponseType.SINGLE, "성공 시: success, 실패 시: fail",
+                    docCode, docMsg)
+            )));
+  }
 }
