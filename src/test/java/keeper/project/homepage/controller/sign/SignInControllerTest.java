@@ -160,7 +160,7 @@ public class SignInControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("data.member.jobs").description(
                         "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
                     .optional(),
-                fieldWithPath("data.member.thumbnailId").description("썸네일 Id").optional()
+                fieldWithPath("data.member.thumbnailPath").description("썸네일 Url").optional()
             )));
   }
 
