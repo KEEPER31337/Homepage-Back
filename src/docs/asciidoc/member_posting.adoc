@@ -122,3 +122,47 @@ include::{snippets}/member-delete-post/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/member-delete-post/http-response.adoc[]
+
+== *다른 회원이 작성한 게시글 목록 조회하기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/member-other-posts-list/http-request.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/member-other-posts-list/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/member-other-posts-list/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/member-other-posts-list/response-fields.adoc[]
+
+== *다른 회원이 작성한 게시글 상세 조회하기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/member-other-posts-single/http-request.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/member-other-posts-single/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/member-other-posts-single/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/member-other-posts-single/response-fields.adoc[]

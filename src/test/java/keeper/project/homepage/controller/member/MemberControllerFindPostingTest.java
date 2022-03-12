@@ -17,27 +17,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.common.dto.result.SingleResult;
-import keeper.project.homepage.common.dto.sign.SignInDto;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
-import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
-import keeper.project.homepage.user.dto.posting.PostingResponseDto;
 import keeper.project.homepage.user.service.posting.PostingService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -95,7 +82,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
                 parameterWithName("size").description("한 페이지에 보이는 게시글 개수 (default : 10)")
             ),
             responseFields(
-                generatePostingResponseFields(ResponseType.LIST, "", docCode, docMsg)
+                generatePostingResponseFields_Legacy(ResponseType.LIST, "", docCode, docMsg)
             )
         ));
   }
@@ -119,7 +106,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
                 parameterWithName("size").description("한 페이지에 보이는 게시글 개수 (default : 10)")
             ),
             responseFields(
-                generatePostingResponseFields(ResponseType.LIST, "", docCode, docMsg)
+                generatePostingResponseFields_Legacy(ResponseType.LIST, "", docCode, docMsg)
             )
         ));
   }
@@ -195,13 +182,16 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
     for (int i = 0; i < 10; i++) {
       generatePostingEntity(memberEntity2, categoryEntity, PostingService.isNotNoticePosting,
           PostingService.isNotSecretPosting, PostingService.isNotTempPosting);
-      // TODO : temp, secret 예외 추가 필요.
+      // TODO : temp, secret 예외 추가 필요. & 해당 예외에 대한 테스트 추가
 //      generatePostingEntity(memberEntity2, categoryEntity, PostingService.isNotNoticePosting,
 //          PostingService.isSecretPosting, PostingService.isTempPosting);
     }
 
+    String docCode = "";
+    String docMsg = "(나중에 예외 사항을 추가하겠습니다..!)"
+        + " +\n" + "그 외 실패한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     Long otherId = memberEntity2.getId();
-    mockMvc.perform(get("/v1/member/{memberid}/posts", otherId)
+    mockMvc.perform(get("/v1/member/{memberId}/posts", otherId)
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(jsonPath("$.list.length()", greaterThan(0)))
@@ -210,7 +200,15 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
         .andExpect(jsonPath("$.list.[?(@.isTemp == %d)]",
             PostingService.isTempPosting).doesNotExist())
         .andExpect(jsonPath("$.list.[?(@.isSecret == %d)]",
-            PostingService.isSecretPosting).doesNotExist());
+            PostingService.isSecretPosting).doesNotExist())
+        .andDo(document("member-other-posts-list",
+            pathParameters(
+                parameterWithName("memberId").description("조회하려는 회원 아이디")
+            ),
+            responseFields(
+                generatePostingResponseFields(ResponseType.LIST, "성공 시: success, 실패 시: fail",
+                    docCode, docMsg)
+            )));
   }
 
   @Test
@@ -220,15 +218,27 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
         PostingService.isNotNoticePosting, PostingService.isNotSecretPosting,
         PostingService.isNotTempPosting);
 
+    String docCode = "";
+    String docMsg = "(나중에 예외 사항을 추가하겠습니다..!)"
+        + " +\n" + "그 외 실패한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     Long otherId = memberEntity2.getId();
     Long postId = posting.getId();
-    mockMvc.perform(get("/v1/member/{memberid}/posts/{postId}", otherId, postId)
+    mockMvc.perform(get("/v1/member/{memberId}/posts/{postId}", otherId, postId)
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.data.writerId").value(otherId))
         .andExpect(jsonPath("$.data.isTemp").value(PostingService.isNotTempPosting))
-        .andExpect(jsonPath("$.data.isSecret").value(PostingService.isNotSecretPosting));
+        .andExpect(jsonPath("$.data.isSecret").value(PostingService.isNotSecretPosting))
+        .andDo(document("member-other-posts-single",
+            pathParameters(
+                parameterWithName("memberId").description("조회하려는 회원 아이디"),
+                parameterWithName("postId").description("조회하려는 게시글 아이디")
+            ),
+            responseFields(
+                generatePostingResponseFields(ResponseType.SINGLE, "성공 시: success, 실패 시: fail",
+                    docCode, docMsg)
+            )));
   }
 
 }

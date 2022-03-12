@@ -219,9 +219,9 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @GetMapping("/member/{memberid}/posts")
+  @GetMapping("/member/{memberId}/posts")
   public ListResult<PostingResponseDto> findPostingListOfOther(
-      @PathVariable("memberid") Long memberId,
+      @PathVariable("memberId") Long memberId,
       @PageableDefault(size = 10, page = 0, sort = "registerTime", direction = Direction.DESC) Pageable pageable
   ) {
     MemberEntity other = memberService.findById(memberId);
@@ -230,10 +230,10 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @GetMapping("/member/{memberid}/posts/{postid}")
+  @GetMapping("/member/{memberId}/posts/{postId}")
   public SingleResult<PostingResponseDto> findSinglePostingOfOther(
-      @PathVariable("memberid") Long memberId,
-      @PathVariable("postid") Long postId) {
+      @PathVariable("memberId") Long memberId,
+      @PathVariable("postId") Long postId) {
     PostingResponseDto posting = postingService.findByPostId(postId);
     System.out.println("In Controller : " + posting.getId());
     return responseService.getSuccessSingleResult(posting);
