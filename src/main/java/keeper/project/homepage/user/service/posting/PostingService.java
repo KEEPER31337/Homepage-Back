@@ -26,6 +26,7 @@ import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.common.service.util.AuthService;
+import keeper.project.homepage.user.dto.posting.PostingResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -53,66 +54,50 @@ public class PostingService {
   public static final Integer isNoticePosting = 1;
   public static final Integer bestPostingCount = 10;
 
-  public List<PostingEntity> findAll(Pageable pageable) {
+  public List<PostingResponseDto> findAll(Pageable pageable) {
 
     Page<PostingEntity> postingEntities = postingRepository.findAllByIsTemp(isNotTempPosting,
         pageable);
-    setAllInfo(postingEntities);
+    List<PostingResponseDto> postingResponseDtos = new ArrayList<>();
 
-    return postingEntities.getContent();
-  }
-
-  private void setWriterInfo(PostingEntity postingEntity) {
-    if (postingEntity.getCategoryId().getName().equals("비밀게시판")) {
-      postingEntity.setWriter("익명");
-    } else {
-      postingEntity.setWriter(postingEntity.getMemberId().getNickName());
-      postingEntity.setWriterId(postingEntity.getMemberId().getId());
-      if (postingEntity.getMemberId().getThumbnail() != null) {
-        postingEntity.setWriterThumbnailId(postingEntity.getMemberId().getThumbnail().getId());
-      }
-    }
-  }
-
-  private void setAllInfo(List<PostingEntity> postingEntities) {
-    setAllInfo(postingEntities, postingEntities.size());
-  }
-
-  private void setAllInfo(Page<PostingEntity> postingEntities) {
-    setAllInfo(postingEntities.getContent(), (int) postingEntities.getTotalElements());
-  }
-
-  private void setAllInfo(List<PostingEntity> postingEntities, Integer totalSize) {
     for (PostingEntity postingEntity : postingEntities) {
-      setWriterInfo(postingEntity);
-      postingEntity.setSize(totalSize);
-      if (postingEntity.getIsSecret() == 1) {
-        postingEntity.makeSecret();
-      }
-      postingEntity.setCategory(postingEntity.getCategoryId().getName());
+      postingResponseDtos.add(new PostingResponseDto().initWithEntity(postingEntity,
+          (int) postingEntities.getTotalElements()));
     }
+
+    return postingResponseDtos;
   }
 
-  public List<PostingEntity> findAllByCategoryId(Long categoryId, Pageable pageable) {
+  public List<PostingResponseDto> findAllByCategoryId(Long categoryId, Pageable pageable) {
 
     CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
         .orElseThrow(CustomCategoryNotFoundException::new);
     Page<PostingEntity> postingEntities = postingRepository.findAllByCategoryIdAndIsTempAndIsNotice(
         categoryEntity, isNotTempPosting, isNotNoticePosting, pageable);
-    setAllInfo(postingEntities);
+    List<PostingResponseDto> postingResponseDtos = new ArrayList<>();
 
-    return postingEntities.getContent();
+    for (PostingEntity postingEntity : postingEntities) {
+      postingResponseDtos.add(new PostingResponseDto().initWithEntity(postingEntity,
+          (int) postingEntities.getTotalElements()));
+    }
+
+    return postingResponseDtos;
   }
 
-  public List<PostingEntity> findAllNoticeByCategoryId(Long categoryId) {
+  public List<PostingResponseDto> findAllNoticeByCategoryId(Long categoryId) {
 
     CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
         .orElseThrow(CustomCategoryNotFoundException::new);
     List<PostingEntity> postingEntities = postingRepository.findAllByCategoryIdAndIsTempAndIsNotice(
         categoryEntity, isNotTempPosting, isNoticePosting);
-    setAllInfo(postingEntities);
+    List<PostingResponseDto> postingResponseDtos = new ArrayList<>();
 
-    return postingEntities;
+    for (PostingEntity postingEntity : postingEntities) {
+      postingResponseDtos.add(new PostingResponseDto().initWithEntity(postingEntity,
+          postingEntities.size()));
+    }
+
+    return postingResponseDtos;
   }
 
   public List<PostingBestDto> findAllBest() {
@@ -121,7 +106,7 @@ public class PostingService {
     LocalDateTime endDate = LocalDate.now().plusDays(1).atStartOfDay();
     List<PostingEntity> postingEntities = postingRepository.findAllByIsTempAndIsSecretAndIsNoticeAndRegisterTimeBetween(
         isNotTempPosting, isNotSecretPosting, isNotNoticePosting, startDate, endDate);
-    setAllInfo(postingEntities);
+//    setAllInfo(postingEntities);
 
     postingEntities.sort((posting1, posting2) -> {
       Integer posting1Score =
@@ -162,8 +147,6 @@ public class PostingService {
 
     PostingEntity postingEntity = postingRepository.findById(pid)
         .orElseThrow(RuntimeException::new); // TODO: CustomPostingNotFoundException 만들어주세여~
-    setWriterInfo(postingEntity);
-    postingEntity.setSize(1);
 
     return postingEntity;
   }
@@ -243,7 +226,7 @@ public class PostingService {
   }
 
   @Transactional
-  public List<PostingEntity> searchPosting(String type, String keyword,
+  public List<PostingResponseDto> searchPosting(String type, String keyword,
       Long categoryId, Pageable pageable) {
 
     CategoryEntity categoryEntity = categoryRepository.findById(categoryId).get();
@@ -276,9 +259,14 @@ public class PostingService {
         break;
       }
     }
-    setAllInfo(postingEntities);
+    List<PostingResponseDto> postingResponseDtos = new ArrayList<>();
 
-    return postingEntities.getContent();
+    for (PostingEntity postingEntity : postingEntities) {
+      postingResponseDtos.add(new PostingResponseDto().initWithEntity(postingEntity,
+          (int) postingEntities.getTotalElements()));
+    }
+
+    return postingResponseDtos;
   }
 
   @Transactional

@@ -29,8 +29,8 @@ public class PostingBestDto {
   public void initWithEntity(PostingEntity postingEntity) {
     this.id = postingEntity.getId();
     this.title = postingEntity.getTitle();
-    this.user = postingEntity.getWriter();
-    this.userThumbnailID = postingEntity.getWriterThumbnailId();
+//    this.user = postingEntity.getWriter();
+//    this.userThumbnailID = postingEntity.getWriterThumbnailId();
     this.dateTime = postingEntity.getRegisterTime();
     this.watch = postingEntity.getVisitCount();
     this.commentN = postingEntity.getCommentCount();
