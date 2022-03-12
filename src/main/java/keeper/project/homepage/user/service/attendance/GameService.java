@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import keeper.project.homepage.user.dto.point.request.PointLogRequest;
+import keeper.project.homepage.user.dto.point.request.PointLogRequestDto;
 import keeper.project.homepage.user.dto.attendance.GameInfoDto;
 import keeper.project.homepage.user.dto.attendance.LottoDto;
 import keeper.project.homepage.user.dto.attendance.RouletteDto;
@@ -76,7 +76,7 @@ public class GameService {
     gameEntity.setLastPlayTime(LocalDateTime.now());
     gameRepository.save(gameEntity);
     pointLogService.createPointUseLog(memberEntity,
-        new PointLogRequest(LocalDateTime.now(), bettingPoint, "주사위 게임 포인트 차감"));
+        new PointLogRequestDto(LocalDateTime.now(), bettingPoint, "주사위 게임 포인트 차감"));
     return true;
   }
 
@@ -103,7 +103,7 @@ public class GameService {
     gameEntity.setDiceDayPoint(gameEntity.getDiceDayPoint() + diceDayPoint);
     gameRepository.save(gameEntity);
     pointLogService.createPointSaveLog(memberEntity,
-        new PointLogRequest(LocalDateTime.now(), updatePoint, "주사위 게임 결과"));
+        new PointLogRequestDto(LocalDateTime.now(), updatePoint, "주사위 게임 결과"));
     return gameEntity.getDiceDayPoint();
   }
 
@@ -133,7 +133,7 @@ public class GameService {
     gameEntity.setLastPlayTime(LocalDateTime.now());
 
     pointLogService.createPointUseLog(memberEntity,
-        new PointLogRequest(LocalDateTime.now(), ROULETTE_FEE, "룰렛 게임 포인트 차감"));
+        new PointLogRequestDto(LocalDateTime.now(), ROULETTE_FEE, "룰렛 게임 포인트 차감"));
     List<Integer> points = new ArrayList<>();
     List<Integer> restricts = ROULETTE_LIST;
     for (int i = 0; i < restricts.size(); i += 2) {
@@ -147,7 +147,7 @@ public class GameService {
     gameRepository.save(gameEntity);
 
     pointLogService.createPointSaveLog(memberEntity,
-        new PointLogRequest(LocalDateTime.now(), points.get(idx), "룰렛 게임 결과"));
+        new PointLogRequestDto(LocalDateTime.now(), points.get(idx), "룰렛 게임 결과"));
     return rouletteDto;
   }
 
@@ -188,7 +188,7 @@ public class GameService {
     gameEntity.setLastPlayTime(LocalDateTime.now());
 
     pointLogService.createPointUseLog(memberEntity,
-        new PointLogRequest(LocalDateTime.now(), LOTTO_FEE, "로또 게임 포인트 차감"));
+        new PointLogRequestDto(LocalDateTime.now(), LOTTO_FEE, "로또 게임 포인트 차감"));
 
     int result;
     int idx;
@@ -218,7 +218,7 @@ public class GameService {
 
     LottoDto lottoDto = new LottoDto(null, idx, gameEntity.getLottoDayPoint());
     pointLogService.createPointSaveLog(memberEntity,
-        new PointLogRequest(LocalDateTime.now(), result, "로또 게임 결과"));
+        new PointLogRequestDto(LocalDateTime.now(), result, "로또 게임 결과"));
 
     return lottoDto;
   }
