@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletResponse;
 import keeper.project.homepage.common.dto.sign.EmailAuthDto;
 import keeper.project.homepage.user.dto.member.MemberDto;
 import keeper.project.homepage.user.dto.member.MemberFollowDto;
-import keeper.project.homepage.user.dto.posting.PostingDto;
 import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.user.dto.member.OtherMemberInfoResult;
@@ -51,38 +50,28 @@ public class MemberController {
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/members")
-  public ListResult<OtherMemberInfoResult> getAllOtherMemberInfo(
-      @PageableDefault(size = 20, sort = "registerDate", direction = Direction.DESC) Pageable pageable
+  public ListResult<OtherMemberInfoResult> getOtherMembers(
+      @PageableDefault(size = 20, sort = "id", direction = Direction.DESC) Pageable pageable
   ) {
-    return responseService.getSuccessListResult(memberService.getAllOtherMemberInfo(pageable));
+    return responseService.getSuccessListResult(memberService.getOtherMembers(pageable));
   }
 
   @Secured("ROLE_회원")
-  @GetMapping(value = "/member/other-id/{id}")
-  public SingleResult<OtherMemberInfoResult> getOtherMemberInfoById(
+  @GetMapping(value = "/members/{id}")
+  public SingleResult<OtherMemberInfoResult> getOtherMember(
       @PathVariable("id") Long otherMemberId
   ) {
     return responseService.getSuccessSingleResult(
-        memberService.getOtherMemberInfoById(otherMemberId));
+        memberService.getOtherMember(otherMemberId));
   }
 
   @Secured("ROLE_회원")
-  @GetMapping(value = "/member/other-name/{name}")
-  public SingleResult<OtherMemberInfoResult> getOtherMemberInfoByRealName(
-      @PathVariable("name") String realName
-  ) {
-    return responseService.getSuccessSingleResult(
-        memberService.getOtherMemberInfoByRealName(realName));
-  }
-
-  // TODO : 이거 삭제 (테스트 & 문서도)
-  @Secured("ROLE_회원") // 각 리소스별 권한 설정
   @GetMapping(value = "/member")
-  public SingleResult<MemberEntity> findMember() {
+  public SingleResult<MemberDto> getMember() {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
     Long id = authService.getMemberIdByJWT();
     // 결과데이터가 단일건인경우 getSuccessSingleResult 이용해서 결과를 출력한다.
-    return responseService.getSuccessSingleResult(memberService.findById(id));
+    return responseService.getSuccessSingleResult(memberService.getMember(id));
   }
 
   @Secured("ROLE_회원")

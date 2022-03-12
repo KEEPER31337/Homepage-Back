@@ -14,6 +14,9 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.common.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -32,9 +35,11 @@ public class AdminMemberController {
 
   @Secured("ROLE_회장") // 각 리소스별 권한 설정
   @GetMapping(value = "/members")
-  public ListResult<MemberEntity> findAllMember() {
+  public ListResult<MemberDto> getMembers(
+      @PageableDefault(size = 20, sort = "id", direction = Direction.DESC)Pageable pageable
+  ) {
     // 결과데이터가 여러건인경우 getSuccessListResult 이용해서 결과를 출력한다.
-    return responseService.getSuccessListResult(adminMemberService.findAll());
+    return responseService.getSuccessListResult(adminMemberService.getMembers(pageable));
   }
 
   @Secured("ROLE_회장")
