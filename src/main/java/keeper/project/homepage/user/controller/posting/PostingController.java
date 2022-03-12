@@ -127,14 +127,13 @@ public class PostingController {
     PostingEntity postingEntity = postingService.getPostingById(postingId);
     Long visitMemberId = authService.getMemberIdByJWT();
 
-    if (postingEntity.getIsSecret() == 1) {
-      if (!(postingEntity.getPassword().equals(password))) {
-        return responseService.getFailSingleResult(null, -11000, "비밀번호가 일치하지 않습니다.");
-      }
-    }
     if (visitMemberId != postingEntity.getMemberId().getId()) {
       if (postingEntity.getIsTemp() == PostingService.isTempPosting) {
         return responseService.getFailSingleResult(null, -11100, "임시저장 게시물입니다.");
+      } else if (postingEntity.getIsSecret() == 1) {
+        if (!(postingEntity.getPassword().equals(password))) {
+          return responseService.getFailSingleResult(null, -11000, "비밀번호가 일치하지 않습니다.");
+        }
       }
       postingEntity.increaseVisitCount();
       postingService.updateInfoById(postingEntity, postingId);
