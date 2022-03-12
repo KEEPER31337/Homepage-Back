@@ -1,4 +1,4 @@
-package keeper.project.homepage.controller.point;
+package keeper.project.homepage.user.controller.point;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -12,40 +12,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import keeper.project.homepage.ApiControllerTestSetUp;
-import keeper.project.homepage.common.dto.result.SingleResult;
-import keeper.project.homepage.common.dto.sign.SignInDto;
+import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
-import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.point.PointLogEntity;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @Log4j2
-public class PointLogControllerTest extends ApiControllerTestSetUp {
+public class PointLogControllerTest extends ApiControllerTestHelper {
 
-  final private String loginId = "hyeonmomo";
-  final private String password = "keeper";
-  final private String realName = "JeongHyeonMo";
-  final private String nickName = "JeongHyeonMo";
-  final private String emailAddress = "test@k33p3r.com";
-  final private String studentId = "201724579";
-  final private Integer point = 200;
-
-  private MemberEntity memberEntity1, memberEntity2;
-  private String userToken1, userToken2;
+  private MemberEntity memberEntity1, memberEntity2, memberEntity3;
+  private String userToken1, userToken2, userToken3;
 
   private final LocalDateTime now = LocalDateTime.now();
 
@@ -53,37 +36,22 @@ public class PointLogControllerTest extends ApiControllerTestSetUp {
 
   @BeforeEach
   public void setUp() throws Exception {
-
-    memberEntity1 = generateTestMember();
-    memberEntity2 = generateTestMember();
-    userToken1 = generateTestMemberJWT(memberEntity1);
-    userToken2 = generateTestMemberJWT(memberEntity2);
-    for (int i = 0; i < 38; i++) {
+    memberEntity1 = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    memberEntity2 = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    memberEntity3 = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    userToken1 = generateJWTToken(memberEntity1);
+    userToken2 = generateJWTToken(memberEntity2);
+    userToken3 = generateJWTToken(memberEntity3);
+    for(int i = 0; i < 38; i++) {
       generateTestPointLog();
       generateTestPointGiftLog();
     }
 
-  }
+    for(int i = 0; i < 10; i++) {
+      generateTestOtherPointLog();
+      generateTestOtherPointGiftLog();
+    }
 
-  private MemberEntity generateTestMember() {
-    final long epochTime = System.nanoTime();
-    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
-    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
-        .memberJobEntity(memberJobEntity)
-        .build();
-    MemberEntity memberEntity = MemberEntity.builder()
-        .loginId(loginId + epochTime)
-        .password(passwordEncoder.encode(password))
-        .realName(realName + epochTime)
-        .nickName(nickName + epochTime)
-        .emailAddress(emailAddress + epochTime)
-        .studentId(studentId + epochTime)
-        .point(point)
-        .generation(0F)
-        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
-        .build();
-    memberRepository.save(memberEntity);
-    return memberEntity;
   }
 
   private void generateTestPointLog() {
@@ -101,6 +69,21 @@ public class PointLogControllerTest extends ApiControllerTestSetUp {
     pointLogRepository.save(pointLogEntity);
   }
 
+  private void generateTestOtherPointLog() {
+    index += 1;
+    final long epochTime = System.nanoTime();
+    final LocalDateTime now = LocalDateTime.now();
+    PointLogEntity pointLogEntity = PointLogEntity.builder()
+        .member(memberEntity3)
+        .point(index)
+        .detail("적립" + epochTime)
+        .time(now)
+        .isSpent(0)
+        .build();
+
+    pointLogRepository.save(pointLogEntity);
+  }
+
   private void generateTestPointGiftLog() {
     index += 1;
     final long epochTime = System.nanoTime();
@@ -108,7 +91,7 @@ public class PointLogControllerTest extends ApiControllerTestSetUp {
     PointLogEntity pointLogEntity = PointLogEntity.builder()
         .member(memberEntity1)
         .point(index)
-        .detail("보낸 선물" + epochTime)
+        .detail("선물" + epochTime)
         .time(now)
         .presentedMember(memberEntity2)
         .isSpent(1)
@@ -117,28 +100,20 @@ public class PointLogControllerTest extends ApiControllerTestSetUp {
     pointLogRepository.save(pointLogEntity);
   }
 
-  private String generateTestMemberJWT(MemberEntity member) throws Exception {
+  private void generateTestOtherPointGiftLog() {
+    index += 1;
+    final long epochTime = System.nanoTime();
+    final LocalDateTime now = LocalDateTime.now();
+    PointLogEntity pointLogEntity = PointLogEntity.builder()
+        .member(memberEntity2)
+        .point(index)
+        .detail("선물" + epochTime)
+        .time(now)
+        .presentedMember(memberEntity3)
+        .isSpent(1)
+        .build();
 
-    String content = "{\n"
-        + "    \"loginId\": \"" + member.getLoginId() + "\",\n"
-        + "    \"password\": \"" + password + "\"\n"
-        + "}";
-    MvcResult result = mockMvc.perform(post("/v1/signin")
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(content))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.code").value(0))
-        .andExpect(jsonPath("$.msg").exists())
-        .andExpect(jsonPath("$.data").exists())
-        .andReturn();
-
-    String resultString = result.getResponse().getContentAsString();
-    ObjectMapper mapper = new ObjectMapper();
-    SingleResult<SignInDto> sign = mapper.readValue(resultString, new TypeReference<>() {
-    });
-    return sign.getData().getToken();
+    pointLogRepository.save(pointLogEntity);
   }
 
   @Test
@@ -147,11 +122,11 @@ public class PointLogControllerTest extends ApiControllerTestSetUp {
     String content = "{\n"
         + "    \"time\": \"" + now + "\",\n"
         + "    \"point\": \"" + 10 + "\",\n"
-        + "    \"detail\": \"" + "선물 드릴께용" + "\",\n"
+        + "    \"detail\": \"" + "포인트 선물" + "\",\n"
         + "    \"presentedId\": \"" + memberEntity2.getId() + "\"\n"
         + "}";
 
-    mockMvc.perform(post("/v1/point/transfer")
+    mockMvc.perform(post("/v1/points/present")
             .header("Authorization", userToken1)
             .content(content)
             .contentType(MediaType.APPLICATION_JSON))
@@ -187,11 +162,11 @@ public class PointLogControllerTest extends ApiControllerTestSetUp {
     String content = "{\n"
         + "    \"time\": \"" + now + "\",\n"
         + "    \"point\": \"" + 10 + "\",\n"
-        + "    \"detail\": \"" + "선물 드릴께용" + "\",\n"
+        + "    \"detail\": \"" + "포인트 선물" + "\",\n"
         + "    \"presentedId\": \"" + 1234 + "\"\n"
         + "}";
 
-    mockMvc.perform(post("/v1/point/transfer")
+    mockMvc.perform(post("/v1/points/present")
             .header("Authorization", userToken1)
             .content(content)
             .contentType(MediaType.APPLICATION_JSON))
@@ -206,17 +181,17 @@ public class PointLogControllerTest extends ApiControllerTestSetUp {
   public void transferPointFailByLackPoint() throws Exception {
     String content = "{\n"
         + "    \"time\": \"" + now + "\",\n"
-        + "    \"point\": \"" + 1000 + "\",\n"
+        + "    \"point\": \"" + 987654321 + "\",\n"
         + "    \"detail\": \"" + "선물 드릴께용" + "\",\n"
-        + "    \"presentedId\": \"" + 1234 + "\"\n"
+        + "    \"presentedId\": \"" + memberEntity2.getId() + "\"\n"
         + "}";
 
-    mockMvc.perform(post("/v1/point/transfer")
+    mockMvc.perform(post("/v1/points/present")
             .header("Authorization", userToken1)
             .content(content)
             .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
-        .andExpect(status().is5xxServerError())
+        .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.msg").value("잔여 포인트가 부족합니다."));
   }
@@ -224,7 +199,7 @@ public class PointLogControllerTest extends ApiControllerTestSetUp {
   @Test
   @DisplayName("포인트 내역 조회 - 성공")
   public void findAllPointLogByMember() throws Exception {
-    mockMvc.perform(get("/v1/point/lists/log")
+    mockMvc.perform(get("/v1/points")
             .param("page", "0")
             .param("size", "20")
             .header("Authorization", userToken1))
@@ -247,68 +222,6 @@ public class PointLogControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].isSpent").description("포인트 사용/적립 여부(0: 적립, 1: 사용)"),
                 fieldWithPath("list[].prePoint").description("포인트 변화가 발생하기 전 멤버의 포인트"),
                 fieldWithPath("list[].finalPoint").description("포인트 변화 발생 후 멤버의 포인트")
-            )));
-  }
-
-  @Test
-  @DisplayName("선물한 포인트 내역 조회 - 성공")
-  public void findAllSentPointGiftLog() throws Exception {
-    mockMvc.perform(get("/v1/point/lists/gift/sent")
-            .param("page", "0")
-            .param("size", "20")
-            .header("Authorization", userToken1))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andDo(document("point-lists-sentLog",
-            requestParameters(
-                parameterWithName("page").optional().description("페이지 번호(default = 0)"),
-                parameterWithName("size").optional().description("한 페이지당 출력 수(default = 20)")
-            ),
-            responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("성공 시 0을 반환"),
-                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("list[].memberName").description("포인트를 선물한 멤버의 실제 이름"),
-                fieldWithPath("list[].time").description("포인트 선물 로그가 생성된 시간"),
-                fieldWithPath("list[].point").description("선물한 포인트"),
-                fieldWithPath("list[].detail").description("선물 시 작성한 내용"),
-                fieldWithPath("list[].presentedMemberName").description("포인트를 선물받은 멤버의 실제 이름"),
-                fieldWithPath("list[].prePointMember").description("포인트를 선물한 멤버의 선물하기 전 포인트"),
-                fieldWithPath("list[].finalPointMember").description("포인트를 선물한 멤버의 선물한 후 포인트"),
-                fieldWithPath("list[].prePointPresented").description("포인트를 선물받은 멤버의 선물받기 전 포인트"),
-                fieldWithPath("list[].finalPointPresented").description("포인트를 선물받은 멤버의 선물받은 후 포인트")
-            )));
-  }
-
-  @Test
-  @DisplayName("선물받은 포인트 내역 조회 - 성공")
-  public void findAllReceivedPointGiftLog() throws Exception {
-    mockMvc.perform(get("/v1/point/lists/gift/received")
-            .param("page", "0")
-            .param("size", "20")
-            .header("Authorization", userToken2))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andDo(document("point-lists-receivedLog",
-            requestParameters(
-                parameterWithName("page").optional().description("페이지 번호(default = 0)"),
-                parameterWithName("size").optional().description("한 페이지당 출력 수(default = 20)")
-            ),
-            responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("성공 시 0을 반환"),
-                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("list[].memberName").description("포인트를 선물한 멤버의 실제 이름"),
-                fieldWithPath("list[].time").description("포인트 선물 로그가 생성된 시간"),
-                fieldWithPath("list[].point").description("선물한 포인트"),
-                fieldWithPath("list[].detail").description("선물 시 작성한 내용"),
-                fieldWithPath("list[].presentedMemberName").description("포인트를 선물받은 멤버의 실제 이름"),
-                fieldWithPath("list[].prePointMember").description("포인트를 선물한 멤버의 선물하기 전 포인트"),
-                fieldWithPath("list[].finalPointMember").description("포인트를 선물한 멤버의 선물한 후 포인트"),
-                fieldWithPath("list[].prePointPresented").description("포인트를 선물받은 멤버의 선물받기 전 포인트"),
-                fieldWithPath("list[].finalPointPresented").description("포인트를 선물받은 멤버의 선물받은 후 포인트")
             )));
   }
 
