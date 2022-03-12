@@ -566,7 +566,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   }
 
   @Test
-  @DisplayName("카테고리별 공지글 목록 불러오기")
+  @DisplayName("공지글 목록 불러오기(카테고리별 or 전부)")
   public void findAllNoticePostingByCategoryId() throws Exception {
 
     ResultActions result = mockMvc.perform(get("/v1/post/notice")
@@ -577,7 +577,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .andDo(print())
         .andDo(document("post-getNotice",
             requestParameters(
-                parameterWithName("category").description("게시판 종류 ID")
+                parameterWithName("category").description("게시판 종류 ID / 주지 않을시 전체 카테고리 공지글 불러옴")
             ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),

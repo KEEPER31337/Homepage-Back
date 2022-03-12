@@ -33,6 +33,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -84,10 +85,15 @@ public class PostingController {
 
   @GetMapping(value = "/notice")
   public ListResult<PostingResponseDto> findAllNoticePostingByCategoryId(
-      @RequestParam("category") Long categoryId) {
+      @SortDefault(sort = "registerTime", direction = Direction.DESC)
+      @RequestParam(value = "category", required = false) Long categoryId) {
 
-    return responseService.getSuccessListResult(
-        postingService.findAllNoticeByCategoryId(categoryId));
+    if (categoryId == null) {
+      return responseService.getSuccessListResult(postingService.findAllNotice());
+    } else {
+      return responseService.getSuccessListResult(
+          postingService.findAllNoticeByCategoryId(categoryId));
+    }
   }
 
   @GetMapping(value = "/best")

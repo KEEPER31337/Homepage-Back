@@ -15,6 +15,8 @@ public interface PostingRepository extends JpaRepository<PostingEntity, Long> {
 
   Page<PostingEntity> findAllByIsTemp(Integer isTemp, Pageable pageable);
 
+  List<PostingEntity> findAllByIsNoticeAndIsTemp(Integer isNotice, Integer isTemp);
+
   Page<PostingEntity> findAllByCategoryIdAndIsTempAndIsNotice(CategoryEntity category,
       Integer isTemp, Integer isNotice, Pageable pageable);
 
@@ -34,7 +36,7 @@ public interface PostingRepository extends JpaRepository<PostingEntity, Long> {
       Integer isTemp, Integer isNotice, Pageable pageable);
 
   Page<PostingEntity> findAllByCategoryIdAndMemberIdAndIsTempAndIsNotice(CategoryEntity category,
-      MemberEntity member, Integer isTemp,Integer isNotice, Pageable pageable);
+      MemberEntity member, Integer isTemp, Integer isNotice, Pageable pageable);
 
   List<PostingEntity> findAllByMemberId(MemberEntity member);
 
