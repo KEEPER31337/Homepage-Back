@@ -1,5 +1,7 @@
 package keeper.project.homepage.controller.member;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
@@ -20,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.dto.sign.SignInDto;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -27,6 +30,9 @@ import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.user.dto.posting.PostingResponseDto;
+import keeper.project.homepage.user.service.posting.PostingService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,7 +41,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-public class MemberControllerFindPostingTest extends MemberControllerTestSetup {
+public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
 
   private String userToken;
 
@@ -53,123 +59,23 @@ public class MemberControllerFindPostingTest extends MemberControllerTestSetup {
 
   @BeforeEach
   public void setup() throws Exception {
-    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
-    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
-        .memberJobEntity(memberJobEntity)
-        .build();
-    memberEntity = MemberEntity.builder()
-        .loginId(loginId)
-        .password(passwordEncoder.encode(password))
-        .realName(realName)
-        .nickName(nickName)
-        .emailAddress(emailAddress)
-        .studentId(studentId)
-        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
-        .generation(getMemberGeneration())
-        .build();
-    memberRepository.save(memberEntity);
-    memberEntity2 = MemberEntity.builder()
-        .loginId(loginId + "2")
-        .password(passwordEncoder.encode(password))
-        .realName(realName + "2")
-        .nickName(nickName + "2")
-        .emailAddress(emailAddress + "2")
-        .studentId(studentId + "2")
-        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
-        .generation(getMemberGeneration())
-        .build();
-    memberRepository.save(memberEntity2);
+    memberEntity = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    memberEntity2 = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    userToken = generateJWTToken(memberEntity);
 
-    String content = "{\n"
-        + "    \"loginId\": \"" + loginId + "\",\n"
-        + "    \"password\": \"" + password + "\"\n"
-        + "}";
-    MvcResult result = mockMvc.perform(post("/v1/signin")
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(content))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.code").value(0))
-        .andExpect(jsonPath("$.msg").exists())
-        .andExpect(jsonPath("$.data").exists())
-        .andReturn();
-
-    String resultString = result.getResponse().getContentAsString();
-    ObjectMapper mapper = new ObjectMapper();
-    SingleResult<SignInDto> sign = mapper.readValue(resultString, new TypeReference<>() {
-    });
-    userToken = sign.getData().getToken();
-
-    categoryEntity = CategoryEntity.builder()
-        .name("테스트 게시판").build();
-    categoryRepository.save(categoryEntity);
-
-    tempPosting = PostingEntity.builder()
-        .title("test 임시글 제목")
-        .content("test 임시글 내용")
-        .memberId(memberEntity2)
-        .categoryId(categoryEntity)
-        .ipAddress("192.11.222.333")
-        .allowComment(0)
-        .isNotice(0)
-        .isTemp(1)
-        .isSecret(1)
-        .likeCount(0)
-        .dislikeCount(0)
-        .commentCount(0)
-        .visitCount(0)
-        .registerTime(LocalDateTime.now())
-        .updateTime(LocalDateTime.now())
-        .password("asd")
-        .build();
-    memberEntity2.getPosting().add(tempPosting);
-
-    postingRepository.save(tempPosting);
+    categoryEntity = generateCategoryEntity();
+    tempPosting = generatePostingEntity(memberEntity2, categoryEntity,
+        PostingService.isNotNoticePosting, PostingService.isSecretPosting,
+        PostingService.isTempPosting);
     for (Integer i = 0; i < 15; i++) {
-      PostingEntity posting = postingRepository.save(PostingEntity.builder()
-          .title("test 게시판 제목" + i.toString())
-          .content("test 게시판 제목 내용" + i.toString())
-          .memberId(memberEntity)
-          .categoryId(categoryEntity)
-          .ipAddress("192.11.223")
-          .allowComment(0)
-          .isNotice(0)
-          .isSecret(0)
-          .isTemp(0)
-          .likeCount(0)
-          .dislikeCount(1)
-          .commentCount(0)
-          .visitCount(0)
-          .registerTime(LocalDateTime.now())
-          .updateTime(LocalDateTime.now())
-          .password("asd2")
-          .build());
-      memberEntity.getPosting().add(posting);
-    }
-    for (Integer i = 0; i < 15; i++) {
-      PostingEntity tempPosting = postingRepository.save(PostingEntity.builder()
-          .title("test 임시글 제목" + i.toString())
-          .content("test 임시글 내용" + i.toString())
-          .memberId(memberEntity)
-          .categoryId(categoryEntity)
-          .ipAddress("192.11.223")
-          .allowComment(0)
-          .isNotice(0)
-          .isSecret(0)
-          .isTemp(1)
-          .likeCount(0)
-          .dislikeCount(1)
-          .commentCount(0)
-          .visitCount(0)
-          .registerTime(LocalDateTime.now())
-          .updateTime(LocalDateTime.now())
-          .password("asd2")
-          .build());
-      memberEntity.getPosting().add(tempPosting);
+      generatePostingEntity(memberEntity, categoryEntity,
+          PostingService.isNotNoticePosting, PostingService.isNotSecretPosting,
+          PostingService.isNotTempPosting);
+      generatePostingEntity(memberEntity, categoryEntity,
+          PostingService.isNotNoticePosting, PostingService.isNotSecretPosting,
+          PostingService.isTempPosting);
     }
   }
-
 
   @Test
   @DisplayName("자신이 작성한 게시글 조회하기")
@@ -282,5 +188,48 @@ public class MemberControllerFindPostingTest extends MemberControllerTestSetup {
                 parameterWithName("pid").description("조회할 게시글의 아이디")
             )));
   }
+
+  @Test
+  @DisplayName("다른 사람의 프로필에서 다른 사람이 작성한 게시글 목록 조회")
+  public void findPostingListOfOtherTest() throws Exception {
+    for (int i = 0; i < 10; i++) {
+      generatePostingEntity(memberEntity2, categoryEntity, PostingService.isNotNoticePosting,
+          PostingService.isNotSecretPosting, PostingService.isNotTempPosting);
+      // TODO : temp, secret 예외 추가 필요.
+//      generatePostingEntity(memberEntity2, categoryEntity, PostingService.isNotNoticePosting,
+//          PostingService.isSecretPosting, PostingService.isTempPosting);
+    }
+
+    Long otherId = memberEntity2.getId();
+    mockMvc.perform(get("/v1/member/{memberid}/posts", otherId)
+            .header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(jsonPath("$.list.length()", greaterThan(0)))
+        .andExpect(jsonPath("$.list.length()", lessThanOrEqualTo(10)))
+        .andExpect(jsonPath("$.list.[?(@.writerId != %d)]", otherId).doesNotExist())
+        .andExpect(jsonPath("$.list.[?(@.isTemp == %d)]",
+            PostingService.isTempPosting).doesNotExist())
+        .andExpect(jsonPath("$.list.[?(@.isSecret == %d)]",
+            PostingService.isSecretPosting).doesNotExist());
+  }
+
+  @Test
+  @DisplayName("다른 사람의 프로필에서 다른 사람이 작성한 게시글 조회")
+  public void findSinglePostingOfOtherTest() throws Exception {
+    PostingEntity posting = generatePostingEntity(memberEntity2, categoryEntity,
+        PostingService.isNotNoticePosting, PostingService.isNotSecretPosting,
+        PostingService.isNotTempPosting);
+
+    Long otherId = memberEntity2.getId();
+    Long postId = posting.getId();
+    mockMvc.perform(get("/v1/member/{memberid}/posts/{postId}", otherId, postId)
+            .header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.data.writerId").value(otherId))
+        .andExpect(jsonPath("$.data.isTemp").value(PostingService.isNotTempPosting))
+        .andExpect(jsonPath("$.data.isSecret").value(PostingService.isNotSecretPosting));
+  }
+
 }
 

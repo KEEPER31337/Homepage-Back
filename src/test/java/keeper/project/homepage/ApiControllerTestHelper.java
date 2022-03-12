@@ -246,7 +246,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
       Integer isNotice, Integer isSecret, Integer isTemp) {
     final String epochTime = Long.toHexString(System.nanoTime());
     final LocalDateTime now = LocalDateTime.now();
-    return postingRepository.save(PostingEntity.builder()
+    PostingEntity posting = postingRepository.save(PostingEntity.builder()
         .title("posting 제목 " + epochTime)
         .content("posting 내용 " + epochTime)
         .categoryId(category)
@@ -264,6 +264,8 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         .password(postingPassword)
         .memberId(writer)
         .build());
+    writer.getPosting().add(posting);
+    return posting;
   }
 
   public CommentEntity generateCommentEntity(PostingEntity posting, MemberEntity writer,
