@@ -122,26 +122,28 @@ public class MemberController {
     return responseService.getSuccessSingleResult(updated);
   }
 
+  // TODO : registerTime 기준으로 정렬이 제대로 안됨.
   @Secured("ROLE_회원")
   @GetMapping(value = "/member/post")
-  public ListResult<PostingDto> findAllPosting(
-      @SortDefault(sort = "registerDate", direction = Direction.ASC)
+  public ListResult<PostingResponseDto> findAllPosting(
+      @SortDefault(sort = "registerTime", direction = Direction.DESC)
       @PageableDefault(page = 0, size = 10) Pageable pageable) {
     Long id = authService.getMemberIdByJWT();
 
-    Page<PostingDto> page = memberService.findAllPostingByIsTemp(id, pageable,
+    Page<PostingResponseDto> page = memberService.findAllPostingByIsTemp(id, pageable,
         PostingService.isNotTempPosting);
     return responseService.getSuccessListResult(page.getContent());
   }
 
+  // TODO : registerTime 기준으로 정렬이 제대로 안됨.
   @Secured("ROLE_회원")
   @GetMapping(value = "/member/temp_post")
-  public ListResult<PostingDto> findAllTempPosting(
-      @SortDefault(sort = "registerDate", direction = Direction.ASC)
+  public ListResult<PostingResponseDto> findAllTempPosting(
+      @SortDefault(sort = "registerTime", direction = Direction.DESC)
       @PageableDefault(page = 0, size = 10) Pageable pageable) {
     Long id = authService.getMemberIdByJWT();
 
-    Page<PostingDto> page = memberService.findAllPostingByIsTemp(id, pageable,
+    Page<PostingResponseDto> page = memberService.findAllPostingByIsTemp(id, pageable,
         PostingService.isTempPosting);
     return responseService.getSuccessListResult(page.getContent());
   }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
+import keeper.project.homepage.user.dto.posting.PostingResponseDto;
 import keeper.project.homepage.user.dto.member.MemberFollowDto;
 import keeper.project.homepage.util.ImageCenterCrop;
 import keeper.project.homepage.common.dto.sign.EmailAuthDto;
@@ -263,21 +264,23 @@ public class MemberService {
     // 출처: https://www.baeldung.com/java-random-string
   }
 
-  // TODO : 모든 PostingDto -> PostingResponseDto 로 변경하기
-  // TODO : return type : List<PostingDto> & return page.getContent(); 로 수정
-  public Page<PostingDto> findAllPostingByIsTemp(Long id, Pageable pageable, Integer isTemp) {
+  public Page<PostingResponseDto> findAllPostingByIsTemp(Long id, Pageable pageable,
+      Integer isTemp) {
     MemberEntity memberEntity = memberRepository.findById(id).orElseThrow(
         () -> new CustomMemberNotFoundException(id.toString() + "인 id를 가진 member가 존재하지 않습니다."));
 
-    List<PostingDto> postings = new ArrayList<>();
+    List<PostingResponseDto> postings = new ArrayList<>();
+    PostingResponseDto postingResponseDto = new PostingResponseDto();
+    Integer postingSize = memberEntity.getPosting().size();
     memberEntity.getPosting().forEach(posting -> {
       if (posting.getIsTemp() == isTemp) {
-        postings.add(PostingDto.create(posting));
+        PostingResponseDto dto = postingResponseDto.initWithEntity(posting, postingSize);
+        postings.add(dto);
       }
     });
     final int start = (int) pageable.getOffset();
     final int end = Math.min((start + pageable.getPageSize()), postings.size());
-    final Page<PostingDto> page = new PageImpl<>(postings.subList(start, end), pageable,
+    final Page<PostingResponseDto> page = new PageImpl<>(postings.subList(start, end), pageable,
         postings.size());
 
     return page;
