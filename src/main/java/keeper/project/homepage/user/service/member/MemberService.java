@@ -275,7 +275,8 @@ public class MemberService {
     Integer postingSize = memberEntity.getPosting().size();
     memberEntity.getPosting().forEach(posting -> {
       if (posting.getIsTemp() == isTemp) {
-        postingResponseDto.initWithEntity(posting, postingSize);
+        PostingResponseDto dto = postingResponseDto.initWithEntity(posting, postingSize);
+        postings.add(dto);
 //        postings.add(PostingDto.create(posting));
       }
     });
