@@ -344,17 +344,45 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     return commonFields;
   }
 
+  public List<FieldDescriptor> generatePrivateMemberCommonResponseFields(ResponseType type,
+      String success, String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(Arrays.asList(
+        fieldWithPath(prefix + ".id").description("아이디"),
+        fieldWithPath(prefix + ".loginId").description("로그인 아이디"),
+        fieldWithPath(prefix + ".emailAddress").description("이메일 주소"),
+        fieldWithPath(prefix + ".realName").description("실제 이름"),
+        fieldWithPath(prefix + ".nickName").description("닉네임"),
+        fieldWithPath(prefix + ".birthday").description("생일").type(Date.class).optional(),
+        fieldWithPath(prefix + ".registerDate").description("학"),
+        fieldWithPath(prefix + ".studentId").description("가입 날짜"),
+        fieldWithPath(prefix + ".point").description("포인트 점수"),
+        fieldWithPath(prefix + ".level").description("레벨"),
+        fieldWithPath(prefix + ".merit").description("상점"),
+        fieldWithPath(prefix + ".demerit").description("벌점"),
+        fieldWithPath(prefix + ".generation").description("기수 (7월 이후는 N.5기)"),
+        fieldWithPath(prefix + ".thumbnailPath").description("회원의 썸네일 이미지 조회 api path"),
+        fieldWithPath(prefix + ".rank").description("회원 등급: null, 우수회원, 일반회원"),
+        fieldWithPath(prefix + ".type").description("회원 상태: null, 비회원, 정회원, 휴면회원, 졸업회원, 탈퇴"),
+        fieldWithPath(prefix + ".jobs").description(
+            "동아리 직책: null, ROLE_회장, ROLE_부회장, ROLE_대외부장, ROLE_학술부장, ROLE_전산관리자, ROLE_서기, ROLE_총무, ROLE_사서"))
+    );
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
+    }
+    return commonFields;
+  }
+
   public List<FieldDescriptor> generateOtherMemberInfoCommonResponseFields(ResponseType type,
       String success, String code, String msg, FieldDescriptor... addDescriptors) {
     String prefix = type.getReponseFieldPrefix();
     List<FieldDescriptor> commonFields = new ArrayList<>();
     commonFields.addAll(generateCommonResponseFields(success, code, msg));
     commonFields.addAll(Arrays.asList(
-        fieldWithPath(prefix + ".loginId").description("해당 유저의 로그인 아이디"),
-        fieldWithPath(prefix + ".realName").description("해당 유저의 실제 이름"),
         fieldWithPath(prefix + ".nickName").description("해당 유저의 닉네임"),
         fieldWithPath(prefix + ".birthday").description("해당 유저의 생일").type(Date.class).optional(),
-        fieldWithPath(prefix + ".registerDate").description("해당 유저의 회원가입 날짜 및 시간"),
         fieldWithPath(prefix + ".checkFollowee").description(
             "상대방을 팔로우 했는지 확인(팔로우: true, 아니면: false)"),
         fieldWithPath(prefix + ".checkFollower").description(
@@ -362,10 +390,10 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         fieldWithPath(prefix + ".generation").description("기수 (7월 이후는 N.5기)").optional(),
         fieldWithPath(prefix + ".thumbnailPath").description("해당 유저의 썸네일 이미지 조회 api path")
             .optional(),
-        subsectionWithPath(prefix + ".memberRankEntity").description(
-            "해당 유저의 등급(id): 일반회원(1), 우수회원(2)").optional(),
-        subsectionWithPath(prefix + ".memberTypeEntity").description(
-            "해당 유저의 유형(id): 비회원(1), 정회원(2), 휴면회원(3), 졸업(4), 탈퇴(5)").optional()
+        subsectionWithPath(prefix + ".memberRank").description("회원 등급: null, 우수회원, 일반회원"),
+        subsectionWithPath(prefix + ".memberType").description("회원 상태: null, 비회원, 정회원, 휴면회원, 졸업회원, 탈퇴"),
+        subsectionWithPath(prefix + ".memberJobs").description(
+            "동아리 직책: null, ROLE_회장, ROLE_부회장, ROLE_대외부장, ROLE_학술부장, ROLE_전산관리자, ROLE_서기, ROLE_총무, ROLE_사서")
     ));
     if (addDescriptors.length > 0) {
       commonFields.addAll(Arrays.asList(addDescriptors));
