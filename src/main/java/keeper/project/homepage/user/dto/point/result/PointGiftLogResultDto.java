@@ -1,15 +1,18 @@
 package keeper.project.homepage.user.dto.point.result;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import keeper.project.homepage.entity.point.PointLogEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Getter
 @Setter
 @NoArgsConstructor
-public class PointGiftLogResult {
+public class PointGiftLogResultDto {
 
   private String memberName;
   private LocalDateTime time;
@@ -21,7 +24,7 @@ public class PointGiftLogResult {
   private Integer prePointPresented;
   private Integer finalPointPresented;
 
-  public PointGiftLogResult(PointLogEntity pointLogEntity, int prePointMember,
+  public PointGiftLogResultDto(PointLogEntity pointLogEntity, int prePointMember,
       int prePointPresented, int finalPointMember, int finalPointPresented) {
     this.memberName = pointLogEntity.getMember().getRealName();
     this.time = pointLogEntity.getTime();
@@ -34,7 +37,7 @@ public class PointGiftLogResult {
     this.finalPointPresented = finalPointPresented;
   }
 
-  public PointGiftLogResult(PointLogEntity pointLogEntity) {
+  public PointGiftLogResultDto(PointLogEntity pointLogEntity) {
     this.memberName = pointLogEntity.getMember().getRealName();
     this.time = pointLogEntity.getTime();
     this.point = pointLogEntity.getPoint();

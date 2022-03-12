@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.transaction.Transactional;
-import keeper.project.homepage.user.dto.point.request.PointLogRequest;
-import keeper.project.homepage.user.dto.point.result.PointLogResult;
+import keeper.project.homepage.user.dto.point.request.PointLogRequestDto;
+import keeper.project.homepage.user.dto.point.result.PointLogResultDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
@@ -69,19 +69,19 @@ public class PointLogServiceTest {
   @Test
   @DisplayName("포인트 사용 요청 생성")
   public void createPointUseRequest() throws Exception {
-    PointLogRequest pointLogRequest = new PointLogRequest(LocalDateTime.now(), 10, "포인트복권에서 사용");
+    PointLogRequestDto pointLogRequestDto = new PointLogRequestDto(LocalDateTime.now(), 10, "포인트복권에서 사용");
 
-    Assertions.assertThat(pointLogRequest.getPoint()).isEqualTo(10);
-    Assertions.assertThat(pointLogRequest.getDetail()).isEqualTo("포인트복권에서 사용");
+    Assertions.assertThat(pointLogRequestDto.getPoint()).isEqualTo(10);
+    Assertions.assertThat(pointLogRequestDto.getDetail()).isEqualTo("포인트복권에서 사용");
   }
 
   @Test
   @DisplayName("포인트 적립 요청 생성")
   public void createPointSaveRequest() throws Exception {
-    PointLogRequest pointLogRequest = new PointLogRequest(LocalDateTime.now(), 20, "포인트복권에서 적립");
+    PointLogRequestDto pointLogRequestDto = new PointLogRequestDto(LocalDateTime.now(), 20, "포인트복권에서 적립");
 
-    Assertions.assertThat(pointLogRequest.getPoint()).isEqualTo(20);
-    Assertions.assertThat(pointLogRequest.getDetail()).isEqualTo("포인트복권에서 적립");
+    Assertions.assertThat(pointLogRequestDto.getPoint()).isEqualTo(20);
+    Assertions.assertThat(pointLogRequestDto.getDetail()).isEqualTo("포인트복권에서 적립");
   }
 
   @Test
@@ -89,16 +89,16 @@ public class PointLogServiceTest {
   public void createPointUseLog() throws Exception {
     createMemberEntity();
 
-    PointLogRequest pointLogRequest = new PointLogRequest(LocalDateTime.now(), 10, "포인트복권에서 사용");
+    PointLogRequestDto pointLogRequestDto = new PointLogRequestDto(LocalDateTime.now(), 10, "포인트복권에서 사용");
 
-    PointLogResult pointLogResult = pointLogService.createPointUseLog(memberEntity,
-        pointLogRequest);
+    PointLogResultDto pointLogResultDto = pointLogService.createPointUseLog(memberEntity,
+        pointLogRequestDto);
 
-    Assertions.assertThat(pointLogResult.getMemberId()).isEqualTo(memberEntity.getId());
-    Assertions.assertThat(pointLogResult.getPoint()).isEqualTo(10);
-    Assertions.assertThat(pointLogResult.getDetail()).isEqualTo("포인트복권에서 사용");
-    Assertions.assertThat(pointLogResult.getPrePoint()).isNotEqualTo(memberEntity.getPoint());
-    Assertions.assertThat(pointLogResult.getFinalPoint()).isEqualTo(90);
+    Assertions.assertThat(pointLogResultDto.getMemberId()).isEqualTo(memberEntity.getId());
+    Assertions.assertThat(pointLogResultDto.getPoint()).isEqualTo(10);
+    Assertions.assertThat(pointLogResultDto.getDetail()).isEqualTo("포인트복권에서 사용");
+    Assertions.assertThat(pointLogResultDto.getPrePoint()).isNotEqualTo(memberEntity.getPoint());
+    Assertions.assertThat(pointLogResultDto.getFinalPoint()).isEqualTo(90);
   }
 
   @Test
@@ -107,10 +107,10 @@ public class PointLogServiceTest {
     createMemberEntity();
 
     try {
-      PointLogRequest pointLogRequest = new PointLogRequest(LocalDateTime.now(), 1000, "포인트복권에서 사용");
+      PointLogRequestDto pointLogRequestDto = new PointLogRequestDto(LocalDateTime.now(), 1000, "포인트복권에서 사용");
 
-      PointLogResult pointLogResult = pointLogService.createPointUseLog(memberEntity,
-          pointLogRequest);
+      PointLogResultDto pointLogResultDto = pointLogService.createPointUseLog(memberEntity,
+          pointLogRequestDto);
     } catch (Exception e) {
       Assertions.assertThat(e.getMessage()).isEqualTo("잔여 포인트가 부족합니다.");
     }
@@ -121,16 +121,16 @@ public class PointLogServiceTest {
   public void createPointSaveLog() throws Exception {
     createMemberEntity();
 
-    PointLogRequest pointLogRequest = new PointLogRequest(LocalDateTime.now(), 20, "포인트복권에서 적립");
+    PointLogRequestDto pointLogRequestDto = new PointLogRequestDto(LocalDateTime.now(), 20, "포인트복권에서 적립");
 
-    PointLogResult pointLogResult = pointLogService.createPointSaveLog(memberEntity,
-        pointLogRequest);
+    PointLogResultDto pointLogResultDto = pointLogService.createPointSaveLog(memberEntity,
+        pointLogRequestDto);
 
-    Assertions.assertThat(pointLogResult.getMemberId()).isEqualTo(memberEntity.getId());
-    Assertions.assertThat(pointLogResult.getPoint()).isEqualTo(20);
-    Assertions.assertThat(pointLogResult.getDetail()).isEqualTo("포인트복권에서 적립");
-    Assertions.assertThat(pointLogResult.getPrePoint()).isNotEqualTo(memberEntity.getPoint());
-    Assertions.assertThat(pointLogResult.getFinalPoint()).isEqualTo(120);
+    Assertions.assertThat(pointLogResultDto.getMemberId()).isEqualTo(memberEntity.getId());
+    Assertions.assertThat(pointLogResultDto.getPoint()).isEqualTo(20);
+    Assertions.assertThat(pointLogResultDto.getDetail()).isEqualTo("포인트복권에서 적립");
+    Assertions.assertThat(pointLogResultDto.getPrePoint()).isNotEqualTo(memberEntity.getPoint());
+    Assertions.assertThat(pointLogResultDto.getFinalPoint()).isEqualTo(120);
   }
 
 }

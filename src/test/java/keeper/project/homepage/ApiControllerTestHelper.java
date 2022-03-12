@@ -186,6 +186,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         .generation(getMemberGeneration())
         .memberType(memberType)
         .memberRank(memberRank)
+        .point(1000)
         .thumbnail(thumbnailEntity)
         .build());
     memberType.getMembers().add(memberEntity);

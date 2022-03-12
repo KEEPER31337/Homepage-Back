@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import keeper.project.homepage.user.dto.point.request.PointLogRequest;
+import keeper.project.homepage.user.dto.point.request.PointLogRequestDto;
 import keeper.project.homepage.user.dto.attendance.AttendanceDto;
 import keeper.project.homepage.user.dto.attendance.AttendancePointDto;
 import keeper.project.homepage.user.dto.attendance.AttendanceResultDto;
@@ -109,7 +109,7 @@ public class AttendanceService {
     attendanceRepository.save(attendanceEntity);
 
     pointLogService.createPointSaveLog(memberEntity,
-        new PointLogRequest(LocalDateTime.now(), point, "출석 포인트"));
+        new PointLogRequestDto(LocalDateTime.now(), point, "출석 포인트"));
   }
 
   private int getContinuousPoint(int continuousDay) {
