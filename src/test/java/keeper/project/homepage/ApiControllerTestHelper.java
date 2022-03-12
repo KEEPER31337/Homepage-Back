@@ -407,4 +407,18 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     }
     return commonFields;
   }
+
+  public List<FieldDescriptor> generateCommonFollowResponse(ResponseType type, String docSuccess,
+      String docCode, String docMsg, FieldDescriptor... descriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(docSuccess, docCode, docMsg));
+    commonFields.addAll(Arrays.asList(
+        fieldWithPath(prefix + ".followerNumber").description("팔로워 숫자"),
+        fieldWithPath(prefix + ".followeeNumber").description("팔로우 숫자")));
+    if (descriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(descriptors));
+    }
+    return commonFields;
+  }
 }
