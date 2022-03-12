@@ -186,6 +186,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         .generation(getMemberGeneration())
         .memberType(memberType)
         .memberRank(memberRank)
+        .point(1000)
         .thumbnail(thumbnailEntity)
         .build());
     memberType.getMembers().add(memberEntity);
@@ -246,7 +247,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
       Integer isNotice, Integer isSecret, Integer isTemp) {
     final String epochTime = Long.toHexString(System.nanoTime());
     final LocalDateTime now = LocalDateTime.now();
-    return postingRepository.save(PostingEntity.builder()
+    PostingEntity posting = postingRepository.save(PostingEntity.builder()
         .title("posting 제목 " + epochTime)
         .content("posting 내용 " + epochTime)
         .categoryId(category)
@@ -264,6 +265,8 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         .password(postingPassword)
         .memberId(writer)
         .build());
+    writer.getPosting().add(posting);
+    return posting;
   }
 
   public CommentEntity generateCommentEntity(PostingEntity posting, MemberEntity writer,
@@ -329,7 +332,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         fieldWithPath(prefix + ".merit").description("상점"),
         fieldWithPath(prefix + ".demerit").description("벌점"),
         fieldWithPath(prefix + ".generation").description("기수 (7월 이후는 N.5기)"),
-        fieldWithPath(prefix + ".thumbnailId").description("회원의 썸네일 이미지 아이디"),
+        fieldWithPath(prefix + ".thumbnailPath").description("회원의 썸네일 이미지 조회 api path"),
         fieldWithPath(prefix + ".rank").description("회원 등급: null, 우수회원, 일반회원"),
         fieldWithPath(prefix + ".type").description("회원 상태: null, 비회원, 정회원, 휴면회원, 졸업회원, 탈퇴"),
         fieldWithPath(prefix + ".jobs").description(
@@ -357,7 +360,8 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         fieldWithPath(prefix + ".checkFollower").description(
             "상대방이 나를 팔로우 했는지 확인(팔로우: true, 아니면: false)"),
         fieldWithPath(prefix + ".generation").description("기수 (7월 이후는 N.5기)").optional(),
-        subsectionWithPath(prefix + ".thumbnailEntity").description("해당 유저의 썸네일 이미지").optional(),
+        fieldWithPath(prefix + ".thumbnailPath").description("해당 유저의 썸네일 이미지 조회 api path")
+            .optional(),
         subsectionWithPath(prefix + ".memberRankEntity").description(
             "해당 유저의 등급(id): 일반회원(1), 우수회원(2)").optional(),
         subsectionWithPath(prefix + ".memberTypeEntity").description(
@@ -369,7 +373,9 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     return commonFields;
   }
 
-  public List<FieldDescriptor> generatePostingResponseFields(ResponseType type, String success,
+  // TODO : PostingDto -> PostingResponseDto로 바꾼 후, .._Legacy 메소드 삭제
+  public List<FieldDescriptor> generatePostingResponseFields_Legacy(ResponseType type,
+      String success,
       String code, String msg, FieldDescriptor... addDescriptors) {
     String prefix = type.getReponseFieldPrefix();
     List<FieldDescriptor> commonFields = new ArrayList<>();
@@ -403,6 +409,42 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     return commonFields;
   }
 
+  public List<FieldDescriptor> generatePostingResponseFields(ResponseType type, String success,
+      String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(Arrays.asList(
+        fieldWithPath(prefix + ".id").description("게시물 ID"),
+        fieldWithPath(prefix + ".title").description("게시물 제목"),
+        fieldWithPath(prefix + ".content").description("게시물 내용 (비밀 게시글일 경우 \"비밀 게시글입니다.\""),
+        fieldWithPath(prefix + ".writer").description("작성자 (비밀 게시글일 경우 \"익명\")"),
+        fieldWithPath(prefix + ".writerId").description("작성자 아이디 (비밀 게시글일 경우 -1)"),
+        fieldWithPath(prefix + ".writerThumbnailPath").description(
+            "작성자 썸네일 이미지 조회 api path (비밀 게시글일 경우 null)").type(String.class).optional(),
+        fieldWithPath(prefix + ".size").description("조건에 따라 조회한 게시글의 총 개수"),
+        fieldWithPath(prefix + ".visitCount").description("조회 수"),
+        fieldWithPath(prefix + ".likeCount").description("좋아요 수"),
+        fieldWithPath(prefix + ".dislikeCount").description("싫어요 수"),
+        fieldWithPath(prefix + ".commentCount").description("댓글 수"),
+        fieldWithPath(prefix + ".registerTime").description("작성 시간"),
+        fieldWithPath(prefix + ".updateTime").description("수정 시간"),
+        fieldWithPath(prefix + ".ipAddress").description("IP 주소"),
+        fieldWithPath(prefix + ".allowComment").description("댓글 허용?"),
+        fieldWithPath(prefix + ".isNotice").description("공지글?"),
+        fieldWithPath(prefix + ".isSecret").description("비밀글?"),
+        fieldWithPath(prefix + ".isTemp").description("임시저장?"),
+        fieldWithPath(prefix + ".category").description("카테고리 이름"),
+        fieldWithPath(prefix + ".thumbnailPath").description("게시글 썸네일 이미지 조회 api path")
+            .type(String.class).optional(),
+        fieldWithPath(prefix + ".files").description("첨부파일")
+    ));
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
+    }
+    return commonFields;
+  }
+
   public List<FieldDescriptor> generateCommonCommentResponse(ResponseType type, String docSuccess,
       String docCode, String docMsg, FieldDescriptor... descriptors) {
     String prefix = type.getReponseFieldPrefix();
@@ -417,10 +459,24 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         fieldWithPath(prefix + ".likeCount").description("좋아요 개수"),
         fieldWithPath(prefix + ".dislikeCount").description("싫어요 개수"),
         fieldWithPath(prefix + ".parentId").description("대댓글인 경우, 부모 댓글의 id"),
-        fieldWithPath(prefix + ".writer").optional().description("작성자 (탈퇴한 작성자일 경우 null)"),
-        fieldWithPath(prefix + ".writerId").optional().description("작성자 (탈퇴한 작성자일 경우 null)"),
-        fieldWithPath(prefix + ".writerThumbnailId").optional().type(Long.TYPE)
-            .description("작성자 (탈퇴했을 경우 / 썸네일을 등록하지 않았을 경우 null)")));
+        fieldWithPath(prefix + ".writer").optional().description("작성자의 닉네임 (탈퇴한 작성자일 경우 null)"),
+        fieldWithPath(prefix + ".writerId").optional().description("작성자 id (탈퇴한 작성자일 경우 null)"),
+        fieldWithPath(prefix + ".writerThumbnailPath").optional().type(String.class)
+            .description("작성자의 썸네일 조회 api 경로 (탈퇴했을 경우 / 썸네일을 등록하지 않았을 경우 null)")));
+    if (descriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(descriptors));
+    }
+    return commonFields;
+  }
+
+  public List<FieldDescriptor> generateCommonFollowResponse(ResponseType type, String docSuccess,
+      String docCode, String docMsg, FieldDescriptor... descriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(docSuccess, docCode, docMsg));
+    commonFields.addAll(Arrays.asList(
+        fieldWithPath(prefix + ".followerNumber").description("팔로워 숫자"),
+        fieldWithPath(prefix + ".followeeNumber").description("팔로우 숫자")));
     if (descriptors.length > 0) {
       commonFields.addAll(Arrays.asList(descriptors));
     }

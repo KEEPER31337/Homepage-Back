@@ -566,7 +566,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   }
 
   @Test
-  @DisplayName("카테고리별 공지글 목록 불러오기")
+  @DisplayName("공지글 목록 불러오기(카테고리별 or 전부)")
   public void findAllNoticePostingByCategoryId() throws Exception {
 
     ResultActions result = mockMvc.perform(get("/v1/post/notice")
@@ -577,7 +577,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .andDo(print())
         .andDo(document("post-getNotice",
             requestParameters(
-                parameterWithName("category").description("게시판 종류 ID")
+                parameterWithName("category").description("게시판 종류 ID / 주지 않을시 전체 카테고리 공지글 불러옴")
             ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
@@ -629,14 +629,16 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
                 fieldWithPath("list[].id").description("게시물 ID"),
                 fieldWithPath("list[].title").description("제목"),
-                fieldWithPath("list[].userThumbnailID").description("작성자 썸네일 ID").optional(),
+                fieldWithPath("list[].userThumbnailPath").description("작성자 썸네일 이미지 조회 api path")
+                    .optional(),
                 fieldWithPath("list[].user").description("작성자"),
                 fieldWithPath("list[].dateTime").description("작성 시간"),
                 fieldWithPath("list[].watch").description("조회 수"),
                 fieldWithPath("list[].commentN").description("댓글 개수"),
                 fieldWithPath("list[].categoryId").description("카테고리 ID"),
                 fieldWithPath("list[].category").description("카테고리명"),
-                fieldWithPath("list[].thumbnailId").description("게시글 썸네일 id").optional()
+                fieldWithPath("list[].thumbnailPath").description("게시글 썸네일 이미지 조회 api path")
+                    .optional()
             )
         ));
   }

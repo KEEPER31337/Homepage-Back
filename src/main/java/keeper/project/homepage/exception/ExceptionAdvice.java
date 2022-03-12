@@ -17,6 +17,8 @@ import keeper.project.homepage.exception.member.CustomMemberDuplicateException;
 import keeper.project.homepage.exception.member.CustomMemberEmptyFieldException;
 import keeper.project.homepage.exception.member.CustomMemberInfoNotFoundException;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
+import keeper.project.homepage.exception.point.CustomPointLogRequestNullException;
+import keeper.project.homepage.exception.point.CustomPointLackException;
 import keeper.project.homepage.exception.posting.CustomAccessRootCategoryException;
 import keeper.project.homepage.exception.posting.CustomCategoryNotFoundException;
 import keeper.project.homepage.exception.posting.CustomCommentEmptyFieldException;
@@ -121,10 +123,10 @@ public class ExceptionAdvice {
         e.getMessage() == null ? getMessage("fileNotFound.msg") : e.getMessage());
   }
 
-  @ExceptionHandler(CustomTransferPointLackException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  @ExceptionHandler(CustomPointLackException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
   public CommonResult transferPointLackException(HttpServletRequest request,
-      CustomTransferPointLackException e) {
+      CustomPointLackException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("pointLackException.code")),
         e.getMessage() == null ? getMessage("pointLackException.msg") : e.getMessage());
   }
@@ -327,4 +329,5 @@ public class ExceptionAdvice {
         getMessage("bookDepartmentNotFound.msg"));
 
   }
+
 }

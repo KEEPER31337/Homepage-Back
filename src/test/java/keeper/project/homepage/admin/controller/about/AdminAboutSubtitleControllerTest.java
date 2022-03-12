@@ -192,8 +192,8 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("data.subtitle").description("생성에 성공한 페이지 블럭 서브 타이틀의 부제목"),
                 fieldWithPath("data.staticWriteTitleId").description(
                     "생성에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 타이틀의 ID"),
-                subsectionWithPath("data.thumbnail").description(
-                    "생성에 성공한 페이지 블럭 서브 타이틀과 연결된 썸네일 데이터"),
+                subsectionWithPath("data.thumbnailPath").description(
+                    "생성에 성공한 페이지 블럭 서브 타이틀과 연결된 썸네일 이미지를 조회하는 api path"),
                 fieldWithPath("data.displayOrder").description("생성에 성공한 페이지 블럭 서브 타이틀이 보여지는 순서"),
                 subsectionWithPath("data.staticWriteContentResults[]").description(
                     "생성에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 컨텐츠 데이터 리스트")
@@ -306,8 +306,8 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("data.subtitle").description("수정에 성공한 페이지 블럭 서브 타이틀의 부제목"),
                 fieldWithPath("data.staticWriteTitleId").description(
                     "수정에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 타이틀의 ID"),
-                subsectionWithPath("data.thumbnail").description(
-                    "수정에 성공한 페이지 블럭 서브 타이틀과 연결된 썸네일 데이터"),
+                subsectionWithPath("data.thumbnailPath").description(
+                    "수정에 성공한 페이지 블럭 서브 타이틀과 연결된 썸네일 이미지를 조회하는 api path"),
                 fieldWithPath("data.displayOrder").description("수정에 성공한 페이지 블럭 서브 타이틀이 보여지는 순서"),
                 subsectionWithPath("data.staticWriteContentResults[]").description(
                     "수정에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 컨텐츠 데이터 리스트")
@@ -365,8 +365,8 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("data.subtitle").description("삭제에 성공한 페이지 블럭 서브 타이틀의 부제목"),
                 fieldWithPath("data.staticWriteTitleId").description(
                     "삭제에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 타이틀의 ID"),
-                subsectionWithPath("data.thumbnail").description(
-                    "삭제에 성공한 페이지 블럭 서브 타이틀과 연결된 썸네일 데이터"),
+                subsectionWithPath("data.thumbnailPath").description(
+                    "삭제에 성공한 페이지 블럭 서브 타이틀과 연결된 썸네일 이미지를 조회하는 api path"),
                 fieldWithPath("data.displayOrder").description("삭제에 성공한 페이지 블럭 서브 타이틀이 보여지는 순서"),
                 subsectionWithPath("data.staticWriteContentResults[]").description(
                     "삭제에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 컨텐츠 데이터 리스트")

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import keeper.project.homepage.common.controller.util.ImageController;
 import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,7 +37,7 @@ public class MemberDto {
   private String rank;
   private String type;
   private List<String> jobs;
-  private Long thumbnailId;
+  private String thumbnailPath;
   private Integer merit;
   private Integer demerit;
   private Float generation;
@@ -70,7 +71,7 @@ public class MemberDto {
     this.generation = memberEntity.getGeneration();
 
     if (memberEntity.getThumbnail() != null) {
-      this.thumbnailId = memberEntity.getThumbnail().getId();
+      this.thumbnailPath = ImageController.THUMBNAIL_PATH + memberEntity.getThumbnail().getId();
     }
     if (memberEntity.getMemberRank() != null) {
       this.rank = memberEntity.getMemberRank().getName();

@@ -1,6 +1,7 @@
 package keeper.project.homepage.user.dto.point.request;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.point.PointLogEntity;
 import lombok.AllArgsConstructor;
@@ -12,7 +13,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class PointLogRequest {
+public class PointLogRequestDto {
 
   private LocalDateTime time;
 

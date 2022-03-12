@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 import keeper.project.homepage.user.dto.posting.PostingResponseDto;
+import keeper.project.homepage.user.dto.member.MemberFollowDto;
 import keeper.project.homepage.util.ImageCenterCrop;
 import keeper.project.homepage.common.dto.sign.EmailAuthDto;
 import keeper.project.homepage.user.dto.member.MemberDto;
@@ -283,5 +284,21 @@ public class MemberService {
         postings.size());
 
     return page;
+  }
+
+  private Integer getFolloweeNumber(MemberEntity member) {
+    return member.getFollowee().size();
+  }
+
+  private Integer getFollowerNumber(MemberEntity member) {
+    return member.getFollower().size();
+  }
+
+  public MemberFollowDto getFollowerAndFolloweeNumber(Long id) {
+    MemberEntity member = findById(id);
+    return MemberFollowDto.builder()
+        .followeeNumber(getFolloweeNumber(member))
+        .followerNumber(getFollowerNumber(member))
+        .build();
   }
 }

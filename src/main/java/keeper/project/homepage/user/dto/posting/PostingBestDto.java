@@ -1,6 +1,7 @@
 package keeper.project.homepage.user.dto.posting;
 
 import java.time.LocalDateTime;
+import keeper.project.homepage.common.controller.util.ImageController;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,17 +19,19 @@ public class PostingBestDto {
   private Long id;
   private String title;
   private String user;
-  private Long userThumbnailID;
+  private String userThumbnailPath;
   private LocalDateTime dateTime;
   private Integer watch;
   private Integer commentN;
   private Long categoryId;
   private String category;
-  private Long ThumbnailId;
+  private String thumbnailPath;
 
   public void initWithEntity(PostingEntity postingEntity) {
     this.id = postingEntity.getId();
     this.title = postingEntity.getTitle();
+    // TODO : this.userThumbnailId = getWriterThumbnailId(); 를 아래와 같이 수정
+    //         --> this.userThumbnailPath = ImageController.THUMBNAIL_PATH + postingEntity.getWriterThumbnailId();
 //    this.user = postingEntity.getWriter();
 //    this.userThumbnailID = postingEntity.getWriterThumbnailId();
     this.dateTime = postingEntity.getRegisterTime();
@@ -37,7 +40,7 @@ public class PostingBestDto {
     this.categoryId = postingEntity.getCategoryId().getId();
     this.category = postingEntity.getCategoryId().getName();
     if (postingEntity.getThumbnail() != null) {
-      this.ThumbnailId = postingEntity.getThumbnail().getId();
+      this.thumbnailPath = ImageController.THUMBNAIL_PATH + postingEntity.getThumbnail().getId();
     }
   }
 }

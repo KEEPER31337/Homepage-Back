@@ -3,6 +3,7 @@ package keeper.project.homepage.user.dto.posting;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.time.LocalDateTime;
+import keeper.project.homepage.common.controller.util.ImageController;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
@@ -28,7 +29,7 @@ public class CommentDto {
   private Long parentId;
   private String writer;
   private Long writerId;
-  private Long writerThumbnailId;
+  private String writerThumbnailPath;
   private Boolean checkedLike;
   private Boolean checkedDislike;
 
@@ -59,7 +60,7 @@ public class CommentDto {
       this.writerId = member.getId();
       ThumbnailEntity thumbnail = member.getThumbnail();
       if (thumbnail != null) {
-        this.writerThumbnailId = thumbnail.getId();
+        this.writerThumbnailPath = ImageController.THUMBNAIL_PATH + thumbnail.getId().toString();
       }
     }
   }
