@@ -141,6 +141,27 @@ public class PostingService {
     return postingBestDtos;
   }
 
+  public PostingResponseDto findByPostId(Long postId) {
+    PostingEntity posting = getPostingById(postId);
+    // TODO : isTemp, isSecret 체크하는 예외처리 추가
+    // TODO : postingNotExist 예외처리 추가
+    // FIXME : request와 response용 dto를 나눴다면 initWithEntity() 대신 생성자로 초기화하는 게 좋을 것 같습니다
+    // TODO : postingResponseDto의 initWithEntity가 init하는 동작이 아니라 새로운 dto를 반환해주는 동작을 수행하고 있습니다
+    PostingResponseDto postingResponseDto = new PostingResponseDto();
+    return postingResponseDto.initWithEntity(posting, 1);
+  }
+
+  public List<PostingResponseDto> findAllByMemberId(MemberEntity memberEntity, Pageable pageable) {
+    Page<PostingEntity> postingPage = postingRepository.findAllByMemberIdAndIsTempAndIsSecret(
+        memberEntity, isNotTempPosting, isNotSecretPosting, pageable);
+    List<PostingResponseDto> postingList = new ArrayList<>();
+    for (PostingEntity posting : postingPage) {
+      PostingResponseDto dto = new PostingResponseDto();
+      postingList.add(dto.initWithEntity(posting, (int) postingPage.getTotalElements()));
+    }
+    return postingList;
+  }
+
   public PostingEntity save(PostingDto dto) {
 
     Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
@@ -372,6 +393,7 @@ public class PostingService {
     return likeAndDislikeDto;
   }
 
+  // FIXME : authService.getMemberEntityWithJWT() 가 생겼습니다ㅏ
   private MemberEntity getMemberEntityWithJWT() {
     Long memberId = authService.getMemberIdByJWT();
     Optional<MemberEntity> member = memberRepository.findById(memberId);

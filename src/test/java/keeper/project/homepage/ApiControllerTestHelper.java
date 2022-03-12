@@ -246,7 +246,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
       Integer isNotice, Integer isSecret, Integer isTemp) {
     final String epochTime = Long.toHexString(System.nanoTime());
     final LocalDateTime now = LocalDateTime.now();
-    return postingRepository.save(PostingEntity.builder()
+    PostingEntity posting = postingRepository.save(PostingEntity.builder()
         .title("posting 제목 " + epochTime)
         .content("posting 내용 " + epochTime)
         .categoryId(category)
@@ -264,6 +264,8 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         .password(postingPassword)
         .memberId(writer)
         .build());
+    writer.getPosting().add(posting);
+    return posting;
   }
 
   public CommentEntity generateCommentEntity(PostingEntity posting, MemberEntity writer,
@@ -370,7 +372,9 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     return commonFields;
   }
 
-  public List<FieldDescriptor> generatePostingResponseFields(ResponseType type, String success,
+  // TODO : PostingDto -> PostingResponseDto로 바꾼 후, .._Legacy 메소드 삭제
+  public List<FieldDescriptor> generatePostingResponseFields_Legacy(ResponseType type,
+      String success,
       String code, String msg, FieldDescriptor... addDescriptors) {
     String prefix = type.getReponseFieldPrefix();
     List<FieldDescriptor> commonFields = new ArrayList<>();
@@ -397,6 +401,42 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         fieldWithPath(prefix + ".categoryId").description("카테고리 아이디"),
         fieldWithPath(prefix + ".category").description("카테고리 이름"),
         fieldWithPath(prefix + ".thumbnailId").description("게시글 썸네일 아이디")
+    ));
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
+    }
+    return commonFields;
+  }
+
+  public List<FieldDescriptor> generatePostingResponseFields(ResponseType type, String success,
+      String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(Arrays.asList(
+        fieldWithPath(prefix + ".id").description("게시물 ID"),
+        fieldWithPath(prefix + ".title").description("게시물 제목"),
+        fieldWithPath(prefix + ".content").description("게시물 내용 (비밀 게시글일 경우 \"비밀 게시글입니다.\""),
+        fieldWithPath(prefix + ".writer").description("작성자 (비밀 게시글일 경우 \"익명\")"),
+        fieldWithPath(prefix + ".writerId").description("작성자 아이디 (비밀 게시글일 경우 -1)"),
+        fieldWithPath(prefix + ".writerThumbnailPath").description(
+            "작성자 썸네일 이미지 조회 api path (비밀 게시글일 경우 null)").type(String.class).optional(),
+        fieldWithPath(prefix + ".size").description("조건에 따라 조회한 게시글의 총 개수"),
+        fieldWithPath(prefix + ".visitCount").description("조회 수"),
+        fieldWithPath(prefix + ".likeCount").description("좋아요 수"),
+        fieldWithPath(prefix + ".dislikeCount").description("싫어요 수"),
+        fieldWithPath(prefix + ".commentCount").description("댓글 수"),
+        fieldWithPath(prefix + ".registerTime").description("작성 시간"),
+        fieldWithPath(prefix + ".updateTime").description("수정 시간"),
+        fieldWithPath(prefix + ".ipAddress").description("IP 주소"),
+        fieldWithPath(prefix + ".allowComment").description("댓글 허용?"),
+        fieldWithPath(prefix + ".isNotice").description("공지글?"),
+        fieldWithPath(prefix + ".isSecret").description("비밀글?"),
+        fieldWithPath(prefix + ".isTemp").description("임시저장?"),
+        fieldWithPath(prefix + ".category").description("카테고리 이름"),
+        fieldWithPath(prefix + ".thumbnailPath").description("게시글 썸네일 이미지 조회 api path")
+            .type(String.class).optional(),
+        fieldWithPath(prefix + ".files").description("첨부파일")
     ));
     if (addDescriptors.length > 0) {
       commonFields.addAll(Arrays.asList(addDescriptors));
