@@ -55,12 +55,14 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
         PostingService.isNotNoticePosting, PostingService.isSecretPosting,
         PostingService.isTempPosting);
     for (Integer i = 0; i < 15; i++) {
-      generatePostingEntity(memberEntity, categoryEntity,
+      PostingEntity posting = generatePostingEntity(memberEntity, categoryEntity,
           PostingService.isNotNoticePosting, PostingService.isNotSecretPosting,
           PostingService.isNotTempPosting);
-      generatePostingEntity(memberEntity, categoryEntity,
+      memberEntity.getPosting().add(posting);
+      posting = generatePostingEntity(memberEntity, categoryEntity,
           PostingService.isNotNoticePosting, PostingService.isNotSecretPosting,
           PostingService.isTempPosting);
+      memberEntity.getPosting().add(posting);
     }
   }
 
@@ -74,6 +76,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
             .param("page", "0")
             .param("size", "10"))
         .andDo(print())
+        .andExpect(jsonPath("$.list.length()", greaterThan(0)))
         .andExpect(jsonPath("$.list.length()", lessThanOrEqualTo(10)))
         .andExpect(status().isOk())
         .andDo(document("member-show-all-post",
@@ -82,7 +85,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
                 parameterWithName("size").description("한 페이지에 보이는 게시글 개수 (default : 10)")
             ),
             responseFields(
-                generatePostingResponseFields_Legacy(ResponseType.LIST, "", docCode, docMsg)
+                generatePostingResponseFields(ResponseType.LIST, "", docCode, docMsg)
             )
         ));
   }
@@ -98,6 +101,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
             .param("page", "0")
             .param("size", "10"))
         .andDo(print())
+        .andExpect(jsonPath("$.list.length()", greaterThan(0)))
         .andExpect(jsonPath("$.list.length()", lessThanOrEqualTo(10)))
         .andExpect(status().isOk())
         .andDo(document("member-show-all-temp-post",
@@ -106,7 +110,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
                 parameterWithName("size").description("한 페이지에 보이는 게시글 개수 (default : 10)")
             ),
             responseFields(
-                generatePostingResponseFields_Legacy(ResponseType.LIST, "", docCode, docMsg)
+                generatePostingResponseFields(ResponseType.LIST, "", docCode, docMsg)
             )
         ));
   }
