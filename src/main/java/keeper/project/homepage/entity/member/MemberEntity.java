@@ -103,14 +103,13 @@ public class MemberEntity implements UserDetails, Serializable {
 
   @OneToOne
   @JoinColumn(name = "thumbnail_id")
-  // DEFAULT 1
   private ThumbnailEntity thumbnail;
 
-  @OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE)
+  @OneToMany(mappedBy = "followee", cascade = CascadeType.REMOVE)
   @Builder.Default
   private List<FriendEntity> follower = new ArrayList<>();
 
-  @OneToMany(mappedBy = "followee", cascade = CascadeType.REMOVE)
+  @OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE)
   @Builder.Default
   private List<FriendEntity> followee = new ArrayList<>();
 

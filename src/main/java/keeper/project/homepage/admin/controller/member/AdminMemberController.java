@@ -32,7 +32,7 @@ public class AdminMemberController {
 
   @Secured("ROLE_회장") // 각 리소스별 권한 설정
   @GetMapping(value = "/members")
-  public ListResult<MemberEntity> findAllMember() {
+  public ListResult<MemberDto> findAllMember() {
     // 결과데이터가 여러건인경우 getSuccessListResult 이용해서 결과를 출력한다.
     return responseService.getSuccessListResult(adminMemberService.findAll());
   }
