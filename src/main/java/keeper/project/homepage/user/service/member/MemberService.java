@@ -135,7 +135,7 @@ public class MemberService {
 
   public List<MemberDto> showFollower(Long myId) {
     MemberEntity me = findById(myId);
-    List<FriendEntity> friendList = me.getFollower();
+    List<FriendEntity> friendList = me.getFollowee();
 
     List<MemberDto> followerList = new ArrayList<>();
     for (FriendEntity friend : friendList) {
@@ -148,7 +148,7 @@ public class MemberService {
 
   public List<MemberDto> showFollowee(Long myId) {
     MemberEntity me = findById(myId);
-    List<FriendEntity> friendList = me.getFollowee();
+    List<FriendEntity> friendList = me.getFollower();
 
     List<MemberDto> followeeList = new ArrayList<>();
     for (FriendEntity friend : friendList) {
