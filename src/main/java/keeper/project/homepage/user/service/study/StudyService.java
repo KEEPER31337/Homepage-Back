@@ -16,6 +16,7 @@ import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.study.StudyHasMemberRepository;
 import keeper.project.homepage.repository.study.StudyRepository;
 import keeper.project.homepage.user.dto.study.StudyDto;
+import keeper.project.homepage.user.dto.study.StudyYearSeasonDto;
 import keeper.project.homepage.user.mapper.StudyMapper;
 import keeper.project.homepage.util.ImageCenterCrop;
 import keeper.project.homepage.util.service.ThumbnailService;
@@ -41,13 +42,21 @@ public class StudyService {
   private final MemberRepository memberRepository;
   private final StudyMapper studyMapper = Mappers.getMapper(StudyMapper.class);
 
-  public List<Integer> getAllStudyYears() {
+  public List<StudyYearSeasonDto> getAllStudyYearsAndSeasons() {
+    List<StudyYearSeasonDto> studyYearSeasonDtoList = new ArrayList<>();
+
     List<Integer> years = studyRepository.findDistinctYear();
     years.sort(Comparator.naturalOrder());
-    return years;
+    for (Integer year : years) {
+      StudyYearSeasonDto studyYearSeasonDto = new StudyYearSeasonDto();
+      studyYearSeasonDto.setYear(year);
+      studyYearSeasonDto.setSeason(studyRepository.findDistinctYearAndSeasonByYear(year));
+      studyYearSeasonDtoList.add(studyYearSeasonDto);
+    }
+    return studyYearSeasonDtoList;
   }
 
-  public List<StudyDto> getAllStudyLists(Integer year, Integer season) {
+  public List<StudyDto> getAllStudyList(Integer year, Integer season) {
 
     checkSeasonValidate(season);
     List<StudyEntity> studyEntities = studyRepository.findAllByYearOrSeason(year, season);
