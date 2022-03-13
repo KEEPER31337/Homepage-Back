@@ -44,7 +44,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
   @Test
   @DisplayName("다른 유저 정보 리스트 조회하기 - 성공")
   public void getAllOtherUserInfoSuccess() throws Exception {
-    mockMvc.perform(get("/v1/members")
+    mockMvc.perform(get("/v1/members/others")
             .param("page", "0")
             .param("size", "20")
             .header("Authorization", userToken))
@@ -64,7 +64,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
   @Test
   @DisplayName("다른 유저 정보 리스트 조회하기 - 실패(유효하지 않은 토큰)")
   public void getAllOtherUserInfoFail() throws Exception {
-    mockMvc.perform(get("/v1/members")
+    mockMvc.perform(get("/v1/members/others")
             .param("page", "0")
             .param("size", "10")
             .header("Authorization", 111111))
@@ -77,7 +77,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
   @Test
   @DisplayName("다른 유저 ID를 통해 정보 조회하기 - 성공")
   public void getOtherUserInfoByIdSuccess() throws Exception {
-    mockMvc.perform(get("/v1/members/{id}", adminEntity.getId())
+    mockMvc.perform(get("/v1/members/others/{id}", adminEntity.getId())
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -94,7 +94,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
   @Test
   @DisplayName("다른 유저 ID를 통해 정보 조회하기 - 실패(유효하지 않은 토큰)")
   public void getOtherUserInfoByIdFailByToken() throws Exception {
-    mockMvc.perform(get("/v1/members/{id}", adminEntity.getId())
+    mockMvc.perform(get("/v1/members/others/{id}", adminEntity.getId())
             .header("Authorization", 111111))
         .andDo(print())
         .andExpect(status().is4xxClientError())
@@ -105,7 +105,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
   @Test
   @DisplayName("다른 유저 ID를 통해 정보 조회하기 - 실패(존재하지 않는 ID)")
   public void getOtherUserInfoByIdFailById() throws Exception {
-    mockMvc.perform(get("/v1/members/{id}", 1234567)
+    mockMvc.perform(get("/v1/members/others/{id}", 1234567)
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().is5xxServerError())
@@ -116,7 +116,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
   @Test
   @DisplayName("내 정보 조회하기 - 성공")
   public void getMemberSuccess() throws Exception {
-    mockMvc.perform(get("/v1/member")
+    mockMvc.perform(get("/v1/members")
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -130,7 +130,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
   @Test
   @DisplayName("내 정보 조회하기 - 실패(권한 에러)")
   public void getMemberFailByAuth() throws Exception {
-    mockMvc.perform(get("/v1/member")
+    mockMvc.perform(get("/v1/members")
             .header("Authorization", 1234))
         .andDo(print())
         .andExpect(status().is4xxClientError())
