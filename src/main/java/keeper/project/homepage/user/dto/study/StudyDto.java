@@ -29,6 +29,8 @@ public class StudyDto {
   private String etcLink;
   @JsonProperty(access = Access.READ_ONLY)
   private String thumbnailPath;
+  @JsonProperty(access = Access.READ_ONLY)
+  private MemberDto headMember;
   @JsonProperty(access = Access.WRITE_ONLY)
   private String ipAddress;
   @JsonProperty(access = Access.READ_ONLY)

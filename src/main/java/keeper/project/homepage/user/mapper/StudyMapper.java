@@ -13,6 +13,7 @@ import org.mapstruct.ReportingPolicy;
 public abstract class StudyMapper {
 
   @Mapping(target = "thumbnailPath", expression = "java(studyEntity.getThumbnailPath())")
+  @Mapping(target = "headMember", expression = "java(studyEntity.headMemberToDto())")
   @Mapping(target = "memberList", expression = "java(studyEntity.getStudyMembers())")
   public abstract StudyDto toDto(StudyEntity studyEntity);
 

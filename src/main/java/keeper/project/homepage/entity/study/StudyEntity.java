@@ -35,13 +35,18 @@ import lombok.Setter;
 @Table(name = "study")
 public class StudyEntity {
 
+  private static final int RECTANGLE_DEFAULT_THUMBNAIL_ID = 1;
+  private static final int SQUARE_DEFAULT_THUMBNAIL_ID = 2;
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  @Setter
   @Column(length = 45, nullable = false)
   private String title;
 
+  @Setter
   @Column(length = 256)
   private String information;
 
@@ -51,25 +56,35 @@ public class StudyEntity {
   @Column
   private LocalDateTime registerTime;
 
+  @Setter
   @Column
   private Integer year;
 
+  @Setter
   @Column
   private Integer season;
 
+  @Setter
   @Column(length = 256)
   private String gitLink;
 
+  @Setter
   @Column(length = 256)
   private String noteLink;
 
+  @Setter
   @Column(length = 256)
   private String etcLink;
 
+  @Setter
   @OneToOne
   @JoinColumn(name = "thumbnail_id")
-  @Setter
   private ThumbnailEntity thumbnail;
+
+  @Setter
+  @ManyToOne
+  @JoinColumn(name = "head_member_id")
+  private MemberEntity headMember;
 
   @OneToMany(mappedBy = "study", orphanRemoval = true, fetch = FetchType.LAZY)
   @Builder.Default
@@ -78,7 +93,7 @@ public class StudyEntity {
   public String getThumbnailPath() {
     String thumbnailApiPath = "/v1/util/thumbnail/";
     if (getThumbnail() == null) {
-      return thumbnailApiPath + 0;
+      return thumbnailApiPath + SQUARE_DEFAULT_THUMBNAIL_ID;
     }
     return thumbnailApiPath + getThumbnail().getId();
   }
@@ -93,5 +108,11 @@ public class StudyEntity {
       }
     }
     return members;
+  }
+
+  public MemberDto headMemberToDto() {
+    MemberDto temp = new MemberDto();
+    temp.initWithEntity(headMember);
+    return temp;
   }
 }

@@ -31,10 +31,13 @@ import keeper.project.homepage.common.service.ResponseService;
 import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.exception.study.CustomIpAddressNotFoundException;
 import keeper.project.homepage.exception.study.CustomSeasonInvalidException;
+import keeper.project.homepage.exception.study.CustomStudyIsNotMineException;
+import keeper.project.homepage.exception.study.CustomStudyNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -64,7 +67,7 @@ public class ExceptionAdvice {
       CustomMemberNotFoundException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(Integer.parseInt(getMessage("memberNotFound.code")),
-        getMessage("memberNotFound.msg"));
+        e.getMessage() == null ? getMessage("memberNotFound.msg") : e.getMessage());
   }
 
   // code정보에 해당하는 메시지를 조회합니다.
@@ -345,5 +348,29 @@ public class ExceptionAdvice {
       CustomIpAddressNotFoundException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("ipAddressNotFound.code")),
         e.getMessage() == null ? getMessage("ipAddressNotFound.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomStudyNotFoundException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult studyNotFound(HttpServletRequest request,
+      CustomStudyNotFoundException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("studyNotFound.code")),
+        e.getMessage() == null ? getMessage("studyNotFound.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomStudyIsNotMineException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult studyNotMine(HttpServletRequest request,
+      CustomStudyIsNotMineException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("studyNotMine.code")),
+        e.getMessage() == null ? getMessage("studyNotMine.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(EmptyResultDataAccessException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult dataAccessException(HttpServletRequest request,
+      EmptyResultDataAccessException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("dataNotFound.code")),
+        e.getMessage() == null ? getMessage("dataNotFound.msg") : e.getMessage());
   }
 }

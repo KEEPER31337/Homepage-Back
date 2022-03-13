@@ -1,14 +1,17 @@
 package keeper.project.homepage.user.mapper;
 
 import javax.annotation.processing.Generated;
+import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.member.MemberEntity.MemberEntityBuilder;
 import keeper.project.homepage.entity.study.StudyEntity;
 import keeper.project.homepage.entity.study.StudyEntity.StudyEntityBuilder;
+import keeper.project.homepage.user.dto.member.MemberDto;
 import keeper.project.homepage.user.dto.study.StudyDto;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2022-03-13T20:40:23+0900",
+    date = "2022-03-14T03:24:31+0900",
     comments = "version: 1.4.2.Final, compiler: javac, environment: Java 17.0.2 (Oracle Corporation)"
 )
 @Component
@@ -34,6 +37,7 @@ public class StudyMapperImpl extends StudyMapper {
         studyDto.setEtcLink( studyEntity.getEtcLink() );
 
         studyDto.setThumbnailPath( studyEntity.getThumbnailPath() );
+        studyDto.setHeadMember( studyEntity.headMemberToDto() );
         studyDto.setMemberList( studyEntity.getStudyMembers() );
 
         return studyDto;
@@ -57,7 +61,33 @@ public class StudyMapperImpl extends StudyMapper {
         studyEntity.gitLink( studyDto.getGitLink() );
         studyEntity.noteLink( studyDto.getNoteLink() );
         studyEntity.etcLink( studyDto.getEtcLink() );
+        studyEntity.headMember( memberDtoToMemberEntity( studyDto.getHeadMember() ) );
 
         return studyEntity.build();
+    }
+
+    protected MemberEntity memberDtoToMemberEntity(MemberDto memberDto) {
+        if ( memberDto == null ) {
+            return null;
+        }
+
+        MemberEntityBuilder memberEntity = MemberEntity.builder();
+
+        memberEntity.id( memberDto.getId() );
+        memberEntity.loginId( memberDto.getLoginId() );
+        memberEntity.emailAddress( memberDto.getEmailAddress() );
+        memberEntity.password( memberDto.getPassword() );
+        memberEntity.realName( memberDto.getRealName() );
+        memberEntity.nickName( memberDto.getNickName() );
+        memberEntity.birthday( memberDto.getBirthday() );
+        memberEntity.studentId( memberDto.getStudentId() );
+        memberEntity.registerDate( memberDto.getRegisterDate() );
+        memberEntity.point( memberDto.getPoint() );
+        memberEntity.level( memberDto.getLevel() );
+        memberEntity.merit( memberDto.getMerit() );
+        memberEntity.demerit( memberDto.getDemerit() );
+        memberEntity.generation( memberDto.getGeneration() );
+
+        return memberEntity.build();
     }
 }

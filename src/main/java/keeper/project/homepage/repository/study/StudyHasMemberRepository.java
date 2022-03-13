@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface StudyHasMemberRepository extends
     JpaRepository<StudyHasMemberEntity, MemberEntity> {
 
-
+  void deleteByMember(MemberEntity memberEntity);
 }
