@@ -59,7 +59,7 @@ public class StudyService {
   public List<StudyDto> getAllStudyList(Integer year, Integer season) {
 
     checkSeasonValidate(season);
-    List<StudyEntity> studyEntities = studyRepository.findAllByYearOrSeason(year, season);
+    List<StudyEntity> studyEntities = studyRepository.findAllByYearAndSeason(year, season);
 
     List<StudyDto> studyDtos = new ArrayList<>();
     for (StudyEntity studyEntity : studyEntities) {
