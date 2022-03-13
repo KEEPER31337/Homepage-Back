@@ -1,5 +1,6 @@
 package keeper.project.homepage.admin.service.member;
 
+import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.admin.dto.member.MemberDemeritDto;
 import keeper.project.homepage.admin.dto.member.MemberDto;
@@ -34,8 +35,15 @@ public class AdminMemberService {
   private final MemberHasMemberJobRepository memberHasMemberJobRepository;
   private final MemberJobRepository memberJobRepository;
 
-  public List<MemberEntity> findAll() {
-    return memberRepository.findAll();
+  public List<MemberDto> findAll() {
+    List<MemberEntity> entityList = memberRepository.findAll();
+    List<MemberDto> dtoList = new ArrayList<>();
+    for (MemberEntity entity : entityList) {
+      MemberDto dto = new MemberDto();
+      dto.initWithEntity(entity);
+      dtoList.add(dto);
+    }
+    return dtoList;
   }
 
   public MemberEntity findByLoginId(String loginId) {
