@@ -29,6 +29,8 @@ import keeper.project.homepage.exception.sign.CustomLoginIdSigninFailedException
 import keeper.project.homepage.exception.sign.CustomSignUpFailedException;
 import keeper.project.homepage.common.service.ResponseService;
 import javax.servlet.http.HttpServletRequest;
+import keeper.project.homepage.exception.study.CustomIpAddressNotFoundException;
+import keeper.project.homepage.exception.study.CustomSeasonInvalidException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.MessageSource;
@@ -327,7 +329,21 @@ public class ExceptionAdvice {
     return responseService.getFailResult(
         Integer.parseInt(getMessage("bookDepartmentNotFound.code")),
         getMessage("bookDepartmentNotFound.msg"));
-
   }
 
+  @ExceptionHandler(CustomSeasonInvalidException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult seasonInvalid(HttpServletRequest request,
+      CustomSeasonInvalidException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("seasonInvalid.code")),
+        e.getMessage() == null ? getMessage("seasonInvalid.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomIpAddressNotFoundException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult ipAddressNotFound(HttpServletRequest request,
+      CustomIpAddressNotFoundException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("ipAddressNotFound.code")),
+        e.getMessage() == null ? getMessage("ipAddressNotFound.msg") : e.getMessage());
+  }
 }

@@ -22,6 +22,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.entity.study.StudyHasMemberEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -113,6 +114,10 @@ public class MemberEntity implements UserDetails, Serializable {
   @OneToMany(mappedBy = "followee", cascade = CascadeType.REMOVE)
   @Builder.Default
   private List<FriendEntity> followee = new ArrayList<>();
+
+  @OneToMany(mappedBy = "member", orphanRemoval = true, fetch = FetchType.LAZY)
+  @Builder.Default
+  private List<StudyHasMemberEntity> studyHasMemberEntities = new ArrayList<>();
 
   public void changePassword(String newPassword) {
     this.password = newPassword;

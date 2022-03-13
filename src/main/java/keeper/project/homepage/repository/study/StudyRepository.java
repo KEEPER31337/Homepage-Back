@@ -9,4 +9,6 @@ public interface StudyRepository extends JpaRepository<StudyEntity, Long> {
 
   @Query("SELECT DISTINCT year FROM StudyEntity")
   List<Integer> findDistinctYear();
+
+  List<StudyEntity> findAllByYearOrSeason(Integer year, Integer season);
 }
