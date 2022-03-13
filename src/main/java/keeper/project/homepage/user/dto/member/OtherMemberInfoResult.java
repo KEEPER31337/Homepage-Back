@@ -6,6 +6,7 @@ import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberRankEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
+import keeper.project.homepage.util.EnvironmentProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -46,7 +47,8 @@ public class OtherMemberInfoResult {
     this.memberTypeEntity = memberEntity.getMemberType();
     this.memberRankEntity = memberEntity.getMemberRank();
     if (memberEntity.getThumbnail() != null) {
-      this.thumbnailPath = ImageController.THUMBNAIL_PATH + memberEntity.getThumbnail().getId();
+      this.thumbnailPath = EnvironmentProperty.getThumbnailPath(
+          memberEntity.getThumbnail().getId());
     }
     this.generation = memberEntity.getGeneration();
   }

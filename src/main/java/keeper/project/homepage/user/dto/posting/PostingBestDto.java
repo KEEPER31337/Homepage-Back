@@ -3,6 +3,7 @@ package keeper.project.homepage.user.dto.posting;
 import java.time.LocalDateTime;
 import keeper.project.homepage.common.controller.util.ImageController;
 import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.util.EnvironmentProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,7 +41,8 @@ public class PostingBestDto {
     this.categoryId = postingEntity.getCategoryId().getId();
     this.category = postingEntity.getCategoryId().getName();
     if (postingEntity.getThumbnail() != null) {
-      this.thumbnailPath = ImageController.THUMBNAIL_PATH + postingEntity.getThumbnail().getId();
+      this.thumbnailPath = EnvironmentProperty.getThumbnailPath(
+          postingEntity.getThumbnail().getId());
     }
   }
 }

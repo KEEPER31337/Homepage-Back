@@ -22,6 +22,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.util.EnvironmentProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -226,11 +227,10 @@ public class MemberEntity implements UserDetails, Serializable {
   }
 
   public String getThumbnailPath() {
-    String thumbnailApiPath = "/v1/util/thumbnail/";
     if (getThumbnail() == null) {
-      return thumbnailApiPath + 0;
+      return EnvironmentProperty.getThumbnailPath(0L);
     }
-    return thumbnailApiPath + getThumbnail().getId();
+    return EnvironmentProperty.getThumbnailPath(getThumbnail().getId());
   }
 
   @PrePersist

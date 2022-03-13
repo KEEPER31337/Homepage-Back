@@ -76,13 +76,22 @@ public class MemberController {
   }
 
   // TODO : 이거 삭제 (테스트 & 문서도)
+  // MemberEntity를 반환하는데 왜 test에서는 MemberDto 결과가 나오는,.??
+//  @Secured("ROLE_회원") // 각 리소스별 권한 설정
+//  @GetMapping(value = "/member")
+//  public SingleResult<MemberEntity> findMember() {
+//    // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
+//    Long id = authService.getMemberIdByJWT();
+//    // 결과데이터가 단일건인경우 getSuccessSingleResult 이용해서 결과를 출력한다.
+//    return responseService.getSuccessSingleResult(memberService.findById(id));
+//  }
   @Secured("ROLE_회원") // 각 리소스별 권한 설정
   @GetMapping(value = "/member")
-  public SingleResult<MemberEntity> findMember() {
+  public SingleResult<MemberDto> findMember() {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
     Long id = authService.getMemberIdByJWT();
     // 결과데이터가 단일건인경우 getSuccessSingleResult 이용해서 결과를 출력한다.
-    return responseService.getSuccessSingleResult(memberService.findById(id));
+    return responseService.getSuccessSingleResult(memberService.findMember(id));
   }
 
   @Secured("ROLE_회원")
@@ -242,7 +251,7 @@ public class MemberController {
     System.out.println("In Controller : " + posting.getId());
     return responseService.getSuccessSingleResult(posting);
   }
-    
+
   @Secured("ROLE_회원")
   @GetMapping("/member/follow-number")
   public SingleResult<MemberFollowDto> getFollowerAndFolloweeCount() {

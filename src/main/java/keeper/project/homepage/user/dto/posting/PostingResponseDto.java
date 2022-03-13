@@ -7,6 +7,7 @@ import java.util.List;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.util.EnvironmentProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,8 +21,6 @@ import lombok.Setter;
 @Builder
 @JsonInclude(Include.NON_NULL)
 public class PostingResponseDto {
-
-  private static final String thumbnailApiPath = "/v1/util/thumbnail/";
 
   private Long id;
   private String title;
@@ -76,11 +75,13 @@ public class PostingResponseDto {
 
     // 썸네일 경로 처리
     if (memberThumbnail != null) {
-      postingResponseDto.setWriterThumbnailPath(thumbnailApiPath + memberThumbnail.getId());
+      postingResponseDto.setWriterThumbnailPath(
+          EnvironmentProperty.getThumbnailPath(memberThumbnail.getId()));
     }
 
     if (postingThumbnail != null) {
-      postingResponseDto.setThumbnailPath(thumbnailApiPath + postingThumbnail.getId());
+      postingResponseDto.setThumbnailPath(
+          EnvironmentProperty.getThumbnailPath(postingThumbnail.getId()));
     }
 
     // 비밀게시판 처리
