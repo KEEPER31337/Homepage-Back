@@ -39,7 +39,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Log4j2
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/v1")
+@RequestMapping(value = "/v1/members")
 public class MemberController {
 
   private final MemberService memberService;
@@ -49,7 +49,7 @@ public class MemberController {
   private final PostingService postingService;
 
   @Secured("ROLE_회원")
-  @GetMapping(value = "/members")
+  @GetMapping(value = "/others")
   public ListResult<OtherMemberInfoResult> getOtherMembers(
       @PageableDefault(size = 20, sort = "id", direction = Direction.DESC) Pageable pageable
   ) {
@@ -57,7 +57,7 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @GetMapping(value = "/members/{id}")
+  @GetMapping(value = "/others/{id}")
   public SingleResult<OtherMemberInfoResult> getOtherMember(
       @PathVariable("id") Long otherMemberId
   ) {
@@ -66,7 +66,7 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @GetMapping(value = "/member")
+  @GetMapping(value = "")
   public SingleResult<MemberDto> getMember() {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
     Long id = authService.getMemberIdByJWT();
@@ -75,7 +75,7 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @PutMapping(value = "/member/update/profile")
+  @PutMapping(value = "/profile")
   public SingleResult<MemberDto> updateProfile(@RequestBody MemberDto memberDto) {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
     Long id = authService.getMemberIdByJWT();
@@ -84,7 +84,7 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @PutMapping(value = "/member/update/thumbnail")
+  @PutMapping(value = "/thumbnail")
   public SingleResult<MemberDto> updateThumbnail(
       @RequestParam("thumbnail") MultipartFile image,
       @RequestParam("ipAddress") String ipAddress) {
@@ -94,7 +94,7 @@ public class MemberController {
     return responseService.getSuccessSingleResult(updated);
   }
 
-  @PostMapping(value = "/member/update/emailauth")
+  @PostMapping(value = "/emailauth")
   public CommonResult emailAuth(@RequestBody EmailAuthDto emailAuthDto) {
     EmailAuthDto emailAuthDtoForSend = memberService.generateEmailAuth(emailAuthDto);
     memberService.sendEmailAuthCode(emailAuthDtoForSend);
@@ -102,7 +102,7 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @PutMapping(value = "/member/update/email")
+  @PutMapping(value = "/email")
   public SingleResult<MemberDto> updateEmailAddress(@RequestBody MemberDto memberDto) {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
     Long id = authService.getMemberIdByJWT();
@@ -113,7 +113,7 @@ public class MemberController {
 
   // TODO : registerTime 기준으로 정렬이 제대로 안됨.
   @Secured("ROLE_회원")
-  @GetMapping(value = "/member/post")
+  @GetMapping(value = "/posts")
   public ListResult<PostingResponseDto> findAllPosting(
       @SortDefault(sort = "registerTime", direction = Direction.DESC)
       @PageableDefault(page = 0, size = 10) Pageable pageable) {
@@ -126,7 +126,7 @@ public class MemberController {
 
   // TODO : registerTime 기준으로 정렬이 제대로 안됨.
   @Secured("ROLE_회원")
-  @GetMapping(value = "/member/temp_post")
+  @GetMapping(value = "/temp_posts")
   public ListResult<PostingResponseDto> findAllTempPosting(
       @SortDefault(sort = "registerTime", direction = Direction.DESC)
       @PageableDefault(page = 0, size = 10) Pageable pageable) {
@@ -138,7 +138,7 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @GetMapping(value = "/member/post/{pid}")
+  @GetMapping(value = "/posts/{pid}")
   public void findPosting(@PathVariable("pid") Long postingId, HttpServletResponse response) {
     String uri = "/v1/post/" + postingId;
     try {
@@ -150,7 +150,7 @@ public class MemberController {
 
   @Secured("ROLE_회원")
   @RequestMapping(method = {RequestMethod.PUT,
-      RequestMethod.PATCH}, value = "/member/post/{pid}")
+      RequestMethod.PATCH}, value = "/posts/{pid}")
   public void modifyPosting(@PathVariable("pid") Long postingId, HttpServletResponse response) {
     String uri = "/v1/post/" + postingId.toString();
     try {
@@ -161,7 +161,7 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @DeleteMapping(value = "/member/post/{pid}")
+  @DeleteMapping(value = "/posts/{pid}")
   public void deletePosting(@PathVariable("pid") Long postingId, HttpServletResponse response) {
     String uri = "/v1/post/" + postingId.toString();
     try {
@@ -172,7 +172,7 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @PostMapping(value = "/member/follow")
+  @PostMapping(value = "/follow")
   public CommonResult followByLoginId(@RequestBody MemberDto memberDto) {
     Long id = authService.getMemberIdByJWT();
     memberService.follow(id, memberDto.getFolloweeLoginId());
@@ -180,7 +180,7 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @DeleteMapping(value = "/member/unfollow")
+  @DeleteMapping(value = "/unfollow")
   public CommonResult unfollowByLoginId(@RequestBody MemberDto memberDto) {
     Long id = authService.getMemberIdByJWT();
     memberService.unfollow(id, memberDto.getFolloweeLoginId());
@@ -188,7 +188,7 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @GetMapping(value = "/member/follower")
+  @GetMapping(value = "/followers")
   public ListResult<MemberDto> showFollowerList() {
     Long id = authService.getMemberIdByJWT();
     List<MemberDto> followerList = memberService.showFollower(id);
@@ -196,7 +196,7 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @GetMapping(value = "/member/followee")
+  @GetMapping(value = "/followees")
   public ListResult<MemberDto> showFolloweeList() {
     Long id = authService.getMemberIdByJWT();
     List<MemberDto> followeeList = memberService.showFollowee(id);
@@ -204,7 +204,7 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @DeleteMapping("/member/delete")
+  @DeleteMapping("")
   public CommonResult deleteMember(@RequestParam("password") String password) {
     Long id = authService.getMemberIdByJWT();
     memberDeleteService.deleteAccount(id, password);
@@ -212,7 +212,7 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @GetMapping("/member/{memberId}/posts")
+  @GetMapping("/{memberId}/posts")
   public ListResult<PostingResponseDto> findPostingListOfOther(
       @PathVariable("memberId") Long memberId,
       @PageableDefault(size = 10, page = 0, sort = "registerTime", direction = Direction.DESC) Pageable pageable
@@ -223,7 +223,7 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @GetMapping("/member/{memberId}/posts/{postId}")
+  @GetMapping("/{memberId}/posts/{postId}")
   public SingleResult<PostingResponseDto> findSinglePostingOfOther(
       @PathVariable("memberId") Long memberId,
       @PathVariable("postId") Long postId) {
@@ -233,7 +233,7 @@ public class MemberController {
   }
     
   @Secured("ROLE_회원")
-  @GetMapping("/member/follow-number")
+  @GetMapping("/follow-number")
   public SingleResult<MemberFollowDto> getFollowerAndFolloweeCount() {
     Long id = authService.getMemberIdByJWT();
     MemberFollowDto followDto = memberService.getFollowerAndFolloweeNumber(id);
