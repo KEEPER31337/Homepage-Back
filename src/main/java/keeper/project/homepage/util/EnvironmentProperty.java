@@ -31,6 +31,6 @@ public class EnvironmentProperty {
   }
 
   public static String getThumbnailPath(Long thumbnailId) {
-    return getURL(URL_TYPE.Local) + THUMBNAIL_PATH + thumbnailId;
+    return getURL(URL_TYPE.Prod) + THUMBNAIL_PATH + thumbnailId;
   }
 }
