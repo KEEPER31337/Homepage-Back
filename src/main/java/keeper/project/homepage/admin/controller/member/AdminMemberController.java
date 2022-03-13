@@ -27,14 +27,14 @@ import org.springframework.web.bind.annotation.RestController;
 @Log4j2
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/v1/admin")
+@RequestMapping(value = "/v1/admin/members")
 public class AdminMemberController {
 
   private final AdminMemberService adminMemberService;
   private final ResponseService responseService;
 
   @Secured("ROLE_회장") // 각 리소스별 권한 설정
-  @GetMapping(value = "/members")
+  @GetMapping(value = "")
   public ListResult<MemberDto> getMembers(
       @PageableDefault(size = 20, sort = "id", direction = Direction.DESC)Pageable pageable
   ) {
@@ -43,21 +43,21 @@ public class AdminMemberController {
   }
 
   @Secured("ROLE_회장")
-  @PutMapping("/member/update/rank")
+  @PutMapping("/rank")
   public SingleResult<MemberDto> updateMemberRank(@RequestBody MemberRankDto memberRankDto) {
     MemberDto update = adminMemberService.updateMemberRank(memberRankDto);
     return responseService.getSuccessSingleResult(update);
   }
 
   @Secured("ROLE_회장")
-  @PutMapping("/member/update/type")
+  @PutMapping("/type")
   public SingleResult<MemberDto> updateMemberType(@RequestBody MemberTypeDto memberTypeDto) {
     MemberDto update = adminMemberService.updateMemberType(memberTypeDto);
     return responseService.getSuccessSingleResult(update);
   }
 
   @Secured("ROLE_회장")
-  @PutMapping("/member/update/job")
+  @PutMapping("/job")
   public SingleResult<MemberDto> updateMemberJob(@RequestBody MemberJobDto memberJobDto) {
 
     MemberDto update = adminMemberService.updateMemberJobs(memberJobDto);
@@ -65,7 +65,7 @@ public class AdminMemberController {
   }
 
   @Secured({"ROLE_회장", "ROLE_서기"})
-  @PutMapping("/member/update/generation")
+  @PutMapping("/generation")
   public SingleResult<MemberDto> updateMemberGeneration(
       @RequestBody MemberGenerationDto memberGenerationDto) {
     MemberDto update = adminMemberService.updateGeneration(memberGenerationDto);
@@ -73,7 +73,7 @@ public class AdminMemberController {
   }
 
   @Secured({"ROLE_회장", "ROLE_서기"})
-  @PutMapping("/member/update/merit")
+  @PutMapping("/merit")
   public SingleResult<MemberDto> updateMemberMerit(@RequestBody MemberMeritDto memberMeritDto) {
     MemberDto update = adminMemberService.updateMerit(memberMeritDto);
     return responseService.getSuccessSingleResult(update);
@@ -81,7 +81,7 @@ public class AdminMemberController {
 
 
   @Secured({"ROLE_회장", "ROLE_서기"})
-  @PutMapping("/member/update/demerit")
+  @PutMapping("/demerit")
   public SingleResult<MemberDto> updateMemberDemerit(
       @RequestBody MemberDemeritDto memberDemeritDto) {
     MemberDto update = adminMemberService.updateDemerit(memberDemeritDto);
