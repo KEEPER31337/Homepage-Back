@@ -27,6 +27,8 @@ import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.admin.service.library.BookManageService;
+import keeper.project.homepage.repository.study.StudyHasMemberRepository;
+import keeper.project.homepage.repository.study.StudyRepository;
 import keeper.project.homepage.user.service.attendance.AttendanceService;
 import keeper.project.homepage.user.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.user.service.member.MemberHasCommentLikeService;
@@ -34,6 +36,7 @@ import keeper.project.homepage.user.service.posting.CommentService;
 import keeper.project.homepage.common.service.sign.SignUpService;
 import keeper.project.homepage.user.service.member.MemberService;
 import keeper.project.homepage.user.service.posting.PostingService;
+import keeper.project.homepage.user.service.study.StudyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,6 +114,12 @@ public abstract class ApiControllerTestSetUp {
   @Autowired
   protected PointLogRepository pointLogRepository;
 
+  @Autowired
+  protected StudyRepository studyRepository;
+
+  @Autowired
+  protected StudyHasMemberRepository studyHasMemberRepository;
+
   /********* Service Start ********/
   @Autowired
   protected SignUpService signUpService;
@@ -135,6 +144,9 @@ public abstract class ApiControllerTestSetUp {
 
   @Autowired
   protected PostingService postingService;
+
+  @Autowired
+  protected StudyService studyService;
 
   /********* Others Start ********/
   @Autowired

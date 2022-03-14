@@ -32,7 +32,7 @@ public class ThumbnailService {
   private final FileService fileService;
 
   public enum ThumbnailSize {
-    SMALL(30, 30), LARGE(100, 100);
+    SMALL(30, 30), LARGE(100, 100), STUDY(300, 300);
     private Integer width;
     private Integer height;
 

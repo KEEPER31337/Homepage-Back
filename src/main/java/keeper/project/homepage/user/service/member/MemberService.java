@@ -71,6 +71,13 @@ public class MemberService {
     return memberRepository.findByLoginId(loginId).orElseThrow(CustomMemberNotFoundException::new);
   }
 
+  public MemberDto getMember(Long id) {
+    MemberEntity memberEntity = memberRepository.findById(id)
+        .orElseThrow(CustomMemberNotFoundException::new);
+
+    return new MemberDto(memberEntity);
+  }
+
   private Boolean checkFollowing(MemberEntity other) {
     MemberEntity me = authService.getMemberEntityWithJWT();
     if (me.getFollowee().contains(other) == false) {
@@ -87,33 +94,27 @@ public class MemberService {
     return true;
   }
 
-  public OtherMemberInfoResult getOtherMemberInfoById(Long otherMemberId) {
+  public OtherMemberInfoResult getOtherMember(Long otherMemberId) {
     MemberEntity memberEntity = memberRepository.findById(otherMemberId)
         .orElseThrow(CustomMemberNotFoundException::new);
 
-    OtherMemberInfoResult result = new OtherMemberInfoResult(memberEntity);
-    result.setCheckFollow(checkFollowing(memberEntity), checkFollower(memberEntity));
-    return result;
+    OtherMemberInfoResult otherMemberInfoResult = new OtherMemberInfoResult(memberEntity);
+    otherMemberInfoResult.setCheckFollow(checkFollowing(memberEntity), checkFollower(memberEntity));
+    return otherMemberInfoResult;
   }
 
-  public OtherMemberInfoResult getOtherMemberInfoByRealName(String realName) {
-    MemberEntity memberEntity = memberRepository.findByRealName(realName)
-        .orElseThrow(CustomMemberNotFoundException::new);
+  public List<OtherMemberInfoResult> getOtherMembers(Pageable pageable) {
+    List<OtherMemberInfoResult> otherMemberInfoResultList = new ArrayList<>();
+    List<MemberEntity> memberEntityList = memberRepository.findAll(pageable).getContent();
 
-    OtherMemberInfoResult result = new OtherMemberInfoResult(memberEntity);
-    result.setCheckFollow(checkFollowing(memberEntity), checkFollower(memberEntity));
-    return result;
-  }
+    for (MemberEntity memberEntity : memberEntityList) {
+      OtherMemberInfoResult otherMemberInfoResult = new OtherMemberInfoResult(memberEntity);
+      otherMemberInfoResult.setCheckFollow(checkFollowing(memberEntity),
+          checkFollower(memberEntity));
+      otherMemberInfoResultList.add(otherMemberInfoResult);
+    }
 
-  public List<OtherMemberInfoResult> getAllOtherMemberInfo(Pageable pageable) {
-    return memberRepository.findAll(pageable).stream()
-        .map(member -> {
-          OtherMemberInfoResult other = new OtherMemberInfoResult(member);
-          other.setCheckFollow(checkFollowing(member), checkFollower(member));
-          return other;
-        })
-        .sorted(Comparator.comparing(OtherMemberInfoResult::getRegisterDate).reversed())
-        .collect(Collectors.toList());
+    return otherMemberInfoResultList;
   }
 
   public void follow(Long myId, String followLoginId) {
@@ -143,7 +144,7 @@ public class MemberService {
 
   public List<MemberDto> showFollower(Long myId) {
     MemberEntity me = findById(myId);
-    List<FriendEntity> friendList = me.getFollower();
+    List<FriendEntity> friendList = me.getFollowee();
 
     List<MemberDto> followerList = new ArrayList<>();
     for (FriendEntity friend : friendList) {
@@ -156,7 +157,7 @@ public class MemberService {
 
   public List<MemberDto> showFollowee(Long myId) {
     MemberEntity me = findById(myId);
-    List<FriendEntity> friendList = me.getFollowee();
+    List<FriendEntity> friendList = me.getFollower();
 
     List<MemberDto> followeeList = new ArrayList<>();
     for (FriendEntity friend : friendList) {

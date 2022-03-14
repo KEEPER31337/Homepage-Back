@@ -1,6 +1,8 @@
 package keeper.project.homepage.user.dto.member;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import keeper.project.homepage.common.controller.util.ImageController;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -16,19 +18,15 @@ import lombok.Setter;
 @AllArgsConstructor
 public class OtherMemberInfoResult {
 
-  private String loginId;
-
-  private String realName;
-
   private String nickName;
 
   private Date birthday;
 
-  private Date registerDate;
+  private String memberType;
 
-  private MemberTypeEntity memberTypeEntity;
+  private String memberRank;
 
-  private MemberRankEntity memberRankEntity;
+  private List<String> memberJobs;
 
   private String thumbnailPath;
 
@@ -39,13 +37,20 @@ public class OtherMemberInfoResult {
   private Boolean checkFollower;
 
   public OtherMemberInfoResult(MemberEntity memberEntity) {
-    this.loginId = memberEntity.getLoginId();
-    this.realName = memberEntity.getRealName();
     this.nickName = memberEntity.getNickName();
     this.birthday = memberEntity.getBirthday();
-    this.registerDate = memberEntity.getRegisterDate();
-    this.memberTypeEntity = memberEntity.getMemberType();
-    this.memberRankEntity = memberEntity.getMemberRank();
+    if(memberEntity.getMemberType() != null) {
+      this.memberType = memberEntity.getMemberType().getName();
+    }
+    if(memberEntity.getMemberRank() != null) {
+      this.memberRank = memberEntity.getMemberRank().getName();
+    }
+    if (memberEntity.getMemberJobs() != null || !memberEntity.getMemberJobs().isEmpty()) {
+      this.memberJobs = new ArrayList<>();
+      memberEntity.getMemberJobs()
+          .forEach(job ->
+              this.memberJobs.add(job.getMemberJobEntity().getName()));
+    }
     if (memberEntity.getThumbnail() != null) {
       this.thumbnailPath = EnvironmentProperty.getThumbnailPath(
           memberEntity.getThumbnail().getId());

@@ -23,6 +23,7 @@ import keeper.project.homepage.repository.member.MemberRankRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.member.MemberTypeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,15 +36,16 @@ public class AdminMemberService {
   private final MemberHasMemberJobRepository memberHasMemberJobRepository;
   private final MemberJobRepository memberJobRepository;
 
-  public List<MemberDto> findAll() {
-    List<MemberEntity> entityList = memberRepository.findAll();
-    List<MemberDto> dtoList = new ArrayList<>();
-    for (MemberEntity entity : entityList) {
-      MemberDto dto = new MemberDto();
-      dto.initWithEntity(entity);
-      dtoList.add(dto);
+  public List<MemberDto> getMembers(Pageable pageable) {
+    List<MemberDto> memberDtoList = new ArrayList<>();
+    List<MemberEntity> memberEntityList = memberRepository.findAll(pageable).getContent();
+
+    for(MemberEntity memberEntity : memberEntityList) {
+      MemberDto memberDto = new MemberDto(memberEntity);
+      memberDtoList.add(memberDto);
     }
-    return dtoList;
+
+    return memberDtoList;
   }
 
   public MemberEntity findByLoginId(String loginId) {
