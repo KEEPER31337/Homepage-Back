@@ -64,7 +64,6 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
     }
   }
 
-  /*
   @Test
   @DisplayName("자신이 작성한 게시글 조회하기")
   public void findAllPostingById() throws Exception {
@@ -83,15 +82,10 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
                 parameterWithName("size").description("한 페이지에 보이는 게시글 개수 (default : 10)")
             ),
             responseFields(
-                generatePostingResponseFields_Legacy(ResponseType.LIST, "", docCode, docMsg)
+                generatePostingResponseFields(ResponseType.LIST, "", docCode, docMsg)
             )
         ));
   }
-
-   */
-
-  //  FIXME 정채원 고태영
-  /*
   @Test
   @DisplayName("자신이 임시저장한 게시글 조회하기")
   public void findAllTempPostingById() throws Exception {
@@ -110,12 +104,10 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
                 parameterWithName("size").description("한 페이지에 보이는 게시글 개수 (default : 10)")
             ),
             responseFields(
-                generatePostingResponseFields_Legacy(ResponseType.LIST, "", docCode, docMsg)
+                generatePostingResponseFields(ResponseType.LIST, "", docCode, docMsg)
             )
         ));
   }
-
-   */
 
   @Test
   @DisplayName("자신이 작성한 게시글 하나 조회하기")
