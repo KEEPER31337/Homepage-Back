@@ -21,6 +21,7 @@ import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasPostingLikeEntity;
 import keeper.project.homepage.user.dto.member.MemberDto;
+import keeper.project.homepage.util.EnvironmentProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,8 +36,8 @@ import lombok.Setter;
 @Table(name = "study")
 public class StudyEntity {
 
-  private static final int RECTANGLE_DEFAULT_THUMBNAIL_ID = 1;
-  private static final int SQUARE_DEFAULT_THUMBNAIL_ID = 2;
+  private static final Long RECTANGLE_DEFAULT_THUMBNAIL_ID = 1L;
+  private static final Long SQUARE_DEFAULT_THUMBNAIL_ID = 2L;
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -91,11 +92,11 @@ public class StudyEntity {
   private List<StudyHasMemberEntity> studyHasMemberEntities = new ArrayList<>();
 
   public String getThumbnailPath() {
-    String thumbnailApiPath = "/v1/util/thumbnail/";
+
     if (getThumbnail() == null) {
-      return thumbnailApiPath + SQUARE_DEFAULT_THUMBNAIL_ID;
+      return EnvironmentProperty.getThumbnailPath(SQUARE_DEFAULT_THUMBNAIL_ID);
     }
-    return thumbnailApiPath + getThumbnail().getId();
+    return EnvironmentProperty.getThumbnailPath(getThumbnail().getId());
   }
 
   public List<MemberDto> getStudyMembers() {
