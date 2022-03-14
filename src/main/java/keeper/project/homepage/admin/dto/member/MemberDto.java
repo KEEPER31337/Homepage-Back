@@ -87,5 +87,39 @@ public class MemberDto {
     }
   }
 
+  public MemberDto(MemberEntity memberEntity) {
+    // 민감한 정보 포함
+    this.id = memberEntity.getId();
+    this.loginId = memberEntity.getLoginId();
+    this.password = null;//memberEntity.getPassword();
+    this.realName = memberEntity.getRealName();
+    this.nickName = memberEntity.getNickName();
+    this.birthday = memberEntity.getBirthday();
+    this.emailAddress = memberEntity.getEmailAddress();
+    this.studentId = memberEntity.getStudentId();
+    this.registerDate = memberEntity.getRegisterDate();
+    this.point = memberEntity.getPoint();
+    this.level = memberEntity.getLevel();
+    this.merit = memberEntity.getMerit();
+    this.demerit = memberEntity.getDemerit();
+    this.generation = memberEntity.getGeneration();
+
+    if (memberEntity.getThumbnail() != null) {
+      this.thumbnailPath = ImageController.THUMBNAIL_PATH + memberEntity.getThumbnail().getId();
+    }
+    if (memberEntity.getMemberRank() != null) {
+      this.rank = memberEntity.getMemberRank().getName();
+    }
+    if (memberEntity.getMemberType() != null) {
+      this.type = memberEntity.getMemberType().getName();
+    }
+    if (memberEntity.getMemberJobs() != null || memberEntity.getMemberJobs().isEmpty() == false) {
+      this.jobs = new ArrayList<>();
+      memberEntity.getMemberJobs()
+          .forEach(job ->
+              this.jobs.add(job.getMemberJobEntity().getName()));
+    }
+  }
+
 }
 
