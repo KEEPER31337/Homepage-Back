@@ -60,7 +60,11 @@ public class StudyService {
     for (Integer year : years) {
       StudyYearSeasonDto studyYearSeasonDto = new StudyYearSeasonDto();
       studyYearSeasonDto.setYear(year);
-      studyYearSeasonDto.setSeason(studyRepository.findDistinctYearAndSeasonByYear(year));
+
+      List<Integer> season = studyRepository.findDistinctYearAndSeasonByYear(year);
+      season.sort(Comparator.naturalOrder());
+      studyYearSeasonDto.setSeason(season);
+
       studyYearSeasonDtoList.add(studyYearSeasonDto);
     }
     return studyYearSeasonDtoList;
