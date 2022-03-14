@@ -66,7 +66,7 @@ public class AttendanceService {
     LocalDateTime now = LocalDateTime.now();
 
     int point = 0;
-    int continuousDay = getContinuousDay(Timestamp.valueOf(now));
+    int continuousDay = getContinuousDay();
     int continuousPoint = getContinuousPoint(continuousDay);
     int randomPoint = (int) (Math.random() * 900 + 100);
     point = continuousPoint + DAILY_ATTENDANCE_POINT + randomPoint;
@@ -270,14 +270,15 @@ public class AttendanceService {
     return member.get();
   }
 
-  private int getContinuousDay(Date now) {
+  private int getContinuousDay() {
     AttendanceEntity recentAttendanceEntity = getMostRecentlyAttendance();
     if (recentAttendanceEntity == null) {
       return 1;
     }
 
     int continuousDay = 1;
-    if (isBeforeDay(Timestamp.valueOf(recentAttendanceEntity.getTime()), now)) {
+    if (recentAttendanceEntity.getTime().plusDays(1).getDayOfMonth() == LocalDate.now()
+        .getDayOfMonth()) {
       continuousDay = recentAttendanceEntity.getContinuousDay() + 1;
     }
     return continuousDay;

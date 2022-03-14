@@ -7,6 +7,7 @@ import keeper.project.homepage.common.controller.util.ImageController;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
+import keeper.project.homepage.util.EnvironmentProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -60,7 +61,7 @@ public class CommentDto {
       this.writerId = member.getId();
       ThumbnailEntity thumbnail = member.getThumbnail();
       if (thumbnail != null) {
-        this.writerThumbnailPath = ImageController.THUMBNAIL_PATH + thumbnail.getId().toString();
+        this.writerThumbnailPath = EnvironmentProperty.getThumbnailPath(thumbnail.getId());
       }
     }
   }

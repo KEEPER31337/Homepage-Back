@@ -98,7 +98,6 @@ public class AboutTitleControllerTest extends ApiControllerTestHelper {
     staticWriteContentRepository.save(staticWriteContent);
   }
 
-  /* FIXME 우창
   @Test
   @DisplayName("페이지 블럭 타이틀 타입으로 불러오기 - 성공")
   public void findAllByTypeSuccess() throws Exception {
@@ -120,8 +119,6 @@ public class AboutTitleControllerTest extends ApiControllerTestHelper {
                 subsectionWithPath("list[].subtitleImageResults[]").description("페이지 블럭 타이틀과 연결된 페이지 블럭 서브 타이틀 데이터 리스트")
             )));
   }
-
-   */
 
   @Test
   @DisplayName("페이지 블럭 타이틀 타입으로 불러오기 - 실패(존재하지 않는 타입)")

@@ -50,7 +50,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   @Test
   @DisplayName("잘못된 토큰으로 접근하기")
   public void invalidToken() throws Exception {
-    mockMvc.perform(get("/v1/member")
+    mockMvc.perform(get("/v1/members")
             .header("Authorization", "XXXXXXXXXX"))
         .andDo(print())
         .andExpect(jsonPath("$.success").value(false))
@@ -60,7 +60,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   @Test
   @DisplayName("토큰 없이 접근하기")
   public void noToken() throws Exception {
-    mockMvc.perform(get("/v1/member"))
+    mockMvc.perform(get("/v1/members"))
         .andDo(print())
         .andExpect(jsonPath("$.success").value(false));
 //        .andExpect(jsonPath("$.code").value(-1002));
@@ -69,7 +69,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   @Test
   @DisplayName("옳은 토큰으로 접근하기")
   public void validToken() throws Exception {
-    mockMvc.perform(get("/v1/member")
+    mockMvc.perform(get("/v1/members")
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk());
@@ -114,7 +114,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   @DisplayName("기본 권한으로 본인 정보 열람하기")
   public void findMember() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders
-            .get("/v1/member")
+            .get("/v1/members")
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -131,7 +131,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
     String docMsg = "팔로우할 회원이 존재하지 않는다면 실패합니다.";
     String docCode = "회원이 존재하지 않을 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
         + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
-    mockMvc.perform(MockMvcRequestBuilders.post("/v1/member/follow")
+    mockMvc.perform(MockMvcRequestBuilders.post("/v1/members/follow")
             .header("Authorization", userToken)
             .content(content)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -167,7 +167,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
     String docMsg = "언팔로우할 회원이 존재하지 않는다면 실패합니다.";
     String docCode = "회원이 존재하지 않을 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
         + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
-    mockMvc.perform(MockMvcRequestBuilders.delete("/v1/member/unfollow")
+    mockMvc.perform(MockMvcRequestBuilders.delete("/v1/members/unfollow")
             .header("Authorization", userToken)
             .content(content)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -195,7 +195,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
 
     String docMsg = "";
     String docCode = "에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
-    mockMvc.perform(get("/v1/member/followee")
+    mockMvc.perform(get("/v1/members/followees")
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -217,7 +217,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
 
     String docMsg = "";
     String docCode = "에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
-    mockMvc.perform(get("/v1/member/follower")
+    mockMvc.perform(get("/v1/members/followers")
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -231,48 +231,13 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   }
 
   @Test
-  @DisplayName("회원 정보 조회(민감한 정보 제외) - 성공")
-  public void getAllGeneralMemberInfoSuccess() throws Exception {
-    String docCode = "에러 발생 시: " + exceptionAdvice.getMessage("unKnown.code");
-    String docMsg = "민감한 정보를 제외한 다른 회원의 정보를 조회합니다. 한 페이지 당 최대 개수는 20개 입니다.";
-    mockMvc.perform(MockMvcRequestBuilders
-            .get("/v1/members")
-            .param("page", "0")
-            .header("Authorization", userToken))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andDo(document("members-show",
-            requestParameters(
-                parameterWithName("page").description("페이지 번호")
-            ),
-            responseFields(
-                generateOtherMemberInfoCommonResponseFields(ResponseType.LIST,
-                    "성공: true +\n실패: false", docCode, docMsg)
-            )
-        ));
-  }
-
-  @Test
-  @DisplayName("회원 정보 조회(민감한 정보 제외) - 실패(회원 권한 X)")
-  public void getAllGeneralMemberInfoFail() throws Exception {
-    mockMvc.perform(MockMvcRequestBuilders
-            .get("/v1/members")
-            .header("Authorization", 1234))
-        .andDo(print())
-        .andExpect(status().is4xxClientError())
-        .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.msg").value("보유한 권한으로 접근할수 없는 리소스 입니다"));
-  }
-
-  @Test
   @DisplayName("회원 탈퇴하기")
   public void deleteAccount() throws Exception {
     String docMsg = "물품을 대여하고 미납한 기록이 남아있을 경우, 또는 입력한 비밀번호가 옳지 않은 경우 탈퇴가 실패합니다.";
     String docCode =
         "물품 미납 기록이 있거나 비밀번호가 틀린 경우: " + exceptionAdvice.getMessage("accountDeleteFailed.code")
             + " +\n" + "그 외 실패한 경우: " + exceptionAdvice.getMessage("unKnown.code");
-    mockMvc.perform(delete("/v1/member/delete")
+    mockMvc.perform(delete("/v1/members")
             .param("password", memberPassword)
             .header("Authorization", userToken))
         .andDo(print())
@@ -310,7 +275,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
     // TODO : 예외 처리 & doc 메세지 채우기 (회원 관리 전체적으로 예외 수정할 예정)
     String docMsg = "";
     String docCode = "실패한 경우: " + exceptionAdvice.getMessage("unKnown.code");
-    mockMvc.perform(get("/v1/member/follow-number")
+    mockMvc.perform(get("/v1/members/follow-number")
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())

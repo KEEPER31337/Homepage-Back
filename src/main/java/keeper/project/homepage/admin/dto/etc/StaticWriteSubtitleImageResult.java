@@ -7,6 +7,7 @@ import keeper.project.homepage.admin.dto.etc.StaticWriteContentResult;
 import keeper.project.homepage.common.controller.util.ImageController;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.etc.StaticWriteSubtitleImageEntity;
+import keeper.project.homepage.util.EnvironmentProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,7 +35,9 @@ public class StaticWriteSubtitleImageResult {
     this.subtitle = staticWriteSubtitleImageEntity.getSubtitle();
     this.staticWriteTitleId = staticWriteSubtitleImageEntity.getStaticWriteTitle().getId();
     this.thumbnailPath =
-        ImageController.THUMBNAIL_PATH + staticWriteSubtitleImageEntity.getThumbnail().getId();
+        staticWriteSubtitleImageEntity.getThumbnail() == null ? ImageController.THUMBNAIL_PATH + 1
+            : ImageController.THUMBNAIL_PATH + staticWriteSubtitleImageEntity.getThumbnail()
+                .getId();
     this.displayOrder = staticWriteSubtitleImageEntity.getDisplayOrder();
     if (staticWriteSubtitleImageEntity.getStaticWriteContents() != null) {
       this.staticWriteContentResults = staticWriteSubtitleImageEntity.getStaticWriteContents()

@@ -227,7 +227,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
             + "존재하지 않는 회원인 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
             + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/admin/member/update/generation")
+            .put("/v1/admin/members/generation")
             .header("Authorization", adminToken)
             .content(content)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -262,7 +262,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
             + "입력한 rank가 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberInfoNotFound.code")
             + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/admin/member/update/rank")
+            .put("/v1/admin/members/rank")
             .header("Authorization", adminToken)
             .content(content)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -301,7 +301,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
             + "입력한 type이 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberInfoNotFound.code")
             + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/admin/member/update/type")
+            .put("/v1/admin/members/type")
             .header("Authorization", adminToken)
             .content(content)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -342,7 +342,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
             + "입력한 job이 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberInfoNotFound.code")
             + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/admin/member/update/job")
+            .put("/v1/admin/members/job")
             .header("Authorization", adminToken)
             .content(content)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -391,7 +391,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
             + "존재하지 않는 회원인 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
             + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/member/update/profile")
+            .put("/v1/members/profile")
             .header("Authorization", userToken)
             .content(updateContent)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -425,7 +425,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
         + "}";
 
     mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/member/update/profile")
+            .put("/v1/members/profile")
             .header("Authorization", userToken)
             .content(content)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -456,7 +456,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
             "entryPointException.code") + " +\n"
             + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/member/update/email")
+            .put("/v1/members/email")
             .header("Authorization", userToken)
             .content(content)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -488,7 +488,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
         + "}";
 
     mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/member/update/email")
+            .put("/v1/members/email")
             .header("Authorization", userToken)
             .content(content)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -510,7 +510,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
         + "}";
 
     mockMvc.perform(MockMvcRequestBuilders
-            .put("/v1/member/update/email")
+            .put("/v1/members/email")
             .header("Authorization", userToken)
             .content(content)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -548,7 +548,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
             + " +\n"
             + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     // @formatter:on
-    mockMvc.perform(RestDocumentationRequestBuilders.fileUpload("/v1/member/update/thumbnail")
+    mockMvc.perform(RestDocumentationRequestBuilders.fileUpload("/v1/members/thumbnail")
             .file(image)
             .contentType(MediaType.MULTIPART_FORM_DATA)
             .param("ipAddress", "111.111.111.111")
@@ -588,7 +588,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
         "입력 데이터가 비어있는 경우: " + exceptionAdvice.getMessage("memberEmptyField.code") + " +\n"
             + "존재하지 않는 회원인 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
             + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
-    mockMvc.perform(MockMvcRequestBuilders.put("/v1/admin/member/update/merit")
+    mockMvc.perform(MockMvcRequestBuilders.put("/v1/admin/members/merit")
             .header("Authorization", adminToken)
             .content(updateContent)
             .contentType(MediaType.APPLICATION_JSON_VALUE))
@@ -619,7 +619,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
         "입력 데이터가 비어있는 경우: " + exceptionAdvice.getMessage("memberEmptyField.code") + " +\n"
             + "존재하지 않는 회원인 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
             + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
-    mockMvc.perform(MockMvcRequestBuilders.put("/v1/admin/member/update/demerit")
+    mockMvc.perform(MockMvcRequestBuilders.put("/v1/admin/members/demerit")
             .header("Authorization", adminToken)
             .content(updateContent)
             .contentType(MediaType.APPLICATION_JSON_VALUE))

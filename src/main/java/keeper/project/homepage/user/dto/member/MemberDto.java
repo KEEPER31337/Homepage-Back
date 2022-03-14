@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.common.controller.util.ImageController;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.util.EnvironmentProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -63,6 +64,41 @@ public class MemberDto {
     this.birthday = memberEntity.getBirthday();
     this.emailAddress = memberEntity.getEmailAddress();
     this.studentId = null;//memberEntity.getStudentId();
+    this.registerDate = memberEntity.getRegisterDate();
+    this.point = memberEntity.getPoint();
+    this.level = memberEntity.getLevel();
+    this.merit = memberEntity.getMerit();
+    this.demerit = memberEntity.getDemerit();
+    this.generation = memberEntity.getGeneration();
+
+    if (memberEntity.getThumbnail() != null) {
+      this.thumbnailPath = EnvironmentProperty.getThumbnailPath(
+          memberEntity.getThumbnail().getId());
+    }
+    if (memberEntity.getMemberRank() != null) {
+      this.rank = memberEntity.getMemberRank().getName();
+    }
+    if (memberEntity.getMemberType() != null) {
+      this.type = memberEntity.getMemberType().getName();
+    }
+    if (memberEntity.getMemberJobs() != null || memberEntity.getMemberJobs().isEmpty() == false) {
+      this.jobs = new ArrayList<>();
+      memberEntity.getMemberJobs()
+          .forEach(job ->
+              this.jobs.add(job.getMemberJobEntity().getName()));
+    }
+  }
+
+  public MemberDto(MemberEntity memberEntity) {
+    // 민감한 정보 포함
+    this.id = memberEntity.getId();
+    this.loginId = memberEntity.getLoginId();
+    this.password = null;//memberEntity.getPassword();
+    this.realName = memberEntity.getRealName();
+    this.nickName = memberEntity.getNickName();
+    this.birthday = memberEntity.getBirthday();
+    this.emailAddress = memberEntity.getEmailAddress();
+    this.studentId = memberEntity.getStudentId();
     this.registerDate = memberEntity.getRegisterDate();
     this.point = memberEntity.getPoint();
     this.level = memberEntity.getLevel();
