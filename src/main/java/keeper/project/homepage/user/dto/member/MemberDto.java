@@ -107,7 +107,8 @@ public class MemberDto {
     this.generation = memberEntity.getGeneration();
 
     if (memberEntity.getThumbnail() != null) {
-      this.thumbnailPath = ImageController.THUMBNAIL_PATH + memberEntity.getThumbnail().getId();
+      this.thumbnailPath = EnvironmentProperty.getThumbnailPath(
+          memberEntity.getThumbnail().getId());
     }
     if (memberEntity.getMemberRank() != null) {
       this.rank = memberEntity.getMemberRank().getName();
