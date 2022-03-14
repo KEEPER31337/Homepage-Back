@@ -13,7 +13,6 @@ import keeper.project.homepage.util.ImageCenterCrop;
 import keeper.project.homepage.common.dto.sign.EmailAuthDto;
 import keeper.project.homepage.user.dto.member.MemberDto;
 import keeper.project.homepage.user.dto.member.OtherMemberInfoResult;
-import keeper.project.homepage.user.dto.posting.PostingDto;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.EmailAuthRedisEntity;
 import keeper.project.homepage.entity.member.FriendEntity;
@@ -59,41 +58,49 @@ public class MemberService {
     return memberRepository.findById(id).orElseThrow(CustomMemberNotFoundException::new);
   }
 
+  public MemberEntity findByRealName(String realName) {
+    return memberRepository.findByRealName(realName)
+        .orElseThrow(CustomMemberNotFoundException::new);
+  }
+
   public MemberEntity findByLoginId(String loginId) {
     return memberRepository.findByLoginId(loginId).orElseThrow(CustomMemberNotFoundException::new);
   }
 
-  private Boolean checkFollowing(MemberEntity other) {
+  private Boolean isMyFollowee(MemberEntity other) {
     MemberEntity me = authService.getMemberEntityWithJWT();
-    if (me.getFollowee().contains(other) == false) {
-      return false;
+    List<FriendEntity> followeeList = me.getFollowee();
+    for (FriendEntity followee : followeeList) {
+      if (followee.getFollowee().equals(other)) {
+        return true;
+      }
     }
-    return true;
+    return false;
   }
 
-  private Boolean checkFollower(MemberEntity other) {
+  private Boolean isMyFollower(MemberEntity other) {
     MemberEntity me = authService.getMemberEntityWithJWT();
-    if (me.getFollower().contains(other) == false) {
-      return false;
+    List<FriendEntity> followerList = me.getFollower();
+    for (FriendEntity follower : followerList) {
+      if (follower.getFollower().equals(other)) {
+        return true;
+      }
     }
-    return true;
+    return false;
   }
 
   public OtherMemberInfoResult getOtherMemberInfoById(Long otherMemberId) {
-    MemberEntity memberEntity = memberRepository.findById(otherMemberId)
-        .orElseThrow(CustomMemberNotFoundException::new);
+    MemberEntity other = findById(otherMemberId);
 
-    OtherMemberInfoResult result = new OtherMemberInfoResult(memberEntity);
-    result.setCheckFollow(checkFollowing(memberEntity), checkFollower(memberEntity));
+    OtherMemberInfoResult result = new OtherMemberInfoResult(other);
+    result.setCheckFollow(isMyFollowee(other), isMyFollower(other));
     return result;
   }
 
   public OtherMemberInfoResult getOtherMemberInfoByRealName(String realName) {
-    MemberEntity memberEntity = memberRepository.findByRealName(realName)
-        .orElseThrow(CustomMemberNotFoundException::new);
-
-    OtherMemberInfoResult result = new OtherMemberInfoResult(memberEntity);
-    result.setCheckFollow(checkFollowing(memberEntity), checkFollower(memberEntity));
+    MemberEntity other = findByRealName(realName);
+    OtherMemberInfoResult result = new OtherMemberInfoResult(other);
+    result.setCheckFollow(isMyFollowee(other), isMyFollower(other));
     return result;
   }
 
@@ -101,7 +108,7 @@ public class MemberService {
     return memberRepository.findAll(pageable).stream()
         .map(member -> {
           OtherMemberInfoResult other = new OtherMemberInfoResult(member);
-          other.setCheckFollow(checkFollowing(member), checkFollower(member));
+          other.setCheckFollow(isMyFollowee(member), isMyFollower(member));
           return other;
         })
         .sorted(Comparator.comparing(OtherMemberInfoResult::getRegisterDate).reversed())
