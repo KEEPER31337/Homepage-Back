@@ -33,10 +33,10 @@ public class StaticWriteSubtitleImageResult {
     this.id = staticWriteSubtitleImageEntity.getId();
     this.subtitle = staticWriteSubtitleImageEntity.getSubtitle();
     this.staticWriteTitleId = staticWriteSubtitleImageEntity.getStaticWriteTitle().getId();
-    if(staticWriteSubtitleImageEntity.getThumbnail() != null) {
-      this.thumbnailPath =
-          ImageController.THUMBNAIL_PATH + staticWriteSubtitleImageEntity.getThumbnail().getId();
-    }
+    this.thumbnailPath =
+        staticWriteSubtitleImageEntity.getThumbnail() == null ? ImageController.THUMBNAIL_PATH + 1
+            : ImageController.THUMBNAIL_PATH + staticWriteSubtitleImageEntity.getThumbnail()
+                .getId();
     this.displayOrder = staticWriteSubtitleImageEntity.getDisplayOrder();
     if (staticWriteSubtitleImageEntity.getStaticWriteContents() != null) {
       this.staticWriteContentResults = staticWriteSubtitleImageEntity.getStaticWriteContents()
