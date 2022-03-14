@@ -104,14 +104,13 @@ public class MemberEntity implements UserDetails, Serializable {
 
   @OneToOne
   @JoinColumn(name = "thumbnail_id")
-  // DEFAULT 1
   private ThumbnailEntity thumbnail;
 
-  @OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE)
+  @OneToMany(mappedBy = "followee", cascade = CascadeType.REMOVE)
   @Builder.Default
   private List<FriendEntity> follower = new ArrayList<>();
 
-  @OneToMany(mappedBy = "followee", cascade = CascadeType.REMOVE)
+  @OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE)
   @Builder.Default
   private List<FriendEntity> followee = new ArrayList<>();
 
@@ -232,11 +231,10 @@ public class MemberEntity implements UserDetails, Serializable {
   }
 
   public String getThumbnailPath() {
-    String thumbnailApiPath = "/v1/util/thumbnail/";
     if (getThumbnail() == null) {
-      return thumbnailApiPath + 0;
+      return EnvironmentProperty.getThumbnailPath(0L);
     }
-    return thumbnailApiPath + getThumbnail().getId();
+    return EnvironmentProperty.getThumbnailPath(getThumbnail().getId());
   }
 
   @PrePersist

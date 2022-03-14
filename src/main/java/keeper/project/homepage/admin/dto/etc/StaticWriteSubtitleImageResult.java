@@ -7,6 +7,7 @@ import keeper.project.homepage.admin.dto.etc.StaticWriteContentResult;
 import keeper.project.homepage.common.controller.util.ImageController;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.etc.StaticWriteSubtitleImageEntity;
+import keeper.project.homepage.util.EnvironmentProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

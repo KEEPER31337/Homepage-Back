@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.common.controller.util.ImageController;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.util.EnvironmentProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -33,7 +34,8 @@ public class RankDto {
     this.nickName = memberEntity.getNickName();
     this.point = memberEntity.getPoint();
     if (memberEntity.getThumbnail() != null) {
-      this.thumbnailPath = ImageController.THUMBNAIL_PATH + memberEntity.getThumbnail().getId();
+      this.thumbnailPath = EnvironmentProperty.getThumbnailPath(
+          memberEntity.getThumbnail().getId());
     }
     if (memberEntity.getMemberJobs() != null || memberEntity.getMemberJobs().isEmpty() == false) {
       this.jobs = new ArrayList<>();

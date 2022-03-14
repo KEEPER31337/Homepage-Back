@@ -65,7 +65,6 @@ public class MemberController {
         memberService.getOtherMember(otherMemberId));
   }
 
-  @Secured("ROLE_회원")
   @GetMapping(value = "")
   public SingleResult<MemberDto> getMember() {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
@@ -231,7 +230,7 @@ public class MemberController {
     System.out.println("In Controller : " + posting.getId());
     return responseService.getSuccessSingleResult(posting);
   }
-    
+
   @Secured("ROLE_회원")
   @GetMapping("/follow-number")
   public SingleResult<MemberFollowDto> getFollowerAndFolloweeCount() {

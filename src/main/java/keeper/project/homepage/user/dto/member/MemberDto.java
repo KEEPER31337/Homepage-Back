@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.common.controller.util.ImageController;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.util.EnvironmentProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -71,7 +72,8 @@ public class MemberDto {
     this.generation = memberEntity.getGeneration();
 
     if (memberEntity.getThumbnail() != null) {
-      this.thumbnailPath = ImageController.THUMBNAIL_PATH + memberEntity.getThumbnail().getId();
+      this.thumbnailPath = EnvironmentProperty.getThumbnailPath(
+          memberEntity.getThumbnail().getId());
     }
     if (memberEntity.getMemberRank() != null) {
       this.rank = memberEntity.getMemberRank().getName();

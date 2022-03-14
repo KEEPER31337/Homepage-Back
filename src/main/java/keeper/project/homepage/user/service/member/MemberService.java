@@ -59,6 +59,14 @@ public class MemberService {
     return memberRepository.findById(id).orElseThrow(CustomMemberNotFoundException::new);
   }
 
+  public MemberDto findMember(Long id) {
+    MemberEntity member = memberRepository.findById(id)
+        .orElseThrow(CustomMemberNotFoundException::new);
+    MemberDto dto = new MemberDto();
+    dto.initWithEntity(member);
+    return dto;
+  }
+
   public MemberEntity findByLoginId(String loginId) {
     return memberRepository.findByLoginId(loginId).orElseThrow(CustomMemberNotFoundException::new);
   }

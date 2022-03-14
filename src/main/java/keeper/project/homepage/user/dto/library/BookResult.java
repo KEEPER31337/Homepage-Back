@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import keeper.project.homepage.common.controller.util.ImageController;
 import keeper.project.homepage.entity.library.BookEntity;
+import keeper.project.homepage.util.EnvironmentProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,7 +42,8 @@ public class BookResult {
     this.enable = bookEntity.getEnable();
     this.registerDate = bookEntity.getRegisterDate();
     if (bookEntity.getThumbnailId() != null) {
-      this.thumbnailPath = ImageController.THUMBNAIL_PATH + bookEntity.getThumbnailId().getId();
+      this.thumbnailPath = EnvironmentProperty.getThumbnailPath(
+          bookEntity.getThumbnailId().getId());
     }
 
   }
