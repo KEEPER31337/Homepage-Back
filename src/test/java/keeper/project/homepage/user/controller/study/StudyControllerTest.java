@@ -2,11 +2,9 @@ package keeper.project.homepage.user.controller.study;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
@@ -19,7 +17,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.time.LocalDateTime;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.study.StudyEntity;
 import org.junit.jupiter.api.BeforeEach;
@@ -92,9 +89,9 @@ public class StudyControllerTest extends StudyControllerTestSetup {
             requestParameters(
                 parameterWithName("year").description("스터디 년도"),
                 parameterWithName("season").description("스터디 시즌\n"
-                    + "1: 1학기"
-                    + "2: 여름학기"
-                    + "3: 2학기"
+                    + "1: 1학기" + "\n"
+                    + "2: 여름학기" + "\n"
+                    + "3: 2학기" + "\n"
                     + "4: 겨울학기")
             ),
             responseFields(
@@ -161,9 +158,9 @@ public class StudyControllerTest extends StudyControllerTestSetup {
                 parameterWithName("studyDto.information").description("스터디 소개"),
                 parameterWithName("studyDto.year").description("스터디 년도"),
                 parameterWithName("studyDto.season").description("스터디 시즌\n"
-                    + "1: 1학기"
-                    + "2: 여름학기"
-                    + "3: 2학기"
+                    + "1: 1학기" + "\n"
+                    + "2: 여름학기" + "\n"
+                    + "3: 2학기" + "\n"
                     + "4: 겨울학기"),
                 parameterWithName("studyDto.ipAddress").description("IP 주소"),
                 parameterWithName("memberIdList[0]").description(
@@ -256,9 +253,9 @@ public class StudyControllerTest extends StudyControllerTestSetup {
                 parameterWithName("studyDto.information").description("스터디 소개"),
                 parameterWithName("studyDto.year").description("스터디 년도"),
                 parameterWithName("studyDto.season").description("스터디 시즌\n"
-                    + "1: 1학기"
-                    + "2: 여름학기"
-                    + "3: 2학기"
+                    + "1: 1학기" + "\n"
+                    + "2: 여름학기" + "\n"
+                    + "3: 2학기" + "\n"
                     + "4: 겨울학기"),
                 parameterWithName("studyDto.ipAddress").description("IP 주소"),
                 parameterWithName("studyId").description("스터디 Id")
@@ -452,7 +449,7 @@ public class StudyControllerTest extends StudyControllerTestSetup {
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.code").value(0))
         .andExpect(jsonPath("$.list.length()").value(studyMemberCount - 1))
-        .andDo(document("study-member-add",
+        .andDo(document("study-member-remove",
             requestFields(
                 fieldWithPath("studyId").description("스터디원을 삭제할 스터디 Id"),
                 fieldWithPath("memberId").description("삭제할 스터디원 Id (스터디원이 아닐 경우 아무일도 일어나지 않습니다)")

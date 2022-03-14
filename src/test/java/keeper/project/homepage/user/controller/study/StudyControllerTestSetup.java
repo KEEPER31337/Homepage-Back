@@ -115,9 +115,9 @@ public class StudyControllerTestSetup extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".registerTime").description("스터디 생성 시간"),
         fieldWithPath(prefix + ".year").description("스터디 년도"),
         fieldWithPath(prefix + ".season").description("스터디 시즌\n"
-            + "1: 1학기"
-            + "2: 여름학기"
-            + "3: 2학기"
+            + "1: 1학기" + "\n"
+            + "2: 여름학기" + "\n"
+            + "3: 2학기" + "\n"
             + "4: 겨울학기"),
         fieldWithPath(prefix + ".gitLink").description("github 주소"),
         fieldWithPath(prefix + ".noteLink").description("notion 주소"),
@@ -139,9 +139,9 @@ public class StudyControllerTestSetup extends ApiControllerTestHelper {
     commonFields.addAll(Arrays.asList(
         fieldWithPath(prefix + ".year").description("스터디 년도"),
         fieldWithPath(prefix + ".season[]").description("스터디 시즌\n"
-            + "1: 1학기"
-            + "2: 여름학기"
-            + "3: 2학기"
+            + "1: 1학기" + "\n"
+            + "2: 여름학기" + "\n"
+            + "3: 2학기" + "\n"
             + "4: 겨울학기")
     ));
     if (addDescriptors.length > 0) {
