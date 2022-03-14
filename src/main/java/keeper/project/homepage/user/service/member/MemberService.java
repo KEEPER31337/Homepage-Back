@@ -108,7 +108,7 @@ public class MemberService {
     List<OtherMemberInfoResult> otherMemberInfoResultList = new ArrayList<>();
     List<MemberEntity> memberEntityList = memberRepository.findAll(pageable).getContent();
 
-    for(MemberEntity memberEntity : memberEntityList) {
+    for (MemberEntity memberEntity : memberEntityList) {
       OtherMemberInfoResult otherMemberInfoResult = new OtherMemberInfoResult(memberEntity);
       otherMemberInfoResult.setCheckFollow(isMyFollowee(memberEntity), isMyFollower(memberEntity));
       otherMemberInfoResultList.add(otherMemberInfoResult);
@@ -144,7 +144,7 @@ public class MemberService {
 
   public List<MemberDto> showFollower(Long myId) {
     MemberEntity me = findById(myId);
-    List<FriendEntity> friendList = me.getFollowee();
+    List<FriendEntity> friendList = me.getFollower();
 
     List<MemberDto> followerList = new ArrayList<>();
     for (FriendEntity friend : friendList) {
@@ -157,7 +157,7 @@ public class MemberService {
 
   public List<MemberDto> showFollowee(Long myId) {
     MemberEntity me = findById(myId);
-    List<FriendEntity> friendList = me.getFollower();
+    List<FriendEntity> friendList = me.getFollowee();
 
     List<MemberDto> followeeList = new ArrayList<>();
     for (FriendEntity friend : friendList) {
