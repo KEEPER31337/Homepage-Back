@@ -116,14 +116,16 @@ public class StudyService {
     studyRepository.save(studyEntity);
 
     for (Long memberId : memberIdSet) {
-      MemberEntity memberEntity = memberRepository.findById(memberId)
-          .orElseThrow(() -> new CustomMemberNotFoundException("잘못 된 스터디원입니다."));
+      if (memberId != null) {
+        MemberEntity memberEntity = memberRepository.findById(memberId)
+            .orElseThrow(() -> new CustomMemberNotFoundException("잘못 된 스터디원입니다."));
 
-      StudyHasMemberEntity studyHasMemberEntity = new StudyHasMemberEntity(
-          studyEntity, memberEntity);
-      memberEntity.getStudyHasMemberEntities().add(studyHasMemberEntity);
-      studyEntity.getStudyHasMemberEntities().add(studyHasMemberEntity);
-      studyHasMemberRepository.save(studyHasMemberEntity);
+        StudyHasMemberEntity studyHasMemberEntity = new StudyHasMemberEntity(
+            studyEntity, memberEntity);
+        memberEntity.getStudyHasMemberEntities().add(studyHasMemberEntity);
+        studyEntity.getStudyHasMemberEntities().add(studyHasMemberEntity);
+        studyHasMemberRepository.save(studyHasMemberEntity);
+      }
     }
 
     return studyMapper.toDto(studyEntity);
