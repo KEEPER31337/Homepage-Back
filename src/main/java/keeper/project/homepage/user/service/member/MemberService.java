@@ -89,7 +89,14 @@ public class MemberService {
     return false;
   }
 
-  public OtherMemberInfoResult getOtherMemberInfoById(Long otherMemberId) {
+  public MemberDto getMember(Long id) {
+    MemberEntity memberEntity = memberRepository.findById(id)
+        .orElseThrow(CustomMemberNotFoundException::new);
+
+    return new MemberDto(memberEntity);
+  }
+
+  public OtherMemberInfoResult getOtherMember(Long otherMemberId) {
     MemberEntity other = findById(otherMemberId);
 
     OtherMemberInfoResult result = new OtherMemberInfoResult(other);
@@ -97,22 +104,17 @@ public class MemberService {
     return result;
   }
 
-  public OtherMemberInfoResult getOtherMemberInfoByRealName(String realName) {
-    MemberEntity other = findByRealName(realName);
-    OtherMemberInfoResult result = new OtherMemberInfoResult(other);
-    result.setCheckFollow(isMyFollowee(other), isMyFollower(other));
-    return result;
-  }
+  public List<OtherMemberInfoResult> getOtherMembers(Pageable pageable) {
+    List<OtherMemberInfoResult> otherMemberInfoResultList = new ArrayList<>();
+    List<MemberEntity> memberEntityList = memberRepository.findAll(pageable).getContent();
 
-  public List<OtherMemberInfoResult> getAllOtherMemberInfo(Pageable pageable) {
-    return memberRepository.findAll(pageable).stream()
-        .map(member -> {
-          OtherMemberInfoResult other = new OtherMemberInfoResult(member);
-          other.setCheckFollow(isMyFollowee(member), isMyFollower(member));
-          return other;
-        })
-        .sorted(Comparator.comparing(OtherMemberInfoResult::getRegisterDate).reversed())
-        .collect(Collectors.toList());
+    for(MemberEntity memberEntity : memberEntityList) {
+      OtherMemberInfoResult otherMemberInfoResult = new OtherMemberInfoResult(memberEntity);
+      otherMemberInfoResult.setCheckFollow(isMyFollowee(memberEntity), isMyFollower(memberEntity));
+      otherMemberInfoResultList.add(otherMemberInfoResult);
+    }
+
+    return otherMemberInfoResultList;
   }
 
   public void follow(Long myId, String followLoginId) {
