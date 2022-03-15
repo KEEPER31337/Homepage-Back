@@ -101,9 +101,15 @@ public class SignInService {
   }
 
   private boolean passwordMatches(String password, String hashedPassword) {
-    return passwordEncoder.matches(password, hashedPassword)
-        || customPasswordService.checkPasswordWithPBKDF2SHA256(password, hashedPassword)
-        || customPasswordService.checkPasswordWithMD5(password, hashedPassword);
+    boolean isPasswordMatch = false;
+    try {
+    isPasswordMatch = customPasswordService.checkPasswordWithPBKDF2SHA256(password, hashedPassword)
+        || customPasswordService.checkPasswordWithMD5(password, hashedPassword)
+        || passwordEncoder.matches(password, hashedPassword);
+    } catch (Exception e) {
+      throw new CustomLoginIdSigninFailedException("비밀번호가 일치하지 않습니다.");
+    }
+    return isPasswordMatch;
   }
 
   private Long getIdFromAuth(Authentication authentication) {
