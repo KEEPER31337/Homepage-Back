@@ -31,18 +31,21 @@ public class PostingBestDto {
   public void initWithEntity(PostingEntity postingEntity) {
     this.id = postingEntity.getId();
     this.title = postingEntity.getTitle();
-    // TODO : this.userThumbnailId = getWriterThumbnailId(); 를 아래와 같이 수정
-    //         --> this.userThumbnailPath = ImageController.THUMBNAIL_PATH + postingEntity.getWriterThumbnailId();
-//    this.user = postingEntity.getWriter();
-//    this.userThumbnailID = postingEntity.getWriterThumbnailId();
+    this.user = postingEntity.getMemberId().getNickName();
+    this.userThumbnailPath = null;
     this.dateTime = postingEntity.getRegisterTime();
     this.watch = postingEntity.getVisitCount();
     this.commentN = postingEntity.getCommentCount();
     this.categoryId = postingEntity.getCategoryId().getId();
     this.category = postingEntity.getCategoryId().getName();
+    //썸네일 경로 처리
     if (postingEntity.getThumbnail() != null) {
       this.thumbnailPath = EnvironmentProperty.getThumbnailPath(
           postingEntity.getThumbnail().getId());
+    }
+    if (postingEntity.getMemberId().getThumbnail() != null) {
+      this.userThumbnailPath = EnvironmentProperty.getThumbnailPath(
+          postingEntity.getMemberId().getId());
     }
   }
 }
