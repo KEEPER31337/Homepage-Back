@@ -5,7 +5,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;

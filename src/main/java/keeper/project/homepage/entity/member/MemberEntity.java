@@ -19,8 +19,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.entity.study.StudyHasMemberEntity;
+import keeper.project.homepage.util.EnvironmentProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,6 +42,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 @AllArgsConstructor         // 인자를 모두 갖춘 생성자를 자동으로 생성합니다.
 @Table(name = "member")     // 'member' 테이블과 매핑됨을 명시
 public class MemberEntity implements UserDetails, Serializable {
+
+  private static final Long RECTANGLE_DEFAULT_THUMBNAIL_ID = 1L;
+  private static final Long SQUARE_DEFAULT_THUMBNAIL_ID = 2L;
 
   @Id // pk
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -102,16 +108,19 @@ public class MemberEntity implements UserDetails, Serializable {
 
   @OneToOne
   @JoinColumn(name = "thumbnail_id")
-  // DEFAULT 1
   private ThumbnailEntity thumbnail;
-
-  @OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE)
-  @Builder.Default
-  private List<FriendEntity> follower = new ArrayList<>();
 
   @OneToMany(mappedBy = "followee", cascade = CascadeType.REMOVE)
   @Builder.Default
+  private List<FriendEntity> follower = new ArrayList<>();
+
+  @OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE)
+  @Builder.Default
   private List<FriendEntity> followee = new ArrayList<>();
+
+  @OneToMany(mappedBy = "member", orphanRemoval = true, fetch = FetchType.LAZY)
+  @Builder.Default
+  private List<StudyHasMemberEntity> studyHasMemberEntities = new ArrayList<>();
 
   public void changePassword(String newPassword) {
     this.password = newPassword;
@@ -213,6 +222,23 @@ public class MemberEntity implements UserDetails, Serializable {
 
   public void changeGeneration(float generation) {
     this.generation = generation;
+  }
+
+  public List<String> getJobs() {
+    List<String> jobs = new ArrayList<>();
+    if (getMemberJobs() != null || getMemberJobs().isEmpty() == false) {
+      getMemberJobs()
+          .forEach(job ->
+              jobs.add(job.getMemberJobEntity().getName()));
+    }
+    return jobs;
+  }
+
+  public String getThumbnailPath() {
+    if (getThumbnail() == null) {
+      return EnvironmentProperty.getThumbnailPath(SQUARE_DEFAULT_THUMBNAIL_ID);
+    }
+    return EnvironmentProperty.getThumbnailPath(getThumbnail().getId());
   }
 
   @PrePersist

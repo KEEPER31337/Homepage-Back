@@ -18,3 +18,27 @@ endif::[]
 == API 목록
 
 link:memberAdmin.html[회원 API 목록으로 돌아가기]
+
+== *회원 정보 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/admin-members/http-request.adoc[]
+
+==== Request Parameters
+
+include::{snippets}/admin-members/request-parameters.adoc[]
+
+==== Response
+
+include::{snippets}/admin-members/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/admin-members/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/admin-members/response-fields.adoc[]

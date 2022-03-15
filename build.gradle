@@ -35,6 +35,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-mail'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'commons-io:commons-io:2.11.0'
+    implementation "org.mapstruct:mapstruct:1.4.2.Final"
 
     compileOnly 'org.projectlombok:lombok'
 
@@ -46,8 +47,11 @@ dependencies {
 
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor "org.mapstruct:mapstruct-processor:1.4.2.Final"
 
     testAnnotationProcessor 'org.projectlombok:lombok'
+    // If you are using mapstruct in test code
+    testAnnotationProcessor "org.mapstruct:mapstruct-processor:1.4.2.Final"
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:2.2.1'
@@ -76,7 +80,7 @@ asciidoctor.doFirst {
 
 bootJar {
     dependsOn asciidoctor
-    from ("${asciidoctor.outputDir}") {
+    from("${asciidoctor.outputDir}") {
         into "static/docs"
     }
 }

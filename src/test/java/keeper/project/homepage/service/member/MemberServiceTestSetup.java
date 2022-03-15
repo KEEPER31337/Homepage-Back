@@ -10,8 +10,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import keeper.project.homepage.user.service.member.MemberDeleteService;
-import keeper.project.homepage.common.FileConversion;
-import keeper.project.homepage.dto.point.request.PointLogRequest;
+import keeper.project.homepage.user.service.posting.CommentService;
+import keeper.project.homepage.util.FileConversion;
+import keeper.project.homepage.user.dto.point.request.PointLogRequestDto;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.attendance.AttendanceEntity;
@@ -51,8 +52,7 @@ import keeper.project.homepage.repository.point.PointLogRepository;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.repository.posting.PostingRepository;
-import keeper.project.homepage.service.posting.CommentService;
-import keeper.project.homepage.service.posting.PostingService;
+import keeper.project.homepage.user.service.posting.PostingService;
 import keeper.project.homepage.user.service.point.PointLogService;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -461,6 +461,8 @@ public class MemberServiceTestSetup {
             .greetings("hi")
             .continuousDay(1)
             .rank(3)
+            .rankPoint(30)
+            .randomPoint((int) (Math.random() * 900 + 100))
             .member(deletedMember)
             .build());
 
@@ -478,7 +480,7 @@ public class MemberServiceTestSetup {
             .member(otherMember)
             .rank(3)
             .rankPoint(30)
-            .randomPoint(random.nextInt(100, 1001)).build());
+            .randomPoint((int) (Math.random() * 900 + 100)).build());
   }
 
   public void generateCheckRemainBorrowInfoTestcase() {
@@ -492,7 +494,7 @@ public class MemberServiceTestSetup {
 
   public void generatePointLogRemoveTestcase() {
     deletedMember = generateMemberEntity(1);
-    PointLogRequest pointLog = new PointLogRequest();
+    PointLogRequestDto pointLog = new PointLogRequestDto();
     pointLog.setTime(LocalDateTime.now());
     pointLog.setPoint(10);
     pointLog.setDetail("테스트 용 포인트 저장하기");

@@ -73,7 +73,8 @@ public class RankControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
                 fieldWithPath("list[].id").description("멤버 ID"),
                 fieldWithPath("list[].nickName").description("닉네임"),
-                fieldWithPath("list[].thumbnailId").description("멤버 썸네일").optional(),
+                fieldWithPath("list[].thumbnailPath").description("멤버 썸네일 이미지 조회 api path")
+                    .optional(),
                 fieldWithPath("list[].jobs[]").description("멤버 직책"),
                 fieldWithPath("list[].point").description("포인트"),
                 fieldWithPath("list[].rank").description("포인트 등수")
@@ -93,7 +94,7 @@ public class RankControllerTest extends ApiControllerTestHelper {
     );
 
     result.andExpect(MockMvcResultMatchers.status().isOk())
-        .andExpect(jsonPath("$.list.length()").value(memberCount-1)); // virtual member제거
+        .andExpect(jsonPath("$.list.length()").value(memberCount - 1)); // virtual member제거
   }
 
   private MemberEntity generateTestMember(int point) throws Exception {

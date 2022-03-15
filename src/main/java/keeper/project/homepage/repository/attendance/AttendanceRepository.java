@@ -1,7 +1,6 @@
 package keeper.project.homepage.repository.attendance;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.entity.attendance.AttendanceEntity;

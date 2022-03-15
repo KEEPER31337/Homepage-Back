@@ -3,7 +3,6 @@
 package keeper.project.homepage.entity.member;
 
 import java.io.Serializable;
-import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import lombok.Data;
 

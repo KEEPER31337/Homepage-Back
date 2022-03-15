@@ -13,22 +13,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import keeper.project.homepage.ApiControllerTestHelper;
+import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.user.dto.posting.CommentDto;
+import keeper.project.homepage.util.ImageFormatChecking;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -121,6 +125,8 @@ public class CommentControllerTest extends ApiControllerTestHelper {
   @Test
   @DisplayName("댓글 페이징")
   public void showCommentByPostIdTest() throws Exception {
+    // 1. 작성자 썸네일이 이미지 api 조회 uri를 담고 있는지 확인
+    // 2. 작성자 썸네일을 호출했을 때, 이미지 파일이 정상적으로 나오는 지 확인
     CommentEntity anotherComment = generateCommentEntity(postingEntity, userEntity, 0L);
     Long commentId = anotherComment.getId();
     for (int i = 0; i < 5; i++) {
@@ -163,6 +169,43 @@ public class CommentControllerTest extends ApiControllerTestHelper {
   }
 
   @Test
+  @DisplayName("댓글의 작성자 썸네일 조회 테스트 - 이미지 파일이 정상적으로 나오는 지 확인")
+  public void displayThumbnailOfWriterTest() throws Exception {
+    Long postId = postingEntity.getId();
+    MvcResult result = mockMvc.perform(
+            RestDocumentationRequestBuilders.get("/v1/comment/{postId}", postId)
+                .param("page", "0")
+                .param("size", "10")
+                .header("Authorization", userToken))
+        .andReturn();
+
+    String resultString = result.getResponse().getContentAsString();
+    ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
+    ListResult<CommentDto> commentDtoList = mapper.readValue(resultString, new TypeReference<>() {
+    });
+
+    for (CommentDto commentDto : commentDtoList.getList()) {
+      String writerThumbnailUri = commentDto.getWriterThumbnailPath();
+
+      MvcResult resultImage = mockMvc.perform(
+              RestDocumentationRequestBuilders.get(writerThumbnailUri))
+          .andDo(print())
+          .andExpect(status().isOk())
+          .andReturn();
+
+      byte[] imageArray = resultImage.getResponse().getContentAsByteArray();
+      MockMultipartFile imageMultipartFile = new MockMultipartFile("testImage.jpg", "testImage.jpg",
+          "image/jpeg", imageArray);
+
+      ImageFormatChecking imageFormatChecking = new ImageFormatChecking();
+      Assertions.assertDoesNotThrow(() -> {
+        imageFormatChecking.checkImageFile(imageMultipartFile);
+      });
+    }
+
+  }
+
+  @Test
   @DisplayName("댓글 삭제 - 성공")
   public void commentDeleteTest() throws Exception {
     Long commentId = replyEntity.getId();
@@ -176,30 +219,6 @@ public class CommentControllerTest extends ApiControllerTestHelper {
         .andExpect(status().isOk())
         .andDo(print())
         .andDo(document("comment-delete",
-            pathParameters(
-                parameterWithName("commentId").description("삭제할 댓글의 id")
-            ),
-            responseFields(
-                generateCommonResponseFields(docSuccess, docCode, docMsg)
-            )
-        ));
-  }
-
-  @Test
-  @DisplayName("관리자 권한 댓글 삭제 - 성공")
-  public void adminCommentDeleteTest() throws Exception {
-    String docSuccess = "성공: true +\n실패: false";
-    String docCode =
-        "존재하지 않는 댓글인 경우: " + exceptionAdvice.getMessage("commentNotFound.code") + " +\n"
-            + "삭제 중 에러가 난 경우: " + exceptionAdvice.getMessage("unKnown.code");
-    String docMsg = "댓글 기록을 완전히 삭제하지 않고 작성자와 댓글 내용, 좋아요와 싫어요 수를 초기화합니다.";
-    Long commentId = replyEntity.getId();
-    mockMvc.perform(
-            RestDocumentationRequestBuilders.delete("/v1/admin/comment/{commentId}", commentId)
-                .header("Authorization", adminToken))
-        .andExpect(status().isOk())
-        .andDo(print())
-        .andDo(document("admin-comment-delete",
             pathParameters(
                 parameterWithName("commentId").description("삭제할 댓글의 id")
             ),

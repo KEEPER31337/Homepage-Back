@@ -49,66 +49,6 @@ include::{snippets}/aboutTitle-create/response-body.adoc[]
 
 include::{snippets}/aboutTitle-create/response-fields.adoc[]
 
-== *페이지 블럭 서브타이틀 생성*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/aboutSubtitle-create/http-request.adoc[]
-
-==== Request Body
-
-include::{snippets}/aboutSubtitle-create/request-body.adoc[]
-
-==== Request Fields
-
-include::{snippets}/aboutSubtitle-create/request-fields.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/aboutSubtitle-create/http-response.adoc[]
-
-==== Response Body
-
-include::{snippets}/aboutSubtitle-create/response-body.adoc[]
-
-==== Response Fields
-
-include::{snippets}/aboutSubtitle-create/response-fields.adoc[]
-
-== *페이지 블럭 컨텐츠 생성*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/aboutContent-create/http-request.adoc[]
-
-==== Request Body
-
-include::{snippets}/aboutContent-create/request-body.adoc[]
-
-==== Request Fields
-
-include::{snippets}/aboutContent-create/request-fields.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/aboutContent-create/http-response.adoc[]
-
-==== Response Body
-
-include::{snippets}/aboutContent-create/response-body.adoc[]
-
-==== Response Fields
-
-include::{snippets}/aboutContent-create/response-fields.adoc[]
-
 == *페이지 블럭 타이틀 수정*
 
 === 요청
@@ -143,6 +83,62 @@ include::{snippets}/aboutTitle-modify/response-body.adoc[]
 
 include::{snippets}/aboutTitle-modify/response-fields.adoc[]
 
+== *페이지 블럭 타이틀 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/aboutTitle-delete/http-request.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/aboutTitle-delete/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/aboutTitle-delete/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/aboutTitle-delete/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/aboutTitle-delete/response-fields.adoc[]
+
+== *페이지 블럭 서브타이틀 생성*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/aboutSubtitle-create/http-request.adoc[]
+
+==== Request Parameters
+
+include::{snippets}/aboutSubtitle-create/request-parameters.adoc[]
+
+==== Request Parts
+
+include::{snippets}/aboutSubtitle-create/request-parts.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/aboutSubtitle-create/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/aboutSubtitle-create/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/aboutSubtitle-create/response-fields.adoc[]
+
 == *페이지 블럭 서브타이틀 수정*
 
 === 요청
@@ -155,13 +151,13 @@ include::{snippets}/aboutSubtitle-modify/http-request.adoc[]
 
 include::{snippets}/aboutSubtitle-modify/path-parameters.adoc[]
 
-==== Request Body
+==== Request Parameters
 
-include::{snippets}/aboutSubtitle-modify/request-body.adoc[]
+include::{snippets}/aboutSubtitle-modify/request-parameters.adoc[]
 
-==== Request Fields
+==== Request Parts
 
-include::{snippets}/aboutSubtitle-modify/request-fields.adoc[]
+include::{snippets}/aboutSubtitle-modify/request-parts.adoc[]
 
 === 응답
 
@@ -176,6 +172,62 @@ include::{snippets}/aboutSubtitle-modify/response-body.adoc[]
 ==== Response Fields
 
 include::{snippets}/aboutSubtitle-modify/response-fields.adoc[]
+
+== *페이지 블럭 서브타이틀 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/aboutSubtitle-delete/http-request.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/aboutSubtitle-delete/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/aboutSubtitle-delete/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/aboutSubtitle-delete/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/aboutSubtitle-delete/response-fields.adoc[]
+
+== *페이지 블럭 컨텐츠 생성*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/aboutContent-create/http-request.adoc[]
+
+==== Request Body
+
+include::{snippets}/aboutContent-create/request-body.adoc[]
+
+==== Request Fields
+
+include::{snippets}/aboutContent-create/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/aboutContent-create/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/aboutContent-create/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/aboutContent-create/response-fields.adoc[]
 
 == *페이지 블럭 컨텐츠 수정*
 
@@ -210,58 +262,6 @@ include::{snippets}/aboutContent-modify/response-body.adoc[]
 ==== Response Fields
 
 include::{snippets}/aboutContent-modify/response-fields.adoc[]
-
-== *페이지 블럭 타이틀 삭제*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/aboutTitle-delete/http-request.adoc[]
-
-==== Path Parameters
-
-include::{snippets}/aboutTitle-delete/path-parameters.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/aboutTitle-delete/http-response.adoc[]
-
-==== Response Body
-
-include::{snippets}/aboutTitle-delete/response-body.adoc[]
-
-==== Response Fields
-
-include::{snippets}/aboutTitle-delete/response-fields.adoc[]
-
-== *페이지 블럭 서브타이틀 삭제*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/aboutSubtitle-delete/http-request.adoc[]
-
-==== Path Parameters
-
-include::{snippets}/aboutSubtitle-delete/path-parameters.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/aboutSubtitle-delete/http-response.adoc[]
-
-==== Response Body
-
-include::{snippets}/aboutSubtitle-delete/response-body.adoc[]
-
-==== Response Fields
-
-include::{snippets}/aboutSubtitle-delete/response-fields.adoc[]
 
 == *페이지 블럭 컨텐츠 삭제*
 

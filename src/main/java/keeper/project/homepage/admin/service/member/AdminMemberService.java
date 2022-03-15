@@ -1,13 +1,14 @@
 package keeper.project.homepage.admin.service.member;
 
+import java.util.ArrayList;
 import java.util.List;
-import keeper.project.homepage.dto.member.MemberDemeritDto;
-import keeper.project.homepage.dto.member.MemberDto;
-import keeper.project.homepage.dto.member.MemberGenerationDto;
-import keeper.project.homepage.dto.member.MemberJobDto;
-import keeper.project.homepage.dto.member.MemberMeritDto;
-import keeper.project.homepage.dto.member.MemberRankDto;
-import keeper.project.homepage.dto.member.MemberTypeDto;
+import keeper.project.homepage.admin.dto.member.MemberDemeritDto;
+import keeper.project.homepage.admin.dto.member.MemberDto;
+import keeper.project.homepage.admin.dto.member.MemberGenerationDto;
+import keeper.project.homepage.admin.dto.member.MemberJobDto;
+import keeper.project.homepage.admin.dto.member.MemberMeritDto;
+import keeper.project.homepage.admin.dto.member.MemberRankDto;
+import keeper.project.homepage.admin.dto.member.MemberTypeDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
@@ -22,6 +23,7 @@ import keeper.project.homepage.repository.member.MemberRankRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.member.MemberTypeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -34,8 +36,16 @@ public class AdminMemberService {
   private final MemberHasMemberJobRepository memberHasMemberJobRepository;
   private final MemberJobRepository memberJobRepository;
 
-  public List<MemberEntity> findAll() {
-    return memberRepository.findAll();
+  public List<MemberDto> getMembers(Pageable pageable) {
+    List<MemberDto> memberDtoList = new ArrayList<>();
+    List<MemberEntity> memberEntityList = memberRepository.findAll(pageable).getContent();
+
+    for(MemberEntity memberEntity : memberEntityList) {
+      MemberDto memberDto = new MemberDto(memberEntity);
+      memberDtoList.add(memberDto);
+    }
+
+    return memberDtoList;
   }
 
   public MemberEntity findByLoginId(String loginId) {
