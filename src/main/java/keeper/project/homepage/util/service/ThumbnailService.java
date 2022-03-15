@@ -82,8 +82,10 @@ public class ThumbnailService {
 
         // 썸네일 파일 저장
         File thumbnailImage = fileService.saveFileInServer(multipartFileWrapper, this.relDirPath);
-        imageProcessing.imageProcessing(thumbnailImage, size.getWidth(), size.getHeight(),
-            THUMBNAIL_FORMAT);
+        if (size != null) {
+          imageProcessing.imageProcessing(thumbnailImage, size.getWidth(), size.getHeight(),
+              THUMBNAIL_FORMAT);
+        }
         fileName = thumbnailImage.getName();
       } catch (Exception e) {
         e.printStackTrace();

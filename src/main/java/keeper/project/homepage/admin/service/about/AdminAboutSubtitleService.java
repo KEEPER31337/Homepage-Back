@@ -78,7 +78,7 @@ public class AdminAboutSubtitleService {
 
     ThumbnailEntity prevThumbnail = staticWriteSubtitleImageEntity.getThumbnail();
     ThumbnailEntity newThumbnail = thumbnailService.saveThumbnail(new ImageCenterCrop(), image,
-        ThumbnailSize.LARGE, ipAddress);
+        null, ipAddress);
 
     staticWriteSubtitleImageEntity.updateInfo(staticWriteSubtitleImageDto, staticWriteTitle,
         newThumbnail);
