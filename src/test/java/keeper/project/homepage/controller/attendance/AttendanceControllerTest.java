@@ -269,7 +269,8 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.ipAddress").description("출석 당시 IP 주소 (앞의 두 자리는 가려집니다.)"),
                 fieldWithPath("data.memberId").description("출석자의 Id"),
                 fieldWithPath("data.nickName").description("출석자의 nickname"),
-                subsectionWithPath("data.thumbnail").description("출석자의 썸네일 정보"),
+                fieldWithPath("data.thumbnailPath").description(
+                    "출석자 썸네일 경로(썸네일을 등록하지 않았을 경우 null)"),
                 fieldWithPath("data.greetings").description("해당일 출석 메시지"),
                 fieldWithPath("data.continuousDay").description("현재 개근 일 수"),
                 fieldWithPath("data.rank").description("랭킹"),
@@ -315,7 +316,8 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
                 fieldWithPath("list[].memberId").description("출석자의 Id"),
                 fieldWithPath("list[].nickName").description("출석자의 nickname"),
-                subsectionWithPath("list[].thumbnail").description("출석자의 썸네일 정보"),
+                subsectionWithPath("list[].thumbnailPath").description(
+                    "출석자 썸네일 경로(썸네일을 등록하지 않았을 경우 null)"),
                 fieldWithPath("list[].greetings").description("해당일 출석 메시지"),
                 fieldWithPath("list[].continuousDay").description("현재 개근 일 수"),
                 fieldWithPath("list[].rank").description("랭킹"),
