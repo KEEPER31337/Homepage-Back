@@ -475,6 +475,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         fieldWithPath(prefix + ".isSecret").description("비밀글?"),
         fieldWithPath(prefix + ".isTemp").description("임시저장?"),
         fieldWithPath(prefix + ".category").description("카테고리 이름"),
+        fieldWithPath(prefix + ".categoryId").description("카테고리 ID"),
         fieldWithPath(prefix + ".thumbnailPath").description("게시글 썸네일 이미지 조회 api path")
             .type(String.class).optional(),
         fieldWithPath(prefix + ".files").description("첨부파일")
