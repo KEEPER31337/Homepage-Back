@@ -488,6 +488,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].title").description("게시물 제목"),
                 fieldWithPath("list[].content").description("게시물 내용"),
                 fieldWithPath("list[].category").description("카테고리 이름"),
+                fieldWithPath("list[].categoryId").description("카테고리 ID"),
                 fieldWithPath("list[].writer").optional().description("작성자 (비밀 게시글일 경우 익명)"),
                 fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
                 fieldWithPath("list[].writerThumbnailPath").optional().type(JsonFieldType.STRING)
@@ -540,6 +541,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].title").description("게시물 제목"),
                 fieldWithPath("list[].content").description("게시물 내용"),
                 fieldWithPath("list[].category").description("카테고리 이름"),
+                fieldWithPath("list[].categoryId").description("카테고리 ID"),
                 fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
                 fieldWithPath("list[].writerThumbnailPath").optional().type(JsonFieldType.STRING)
@@ -587,6 +589,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].title").description("게시물 제목"),
                 fieldWithPath("list[].content").description("게시물 내용"),
                 fieldWithPath("list[].category").description("카테고리 이름"),
+                fieldWithPath("list[].categoryId").description("카테고리 ID"),
                 fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
                 fieldWithPath("list[].writerThumbnailPath").optional().type(JsonFieldType.STRING)
@@ -667,6 +670,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.title").description("게시물 제목"),
                 fieldWithPath("data.content").description("게시물 내용"),
                 fieldWithPath("data.category").description("카테고리 이름"),
+                fieldWithPath("data.categoryId").description("카테고리 ID"),
                 fieldWithPath("data.writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("data.writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
                 fieldWithPath("data.writerThumbnailPath").optional().type(JsonFieldType.STRING)
@@ -717,6 +721,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.title").description("게시물 제목"),
                 fieldWithPath("data.content").description("게시물 내용"),
                 fieldWithPath("data.category").description("카테고리 이름"),
+                fieldWithPath("data.categoryId").description("카테고리 ID"),
                 fieldWithPath("data.writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("data.writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
                 fieldWithPath("data.writerThumbnailPath").optional().type(JsonFieldType.STRING)
@@ -986,6 +991,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].title").description("게시물 제목"),
                 fieldWithPath("list[].content").description("게시물 내용"),
                 fieldWithPath("list[].category").description("카테고리 이름"),
+                fieldWithPath("list[].categoryId").description("카테고리 ID"),
                 fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
                 fieldWithPath("list[].writerThumbnailPath").optional().type(JsonFieldType.STRING)

@@ -41,6 +41,7 @@ public class PostingResponseDto {
   private Integer isSecret;
   private Integer isTemp;
   private String category;
+  private Long categoryId;
   private String thumbnailPath;
   private List<FileEntity> files;
 
@@ -69,6 +70,7 @@ public class PostingResponseDto {
         .isSecret(postingEntity.getIsSecret())
         .isTemp(postingEntity.getIsTemp())
         .category(postingEntity.getCategoryId().getName())
+        .categoryId(postingEntity.getCategoryId().getId())
         .files(postingEntity.getFiles())
         .thumbnailPath(null)
         .build();
