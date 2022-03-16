@@ -38,6 +38,7 @@ public class PostingBestDto {
     this.commentN = postingEntity.getCommentCount();
     this.categoryId = postingEntity.getCategoryId().getId();
     this.category = postingEntity.getCategoryId().getName();
+
     //썸네일 경로 처리
     if (postingEntity.getThumbnail() != null) {
       this.thumbnailPath = EnvironmentProperty.getThumbnailPath(
@@ -46,6 +47,12 @@ public class PostingBestDto {
     if (postingEntity.getMemberId().getThumbnail() != null) {
       this.userThumbnailPath = EnvironmentProperty.getThumbnailPath(
           postingEntity.getMemberId().getId());
+    }
+
+    //익명게시판 처리
+    if (postingEntity.getCategoryId().getName().equals("익명게시판")) {
+      this.user = "익명";
+      this.userThumbnailPath = null;
     }
   }
 }
