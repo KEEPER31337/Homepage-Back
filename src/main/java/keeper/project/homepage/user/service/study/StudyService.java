@@ -3,9 +3,7 @@ package keeper.project.homepage.user.service.study;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -42,7 +40,6 @@ public class StudyService {
   static private final Integer SUMMER_SESSION = 2;
   static private final Integer SECOND_SEMESTER = 3;
   static private final Integer WINTER_SESSION = 4;
-  static private final Integer HEAD_MEMBER_COUNT = 1;
 
   private final StudyRepository studyRepository;
   private final StudyHasMemberRepository studyHasMemberRepository;
@@ -105,12 +102,12 @@ public class StudyService {
     checkIpAddressExist(studyDto.getIpAddress());
 
     // 스터디장 memberList에 추가
-    Set<Long> memberIdSet = new HashSet<>(memberIdList);
     MemberEntity headMember = authService.getMemberEntityWithJWT();
-    memberIdSet.add(headMember.getId());
+    memberIdList.remove(headMember.getId());
+    memberIdList.add(0, headMember.getId());
 
     studyDto.setRegisterTime(LocalDateTime.now());
-    studyDto.setMemberNumber(memberIdList.size() + HEAD_MEMBER_COUNT);
+    studyDto.setMemberNumber(memberIdList.size());
 
     StudyEntity studyEntity = studyMapper.toEntity(studyDto);
 
@@ -119,13 +116,13 @@ public class StudyService {
     studyEntity.setHeadMember(headMember);
     studyRepository.save(studyEntity);
 
-    for (Long memberId : memberIdSet) {
+    for (Long memberId : memberIdList) {
       if (memberId != null) {
         MemberEntity memberEntity = memberRepository.findById(memberId)
             .orElseThrow(() -> new CustomMemberNotFoundException("잘못 된 스터디원입니다."));
 
         StudyHasMemberEntity studyHasMemberEntity = new StudyHasMemberEntity(
-            studyEntity, memberEntity);
+            studyEntity, memberEntity, LocalDateTime.now());
         memberEntity.getStudyHasMemberEntities().add(studyHasMemberEntity);
         studyEntity.getStudyHasMemberEntities().add(studyHasMemberEntity);
         studyHasMemberRepository.save(studyHasMemberEntity);
@@ -209,6 +206,7 @@ public class StudyService {
       StudyHasMemberEntity studyHasMemberEntity = StudyHasMemberEntity.builder()
           .member(addMemberEntity)
           .study(studyEntity)
+          .registerTime(LocalDateTime.now())
           .build();
       studyEntity.getStudyHasMemberEntities().add(studyHasMemberEntity);
       addMemberEntity.getStudyHasMemberEntities().add(studyHasMemberEntity);
@@ -216,7 +214,9 @@ public class StudyService {
     }
 
     List<MemberDto> memberDtoList = new ArrayList<>();
-    for (StudyHasMemberEntity studyHasMember : studyEntity.getStudyHasMemberEntities()) {
+    List<StudyHasMemberEntity> studyHasMemberEntities = studyEntity.getStudyHasMemberEntities();
+    studyHasMemberEntities.sort(Comparator.comparing(StudyHasMemberEntity::getRegisterTime));
+    for (StudyHasMemberEntity studyHasMember : studyHasMemberEntities) {
       MemberDto memberDto = new MemberDto();
       memberDto.initWithEntity(studyHasMember.getMember());
       memberDtoList.add(memberDto);
@@ -245,7 +245,9 @@ public class StudyService {
     }
 
     List<MemberDto> memberDtoList = new ArrayList<>();
-    for (StudyHasMemberEntity studyHasMember : studyEntity.getStudyHasMemberEntities()) {
+    List<StudyHasMemberEntity> studyHasMemberEntities = studyEntity.getStudyHasMemberEntities();
+    studyHasMemberEntities.sort(Comparator.comparing(StudyHasMemberEntity::getRegisterTime));
+    for (StudyHasMemberEntity studyHasMember : studyHasMemberEntities) {
       MemberDto memberDto = new MemberDto();
       memberDto.initWithEntity(studyHasMember.getMember());
       memberDtoList.add(memberDto);

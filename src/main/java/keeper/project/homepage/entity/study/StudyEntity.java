@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sun.istack.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -101,8 +102,10 @@ public class StudyEntity {
 
   public List<MemberDto> getStudyMembers() {
     List<MemberDto> members = new ArrayList<>();
-    if (!getStudyHasMemberEntities().isEmpty()) {
-      for (StudyHasMemberEntity studyHasMemberEntity : getStudyHasMemberEntities()) {
+    List<StudyHasMemberEntity> studyHasMemberEntities = getStudyHasMemberEntities();
+    studyHasMemberEntities.sort(Comparator.comparing(StudyHasMemberEntity::getRegisterTime));
+    if (!studyHasMemberEntities.isEmpty()) {
+      for (StudyHasMemberEntity studyHasMemberEntity : studyHasMemberEntities) {
         MemberDto temp = new MemberDto();
         temp.initWithEntity(studyHasMemberEntity.getMember());
         members.add(temp);

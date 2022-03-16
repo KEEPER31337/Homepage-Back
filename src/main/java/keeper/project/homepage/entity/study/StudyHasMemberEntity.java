@@ -1,6 +1,9 @@
 package keeper.project.homepage.entity.study;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
@@ -32,4 +35,7 @@ public class StudyHasMemberEntity implements Serializable {
   @ManyToOne(targetEntity = MemberEntity.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "member_id")
   private MemberEntity member;
+
+  @Column
+  private LocalDateTime registerTime;
 }
