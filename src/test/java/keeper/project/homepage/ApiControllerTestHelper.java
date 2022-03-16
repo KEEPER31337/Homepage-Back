@@ -381,6 +381,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     List<FieldDescriptor> commonFields = new ArrayList<>();
     commonFields.addAll(generateCommonResponseFields(success, code, msg));
     commonFields.addAll(Arrays.asList(
+        fieldWithPath(prefix + ".memberId").description("해당 유저의 ID"),
         fieldWithPath(prefix + ".nickName").description("해당 유저의 닉네임"),
         fieldWithPath(prefix + ".birthday").description("해당 유저의 생일").type(Date.class).optional(),
         fieldWithPath(prefix + ".checkFollowee").description(
@@ -390,9 +391,9 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         fieldWithPath(prefix + ".generation").description("기수 (7월 이후는 N.5기)").optional(),
         fieldWithPath(prefix + ".thumbnailPath").description("해당 유저의 썸네일 이미지 조회 api path")
             .optional(),
-        subsectionWithPath(prefix + ".memberRank").description("회원 등급: null, 우수회원, 일반회원"),
-        subsectionWithPath(prefix + ".memberType").description("회원 상태: null, 비회원, 정회원, 휴면회원, 졸업회원, 탈퇴"),
-        subsectionWithPath(prefix + ".memberJobs").description(
+        fieldWithPath(prefix + ".memberRank").description("회원 등급: null, 우수회원, 일반회원").optional(),
+        fieldWithPath(prefix + ".memberType").description("회원 상태: null, 비회원, 정회원, 휴면회원, 졸업회원, 탈퇴").optional(),
+        fieldWithPath(prefix + ".memberJobs").description(
             "동아리 직책: null, ROLE_회장, ROLE_부회장, ROLE_대외부장, ROLE_학술부장, ROLE_전산관리자, ROLE_서기, ROLE_총무, ROLE_사서")
     ));
     if (addDescriptors.length > 0) {

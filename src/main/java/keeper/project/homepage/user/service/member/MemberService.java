@@ -104,11 +104,12 @@ public class MemberService {
     return result;
   }
 
-  public List<OtherMemberInfoResult> getOtherMembers(Pageable pageable) {
+  public List<OtherMemberInfoResult> getOtherMembers() {
     List<OtherMemberInfoResult> otherMemberInfoResultList = new ArrayList<>();
-    List<MemberEntity> memberEntityList = memberRepository.findAll(pageable).getContent();
+    List<MemberEntity> memberEntityList = memberRepository.findAll();
 
     for (MemberEntity memberEntity : memberEntityList) {
+      if(memberEntity.getMemberType() != null && memberEntity.getMemberType().getId() == 5) continue;
       OtherMemberInfoResult otherMemberInfoResult = new OtherMemberInfoResult(memberEntity);
       otherMemberInfoResult.setCheckFollow(isMyFollowee(memberEntity), isMyFollower(memberEntity));
       otherMemberInfoResultList.add(otherMemberInfoResult);

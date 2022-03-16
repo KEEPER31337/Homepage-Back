@@ -50,10 +50,8 @@ public class MemberController {
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/others")
-  public ListResult<OtherMemberInfoResult> getOtherMembers(
-      @PageableDefault(size = 20, sort = "id", direction = Direction.DESC) Pageable pageable
-  ) {
-    return responseService.getSuccessListResult(memberService.getOtherMembers(pageable));
+  public ListResult<OtherMemberInfoResult> getOtherMembers() {
+    return responseService.getSuccessListResult(memberService.getOtherMembers());
   }
 
   @Secured("ROLE_회원")
