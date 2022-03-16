@@ -144,24 +144,34 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     }
   }
 
+  public FileEntity generateFileEntity() {
+    final String usrDir = System.getProperty("user.dir") + File.separator;
+    final String fileRelDir = "keeper_files" + File.separator;
+
+    final String epochTime = Long.toHexString(System.nanoTime());
+    final String fileName = epochTime + ".jpg";
+
+    createFileForTest(usrDir + fileRelDir + fileName);
+
+    return fileRepository.save(FileEntity.builder()
+        .fileName(fileName)
+        .filePath(fileRelDir + fileName)
+        .fileSize(0L)
+        .ipAddress("111.111.111.111")
+        .build());
+  }
+
   public ThumbnailEntity generateThumbnailEntity() {
     final String usrDir = System.getProperty("user.dir") + File.separator;
     final String fileRelDir = "keeper_files" + File.separator;
     final String thumbRelDir = fileRelDir + "thumbnail" + File.separator;
 
     final String epochTime = Long.toHexString(System.nanoTime());
-    final String fileName = epochTime + ".jpg";
     final String thumbName = "thumb_" + epochTime + ".jpg";
 
-    createFileForTest(usrDir + fileRelDir + fileName);
     createFileForTest(usrDir + thumbRelDir + thumbName);
 
-    FileEntity fileEntity = fileRepository.save(FileEntity.builder()
-        .fileName(fileName)
-        .filePath(fileRelDir + fileName)
-        .fileSize(0L)
-        .ipAddress("111.111.111.111")
-        .build());
+    FileEntity fileEntity = generateFileEntity();
 
     return thumbnailRepository.save(ThumbnailEntity.builder()
         .path(thumbRelDir + thumbName)
@@ -392,7 +402,8 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         fieldWithPath(prefix + ".thumbnailPath").description("해당 유저의 썸네일 이미지 조회 api path")
             .optional(),
         fieldWithPath(prefix + ".memberRank").description("회원 등급: null, 우수회원, 일반회원").optional(),
-        fieldWithPath(prefix + ".memberType").description("회원 상태: null, 비회원, 정회원, 휴면회원, 졸업회원, 탈퇴").optional(),
+        fieldWithPath(prefix + ".memberType").description("회원 상태: null, 비회원, 정회원, 휴면회원, 졸업회원, 탈퇴")
+            .optional(),
         fieldWithPath(prefix + ".memberJobs").description(
             "동아리 직책: null, ROLE_회장, ROLE_부회장, ROLE_대외부장, ROLE_학술부장, ROLE_전산관리자, ROLE_서기, ROLE_총무, ROLE_사서")
     ));

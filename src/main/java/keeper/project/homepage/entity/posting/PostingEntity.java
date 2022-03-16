@@ -82,7 +82,7 @@ public class PostingEntity {
   @JoinColumn(name = "category_id")
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private CategoryEntity categoryId;
-  @OneToOne
+  @ManyToOne
   @JoinColumn(name = "thumbnail_id")
   @Setter
   private ThumbnailEntity thumbnail;
