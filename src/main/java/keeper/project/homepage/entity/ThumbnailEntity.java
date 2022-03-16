@@ -44,9 +44,9 @@ public class ThumbnailEntity implements Serializable {
   @JsonBackReference(value = "thumbnail")
   private MemberEntity memberEntity;
 
-  @OneToOne(mappedBy = "thumbnail")
-  @JsonBackReference(value = "posting")
-  private PostingEntity postingEntity;
+//  @OneToOne(mappedBy = "thumbnail")
+//  @JsonBackReference(value = "posting")
+//  private PostingEntity postingEntity;
 
   @OneToOne(mappedBy = "thumbnail")
   @JsonBackReference(value = "staticWriteSubtitleImage")
