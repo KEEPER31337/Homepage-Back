@@ -18,6 +18,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class OtherMemberInfoResult {
 
+  private Long memberId;
+
   private String nickName;
 
   private Date birthday;
@@ -37,6 +39,7 @@ public class OtherMemberInfoResult {
   private Boolean checkFollower;
 
   public OtherMemberInfoResult(MemberEntity memberEntity) {
+    this.memberId = memberEntity.getId();
     this.nickName = memberEntity.getNickName();
     this.birthday = memberEntity.getBirthday();
     if(memberEntity.getMemberType() != null) {
