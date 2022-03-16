@@ -84,8 +84,8 @@ public class PostingResponseDto {
           EnvironmentProperty.getThumbnailPath(postingThumbnail.getId()));
     }
 
-    // 비밀게시판 처리
-    if (postingEntity.getCategoryId().getName().equals("비밀게시판")) {
+    // 익명게시판 처리
+    if (postingEntity.getCategoryId().getName().equals("익명게시판")) {
       postingResponseDto.setWriter("익명");
       postingResponseDto.setWriterId(-1L);
       postingResponseDto.setWriterThumbnailPath("");
