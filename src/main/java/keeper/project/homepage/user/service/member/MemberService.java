@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
+import keeper.project.homepage.exception.member.CustomAccessVirtualMemberException;
 import keeper.project.homepage.user.dto.posting.PostingResponseDto;
 import keeper.project.homepage.user.dto.member.MemberFollowDto;
 import keeper.project.homepage.util.ImageCenterCrop;
@@ -89,6 +90,12 @@ public class MemberService {
     return false;
   }
 
+  private void checkVirtualMember(Long id) {
+    if(id.equals(VIRTUAL_MEMBER_ID)) {
+      throw new CustomAccessVirtualMemberException();
+    }
+  }
+
   public MemberDto getMember(Long id) {
     MemberEntity memberEntity = memberRepository.findById(id)
         .orElseThrow(CustomMemberNotFoundException::new);
@@ -97,6 +104,8 @@ public class MemberService {
   }
 
   public OtherMemberInfoResult getOtherMember(Long otherMemberId) {
+    checkVirtualMember(otherMemberId);
+
     MemberEntity other = findById(otherMemberId);
 
     OtherMemberInfoResult result = new OtherMemberInfoResult(other);
@@ -110,6 +119,7 @@ public class MemberService {
 
     for (MemberEntity memberEntity : memberEntityList) {
       if(memberEntity.getMemberType() != null && memberEntity.getMemberType().getId() == 5) continue;
+      if(memberEntity.getId().equals(VIRTUAL_MEMBER_ID)) continue;
       OtherMemberInfoResult otherMemberInfoResult = new OtherMemberInfoResult(memberEntity);
       otherMemberInfoResult.setCheckFollow(isMyFollowee(memberEntity), isMyFollower(memberEntity));
       otherMemberInfoResultList.add(otherMemberInfoResult);
