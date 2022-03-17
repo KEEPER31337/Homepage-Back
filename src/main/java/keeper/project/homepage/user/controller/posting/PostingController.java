@@ -1,6 +1,7 @@
 package keeper.project.homepage.user.controller.posting;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -48,6 +49,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriUtils;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -163,11 +165,12 @@ public class PostingController {
     FileEntity fileEntity = fileService.findFileEntityById(fileId);
     Path path = Paths.get(fileEntity.getFilePath());
     Resource resource = new InputStreamResource(Files.newInputStream(path));
+    String encodedFileName = UriUtils.encode(fileEntity.getFileName(), StandardCharsets.UTF_8);
 
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.parseMediaType("application/octet-stream"))
         .header(HttpHeaders.CONTENT_DISPOSITION,
-            "attachment; filename=\"" + fileEntity.getFileName() + "\"")
+            "attachment; filename=\"" + encodedFileName + "\"")
         .body(resource);
   }
 
