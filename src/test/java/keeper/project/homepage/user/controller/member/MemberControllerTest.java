@@ -110,6 +110,17 @@ public class MemberControllerTest extends ApiControllerTestHelper {
   }
 
   @Test
+  @DisplayName("다른 유저 ID를 통해 정보 조회하기 - 실패(탈퇴회원 조회)")
+  public void getOtherUserInfoByIdFailByVirtualId() throws Exception {
+    mockMvc.perform(get("/v1/members/others/{id}", 1)
+            .header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().is4xxClientError())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.msg").value("접근할 수 없는 회원입니다."));
+  }
+
+  @Test
   @DisplayName("내 정보 조회하기 - 성공")
   public void getMemberSuccess() throws Exception {
     mockMvc.perform(get("/v1/members")
