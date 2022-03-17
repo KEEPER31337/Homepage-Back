@@ -3,11 +3,12 @@ package keeper.project.homepage.util;
 public class EnvironmentProperty {
 
   private static final String THUMBNAIL_PATH = "/v1/util/thumbnail/";
+  private static final String SERVER_IP = "3.34.48.167";
 
   private enum URL_TYPE {
     Local("127.0.0.1", "8080"),
-    Dev("13.125.14.242", "3000"),
-    Prod("13.125.14.242", "8080");
+    Dev(SERVER_IP, "3000"),
+    Prod(SERVER_IP, "8080");
 
     String ip;
     String port;
