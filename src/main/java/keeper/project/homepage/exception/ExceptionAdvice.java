@@ -12,6 +12,7 @@ import keeper.project.homepage.exception.library.CustomBookBorrowNotFoundExcepti
 import keeper.project.homepage.exception.library.CustomBookDepartmentNotFoundException;
 import keeper.project.homepage.exception.library.CustomBookNotFoundException;
 import keeper.project.homepage.exception.library.CustomBookOverTheMaxException;
+import keeper.project.homepage.exception.member.CustomAccessVirtualMemberException;
 import keeper.project.homepage.exception.member.CustomAccountDeleteFailedException;
 import keeper.project.homepage.exception.member.CustomMemberDuplicateException;
 import keeper.project.homepage.exception.member.CustomMemberEmptyFieldException;
@@ -372,5 +373,13 @@ public class ExceptionAdvice {
       EmptyResultDataAccessException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("dataNotFound.code")),
         e.getMessage() == null ? getMessage("dataNotFound.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomAccessVirtualMemberException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult accessVirtualMember(HttpServletRequest request,
+      CustomAccessVirtualMemberException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("accessVirtualMember.code")),
+        e.getMessage() == null ? getMessage("accessVirtualMember.msg") : e.getMessage());
   }
 }
