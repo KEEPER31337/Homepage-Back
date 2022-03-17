@@ -73,23 +73,31 @@ public class BookManageService {
   public void addBook(String title, String author, String information, Long total,
       BookDepartmentEntity department, ThumbnailEntity thumbnailId) {
 
-    Long borrowState = 0L;
     if (bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
-      borrowState = bookRepository.findByTitleAndAuthor(title, author).get().getBorrow();
-    }
+      BookEntity updateBookEntity = bookRepository.findByTitleAndAuthor(title, author).get();
 
-    bookRepository.save(
-        BookEntity.builder()
-            .title(title)
-            .author(author)
-            .information(information)
-            .department(department)
-            .total(total)
-            .borrow(borrowState)
-            .enable(total - borrowState)
-            .registerDate(new Date())
-            .thumbnailId(thumbnailId)
-            .build());
+      Long nowTotal = updateBookEntity.getTotal();
+      Long nowEnable = updateBookEntity.getEnable();
+
+      updateBookEntity.setTotal(nowTotal + total);
+      updateBookEntity.setEnable(nowEnable + total);
+
+      bookRepository.save(updateBookEntity);
+    } else {
+
+      bookRepository.save(
+          BookEntity.builder()
+              .title(title)
+              .author(author)
+              .information(information)
+              .department(department)
+              .total(total)
+              .borrow(0L)
+              .enable(total)
+              .registerDate(new Date())
+              .thumbnailId(thumbnailId)
+              .build());
+    }
   }
 
   /**
