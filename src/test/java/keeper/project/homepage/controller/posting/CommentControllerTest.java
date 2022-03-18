@@ -23,6 +23,7 @@ import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.user.dto.posting.CommentDto;
+import keeper.project.homepage.user.service.posting.PostingService;
 import keeper.project.homepage.util.ImageFormatChecking;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.Assertions;
@@ -166,6 +167,34 @@ public class CommentControllerTest extends ApiControllerTestHelper {
                         "싫어요 눌렀는지 확인 (눌렀으면 true, 아니면 false)"))
             )
         ));
+  }
+
+  @Test
+  @DisplayName("익명 게시판 댓글 조회 테스트")
+  public void showAnonymousCommentByPostIdTest() throws Exception {
+    // 1. 작성자 썸네일이 이미지 api 조회 uri를 담고 있는지 확인
+    // 2. 작성자 썸네일을 호출했을 때, 이미지 파일이 정상적으로 나오는 지 확인
+    CategoryEntity anonyCategory = generateAnonymousCategoryEntity();
+    PostingEntity anonyPosting = generatePostingEntity(userEntity, anonyCategory, 0, 0, 0);
+
+    CommentEntity anonyComment = generateCommentEntity(anonyPosting, userEntity, 0L);
+    Long commentId = anonyComment.getId();
+    for (int i = 0; i < 5; i++) {
+      generateCommentEntity(anonyPosting, userEntity, commentId);
+    }
+
+    Long postId = anonyPosting.getId();
+    mockMvc.perform(
+            RestDocumentationRequestBuilders.get("/v1/comment/{postId}", postId)
+                .param("page", "0")
+                .param("size", "10")
+                .header("Authorization", userToken)
+        )
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.list[*].[?(@.writer != \"익명\")]").doesNotExist())
+        .andExpect(jsonPath("$.list[*].[?(@.writerId != -1)]").doesNotExist())
+        .andExpect(jsonPath("$.list[*].[?(@.writerThumbnailPath != \"\")]").doesNotExist());
   }
 
   @Test
