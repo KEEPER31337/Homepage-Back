@@ -120,7 +120,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     return generation;
   }
 
-  private void createFileForTest(String filePath) {
+  public void createFileForTest(String filePath) {
     FileConversion fileConversion = new FileConversion();
     fileConversion.makeSampleJPEGImage(filePath);
   }
@@ -168,11 +168,17 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     final String thumbRelDir = fileRelDir + "thumbnail" + File.separator;
 
     final String epochTime = Long.toHexString(System.nanoTime());
+    final String fileName = epochTime + ".jpg";
     final String thumbName = "thumb_" + epochTime + ".jpg";
 
     createFileForTest(usrDir + thumbRelDir + thumbName);
 
-    FileEntity fileEntity = generateFileEntity();
+    FileEntity fileEntity = fileRepository.save(FileEntity.builder()
+        .fileName(fileName)
+        .filePath(fileRelDir + fileName)
+        .fileSize(0L)
+        .ipAddress("111.111.111.111")
+        .build());
 
     return thumbnailRepository.save(ThumbnailEntity.builder()
         .path(thumbRelDir + thumbName)
@@ -254,6 +260,10 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         CategoryEntity.builder().name("testCategory" + epochTime).build());
   }
 
+  public CategoryEntity generateAnonymousCategoryEntity() {
+    return categoryRepository.findByName("익명게시판");
+  }
+
   public PostingEntity generatePostingEntity(MemberEntity writer, CategoryEntity category,
       Integer isNotice, Integer isSecret, Integer isTemp) {
     final String epochTime = Long.toHexString(System.nanoTime());
@@ -285,6 +295,9 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     final String epochTime = Long.toHexString(System.nanoTime());
     final LocalDateTime now = LocalDateTime.now();
     final String content = (parentId == 0L ? "댓글 내용 " : parentId + "의 대댓글 내용 ") + epochTime;
+
+    posting.increaseCommentCount();
+    postingRepository.save(posting);
     return commentRepository.save(CommentEntity.builder()
         .content(content)
         .registerTime(now)
@@ -519,10 +532,13 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         fieldWithPath(prefix + ".likeCount").description("좋아요 개수"),
         fieldWithPath(prefix + ".dislikeCount").description("싫어요 개수"),
         fieldWithPath(prefix + ".parentId").description("대댓글인 경우, 부모 댓글의 id"),
-        fieldWithPath(prefix + ".writer").optional().description("작성자의 닉네임 (탈퇴한 작성자일 경우 null)"),
-        fieldWithPath(prefix + ".writerId").optional().description("작성자 id (탈퇴한 작성자일 경우 null)"),
+        fieldWithPath(prefix + ".writer").optional()
+            .description("작성자의 닉네임 (익명 게시판의 경우 \"익명\", 탈퇴한 작성자일 경우 null)"),
+        fieldWithPath(prefix + ".writerId").optional()
+            .description("작성자 id (익명 게시판의 경우 -1, 탈퇴한 작성자일 경우 null)"),
         fieldWithPath(prefix + ".writerThumbnailPath").optional().type(String.class)
-            .description("작성자의 썸네일 조회 api 경로 (탈퇴했을 경우 / 썸네일을 등록하지 않았을 경우 null)")));
+            .description(
+                "작성자의 썸네일 조회 api 경로 (익명 게시판의 경우 빈 문자열 \"\", 탈퇴했을 경우 / 썸네일을 등록하지 않았을 경우 null)")));
     if (descriptors.length > 0) {
       commonFields.addAll(Arrays.asList(descriptors));
     }
