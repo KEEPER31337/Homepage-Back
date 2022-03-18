@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import keeper.project.homepage.repository.attendance.AttendanceRepository;
+import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.user.dto.posting.LikeAndDislikeDto;
 import keeper.project.homepage.user.dto.posting.PostingBestDto;
 import keeper.project.homepage.user.dto.posting.PostingDto;
@@ -40,10 +42,12 @@ public class PostingService {
   private final PostingRepository postingRepository;
   private final CategoryRepository categoryRepository;
   private final MemberRepository memberRepository;
+  private final CommentRepository commentRepository;
   private final FileRepository fileRepository;
   private final ThumbnailRepository thumbnailRepository;
   private final MemberHasPostingLikeRepository memberHasPostingLikeRepository;
   private final MemberHasPostingDislikeRepository memberHasPostingDislikeRepository;
+  private final AttendanceRepository attendanceRepository;
   private final AuthService authService;
 
   public static final Integer isNotTempPosting = 0;
@@ -53,6 +57,12 @@ public class PostingService {
   public static final Integer isNotNoticePosting = 0;
   public static final Integer isNoticePosting = 1;
   public static final Integer bestPostingCount = 10;
+  public static final Integer EXAM_BOARD_ACCESS_POINT = 20000;
+  public static final Integer EXAM_BOARD_ACCESS_COMMENT_COUNT = 5;
+  public static final Integer EXAM_BOARD_ACCESS_ATTEND_COUNT = 10;
+  public static final Long EXAM_CATEGORY_ID = 1377L;
+  public static final String EXAM_ACCESS_DENIED_TITLE = "접근할 수 없습니다.";
+  public static final String EXAM_ACCESS_DENIED_CONTENT = "공지사항을 확인해 주세요.";
 
   public List<PostingResponseDto> findAll(Pageable pageable) {
 
@@ -401,5 +411,35 @@ public class PostingService {
       throw new CustomMemberNotFoundException();
     }
     return member.get();
+  }
+
+  public boolean isNotAccessExamBoard(CategoryEntity categoryEntity) {
+    if (categoryEntity.getId() != EXAM_CATEGORY_ID) {
+      return false;
+    }
+    MemberEntity visitMember = authService.getMemberEntityWithJWT();
+    Integer myPoint = visitMember.getPoint();
+    Long myCommentCount = commentRepository.countByMember(visitMember);
+    Long myAttendCount = attendanceRepository.countByMember(visitMember);
+
+    if (visitMember.getGeneration() < 13) {
+      return false;
+    }
+    if (myPoint >= EXAM_BOARD_ACCESS_POINT &&
+        myCommentCount >= EXAM_BOARD_ACCESS_COMMENT_COUNT &&
+        myAttendCount >= EXAM_BOARD_ACCESS_ATTEND_COUNT
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  public PostingResponseDto createNotAccessDto(PostingEntity postingEntity) {
+    PostingResponseDto postingResponseDto = new PostingResponseDto().initWithEntity(postingEntity,
+        1);
+    postingResponseDto.setTitle(EXAM_ACCESS_DENIED_TITLE);
+    postingResponseDto.setContent(EXAM_ACCESS_DENIED_CONTENT);
+    postingResponseDto.setFiles(new ArrayList<>());
+    return postingResponseDto;
   }
 }

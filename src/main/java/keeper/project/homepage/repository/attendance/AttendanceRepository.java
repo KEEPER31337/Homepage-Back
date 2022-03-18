@@ -21,4 +21,5 @@ public interface AttendanceRepository extends JpaRepository<AttendanceEntity, Lo
   List<AttendanceEntity> findByMemberAndTimeBetween(
       MemberEntity member, LocalDateTime time, LocalDateTime time2);
 
+  Long countByMember(MemberEntity memberEntity);
 }

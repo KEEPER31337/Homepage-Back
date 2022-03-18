@@ -133,6 +133,11 @@ public class PostingController {
     PostingEntity postingEntity = postingService.getPostingById(postingId);
     Long visitMemberId = authService.getMemberIdByJWT();
 
+    // 키퍼 13기 이후부터 시험 게시판에 접근하려면 조건 충족해야함.
+    if (postingService.isNotAccessExamBoard(postingEntity.getCategoryId())) {
+      return responseService.getSuccessSingleResult(
+          postingService.createNotAccessDto(postingEntity));
+    }
     if (visitMemberId != postingEntity.getMemberId().getId()) {
       if (postingEntity.getIsTemp() == PostingService.isTempPosting) {
         return responseService.getFailSingleResult(null, -11100, "임시저장 게시물입니다.");
