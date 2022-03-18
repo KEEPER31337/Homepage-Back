@@ -22,6 +22,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,9 +54,9 @@ public class BookManageController {
     return responseService.getSuccessListResult(bookManageService.sendOverdueBooks(pageable));
   }
 
-  @PostMapping(value = "/add", consumes = "multipart/form-data", produces = {
+  @PostMapping(value = "/addition", consumes = "multipart/form-data", produces = {
       MediaType.APPLICATION_JSON_VALUE})
-  public CommonResult add(
+  public CommonResult addition(
       @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
       BookDto bookDto) {
 
@@ -75,8 +76,8 @@ public class BookManageController {
     return bookManageService.doAdd(bookDto, thumbnailEntity);
   }
 
-  @PostMapping(value = "/remove")
-  public CommonResult remove(@RequestBody String title, @RequestBody String author,
+  @PatchMapping(value = "/removal")
+  public CommonResult removal(@RequestBody String title, @RequestBody String author,
       @RequestBody Long quantity) {
 
     return bookManageService.doRemove(title, author, quantity);
@@ -93,8 +94,8 @@ public class BookManageController {
     return bookManageService.doBorrow(title, author, borrowMemberId, quantity);
   }
 
-  @PostMapping(value = "/return")
-  public CommonResult returnBook(
+  @PostMapping(value = "/returning")
+  public CommonResult returning(
       @RequestBody String title,
       @RequestBody String author,
       @RequestBody Long quantity) {
