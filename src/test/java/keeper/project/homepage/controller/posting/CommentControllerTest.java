@@ -258,6 +258,21 @@ public class CommentControllerTest extends ApiControllerTestHelper {
   }
 
   @Test
+  @DisplayName("댓글 삭제 후, 게시글 댓글 수 감소 X 확인")
+  public void commentCountReduceAfterDeleteTest() throws Exception {
+    Long commentId = replyEntity.getId();
+    PostingEntity posting = replyEntity.getPostingId();
+    Integer commentCountBeforeDelete = posting.getCommentCount();
+    mockMvc.perform(RestDocumentationRequestBuilders.delete("/v1/comment/{commentId}", commentId)
+            .header("Authorization", userToken))
+        .andExpect(status().isOk())
+        .andDo(print());
+    Integer commentCountAfterDelete = posting.getCommentCount();
+    Assertions.assertTrue(commentCountBeforeDelete == commentCountAfterDelete);
+
+  }
+
+  @Test
   @DisplayName("댓글 수정")
   public void commentUpdateTest() throws Exception {
     Long updateId = replyEntity.getId();

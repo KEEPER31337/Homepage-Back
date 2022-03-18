@@ -294,6 +294,9 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     final String epochTime = Long.toHexString(System.nanoTime());
     final LocalDateTime now = LocalDateTime.now();
     final String content = (parentId == 0L ? "댓글 내용 " : parentId + "의 대댓글 내용 ") + epochTime;
+
+    posting.increaseCommentCount();
+    postingRepository.save(posting);
     return commentRepository.save(CommentEntity.builder()
         .content(content)
         .registerTime(now)
