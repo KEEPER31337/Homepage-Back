@@ -116,14 +116,20 @@ public class CommentService {
       commentPage.addAll(replies);
     }
 
+    boolean isAnonymousCategory = postingEntity.getCategoryId().getName().equals("익명게시판");
+
     List<CommentDto> dtoPage = new ArrayList<>();
     for (CommentEntity comment : commentPage) {
       CommentDto dto = CommentDto.builder().build();
-      dto.initWithEntity(comment);
-      dto.setCheckedLike(false);
-      dto.setCheckedDislike(false);
-      dto.setCheckedLike(checkPushLike(member, comment));
-      dto.setCheckedDislike(checkPushDislike(member, comment));
+      if (isAnonymousCategory) {
+        dto.initAnonymousWithEntity(comment);
+        dto.setCheckedLike(false);
+        dto.setCheckedDislike(false);
+      } else {
+        dto.initWithEntity(comment);
+        dto.setCheckedLike(checkPushLike(member, comment));
+        dto.setCheckedDislike(checkPushDislike(member, comment));
+      }
       dtoPage.add(dto);
     }
 
@@ -166,11 +172,6 @@ public class CommentService {
     MemberEntity virtual = memberService.findById(1L);
     comment.overwriteInfo(virtual, DELETED_COMMENT_CONTENT);
     commentRepository.save(comment);
-
-    PostingEntity postingEntity = postingRepository.findById(comment.getPostingId().getId())
-        .orElseThrow(() -> new CustomCommentNotFoundException("댓글에 해당하는 게시글이 존재하지 않습니다."));
-    postingEntity.decreaseCommentCount();
-    postingRepository.save(postingEntity);
   }
 
   private void deleteCommentRow(Long commentId) {

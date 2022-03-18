@@ -251,6 +251,16 @@ public class BookManageService {
     }
     if (borrowedBook == quantity && borrowEntities.size() == 1) {
       bookBorrowRepository.delete(borrowEntities.get(0));
+
+      BookEntity nowBookEntity = bookRepository.findByTitleAndAuthor(title, author)
+          .orElseThrow(() -> new CustomBookNotFoundException());
+      Long nowBorrow = nowBookEntity.getBorrow();
+      Long nowEnable = nowBookEntity.getEnable();
+
+      nowBookEntity.setBorrow(nowBorrow - quantity);
+      nowBookEntity.setEnable(nowEnable + quantity);
+
+      bookRepository.save(nowBookEntity);
     } else {
       returnBook(title, author, returnMemberId, quantity, borrowEntities);
     }
