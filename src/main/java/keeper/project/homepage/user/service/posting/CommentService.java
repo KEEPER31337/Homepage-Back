@@ -172,11 +172,6 @@ public class CommentService {
     MemberEntity virtual = memberService.findById(1L);
     comment.overwriteInfo(virtual, DELETED_COMMENT_CONTENT);
     commentRepository.save(comment);
-
-    PostingEntity postingEntity = postingRepository.findById(comment.getPostingId().getId())
-        .orElseThrow(() -> new CustomCommentNotFoundException("댓글에 해당하는 게시글이 존재하지 않습니다."));
-    postingEntity.decreaseCommentCount();
-    postingRepository.save(postingEntity);
   }
 
   private void deleteCommentRow(Long commentId) {
