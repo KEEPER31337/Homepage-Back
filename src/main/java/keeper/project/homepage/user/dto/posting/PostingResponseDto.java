@@ -8,6 +8,7 @@ import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.util.EnvironmentProperty;
+import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -76,15 +77,12 @@ public class PostingResponseDto {
         .build();
 
     // 썸네일 경로 처리
-    if (memberThumbnail != null) {
-      postingResponseDto.setWriterThumbnailPath(
-          EnvironmentProperty.getThumbnailPath(memberThumbnail.getId()));
-    }
-
-    if (postingThumbnail != null) {
-      postingResponseDto.setThumbnailPath(
-          EnvironmentProperty.getThumbnailPath(postingThumbnail.getId()));
-    }
+    postingResponseDto.setWriterThumbnailPath(postingEntity.getMemberId().getThumbnailPath());
+    postingResponseDto.setThumbnailPath(
+        postingThumbnail == null ?
+            EnvironmentProperty.getThumbnailPath(DefaultThumbnailInfo.ThumbPosting.getThumbnailId())
+            : EnvironmentProperty.getThumbnailPath(postingThumbnail.getId())
+    );
 
     // 익명게시판 처리
     if (postingEntity.getCategoryId().getName().equals("익명게시판")) {

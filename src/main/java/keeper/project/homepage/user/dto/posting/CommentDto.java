@@ -8,6 +8,7 @@ import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.util.EnvironmentProperty;
+import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -71,10 +72,7 @@ public class CommentDto {
     if (member != null) {
       this.writer = member.getNickName();
       this.writerId = member.getId();
-      ThumbnailEntity thumbnail = member.getThumbnail();
-      if (thumbnail != null) {
-        this.writerThumbnailPath = EnvironmentProperty.getThumbnailPath(thumbnail.getId());
-      }
+      this.writerThumbnailPath = member.getThumbnailPath();
     }
   }
 

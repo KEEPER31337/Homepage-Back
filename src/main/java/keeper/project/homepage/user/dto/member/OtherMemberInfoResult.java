@@ -9,6 +9,7 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberRankEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
 import keeper.project.homepage.util.EnvironmentProperty;
+import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -42,10 +43,10 @@ public class OtherMemberInfoResult {
     this.memberId = memberEntity.getId();
     this.nickName = memberEntity.getNickName();
     this.birthday = memberEntity.getBirthday();
-    if(memberEntity.getMemberType() != null) {
+    if (memberEntity.getMemberType() != null) {
       this.memberType = memberEntity.getMemberType().getName();
     }
-    if(memberEntity.getMemberRank() != null) {
+    if (memberEntity.getMemberRank() != null) {
       this.memberRank = memberEntity.getMemberRank().getName();
     }
     if (memberEntity.getMemberJobs() != null || !memberEntity.getMemberJobs().isEmpty()) {
@@ -54,10 +55,7 @@ public class OtherMemberInfoResult {
           .forEach(job ->
               this.memberJobs.add(job.getMemberJobEntity().getName()));
     }
-    if (memberEntity.getThumbnail() != null) {
-      this.thumbnailPath = EnvironmentProperty.getThumbnailPath(
-          memberEntity.getThumbnail().getId());
-    }
+    this.thumbnailPath = memberEntity.getThumbnailPath();
     this.generation = memberEntity.getGeneration();
   }
 

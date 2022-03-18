@@ -24,6 +24,7 @@ import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.entity.study.StudyHasMemberEntity;
 import keeper.project.homepage.util.EnvironmentProperty;
+import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,9 +43,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 @AllArgsConstructor         // 인자를 모두 갖춘 생성자를 자동으로 생성합니다.
 @Table(name = "member")     // 'member' 테이블과 매핑됨을 명시
 public class MemberEntity implements UserDetails, Serializable {
-
-  private static final Long RECTANGLE_DEFAULT_THUMBNAIL_ID = 1L;
-  private static final Long SQUARE_DEFAULT_THUMBNAIL_ID = 2L;
 
   @Id // pk
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -235,10 +233,9 @@ public class MemberEntity implements UserDetails, Serializable {
   }
 
   public String getThumbnailPath() {
-    if (getThumbnail() == null) {
-      return EnvironmentProperty.getThumbnailPath(SQUARE_DEFAULT_THUMBNAIL_ID);
-    }
-    return EnvironmentProperty.getThumbnailPath(getThumbnail().getId());
+    return getThumbnail() == null ?
+        EnvironmentProperty.getThumbnailPath(DefaultThumbnailInfo.ThumbMember.getThumbnailId())
+        : EnvironmentProperty.getThumbnailPath(getThumbnail().getId());
   }
 
   @PrePersist

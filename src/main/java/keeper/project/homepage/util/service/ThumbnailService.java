@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import keeper.project.homepage.util.ImageFormatChecking;
 import keeper.project.homepage.util.MultipartFileWrapper;
 import keeper.project.homepage.entity.FileEntity;
@@ -25,25 +28,45 @@ public class ThumbnailService {
   private final static String THUMBNAIL_FORMAT = "jpg";
 
   private final static String relDirPath = "keeper_files" + File.separator + "thumbnail";
-  private final static String defaultImageName = "thumb_default.jpg"; // thumbnail delete시 파일명 비교
-  // DB에는 디렉토리 구분자가 "/"
-  public final static String DEFAULT_RELATIVE_DIR_PATH = relDirPath + File.separator + "default";
-
-  // TODO : file과 thumbnail의 default id, name은 같지만, 그래도 각 service에 분리하기
-  // TODO : 앞으로 default 더 생길 것이므로, class나 enum으로 정리하기
-  public final static String DEFAULT_RECTAGLE_NAME = "default_thumbnail_rectangle.jpg";
-  public final static String DEFAULT_SQUARE_NAME = "default_thumbnail_square.jpg";
-  public final static Long DEFAULT_RECTANGLE_ID = 1L;
-  public final static Long DEFAULT_SQUARE_ID = 2L;
 
   private final ImageFormatChecking imageFormatChecking;
   private final ThumbnailRepository thumbnailRepository;
   private final FileService fileService;
 
+  // TODO : 뱃지는 계속 추가됨 -> 뱃지 추가하는 controller & service 만들기
+  public enum DefaultThumbnailInfo {
+    ThumbMember(1L, 1L),
+    ThumbPosting(2L, 2L),
+    ThumbBook(2L, 2L), // fixme: 지금은 Posting과 같이 사용. 나중에 추가되면 바꾸기.
+    BadgeGradeFirst(3L, 3L),
+    BadgeGradeSecond(4L, 4L),
+    BadgeGraduate(5L, 5L),
+    BadgeQuit(6L, 6L),
+    BadgeSleep(7L, 7L),
+    BadgeRegular(8L, 8L);
+
+    private final Long thumbnailId;
+    private final Long fileId;
+
+    DefaultThumbnailInfo(Long thumbnailId, Long fileId) {
+      this.thumbnailId = thumbnailId;
+      this.fileId = fileId;
+    }
+
+    public Long getThumbnailId() {
+      return this.thumbnailId;
+    }
+
+    public Long getFileId() {
+      return this.fileId;
+    }
+
+  }
+
   public enum ThumbnailSize {
-    SMALL(30, 30), LARGE(100, 100), STUDY(300, 300);
-    private Integer width;
-    private Integer height;
+    SMALL(100, 100), LARGE(500, 500), STUDY(500, 500);
+    private final Integer width;
+    private final Integer height;
 
     ThumbnailSize(int width, int height) {
       this.width = width;
@@ -72,52 +95,50 @@ public class ThumbnailService {
 
     FileEntity fileEntity = null;
     String fileName = "";
+    // default 이미지 추가
     if (multipartFile == null || multipartFile.isEmpty()) {
       FileEntity defaultFile = null;
       ThumbnailEntity defaultThumbnail = null;
+      // TODO : 목적에 따라 바꾸기
       if (size.equals(ThumbnailSize.LARGE)) { // -> rectangle
-        defaultFile = fileService.findFileEntityById(DEFAULT_RECTANGLE_ID);
-        defaultThumbnail = findById(DEFAULT_RECTANGLE_ID);
+        defaultFile = fileService.findFileEntityById(DefaultThumbnailInfo.ThumbPosting.getFileId());
+        defaultThumbnail = findById(DefaultThumbnailInfo.ThumbPosting.getThumbnailId());
       } else { // -> square
-        defaultFile = fileService.findFileEntityById(DEFAULT_SQUARE_ID);
-        defaultThumbnail = findById(DEFAULT_SQUARE_ID);
+        defaultFile = fileService.findFileEntityById(DefaultThumbnailInfo.ThumbMember.getFileId());
+        defaultThumbnail = findById(DefaultThumbnailInfo.ThumbMember.getThumbnailId());
       }
       return defaultThumbnail;
-//      fileName = this.defaultImageName;
-//      File defaultFile = new File(
-//          FileService.fileRelDirPath + File.separator + FileService.defaultImageFileName);
-//      fileEntity = fileService.saveFileEntity(
-//          defaultFile, FileService.fileRelDirPath, ipAddress, FileService.defaultImageFileName,
-//          null);
-    } else {
-      MultipartFileWrapper multipartFileWrapper = new MultipartFileWrapper(multipartFile);
-      try {
-        imageFormatChecking.checkNormalImageFile(multipartFileWrapper);
 
-        // 원본 파일 저장
-        File file = fileService.saveFileInServer(multipartFileWrapper, FileService.fileRelDirPath);
-        fileEntity = fileService.saveFileEntity(file, FileService.fileRelDirPath, ipAddress,
-            multipartFile.getOriginalFilename(), null);
-
-        // 썸네일 파일 저장
-        File thumbnailImage = fileService.saveFileInServer(multipartFileWrapper, this.relDirPath);
-        if (size != null) {
-          imageProcessing.imageProcessing(thumbnailImage, size.getWidth(), size.getHeight(),
-              THUMBNAIL_FORMAT);
-        }
-        fileName = thumbnailImage.getName();
-      } catch (Exception e) {
-        e.printStackTrace();
-      } finally {
-        // 업로드 임시 파일 삭제
-        multipartFileWrapper.transferFinish();
-      }
-      return thumbnailRepository.save(
-          ThumbnailEntity.builder()
-              .path(this.relDirPath + File.separator + fileName)
-              .file(fileEntity)
-              .build());
     }
+
+    MultipartFileWrapper multipartFileWrapper = new MultipartFileWrapper(multipartFile);
+    try {
+      imageFormatChecking.checkNormalImageFile(multipartFileWrapper);
+
+      // 원본 파일 저장
+      File file = fileService.saveFileInServer(multipartFileWrapper, FileService.fileRelDirPath);
+      fileEntity = fileService.saveFileEntity(file, FileService.fileRelDirPath, ipAddress,
+          multipartFile.getOriginalFilename(), null);
+
+      // 썸네일 파일 저장
+      File thumbnailImage = fileService.saveFileInServer(multipartFileWrapper, this.relDirPath);
+      if (size != null) {
+        imageProcessing.imageProcessing(thumbnailImage, size.getWidth(), size.getHeight(),
+            THUMBNAIL_FORMAT);
+      }
+      fileName = thumbnailImage.getName();
+    } catch (Exception e) {
+      e.printStackTrace();
+    } finally {
+      // 업로드 임시 파일 삭제
+      multipartFileWrapper.transferFinish();
+    }
+    return thumbnailRepository.save(
+        ThumbnailEntity.builder()
+            .path(this.relDirPath + File.separator + fileName)
+            .file(fileEntity)
+            .build());
+
   }
 
   public ThumbnailEntity findById(Long findId) {
@@ -127,9 +148,13 @@ public class ThumbnailService {
 
   public void deleteById(Long deleteId) {
     // 기본 썸네일이면 삭제 X
-    if (deleteId == DEFAULT_RECTANGLE_ID || deleteId == DEFAULT_SQUARE_ID) {
+    List<Long> defaultIdList = Stream.of(DefaultThumbnailInfo.values())
+        .map(t -> t.getThumbnailId())
+        .collect(Collectors.toList());
+    if (defaultIdList.contains(deleteId)) {
       return;
     }
+
     ThumbnailEntity deleted = findById(deleteId);
     File thumbnailFile = new File(
         System.getProperty("user.dir") + File.separator + deleted.getPath());

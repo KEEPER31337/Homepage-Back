@@ -2,6 +2,7 @@ package keeper.project.homepage.user.dto.attendance;
 
 import keeper.project.homepage.entity.attendance.AttendanceEntity;
 import keeper.project.homepage.util.EnvironmentProperty;
+import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,10 +41,7 @@ public class AttendanceResultDto {
     this.continuousPoint = attendanceEntity.getContinuousPoint();
     this.randomPoint = attendanceEntity.getRandomPoint();
 
-    if (attendanceEntity.getMember().getThumbnail() != null) {
-      this.thumbnailPath = EnvironmentProperty.getThumbnailPath(
-          attendanceEntity.getMember().getId());
-    }
+    this.thumbnailPath = attendanceEntity.getMember().getThumbnailPath();
   }
 
   private String hidingIpAddress(String ipAddress) {
