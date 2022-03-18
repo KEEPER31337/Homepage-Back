@@ -3,7 +3,7 @@ package keeper.project.homepage.util;
 public class EnvironmentProperty {
 
   private static final String THUMBNAIL_PATH = "/v1/util/thumbnail/";
-  private static final String SERVER_IP = "3.34.48.167";
+  private static final String SERVER_IP = "3.34.46.234";
 
   private enum URL_TYPE {
     Local("127.0.0.1", "8080"),
