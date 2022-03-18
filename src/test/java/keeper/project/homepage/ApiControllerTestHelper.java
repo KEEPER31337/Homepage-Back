@@ -119,7 +119,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     return generation;
   }
 
-  private void createFileForTest(String filePath) {
+  public void createFileForTest(String filePath) {
     FileConversion fileConversion = new FileConversion();
     fileConversion.makeSampleJPEGImage(filePath);
   }
@@ -167,11 +167,17 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     final String thumbRelDir = fileRelDir + "thumbnail" + File.separator;
 
     final String epochTime = Long.toHexString(System.nanoTime());
+    final String fileName = epochTime + ".jpg";
     final String thumbName = "thumb_" + epochTime + ".jpg";
 
     createFileForTest(usrDir + thumbRelDir + thumbName);
 
-    FileEntity fileEntity = generateFileEntity();
+    FileEntity fileEntity = fileRepository.save(FileEntity.builder()
+        .fileName(fileName)
+        .filePath(fileRelDir + fileName)
+        .fileSize(0L)
+        .ipAddress("111.111.111.111")
+        .build());
 
     return thumbnailRepository.save(ThumbnailEntity.builder()
         .path(thumbRelDir + thumbName)
