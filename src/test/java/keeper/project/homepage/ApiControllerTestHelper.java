@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import keeper.project.homepage.entity.attendance.AttendanceEntity;
 import keeper.project.homepage.util.FileConversion;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.dto.sign.SignInDto;
@@ -302,6 +303,24 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         .member(writer)
         .postingId(posting)
         .build());
+  }
+
+  public void generateNewAttendanceWithTime(LocalDateTime time, MemberEntity memberEntity)
+      throws Exception {
+    attendanceRepository.save(
+        AttendanceEntity.builder()
+            .time(time)
+            .date(time.toLocalDate())
+            .point(10)
+            .rankPoint(500)
+            .continuousPoint(0)
+            .randomPoint((int) (Math.random() * 900 + 100))
+            .ipAddress("127.0.0.1")
+            .greetings("hi")
+            .continuousDay(1)
+            .rank(3)
+            .member(memberEntity)
+            .build());
   }
 
   public List<FieldDescriptor> generateCommonResponseFields(String docSuccess, String docCode,

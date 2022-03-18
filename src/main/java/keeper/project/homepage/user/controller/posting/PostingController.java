@@ -1,6 +1,7 @@
 package keeper.project.homepage.user.controller.posting;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -48,6 +49,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriUtils;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -133,6 +135,11 @@ public class PostingController {
     PostingEntity postingEntity = postingService.getPostingById(postingId);
     Long visitMemberId = authService.getMemberIdByJWT();
 
+    // 키퍼 13기 이후부터 시험 게시판에 접근하려면 조건 충족해야함.
+    if (postingService.isNotAccessExamBoard(postingEntity.getCategoryId())) {
+      return responseService.getSuccessSingleResult(
+          postingService.createNotAccessDto(postingEntity));
+    }
     if (visitMemberId != postingEntity.getMemberId().getId()) {
       if (postingEntity.getIsTemp() == PostingService.isTempPosting) {
         return responseService.getFailSingleResult(null, -11100, "임시저장 게시물입니다.");
@@ -163,11 +170,12 @@ public class PostingController {
     FileEntity fileEntity = fileService.findFileEntityById(fileId);
     Path path = Paths.get(fileEntity.getFilePath());
     Resource resource = new InputStreamResource(Files.newInputStream(path));
+    String encodedFileName = UriUtils.encode(fileEntity.getFileName(), StandardCharsets.UTF_8);
 
     return ResponseEntity.status(HttpStatus.OK)
         .contentType(MediaType.parseMediaType("application/octet-stream"))
         .header(HttpHeaders.CONTENT_DISPOSITION,
-            "attachment; filename=\"" + fileEntity.getFileName() + "\"")
+            "attachment; filename=\"" + encodedFileName + "\"")
         .body(resource);
   }
 

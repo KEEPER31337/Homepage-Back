@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.ApiControllerTestSetUp;
+import keeper.project.homepage.exception.posting.CustomCategoryNotFoundException;
+import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.util.FileConversion;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.dto.sign.SignInDto;
@@ -76,16 +78,22 @@ public class PostingControllerTest extends ApiControllerTestHelper {
 
   private String userToken;
   private String adminToken;
+  private String freshManToken;
+  private String freshManHasAccessToken;
 
   private MemberEntity memberEntity;
   private MemberEntity adminEntity;
+  private MemberEntity freshMan;
+  private MemberEntity freshManHasAccess;
   private CategoryEntity categoryEntity;
+  private CategoryEntity notAccessCategoryTestEntity;
   private PostingEntity postingGeneralTest;
   private PostingEntity postingDeleteTest;
   private PostingEntity postingDeleteTest2;
   private PostingEntity postingModifyTest;
   private PostingEntity postingNoticeTest;
   private PostingEntity postingNoticeTest2;
+  private PostingEntity notAccessPostingTestEntity;
 
   private ThumbnailEntity generalThumbnail;
   private FileEntity generalImageFile;
@@ -149,6 +157,29 @@ public class PostingControllerTest extends ApiControllerTestHelper {
         .uploadTime(LocalDateTime.now())
         .ipAddress(postingModifyTest.getIpAddress())
         .build());
+
+    freshMan = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원,
+        MemberRankName.일반회원);
+    freshMan.changeGeneration(13);
+    freshManToken = generateJWTToken(freshMan);
+
+    freshManHasAccess = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원,
+        MemberRankName.일반회원);
+    freshManHasAccess.changeGeneration(13);
+    freshManHasAccess.updatePoint(PostingService.EXAM_BOARD_ACCESS_POINT);
+    for (int i = 0; i < PostingService.EXAM_BOARD_ACCESS_COMMENT_COUNT; i++) {
+      generateCommentEntity(postingGeneralTest, freshManHasAccess, 0L);
+    }
+    for (int i = 0; i < PostingService.EXAM_BOARD_ACCESS_ATTEND_COUNT; i++) {
+      generateNewAttendanceWithTime(LocalDateTime.now().minusDays(i), freshManHasAccess);
+    }
+    freshManHasAccessToken = generateJWTToken(freshManHasAccess);
+
+    notAccessCategoryTestEntity =
+        categoryRepository.findById(PostingService.EXAM_CATEGORY_ID)
+            .orElseThrow(CustomCategoryNotFoundException::new);
+    notAccessPostingTestEntity =
+        generatePostingEntity(memberEntity, notAccessCategoryTestEntity, 0, 0, 0);
   }
 
   @Test
@@ -383,6 +414,47 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                     .optional()
             )
         ));
+  }
+
+  @Test
+  @DisplayName("시험 게시판 조건 충족 함")
+  public void getPostingExamAccess1() throws Exception {
+    ResultActions result = mockMvc.perform(
+        RestDocumentationRequestBuilders.get("/v1/post/{pid}", notAccessPostingTestEntity.getId())
+            .header("Authorization", userToken));
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(jsonPath("$.data.title").value(notAccessPostingTestEntity.getTitle()))
+        .andExpect(jsonPath("$.data.content").value(notAccessPostingTestEntity.getContent()))
+        .andDo(print());
+  }
+
+  @Test
+  @DisplayName("시험 게시판 조건 충족 함2")
+  public void getPostingExamAccess2() throws Exception {
+
+    ResultActions result2 = mockMvc.perform(
+        RestDocumentationRequestBuilders.get("/v1/post/{pid}", notAccessPostingTestEntity.getId())
+            .header("Authorization", freshManHasAccessToken));
+
+    result2.andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(jsonPath("$.data.title").value(notAccessPostingTestEntity.getTitle()))
+        .andExpect(jsonPath("$.data.content").value(notAccessPostingTestEntity.getContent()))
+        .andDo(print());
+
+  }
+
+  @Test
+  @DisplayName("시험 게시판 조건 충족 안함")
+  public void getPostingAccessDeniedExamPosting() throws Exception {
+    ResultActions result = mockMvc.perform(
+        RestDocumentationRequestBuilders.get("/v1/post/{pid}", notAccessPostingTestEntity.getId())
+            .header("Authorization", freshManToken));
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(jsonPath("$.data.title").value(PostingService.EXAM_ACCESS_DENIED_TITLE))
+        .andExpect(jsonPath("$.data.content").value(PostingService.EXAM_ACCESS_DENIED_CONTENT))
+        .andDo(print());
   }
 
   @Test

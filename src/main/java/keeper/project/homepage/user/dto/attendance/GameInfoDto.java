@@ -25,8 +25,8 @@ public class GameInfoDto {
   public static final Integer FOURTH_POINT = 3000;
   public static final Integer FIFTH_POINT = 2000;
   public static final Integer LAST_POINT = 100;
-  public static final Integer DICE_MAX_PLAYTIME = 100;
-  public static final Integer ROULETTE_MAX_PLAYTIME = 100;
-  public static final Integer LOTTO_MAX_PLAYTIME = 100;
+  public static final Integer DICE_MAX_PLAYTIME = 6;
+  public static final Integer ROULETTE_MAX_PLAYTIME = 3;
+  public static final Integer LOTTO_MAX_PLAYTIME = 1;
 
 }
