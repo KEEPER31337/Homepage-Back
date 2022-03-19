@@ -399,7 +399,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         fieldWithPath(prefix + ".merit").description("상점"),
         fieldWithPath(prefix + ".demerit").description("벌점"),
         fieldWithPath(prefix + ".generation").description("기수 (7월 이후는 N.5기)"),
-        fieldWithPath(prefix + ".thumbnailPath").description("회원의 썸네일 이미지 조회 api path"),
+        fieldWithPath(prefix + ".thumbnailPath").description("회원의 썸네일 이미지 조회 api path").optional(),
         fieldWithPath(prefix + ".rank").description("회원 등급: null, 우수회원, 일반회원"),
         fieldWithPath(prefix + ".type").description("회원 상태: null, 비회원, 정회원, 휴면회원, 졸업회원, 탈퇴"),
         fieldWithPath(prefix + ".jobs").description(
