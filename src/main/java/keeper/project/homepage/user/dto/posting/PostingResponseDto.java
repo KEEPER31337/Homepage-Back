@@ -46,7 +46,7 @@ public class PostingResponseDto {
   private String thumbnailPath;
   private List<FileEntity> files;
 
-  public PostingResponseDto initWithEntity(PostingEntity postingEntity, Integer size) {
+  public PostingResponseDto initWithEntity(PostingEntity postingEntity, Integer size, boolean isOne) {
 
     ThumbnailEntity memberThumbnail = postingEntity.getMemberId().getThumbnail();
     ThumbnailEntity postingThumbnail = postingEntity.getThumbnail();
@@ -54,7 +54,7 @@ public class PostingResponseDto {
     PostingResponseDto postingResponseDto = PostingResponseDto.builder()
         .id(postingEntity.getId())
         .title(postingEntity.getTitle())
-        .content(postingEntity.getContent())
+        .content(isOne ? postingEntity.getContent() : "")
         .writer(postingEntity.getMemberId().getNickName())
         .writerId(postingEntity.getMemberId().getId())
         .writerThumbnailPath(null)
@@ -89,11 +89,6 @@ public class PostingResponseDto {
       postingResponseDto.setWriter("익명");
       postingResponseDto.setWriterId(-1L);
       postingResponseDto.setWriterThumbnailPath("");
-    }
-
-    // 비밀글 처리
-    if (postingEntity.getIsSecret() == 1) {
-      postingResponseDto.setContent("비밀 게시글입니다.");
     }
 
     return postingResponseDto;

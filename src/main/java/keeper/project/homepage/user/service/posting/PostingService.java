@@ -72,7 +72,7 @@ public class PostingService {
 
     for (PostingEntity postingEntity : postingEntities) {
       postingResponseDtos.add(new PostingResponseDto().initWithEntity(postingEntity,
-          (int) postingEntities.getTotalElements()));
+          (int) postingEntities.getTotalElements(),false));
     }
 
     return postingResponseDtos;
@@ -88,7 +88,7 @@ public class PostingService {
 
     for (PostingEntity postingEntity : postingEntities) {
       postingResponseDtos.add(new PostingResponseDto().initWithEntity(postingEntity,
-          (int) postingEntities.getTotalElements()));
+          (int) postingEntities.getTotalElements(), false));
     }
 
     return postingResponseDtos;
@@ -102,7 +102,7 @@ public class PostingService {
 
     for (PostingEntity postingEntity : postingEntities) {
       postingResponseDtos.add(new PostingResponseDto().initWithEntity(postingEntity,
-          postingEntities.size()));
+          postingEntities.size(), false));
     }
 
     return postingResponseDtos;
@@ -118,7 +118,7 @@ public class PostingService {
 
     for (PostingEntity postingEntity : postingEntities) {
       postingResponseDtos.add(new PostingResponseDto().initWithEntity(postingEntity,
-          postingEntities.size()));
+          postingEntities.size(), false));
     }
 
     return postingResponseDtos;
@@ -158,7 +158,7 @@ public class PostingService {
     // FIXME : request와 response용 dto를 나눴다면 initWithEntity() 대신 생성자로 초기화하는 게 좋을 것 같습니다
     // TODO : postingResponseDto의 initWithEntity가 init하는 동작이 아니라 새로운 dto를 반환해주는 동작을 수행하고 있습니다
     PostingResponseDto postingResponseDto = new PostingResponseDto();
-    return postingResponseDto.initWithEntity(posting, 1);
+    return postingResponseDto.initWithEntity(posting, 1, true);
   }
 
   public List<PostingResponseDto> findAllByMemberId(MemberEntity memberEntity, Pageable pageable) {
@@ -167,7 +167,7 @@ public class PostingService {
     List<PostingResponseDto> postingList = new ArrayList<>();
     for (PostingEntity posting : postingPage) {
       PostingResponseDto dto = new PostingResponseDto();
-      postingList.add(dto.initWithEntity(posting, (int) postingPage.getTotalElements()));
+      postingList.add(dto.initWithEntity(posting, (int) postingPage.getTotalElements(), false));
     }
     return postingList;
   }
@@ -308,7 +308,7 @@ public class PostingService {
 
     for (PostingEntity postingEntity : postingEntities) {
       postingResponseDtos.add(new PostingResponseDto().initWithEntity(postingEntity,
-          (int) postingEntities.getTotalElements()));
+          (int) postingEntities.getTotalElements(), false));
     }
 
     return postingResponseDtos;
@@ -436,7 +436,7 @@ public class PostingService {
 
   public PostingResponseDto createNotAccessDto(PostingEntity postingEntity) {
     PostingResponseDto postingResponseDto = new PostingResponseDto().initWithEntity(postingEntity,
-        1);
+        1, true);
     postingResponseDto.setTitle(EXAM_ACCESS_DENIED_TITLE);
     postingResponseDto.setContent(EXAM_ACCESS_DENIED_CONTENT);
     postingResponseDto.setFiles(new ArrayList<>());

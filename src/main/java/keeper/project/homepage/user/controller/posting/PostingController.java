@@ -153,7 +153,7 @@ public class PostingController {
     }
 
     return responseService.getSuccessSingleResult(
-        new PostingResponseDto().initWithEntity(postingEntity, 1));
+        new PostingResponseDto().initWithEntity(postingEntity, 1, true));
   }
 
   @GetMapping(value = "/attach/{pid}")

@@ -206,7 +206,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
                 fieldWithPath("list[].id").description("게시물 ID"),
                 fieldWithPath("list[].title").description("게시물 제목"),
-                fieldWithPath("list[].content").description("게시물 내용"),
+                fieldWithPath("list[].content").description("게시물 내용 (하나 조회 아닐경우 빈 문자열)"),
                 fieldWithPath("list[].category").description("카테고리 이름"),
                 fieldWithPath("list[].categoryId").description("카테고리 ID"),
                 fieldWithPath("list[].writer").optional().description("작성자 (비밀 게시글일 경우 익명)"),
@@ -259,7 +259,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
                 fieldWithPath("list[].id").description("게시물 ID"),
                 fieldWithPath("list[].title").description("게시물 제목"),
-                fieldWithPath("list[].content").description("게시물 내용"),
+                fieldWithPath("list[].content").description("게시물 내용 (하나 조회 아닐경우 빈 문자열)"),
                 fieldWithPath("list[].category").description("카테고리 이름"),
                 fieldWithPath("list[].categoryId").description("카테고리 ID"),
                 fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
@@ -307,7 +307,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
                 fieldWithPath("list[].id").description("게시물 ID"),
                 fieldWithPath("list[].title").description("게시물 제목"),
-                fieldWithPath("list[].content").description("게시물 내용"),
+                fieldWithPath("list[].content").description("게시물 내용 (하나 조회 아닐경우 빈 문자열)"),
                 fieldWithPath("list[].category").description("카테고리 이름"),
                 fieldWithPath("list[].categoryId").description("카테고리 ID"),
                 fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
@@ -388,7 +388,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
                 fieldWithPath("data.id").description("게시물 ID"),
                 fieldWithPath("data.title").description("게시물 제목"),
-                fieldWithPath("data.content").description("게시물 내용"),
+                fieldWithPath("data.content").description("게시물 내용 (하나 조회 아닐경우 빈 문자열)"),
                 fieldWithPath("data.category").description("카테고리 이름"),
                 fieldWithPath("data.categoryId").description("카테고리 ID"),
                 fieldWithPath("data.writer").description("작성자  (비밀 게시글일 경우 익명)"),
@@ -467,7 +467,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
                 fieldWithPath("data.id").description("게시물 ID"),
                 fieldWithPath("data.title").description("게시물 제목"),
-                fieldWithPath("data.content").description("게시물 내용"),
+                fieldWithPath("data.content").description("게시물 내용 (하나 조회 아닐경우 빈 문자열)"),
                 fieldWithPath("data.category").description("카테고리 이름"),
                 fieldWithPath("data.categoryId").description("카테고리 ID"),
                 fieldWithPath("data.writer").description("작성자  (비밀 게시글일 경우 익명)"),
@@ -709,7 +709,6 @@ public class PostingControllerTest extends ApiControllerTestHelper {
         ));
   }
 
-/* FIXME
   @Test
   @DisplayName("카테고리별 게시글 검색")
   public void searchPosting() throws Exception {
@@ -738,7 +737,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
                 fieldWithPath("list[].id").description("게시물 ID"),
                 fieldWithPath("list[].title").description("게시물 제목"),
-                fieldWithPath("list[].content").description("게시물 내용"),
+                fieldWithPath("list[].content").description("게시물 내용 (하나 조회 아닐경우 빈 문자열)"),
                 fieldWithPath("list[].category").description("카테고리 이름"),
                 fieldWithPath("list[].categoryId").description("카테고리 ID"),
                 fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
@@ -765,7 +764,6 @@ public class PostingControllerTest extends ApiControllerTestHelper {
             )
         ));
   }
-  */
 
   @Test
   @DisplayName("게시글 좋아요")
