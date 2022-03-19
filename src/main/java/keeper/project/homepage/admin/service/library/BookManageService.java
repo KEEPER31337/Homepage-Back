@@ -62,7 +62,7 @@ public class BookManageService {
       throw new CustomBookOverTheMaxException("수량 초과입니다.");
     }
 
-    addBook(title, author, information, total, department, thumbnailEntity);
+    addBook(title, author, information, quantity, department, thumbnailEntity);
 
     return responseService.getSuccessResult();
   }
@@ -70,7 +70,7 @@ public class BookManageService {
   /**
    * 도서 추가
    */
-  public void addBook(String title, String author, String information, Long total,
+  public void addBook(String title, String author, String information, Long quantity,
       BookDepartmentEntity department, ThumbnailEntity thumbnailId) {
 
     if (bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
@@ -79,10 +79,11 @@ public class BookManageService {
       Long nowTotal = updateBookEntity.getTotal();
       Long nowEnable = updateBookEntity.getEnable();
 
-      updateBookEntity.setTotal(nowTotal + total);
-      updateBookEntity.setEnable(nowEnable + total);
+      updateBookEntity.setTotal(nowTotal + quantity);
+      updateBookEntity.setEnable(nowEnable + quantity);
 
       bookRepository.save(updateBookEntity);
+
     } else {
 
       bookRepository.save(
@@ -91,9 +92,9 @@ public class BookManageService {
               .author(author)
               .information(information)
               .department(department)
-              .total(total)
+              .total(quantity)
               .borrow(0L)
-              .enable(total)
+              .enable(quantity)
               .registerDate(new Date())
               .thumbnailId(thumbnailId)
               .build());
