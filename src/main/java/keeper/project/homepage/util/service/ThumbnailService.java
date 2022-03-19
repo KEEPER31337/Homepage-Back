@@ -37,13 +37,13 @@ public class ThumbnailService {
   public enum DefaultThumbnailInfo {
     ThumbMember(1L, 1L),
     ThumbPosting(2L, 2L),
-    ThumbBook(2L, 2L), // fixme: 지금은 Posting과 같이 사용. 나중에 추가되면 바꾸기.
     BadgeGradeFirst(3L, 3L),
     BadgeGradeSecond(4L, 4L),
     BadgeGraduate(5L, 5L),
     BadgeQuit(6L, 6L),
     BadgeSleep(7L, 7L),
-    BadgeRegular(8L, 8L);
+    BadgeRegular(8L, 8L),
+    ThumbBook(10L, 10L);
 
     private final Long thumbnailId;
     private final Long fileId;
