@@ -6,6 +6,7 @@ import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.etc.StaticWriteSubtitleImageEntity;
 import keeper.project.homepage.entity.etc.StaticWriteTitleEntity;
 import keeper.project.homepage.exception.CustomAboutFailedException;
+import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
 import keeper.project.homepage.repository.etc.StaticWriteSubtitleImageRepository;
 import keeper.project.homepage.repository.etc.StaticWriteTitleRepository;
 import keeper.project.homepage.util.ImageCenterCrop;
@@ -37,7 +38,7 @@ public class AdminAboutSubtitleService {
         .orElseThrow(() -> new CustomAboutFailedException("존재하지 않는 타이틀 ID 입니다."));
   }
 
-  private void deleteRelatedThumbnail(ThumbnailEntity thumbnailEntity) {
+  private void deleteThumbnail(ThumbnailEntity thumbnailEntity) {
     if (thumbnailEntity != null) {
       thumbnailService.deleteById(thumbnailEntity.getId());
       fileService.deleteOriginalThumbnail(thumbnailEntity);
@@ -45,14 +46,22 @@ public class AdminAboutSubtitleService {
   }
 
   public StaticWriteSubtitleImageResult createSubtitle(
-      StaticWriteSubtitleImageDto staticWriteSubtitleImageDto, MultipartFile image,
+      StaticWriteSubtitleImageDto staticWriteSubtitleImageDto, MultipartFile thumbnail,
       String ipAddress) {
 
     StaticWriteTitleEntity staticWriteTitle = checkValidTitleId(
         staticWriteSubtitleImageDto.getStaticWriteTitleId());
 
-    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(), image,
-        ThumbnailSize.LARGE, ipAddress);
+    ThumbnailEntity thumbnailEntity;
+
+    if(thumbnail == null) {
+      thumbnailEntity = thumbnailService.findById(1L);
+      System.out.println("디폴트 이미지로 설정되었습니다.");
+    } else {
+      thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(), thumbnail,
+          ThumbnailSize.LARGE, ipAddress);
+      System.out.println("새로운 이미지가 생성되었습니다.");
+    }
 
     StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity = staticWriteSubtitleImageRepository.save(
         staticWriteSubtitleImageDto.toEntity(staticWriteTitle, thumbnailEntity));
@@ -62,13 +71,18 @@ public class AdminAboutSubtitleService {
 
   public StaticWriteSubtitleImageResult deleteSubtitleById(Long id) {
     StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity = checkValidSubTitleId(id);
-    deleteRelatedThumbnail(staticWriteSubtitleImageEntity.getThumbnail());
+
+    if(!(staticWriteSubtitleImageEntity.getThumbnail().getId() == 1L)) {
+      deleteThumbnail(staticWriteSubtitleImageEntity.getThumbnail());
+      System.out.println("이전 이미지가 삭제되었습니다.");
+    }
+
     staticWriteSubtitleImageRepository.delete(staticWriteSubtitleImageEntity);
     return new StaticWriteSubtitleImageResult(staticWriteSubtitleImageEntity);
   }
 
   public StaticWriteSubtitleImageResult modifySubtitleById(
-      StaticWriteSubtitleImageDto staticWriteSubtitleImageDto, Long id, MultipartFile image,
+      StaticWriteSubtitleImageDto staticWriteSubtitleImageDto, Long id, MultipartFile thumbnail,
       String ipAddress) {
 
     StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity = checkValidSubTitleId(id);
@@ -77,13 +91,24 @@ public class AdminAboutSubtitleService {
         staticWriteSubtitleImageDto.getStaticWriteTitleId());
 
     ThumbnailEntity prevThumbnail = staticWriteSubtitleImageEntity.getThumbnail();
-    ThumbnailEntity newThumbnail = thumbnailService.saveThumbnail(new ImageCenterCrop(), image,
-        null, ipAddress);
+    ThumbnailEntity newThumbnail;
+    if(thumbnail == null) {
+      newThumbnail = thumbnailService.findById(1L);
+      System.out.println("디폴트 이미지로 설정되었습니다.");
+    } else {
+      newThumbnail = thumbnailService.saveThumbnail(new ImageCenterCrop(), thumbnail,
+          ThumbnailSize.LARGE, ipAddress);
+      System.out.println("새로운 이미지가 생성되었습니다.");
+    }
+    if(newThumbnail == null) throw new CustomThumbnailEntityNotFoundException("썸네일 저장 중에 에러가 발생했습니다.");
 
     staticWriteSubtitleImageEntity.updateInfo(staticWriteSubtitleImageDto, staticWriteTitle,
         newThumbnail);
 
-    deleteRelatedThumbnail(prevThumbnail);
+    if(!(prevThumbnail.getId().equals(1L))) {
+      deleteThumbnail(prevThumbnail);
+      System.out.println("이전 이미지가 삭제되었습니다.");
+    }
 
     StaticWriteSubtitleImageEntity modifyEntity = staticWriteSubtitleImageRepository.save(
         staticWriteSubtitleImageEntity);
