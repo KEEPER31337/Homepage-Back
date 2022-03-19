@@ -1,11 +1,8 @@
 package keeper.project.homepage.admin.controller.about;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -20,6 +17,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.Optional;
 import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
@@ -27,15 +25,12 @@ import keeper.project.homepage.entity.etc.StaticWriteContentEntity;
 import keeper.project.homepage.entity.etc.StaticWriteSubtitleImageEntity;
 import keeper.project.homepage.entity.etc.StaticWriteTitleEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.util.FileConversion;
 import lombok.extern.log4j.Log4j2;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.restdocs.operation.preprocess.OperationRequestPreprocessor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -50,15 +45,15 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
   private String adminToken;
 
   private ThumbnailEntity thumbnailEntity;
+  private Optional<ThumbnailEntity> defaultThumbnailEntity;
   private FileEntity fileEntity;
   private StaticWriteTitleEntity staticWriteTitleEntity;
-  private StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity;
+  private StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity, defaultStaticWirteSubtitleImageEntity;
   private StaticWriteContentEntity staticWriteContentEntity;
 
   private final String ipAddress1 = "127.0.0.1";
 
-  @BeforeAll
-  public static void createFile() {
+  public void createFile() {
     final String keeperFilesDirectoryPath = System.getProperty("user.dir") + File.separator
         + "keeper_files";
     final String thumbnailDirectoryPath = System.getProperty("user.dir") + File.separator
@@ -78,45 +73,28 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
       thumbnailDir.mkdir();
     }
 
-    createImageForTest(befUpdateImage);
-    createImageForTest(befUpdateThumbnail);
-    createImageForTest(aftUpdateImage);
-  }
-
-  private static void createImageForTest(String filePath) {
-    FileConversion fileConversion = new FileConversion();
-    fileConversion.makeSampleJPEGImage(filePath);
+    createFileForTest(befUpdateImage);
+    createFileForTest(befUpdateThumbnail);
+    createFileForTest(aftUpdateImage);
   }
 
   @BeforeEach
   public void setUp() throws Exception {
+    createFile();
     generalMember = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
     adminMember = generateMemberEntity(MemberJobName.회장, MemberTypeName.정회원, MemberRankName.우수회원);
     generalToken = generateJWTToken(generalMember.getLoginId(), memberPassword);
     adminToken = generateJWTToken(adminMember.getLoginId(), memberPassword);
 
-    fileEntity = FileEntity.builder()
-        .fileName("bef.jpg")
-        .filePath("keeper_files" + File.separator + "bef.jpg")
-        .fileSize(0L)
-        .ipAddress(ipAddress1)
-        .build();
-    fileRepository.save(fileEntity);
-
-    thumbnailEntity = ThumbnailEntity.builder()
-        .path("keeper_files" + File.separator + "thumbnail" + File.separator + "thumb_bef.jpg")
-        .file(fileEntity).build();
-    thumbnailRepository.save(thumbnailEntity);
+    fileEntity = generateFileEntity();
+    thumbnailEntity = generateThumbnailEntity();
+    defaultThumbnailEntity = thumbnailRepository.findById(1L);
 
     staticWriteTitleEntity = generateTestTitle(1);
-    staticWriteSubtitleImageEntity = generateTestSubtitle(1);
+    staticWriteSubtitleImageEntity = generateTestSubtitle(1, thumbnailEntity);
+    defaultStaticWirteSubtitleImageEntity = generateTestSubtitle(2, defaultThumbnailEntity.get());
     staticWriteContentEntity = generateTestContent(1);
 
-  }
-
-  private String getFileName(String filePath) {
-    File file = new File(filePath);
-    return file.getName();
   }
 
   public StaticWriteTitleEntity generateTestTitle(Integer index) {
@@ -127,12 +105,13 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
     return staticWriteTitleRepository.save(staticWriteTitleEntity);
   }
 
-  public StaticWriteSubtitleImageEntity generateTestSubtitle(Integer index) {
+  public StaticWriteSubtitleImageEntity generateTestSubtitle(Integer index,
+      ThumbnailEntity thumbnail) {
     StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity = StaticWriteSubtitleImageEntity.builder()
         .subtitle("테스트 서브 타이틀" + index)
         .displayOrder(index)
         .staticWriteTitle(staticWriteTitleEntity)
-        .thumbnail(thumbnailEntity)
+        .thumbnail(thumbnail)
         .build();
     return staticWriteSubtitleImageRepository.save(staticWriteSubtitleImageEntity);
   }
@@ -201,8 +180,31 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
   }
 
   @Test
-  @DisplayName("페이지 블럭 서브 타이틀 생성 - 실패(권한 오류)")
-  public void createSubTitleFailByAuth() throws Exception {
+  @DisplayName("페이지 블럭 서브 타이틀 생성 - 성공(썸네일이 없는 경우)")
+  public void createSubTitleSuccess_NullThumbnail() throws Exception {
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+
+    params.add("subtitle", "테스트 서브 타이틀");
+    params.add("staticWriteTitleId", "1");
+    params.add("displayOrder", "1");
+    params.add("ipAddress", "192.111.222");
+
+    mockMvc.perform(multipart("/v1/admin/about/sub-title/create")
+            .params(params)
+            .header("Authorization", adminToken)
+            .contentType(MediaType.MULTIPART_FORM_DATA)
+            .with(request -> {
+              request.setMethod("POST");
+              return request;
+            }))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true));
+  }
+
+  @Test
+  @DisplayName("페이지 블럭 서브 타이틀 생성 - 실패(권한이 부족한 경우)")
+  public void createSubTitleFail_Auth() throws Exception {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     MockMultipartFile image = new MockMultipartFile("thumbnail", "aft.jpg", "image/jpg",
         new FileInputStream(new File(
@@ -230,7 +232,7 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
 
   @Test
   @DisplayName("페이지 블럭 서브 타이틀 생성 - 실패(존재하지 않는 타이틀)")
-  public void createSubTitleFailByTitle() throws Exception {
+  public void createSubTitleFail_Title() throws Exception {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     MockMultipartFile image = new MockMultipartFile("thumbnail", "aft.jpg", "image/jpg",
         new FileInputStream(new File(
@@ -315,8 +317,61 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
   }
 
   @Test
+  @DisplayName("페이지 블럭 서브 타이틀 수정 - 성공(새로운 썸네일이 Null 인 경우)")
+  public void modifySubtitleByIdSuccess_NullThumbnail() throws Exception {
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+
+    params.add("subtitle", "수정된 서브 타이틀");
+    params.add("staticWriteTitleId", "1");
+    params.add("displayOrder", "7");
+    params.add("ipAddress", "192.111.777");
+
+    mockMvc.perform(
+            multipart("/v1/admin/about/sub-title/modify/{id}", staticWriteSubtitleImageEntity.getId())
+                .params(params)
+                .header("Authorization", adminToken)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .with(request -> {
+                  request.setMethod("PUT");
+                  return request;
+                }))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true));
+  }
+
+  @Test
+  @DisplayName("페이지 블럭 서브 타이틀 수정 - 성공(디폴트 이미지로 설정된 서브 타이틀)")
+  public void modifySubtitleByIdSuccess_DefaultThumbnail() throws Exception {
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    MockMultipartFile image = new MockMultipartFile("thumbnail", "aft.jpg", "image/jpg",
+        new FileInputStream(new File(
+            System.getProperty("user.dir") + File.separator + "keeper_files" + File.separator
+                + "aft.jpg")));
+
+    params.add("subtitle", "수정된 서브 타이틀");
+    params.add("staticWriteTitleId", "1");
+    params.add("displayOrder", "7");
+    params.add("ipAddress", "192.111.777");
+
+    mockMvc.perform(multipart("/v1/admin/about/sub-title/modify/{id}",
+            defaultStaticWirteSubtitleImageEntity.getId())
+            .file(image)
+            .params(params)
+            .header("Authorization", adminToken)
+            .contentType(MediaType.MULTIPART_FORM_DATA)
+            .with(request -> {
+              request.setMethod("PUT");
+              return request;
+            }))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true));
+  }
+
+  @Test
   @DisplayName("페이지 블럭 서브 타이틀 수정 - 실패(존재하지 않는 서브 타이틀 ID)")
-  public void modifySubtitleByIdFailById() throws Exception {
+  public void modifySubtitleByIdFail_ID() throws Exception {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     MockMultipartFile image = new MockMultipartFile("thumbnail", "aft.jpg", "image/jpg",
         new FileInputStream(new File(
@@ -343,7 +398,6 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
         .andExpect(jsonPath("$.msg").value("존재하지 않는 서브 타이틀 ID 입니다."));
   }
 
-  /* TODO
   @Test
   @DisplayName("페이지 블럭 서브 타이틀 삭제 - 성공")
   public void deleteSubTitleByIdSuccess() throws Exception {
@@ -372,11 +426,22 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
                     "삭제에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 컨텐츠 데이터 리스트")
             )));
   }
-   */
+
+  @Test
+  @DisplayName("페이지 블럭 서브 타이틀 삭제 - 성공(디폴트 이미지로 지정된 경우)")
+  public void deleteSubtitleByIdSuccess_DefaultThumbnail() throws Exception {
+    mockMvc.perform(
+            delete("/v1/admin/about/sub-title/delete/{id}",
+                defaultStaticWirteSubtitleImageEntity.getId())
+                .header("Authorization", adminToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true));
+  }
 
   @Test
   @DisplayName("페이지 블럭 서브 타이틀 삭제 - 실패(존재하지 않는 서브 타이틀 ID)")
-  public void deleteSubTitleByIdFailById() throws Exception {
+  public void deleteSubTitleByIdFail_Id() throws Exception {
     mockMvc.perform(
             delete("/v1/admin/about/sub-title/delete/{id}", 1234)
                 .header("Authorization", adminToken))

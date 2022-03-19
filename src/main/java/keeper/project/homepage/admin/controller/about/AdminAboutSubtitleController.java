@@ -33,7 +33,7 @@ public class AdminAboutSubtitleController {
   @PostMapping(value = "/create")
   public SingleResult<StaticWriteSubtitleImageResult> createSubtitle(
       StaticWriteSubtitleImageDto staticWriteSubtitleImageDto,
-      @RequestParam("thumbnail") MultipartFile image,
+      @RequestParam(value = "thumbnail", required = false) MultipartFile image,
       @RequestParam("ipAddress") String ipAddress
   ) {
 
@@ -60,7 +60,7 @@ public class AdminAboutSubtitleController {
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public SingleResult<StaticWriteSubtitleImageResult> modifySubtitleById(
       @PathVariable("id") Long id,
-      @RequestParam("thumbnail") MultipartFile image,
+      @RequestParam(value = "thumbnail", required = false) MultipartFile image,
       @RequestParam("ipAddress") String ipAddress,
       StaticWriteSubtitleImageDto staticWriteSubtitleImageDto
   ) {
