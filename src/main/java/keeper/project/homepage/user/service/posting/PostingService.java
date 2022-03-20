@@ -72,7 +72,7 @@ public class PostingService {
 
     for (PostingEntity postingEntity : postingEntities) {
       postingResponseDtos.add(new PostingResponseDto().initWithEntity(postingEntity,
-          (int) postingEntities.getTotalElements(),false));
+          (int) postingEntities.getTotalElements(), false));
     }
 
     return postingResponseDtos;
@@ -414,7 +414,7 @@ public class PostingService {
   }
 
   public boolean isNotAccessExamBoard(CategoryEntity categoryEntity) {
-    if (categoryEntity.getId() != EXAM_CATEGORY_ID) {
+    if (!categoryEntity.getId().equals(EXAM_CATEGORY_ID)) {
       return false;
     }
     MemberEntity visitMember = authService.getMemberEntityWithJWT();
