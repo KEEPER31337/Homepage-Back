@@ -42,7 +42,7 @@ public class StaticWriteSubtitleImageEntity {
   @JoinColumn(name = "static_write_title_id", nullable = false)
   private StaticWriteTitleEntity staticWriteTitle;
 
-  @OneToOne(cascade = CascadeType.REMOVE)
+  @ManyToOne(cascade = CascadeType.REMOVE)
   @JoinColumn(name = "thumbnail_id")
   private ThumbnailEntity thumbnail;
 

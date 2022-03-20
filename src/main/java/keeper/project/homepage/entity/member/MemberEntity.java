@@ -104,7 +104,7 @@ public class MemberEntity implements UserDetails, Serializable {
   @Column(name = "generation")
   private Float generation;
 
-  @OneToOne
+  @ManyToOne
   @JoinColumn(name = "thumbnail_id")
   private ThumbnailEntity thumbnail;
 

@@ -79,7 +79,7 @@ public class StudyEntity {
   private String etcLink;
 
   @Setter
-  @OneToOne
+  @ManyToOne
   @JoinColumn(name = "thumbnail_id")
   private ThumbnailEntity thumbnail;
 

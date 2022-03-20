@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import keeper.project.homepage.entity.etc.StaticWriteSubtitleImageEntity;
@@ -40,15 +41,4 @@ public class ThumbnailEntity implements Serializable {
   @JsonBackReference
   private FileEntity file;
 
-  @OneToOne(mappedBy = "thumbnail")
-  @JsonBackReference(value = "thumbnail")
-  private MemberEntity memberEntity;
-
-//  @OneToOne(mappedBy = "thumbnail")
-//  @JsonBackReference(value = "posting")
-//  private PostingEntity postingEntity;
-
-  @OneToOne(mappedBy = "thumbnail")
-  @JsonBackReference(value = "staticWriteSubtitleImage")
-  private StaticWriteSubtitleImageEntity staticWriteSubtitleImage;
 }
