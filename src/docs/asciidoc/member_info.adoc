@@ -29,9 +29,9 @@ link:member.html[회원 API 목록으로 돌아가기]
 
 include::{snippets}/member-follow/http-request.adoc[]
 
-==== Request Fields
+==== Path Parameters
 
-include::{snippets}/member-follow/request-fields.adoc[]
+include::{snippets}/member-follow/path-parameters.adoc[]
 
 === 응답
 
@@ -51,9 +51,9 @@ include::{snippets}/member-follow/response-fields.adoc[]
 
 include::{snippets}/member-unfollow/http-request.adoc[]
 
-==== Request Fields
+==== Path Parameters
 
-include::{snippets}/member-unfollow/request-fields.adoc[]
+include::{snippets}/member-unfollow/path-parameters.adoc[]
 
 === 응답
 

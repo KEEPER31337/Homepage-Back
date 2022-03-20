@@ -23,14 +23,16 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 public class CategoryControllerTest extends ApiControllerTestSetUp {
 
+  private CategoryEntity categoryEntity;
+
   @BeforeEach
   public void setUp() throws Exception {
-    CategoryEntity category = CategoryEntity.builder()
+    categoryEntity = CategoryEntity.builder()
         .name("해킹대회정보 자식 카테고리")
-        .parentId(508L)
+        .parentId(1L)
         .href("board")
         .build();
-    categoryRepository.save(category);
+    categoryRepository.save(categoryEntity);
   }
 
   @Test
@@ -47,7 +49,7 @@ public class CategoryControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("list[].id").description("해당 카테고리의 ID"),
                 fieldWithPath("list[].name").description("해당 카테고리의 이름"),
-                fieldWithPath("list[].href").description("해당 카테고리의 참조값")
+                fieldWithPath("list[].href").description("해당 카테고리의 참조값").optional()
             )));
   }
 
@@ -65,7 +67,7 @@ public class CategoryControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("list[].id").description("해당 카테고리의 ID"),
                 fieldWithPath("list[].name").description("해당 카테고리의 이름"),
-                fieldWithPath("list[].href").description("해당 카테고리의 참조값"),
+                fieldWithPath("list[].href").description("해당 카테고리의 참조값").optional(),
                 subsectionWithPath("list[].children[]").description("해당 카테고리의 하위카테고리")
             )));;
   }
@@ -73,7 +75,7 @@ public class CategoryControllerTest extends ApiControllerTestSetUp {
   @Test
   @DisplayName("부모 ID를 통해 카테고리 리스트 불러오기(자식 카테고리 없이 해당하는 데이터만) - 성공")
   public void getAllCategoryByParentId() throws Exception {
-    mockMvc.perform(get("/v1/category/lists/{parentId}", 5125))
+    mockMvc.perform(get("/v1/category/lists/{parentId}", 1))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -94,7 +96,7 @@ public class CategoryControllerTest extends ApiControllerTestSetUp {
   @Test
   @DisplayName("부모 ID를 통해 카테고리 리스트 불러오기(자식 카테고리 존재) - 성공")
   public void getAllCategoryAndChildByParentId() throws Exception {
-    mockMvc.perform(get("/v1/category/lists/all/{parentId}", 5125))
+    mockMvc.perform(get("/v1/category/lists/all/{parentId}", 1))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))

@@ -55,7 +55,7 @@ public class AdminAboutSubtitleService {
     ThumbnailEntity thumbnailEntity;
 
     if(thumbnail == null) {
-      thumbnailEntity = thumbnailService.findById(1L);
+      thumbnailEntity = thumbnailService.findById(9L);
       System.out.println("디폴트 이미지로 설정되었습니다.");
     } else {
       thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(), thumbnail,
@@ -72,7 +72,7 @@ public class AdminAboutSubtitleService {
   public StaticWriteSubtitleImageResult deleteSubtitleById(Long id) {
     StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity = checkValidSubTitleId(id);
 
-    if(!(staticWriteSubtitleImageEntity.getThumbnail().getId() == 1L)) {
+    if(!(staticWriteSubtitleImageEntity.getThumbnail().getId() == 9L)) {
       deleteThumbnail(staticWriteSubtitleImageEntity.getThumbnail());
       System.out.println("이전 이미지가 삭제되었습니다.");
     }
@@ -93,7 +93,7 @@ public class AdminAboutSubtitleService {
     ThumbnailEntity prevThumbnail = staticWriteSubtitleImageEntity.getThumbnail();
     ThumbnailEntity newThumbnail;
     if(thumbnail == null) {
-      newThumbnail = thumbnailService.findById(1L);
+      newThumbnail = thumbnailService.findById(9L);
       System.out.println("디폴트 이미지로 설정되었습니다.");
     } else {
       newThumbnail = thumbnailService.saveThumbnail(new ImageCenterCrop(), thumbnail,
@@ -105,7 +105,7 @@ public class AdminAboutSubtitleService {
     staticWriteSubtitleImageEntity.updateInfo(staticWriteSubtitleImageDto, staticWriteTitle,
         newThumbnail);
 
-    if(!(prevThumbnail.getId().equals(1L))) {
+    if(!(prevThumbnail.getId().equals(9L))) {
       deleteThumbnail(prevThumbnail);
       System.out.println("이전 이미지가 삭제되었습니다.");
     }

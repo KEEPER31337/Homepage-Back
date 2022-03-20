@@ -128,9 +128,9 @@ public class MemberService {
     return otherMemberInfoResultList;
   }
 
-  public void follow(Long myId, String followLoginId) {
+  public void follow(Long myId, Long memberId) {
     MemberEntity me = findById(myId);
-    MemberEntity followee = findByLoginId(followLoginId);
+    MemberEntity followee = findById(memberId);
 
     FriendEntity friend = FriendEntity.builder()
         .follower(me)
@@ -143,9 +143,9 @@ public class MemberService {
     followee.getFollower().add(friend);
   }
 
-  public void unfollow(Long myId, String followLoginId) {
+  public void unfollow(Long myId, Long memberId) {
     MemberEntity me = findById(myId);
-    MemberEntity followee = findByLoginId(followLoginId);
+    MemberEntity followee = findById(memberId);
 
     FriendEntity friend = friendRepository.findByFolloweeAndFollower(followee, me);
     me.getFollowee().remove(friend);

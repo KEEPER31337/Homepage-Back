@@ -169,18 +169,18 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @PostMapping(value = "/follow")
-  public CommonResult followByLoginId(@RequestBody MemberDto memberDto) {
+  @PostMapping(value = "/follow/{id}")
+  public CommonResult followByLoginId(@PathVariable("id") Long memberId) {
     Long id = authService.getMemberIdByJWT();
-    memberService.follow(id, memberDto.getFolloweeLoginId());
+    memberService.follow(id, memberId);
     return responseService.getSuccessResult();
   }
 
   @Secured("ROLE_회원")
-  @DeleteMapping(value = "/unfollow")
-  public CommonResult unfollowByLoginId(@RequestBody MemberDto memberDto) {
+  @DeleteMapping(value = "/unfollow/{id}")
+  public CommonResult unfollowByLoginId(@PathVariable("id") Long memberId) {
     Long id = authService.getMemberIdByJWT();
-    memberService.unfollow(id, memberDto.getFolloweeLoginId());
+    memberService.unfollow(id, memberId);
     return responseService.getSuccessResult();
   }
 
