@@ -53,7 +53,7 @@ public class AdminCategoryService {
   }
 
   private void checkParentCategoryNotFound(CategoryRequest categoryRequest) {
-    if (categoryRequest.getParentId() != null && categoryRequest.getParentId() != 0) {
+    if (categoryRequest.getParentId() != null && categoryRequest.getParentId() != 1) {
       CategoryEntity categoryEntity = categoryRepository.findById(categoryRequest.getParentId())
           .orElseThrow(CustomParentCategoryNotFoundException::new);
     }
