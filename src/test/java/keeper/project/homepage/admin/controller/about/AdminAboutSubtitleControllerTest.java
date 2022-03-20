@@ -88,7 +88,7 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
 
     fileEntity = generateFileEntity();
     thumbnailEntity = generateThumbnailEntity();
-    defaultThumbnailEntity = thumbnailRepository.findById(1L);
+    defaultThumbnailEntity = thumbnailRepository.findById(9L);
 
     staticWriteTitleEntity = generateTestTitle(1);
     staticWriteSubtitleImageEntity = generateTestSubtitle(1, thumbnailEntity);
