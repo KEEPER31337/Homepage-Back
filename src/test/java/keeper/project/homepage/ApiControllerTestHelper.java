@@ -251,7 +251,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
   public CategoryEntity generateCategoryEntity() {
     final String epochTime = Long.toHexString(System.nanoTime());
     return categoryRepository.save(
-        CategoryEntity.builder().name("testCategory" + epochTime).parentId(1L).build());
+        CategoryEntity.builder().name("testCategory" + epochTime).build());
   }
 
   public CategoryEntity generateAnonymousCategoryEntity() {
