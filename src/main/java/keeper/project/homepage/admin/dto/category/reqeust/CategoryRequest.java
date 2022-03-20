@@ -24,7 +24,7 @@ public class CategoryRequest {
 
     return CategoryEntity.builder()
         .name(name)
-        .parentId(parentId == null ? 1 : parentId)
+        .parentId(parentId == null ? 0 : parentId)
         .href(href)
         .build();
   }

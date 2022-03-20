@@ -16,12 +16,12 @@ public class CategoryService {
   private final CategoryRepository categoryRepository;
 
   public List<CategoryWithChildResult> getAllHeadCategoryAndChild() {
-    List<CategoryEntity> categoryEntities = categoryRepository.findAllByParentIdIsNull();
+    List<CategoryEntity> categoryEntities = categoryRepository.findAllByParentId(0L);
     return categoryEntities.stream().map(CategoryWithChildResult::new).collect(Collectors.toList());
   }
 
   public List<CategoryResult> getAllHeadCategory() {
-    List<CategoryEntity> categoryEntities = categoryRepository.findAllByParentIdIsNull();
+    List<CategoryEntity> categoryEntities = categoryRepository.findAllByParentId(0L);
     return categoryEntities.stream().map(CategoryResult::new).collect(Collectors.toList());
   }
 

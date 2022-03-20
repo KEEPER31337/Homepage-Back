@@ -23,16 +23,25 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 public class CategoryControllerTest extends ApiControllerTestSetUp {
 
-  private CategoryEntity categoryEntity;
+  private CategoryEntity categoryEntity1, categoryEntity2;
 
   @BeforeEach
   public void setUp() throws Exception {
-    categoryEntity = CategoryEntity.builder()
-        .name("해킹대회정보 자식 카테고리")
-        .parentId(1L)
+    categoryEntity1 = CategoryEntity.builder()
+        .name("헤드 카테고리")
+        .parentId(0L)
         .href("board")
         .build();
-    categoryRepository.save(categoryEntity);
+    categoryRepository.save(categoryEntity1);
+
+    categoryEntity2 = CategoryEntity.builder()
+        .name("자식 카테고리")
+        .parentId(categoryEntity1.getId())
+        .href("board")
+        .build();
+    categoryRepository.save(categoryEntity2);
+
+
   }
 
   @Test
@@ -65,6 +74,7 @@ public class CategoryControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("list[]").description("헤드 카테고리 리스트"),
                 fieldWithPath("list[].id").description("해당 카테고리의 ID"),
                 fieldWithPath("list[].name").description("해당 카테고리의 이름"),
                 fieldWithPath("list[].href").description("해당 카테고리의 참조값").optional(),
@@ -75,7 +85,7 @@ public class CategoryControllerTest extends ApiControllerTestSetUp {
   @Test
   @DisplayName("부모 ID를 통해 카테고리 리스트 불러오기(자식 카테고리 없이 해당하는 데이터만) - 성공")
   public void getAllCategoryByParentId() throws Exception {
-    mockMvc.perform(get("/v1/category/lists/{parentId}", 1))
+    mockMvc.perform(get("/v1/category/lists/{parentId}", categoryEntity1.getId()))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -96,7 +106,7 @@ public class CategoryControllerTest extends ApiControllerTestSetUp {
   @Test
   @DisplayName("부모 ID를 통해 카테고리 리스트 불러오기(자식 카테고리 존재) - 성공")
   public void getAllCategoryAndChildByParentId() throws Exception {
-    mockMvc.perform(get("/v1/category/lists/all/{parentId}", 1))
+    mockMvc.perform(get("/v1/category/lists/all/{parentId}", categoryEntity1.getId()))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
