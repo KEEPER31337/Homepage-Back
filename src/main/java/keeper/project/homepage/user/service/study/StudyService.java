@@ -214,6 +214,9 @@ public class StudyService {
     studyEntity.getStudyHasMemberEntities().add(studyHasMemberEntity);
     addMemberEntity.getStudyHasMemberEntities().add(studyHasMemberEntity);
     studyHasMemberRepository.save(studyHasMemberEntity);
+
+    studyEntity.setMemberNumber(studyEntity.getMemberNumber() + 1);
+    studyRepository.save(studyEntity);
   }
 
   @Transactional
@@ -253,6 +256,9 @@ public class StudyService {
         memberId.equals(studyHasMemberEntity.getMember().getId())
     ));
     studyHasMemberRepository.deleteByMember(removeMemberEntity);
+
+    studyEntity.setMemberNumber(studyEntity.getMemberNumber() - 1);
+    studyRepository.save(studyEntity);
   }
 
   private boolean isAlreadyStudyMember(StudyEntity studyEntity, Long memberId) {
