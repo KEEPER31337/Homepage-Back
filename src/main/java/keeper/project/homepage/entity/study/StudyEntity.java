@@ -52,6 +52,7 @@ public class StudyEntity {
   @Column(length = 256)
   private String information;
 
+  @Setter
   @Column(nullable = false)
   private Integer memberNumber;
 
