@@ -35,11 +35,9 @@ public class AdminMemberController {
 
   @Secured("ROLE_회장") // 각 리소스별 권한 설정
   @GetMapping(value = "")
-  public ListResult<MemberDto> getMembers(
-      @PageableDefault(size = 20, sort = "id", direction = Direction.DESC)Pageable pageable
-  ) {
+  public ListResult<MemberDto> getMembers() {
     // 결과데이터가 여러건인경우 getSuccessListResult 이용해서 결과를 출력한다.
-    return responseService.getSuccessListResult(adminMemberService.getMembers(pageable));
+    return responseService.getSuccessListResult(adminMemberService.getMembers());
   }
 
   @Secured("ROLE_회장")

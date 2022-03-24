@@ -3,9 +3,7 @@ package keeper.project.homepage.user.service.study;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -38,11 +36,10 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class StudyService {
 
-  static private final Integer FIRST_SEMESTER = 1;
-  static private final Integer SUMMER_SESSION = 2;
-  static private final Integer SECOND_SEMESTER = 3;
-  static private final Integer WINTER_SESSION = 4;
-  static private final Integer HEAD_MEMBER_COUNT = 1;
+  private static final Integer FIRST_SEMESTER = 1;
+  private static final Integer SUMMER_SESSION = 2;
+  private static final Integer SECOND_SEMESTER = 3;
+  private static final Integer WINTER_SESSION = 4;
 
   private final StudyRepository studyRepository;
   private final StudyHasMemberRepository studyHasMemberRepository;
@@ -56,14 +53,14 @@ public class StudyService {
     List<StudyYearSeasonDto> studyYearSeasonDtoList = new ArrayList<>();
 
     List<Integer> years = studyRepository.findDistinctYear();
-    years.sort(Comparator.naturalOrder());
+    years.sort(Comparator.naturalOrder()); // 년도 별로 오름차순 정렬
     for (Integer year : years) {
       StudyYearSeasonDto studyYearSeasonDto = new StudyYearSeasonDto();
       studyYearSeasonDto.setYear(year);
 
       List<Integer> season = studyRepository.findDistinctSeasonByYear(year);
       season.sort(Comparator.naturalOrder());
-      studyYearSeasonDto.setSeason(season);
+      studyYearSeasonDto.setSeason(season); // 각 년도마다 시즌별로 오름차순 정렬
 
       studyYearSeasonDtoList.add(studyYearSeasonDto);
     }
@@ -101,34 +98,30 @@ public class StudyService {
   public StudyDto createStudy(
       StudyDto studyDto, MultipartFile thumbnail, List<Long> memberIdList) {
 
+    // request 값 유효성 검사
     checkSeasonValidate(studyDto.getSeason());
     checkIpAddressExist(studyDto.getIpAddress());
 
     // 스터디장 memberList에 추가
-    Set<Long> memberIdSet = new HashSet<>(memberIdList);
     MemberEntity headMember = authService.getMemberEntityWithJWT();
-    memberIdSet.add(headMember.getId());
+    memberIdList.remove(headMember.getId());
+    memberIdList.add(0, headMember.getId());
 
+    // entity에서 register time을 set 할 수 없게 하기 위해
+    // dto에서 register time을 저장 후 entity로 변환
     studyDto.setRegisterTime(LocalDateTime.now());
-    studyDto.setMemberNumber(memberIdList.size() + HEAD_MEMBER_COUNT);
 
     StudyEntity studyEntity = studyMapper.toEntity(studyDto);
 
     ThumbnailEntity studyThumbnail = saveThumbnail(studyDto.getIpAddress(), thumbnail);
     studyEntity.setThumbnail(studyThumbnail);
     studyEntity.setHeadMember(headMember);
+    studyEntity.setMemberNumber(memberIdList.size());
     studyRepository.save(studyEntity);
 
-    for (Long memberId : memberIdSet) {
+    for (Long memberId : memberIdList) {
       if (memberId != null) {
-        MemberEntity memberEntity = memberRepository.findById(memberId)
-            .orElseThrow(() -> new CustomMemberNotFoundException("잘못 된 스터디원입니다."));
-
-        StudyHasMemberEntity studyHasMemberEntity = new StudyHasMemberEntity(
-            studyEntity, memberEntity);
-        memberEntity.getStudyHasMemberEntities().add(studyHasMemberEntity);
-        studyEntity.getStudyHasMemberEntities().add(studyHasMemberEntity);
-        studyHasMemberRepository.save(studyHasMemberEntity);
+        addStudyMember(memberId, studyEntity);
       }
     }
 
@@ -204,24 +197,26 @@ public class StudyService {
     checkStudyIsMine(myId, studyEntity);
 
     if (!isHeadMember(myId, memberId) && !isAlreadyStudyMember(studyEntity, memberId)) {
-      MemberEntity addMemberEntity = memberRepository.findById(memberId)
-          .orElseThrow(CustomMemberNotFoundException::new);
-      StudyHasMemberEntity studyHasMemberEntity = StudyHasMemberEntity.builder()
-          .member(addMemberEntity)
-          .study(studyEntity)
-          .build();
-      studyEntity.getStudyHasMemberEntities().add(studyHasMemberEntity);
-      addMemberEntity.getStudyHasMemberEntities().add(studyHasMemberEntity);
-      studyHasMemberRepository.save(studyHasMemberEntity);
+      addStudyMember(memberId, studyEntity);
     }
 
-    List<MemberDto> memberDtoList = new ArrayList<>();
-    for (StudyHasMemberEntity studyHasMember : studyEntity.getStudyHasMemberEntities()) {
-      MemberDto memberDto = new MemberDto();
-      memberDto.initWithEntity(studyHasMember.getMember());
-      memberDtoList.add(memberDto);
-    }
-    return memberDtoList;
+    return getStudyMemberDtoList(studyEntity);
+  }
+
+  private void addStudyMember(Long memberId, StudyEntity studyEntity) {
+    MemberEntity addMemberEntity = memberRepository.findById(memberId)
+        .orElseThrow(CustomMemberNotFoundException::new);
+    StudyHasMemberEntity studyHasMemberEntity = StudyHasMemberEntity.builder()
+        .member(addMemberEntity)
+        .study(studyEntity)
+        .registerTime(LocalDateTime.now())
+        .build();
+    studyEntity.getStudyHasMemberEntities().add(studyHasMemberEntity);
+    addMemberEntity.getStudyHasMemberEntities().add(studyHasMemberEntity);
+    studyHasMemberRepository.save(studyHasMemberEntity);
+
+    studyEntity.setMemberNumber(studyEntity.getMemberNumber() + 1);
+    studyRepository.save(studyEntity);
   }
 
   @Transactional
@@ -233,24 +228,37 @@ public class StudyService {
     checkStudyIsMine(myId, studyEntity);
 
     if (!isHeadMember(myId, memberId) && isAlreadyStudyMember(studyEntity, memberId)) {
-      MemberEntity removeMemberEntity = memberRepository.findById(memberId)
-          .orElseThrow(CustomMemberNotFoundException::new);
-      studyEntity.getStudyHasMemberEntities().removeIf(studyHasMemberEntity -> (
-          memberId.equals(studyHasMemberEntity.getMember().getId())
-      ));
-      removeMemberEntity.getStudyHasMemberEntities().removeIf(studyHasMemberEntity -> (
-          memberId.equals(studyHasMemberEntity.getMember().getId())
-      ));
-      studyHasMemberRepository.deleteByMember(removeMemberEntity);
+      removeStudyMember(memberId, studyEntity);
     }
 
+    return getStudyMemberDtoList(studyEntity);
+  }
+
+  private List<MemberDto> getStudyMemberDtoList(StudyEntity studyEntity) {
     List<MemberDto> memberDtoList = new ArrayList<>();
-    for (StudyHasMemberEntity studyHasMember : studyEntity.getStudyHasMemberEntities()) {
+    List<StudyHasMemberEntity> studyHasMemberEntities = studyEntity.getStudyHasMemberEntities();
+    studyHasMemberEntities.sort(Comparator.comparing(StudyHasMemberEntity::getRegisterTime));
+    for (StudyHasMemberEntity studyHasMember : studyHasMemberEntities) {
       MemberDto memberDto = new MemberDto();
       memberDto.initWithEntity(studyHasMember.getMember());
       memberDtoList.add(memberDto);
     }
     return memberDtoList;
+  }
+
+  private void removeStudyMember(Long memberId, StudyEntity studyEntity) {
+    MemberEntity removeMemberEntity = memberRepository.findById(memberId)
+        .orElseThrow(CustomMemberNotFoundException::new);
+    studyEntity.getStudyHasMemberEntities().removeIf(studyHasMemberEntity -> (
+        memberId.equals(studyHasMemberEntity.getMember().getId())
+    ));
+    removeMemberEntity.getStudyHasMemberEntities().removeIf(studyHasMemberEntity -> (
+        memberId.equals(studyHasMemberEntity.getMember().getId())
+    ));
+    studyHasMemberRepository.deleteByMember(removeMemberEntity);
+
+    studyEntity.setMemberNumber(studyEntity.getMemberNumber() - 1);
+    studyRepository.save(studyEntity);
   }
 
   private boolean isAlreadyStudyMember(StudyEntity studyEntity, Long memberId) {

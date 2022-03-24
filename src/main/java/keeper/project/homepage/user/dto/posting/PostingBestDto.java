@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import keeper.project.homepage.common.controller.util.ImageController;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.util.EnvironmentProperty;
+import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -40,14 +41,10 @@ public class PostingBestDto {
     this.category = postingEntity.getCategoryId().getName();
 
     //썸네일 경로 처리
-    if (postingEntity.getThumbnail() != null) {
-      this.thumbnailPath = EnvironmentProperty.getThumbnailPath(
-          postingEntity.getThumbnail().getId());
-    }
-    if (postingEntity.getMemberId().getThumbnail() != null) {
-      this.userThumbnailPath = EnvironmentProperty.getThumbnailPath(
-          postingEntity.getMemberId().getId());
-    }
+    this.thumbnailPath = postingEntity.getThumbnail() == null ?
+        EnvironmentProperty.getThumbnailPath(DefaultThumbnailInfo.ThumbPosting.getThumbnailId())
+        : EnvironmentProperty.getThumbnailPath(postingEntity.getThumbnail().getId());
+    this.userThumbnailPath = postingEntity.getMemberId().getThumbnailPath();
 
     //익명게시판 처리
     if (postingEntity.getCategoryId().getName().equals("익명게시판")) {

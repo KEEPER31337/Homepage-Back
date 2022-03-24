@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import keeper.project.homepage.entity.attendance.AttendanceEntity;
 import keeper.project.homepage.util.FileConversion;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.dto.sign.SignInDto;
@@ -119,7 +120,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     return generation;
   }
 
-  private void createFileForTest(String filePath) {
+  public void createFileForTest(String filePath) {
     FileConversion fileConversion = new FileConversion();
     fileConversion.makeSampleJPEGImage(filePath);
   }
@@ -144,24 +145,34 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     }
   }
 
+  public FileEntity generateFileEntity() {
+    final String usrDir = System.getProperty("user.dir") + File.separator;
+    final String fileRelDir = "keeper_files" + File.separator;
+
+    final String epochTime = Long.toHexString(System.nanoTime());
+    final String fileName = epochTime + ".jpg";
+
+    createFileForTest(usrDir + fileRelDir + fileName);
+
+    return fileRepository.save(FileEntity.builder()
+        .fileName(fileName)
+        .filePath(fileRelDir + fileName)
+        .fileSize(0L)
+        .ipAddress("111.111.111.111")
+        .build());
+  }
+
   public ThumbnailEntity generateThumbnailEntity() {
     final String usrDir = System.getProperty("user.dir") + File.separator;
     final String fileRelDir = "keeper_files" + File.separator;
     final String thumbRelDir = fileRelDir + "thumbnail" + File.separator;
 
     final String epochTime = Long.toHexString(System.nanoTime());
-    final String fileName = epochTime + ".jpg";
     final String thumbName = "thumb_" + epochTime + ".jpg";
 
-    createFileForTest(usrDir + fileRelDir + fileName);
     createFileForTest(usrDir + thumbRelDir + thumbName);
 
-    FileEntity fileEntity = fileRepository.save(FileEntity.builder()
-        .fileName(fileName)
-        .filePath(fileRelDir + fileName)
-        .fileSize(0L)
-        .ipAddress("111.111.111.111")
-        .build());
+    FileEntity fileEntity = generateFileEntity();
 
     return thumbnailRepository.save(ThumbnailEntity.builder()
         .path(thumbRelDir + thumbName)
@@ -243,6 +254,10 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         CategoryEntity.builder().name("testCategory" + epochTime).build());
   }
 
+  public CategoryEntity generateAnonymousCategoryEntity() {
+    return categoryRepository.findByName("익명게시판");
+  }
+
   public PostingEntity generatePostingEntity(MemberEntity writer, CategoryEntity category,
       Integer isNotice, Integer isSecret, Integer isTemp) {
     final String epochTime = Long.toHexString(System.nanoTime());
@@ -274,6 +289,9 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     final String epochTime = Long.toHexString(System.nanoTime());
     final LocalDateTime now = LocalDateTime.now();
     final String content = (parentId == 0L ? "댓글 내용 " : parentId + "의 대댓글 내용 ") + epochTime;
+
+    posting.increaseCommentCount();
+    postingRepository.save(posting);
     return commentRepository.save(CommentEntity.builder()
         .content(content)
         .registerTime(now)
@@ -285,6 +303,24 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         .member(writer)
         .postingId(posting)
         .build());
+  }
+
+  public void generateNewAttendanceWithTime(LocalDateTime time, MemberEntity memberEntity)
+      throws Exception {
+    attendanceRepository.save(
+        AttendanceEntity.builder()
+            .time(time)
+            .date(time.toLocalDate())
+            .point(10)
+            .rankPoint(500)
+            .continuousPoint(0)
+            .randomPoint((int) (Math.random() * 900 + 100))
+            .ipAddress("127.0.0.1")
+            .greetings("hi")
+            .continuousDay(1)
+            .rank(3)
+            .member(memberEntity)
+            .build());
   }
 
   public List<FieldDescriptor> generateCommonResponseFields(String docSuccess, String docCode,
@@ -363,7 +399,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         fieldWithPath(prefix + ".merit").description("상점"),
         fieldWithPath(prefix + ".demerit").description("벌점"),
         fieldWithPath(prefix + ".generation").description("기수 (7월 이후는 N.5기)"),
-        fieldWithPath(prefix + ".thumbnailPath").description("회원의 썸네일 이미지 조회 api path"),
+        fieldWithPath(prefix + ".thumbnailPath").description("회원의 썸네일 이미지 조회 api path").optional(),
         fieldWithPath(prefix + ".rank").description("회원 등급: null, 우수회원, 일반회원"),
         fieldWithPath(prefix + ".type").description("회원 상태: null, 비회원, 정회원, 휴면회원, 졸업회원, 탈퇴"),
         fieldWithPath(prefix + ".jobs").description(
@@ -381,6 +417,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     List<FieldDescriptor> commonFields = new ArrayList<>();
     commonFields.addAll(generateCommonResponseFields(success, code, msg));
     commonFields.addAll(Arrays.asList(
+        fieldWithPath(prefix + ".memberId").description("해당 유저의 ID"),
         fieldWithPath(prefix + ".nickName").description("해당 유저의 닉네임"),
         fieldWithPath(prefix + ".birthday").description("해당 유저의 생일").type(Date.class).optional(),
         fieldWithPath(prefix + ".checkFollowee").description(
@@ -390,9 +427,10 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         fieldWithPath(prefix + ".generation").description("기수 (7월 이후는 N.5기)").optional(),
         fieldWithPath(prefix + ".thumbnailPath").description("해당 유저의 썸네일 이미지 조회 api path")
             .optional(),
-        subsectionWithPath(prefix + ".memberRank").description("회원 등급: null, 우수회원, 일반회원"),
-        subsectionWithPath(prefix + ".memberType").description("회원 상태: null, 비회원, 정회원, 휴면회원, 졸업회원, 탈퇴"),
-        subsectionWithPath(prefix + ".memberJobs").description(
+        fieldWithPath(prefix + ".memberRank").description("회원 등급: null, 우수회원, 일반회원").optional(),
+        fieldWithPath(prefix + ".memberType").description("회원 상태: null, 비회원, 정회원, 휴면회원, 졸업회원, 탈퇴")
+            .optional(),
+        fieldWithPath(prefix + ".memberJobs").description(
             "동아리 직책: null, ROLE_회장, ROLE_부회장, ROLE_대외부장, ROLE_학술부장, ROLE_전산관리자, ROLE_서기, ROLE_총무, ROLE_사서")
     ));
     if (addDescriptors.length > 0) {
@@ -463,6 +501,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         fieldWithPath(prefix + ".isSecret").description("비밀글?"),
         fieldWithPath(prefix + ".isTemp").description("임시저장?"),
         fieldWithPath(prefix + ".category").description("카테고리 이름"),
+        fieldWithPath(prefix + ".categoryId").description("카테고리 ID"),
         fieldWithPath(prefix + ".thumbnailPath").description("게시글 썸네일 이미지 조회 api path")
             .type(String.class).optional(),
         fieldWithPath(prefix + ".files").description("첨부파일")
@@ -487,10 +526,13 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         fieldWithPath(prefix + ".likeCount").description("좋아요 개수"),
         fieldWithPath(prefix + ".dislikeCount").description("싫어요 개수"),
         fieldWithPath(prefix + ".parentId").description("대댓글인 경우, 부모 댓글의 id"),
-        fieldWithPath(prefix + ".writer").optional().description("작성자의 닉네임 (탈퇴한 작성자일 경우 null)"),
-        fieldWithPath(prefix + ".writerId").optional().description("작성자 id (탈퇴한 작성자일 경우 null)"),
+        fieldWithPath(prefix + ".writer").optional()
+            .description("작성자의 닉네임 (익명 게시판의 경우 \"익명\", 탈퇴한 작성자일 경우 null)"),
+        fieldWithPath(prefix + ".writerId").optional()
+            .description("작성자 id (익명 게시판의 경우 -1, 탈퇴한 작성자일 경우 null)"),
         fieldWithPath(prefix + ".writerThumbnailPath").optional().type(String.class)
-            .description("작성자의 썸네일 조회 api 경로 (탈퇴했을 경우 / 썸네일을 등록하지 않았을 경우 null)")));
+            .description(
+                "작성자의 썸네일 조회 api 경로 (익명 게시판의 경우 빈 문자열 \"\", 탈퇴했을 경우 / 썸네일을 등록하지 않았을 경우 null)")));
     if (descriptors.length > 0) {
       commonFields.addAll(Arrays.asList(descriptors));
     }

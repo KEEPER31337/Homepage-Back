@@ -162,6 +162,9 @@ public class StudyControllerTest extends StudyControllerTestSetup {
                     + "2: 여름학기" + "\n"
                     + "3: 2학기" + "\n"
                     + "4: 겨울학기"),
+                parameterWithName("studyDto.gitLink").description("github 주소").optional(),
+                parameterWithName("studyDto.noteLink").description("notion 주소").optional(),
+                parameterWithName("studyDto.etcLink").description("그 외 스터디 링크").optional(),
                 parameterWithName("studyDto.ipAddress").description("IP 주소"),
                 parameterWithName("memberIdList[0]").description(
                     "추가할 스터디원 id (스터디 생성자는 자동으로 추가됩니다.)"),
@@ -189,6 +192,8 @@ public class StudyControllerTest extends StudyControllerTestSetup {
     params.add("studyDto.information", NEW_INFORMATION);
     params.add("studyDto.year", String.valueOf(VALID_YEAR));
     params.add("studyDto.season", String.valueOf(VALID_SEASON));
+    params.add("studyDto.gitLink", GIT_LINK);
+    params.add("studyDto.noteLink", NOTE_LINK);
     params.add("studyDto.ipAddress", "127.0.0.1");
     params.add("memberIdList[0]", String.valueOf(memberEntity2.getId()));
     params.add("memberIdList[1]", String.valueOf(INVALID_MEMBER_ID));
@@ -227,6 +232,8 @@ public class StudyControllerTest extends StudyControllerTestSetup {
     params.add("studyDto.information", MODIFY_INFORMATION);
     params.add("studyDto.year", String.valueOf(MODIFY_VALID_YEAR));
     params.add("studyDto.season", String.valueOf(MODIFY_VALID_SEASON));
+    params.add("studyDto.gitLink", GIT_LINK);
+    params.add("studyDto.noteLink", NOTE_LINK);
     params.add("studyDto.ipAddress", "127.0.0.2");
     params.add("studyId", String.valueOf(studyEntity.getId()));
 
@@ -257,6 +264,9 @@ public class StudyControllerTest extends StudyControllerTestSetup {
                     + "2: 여름학기" + "\n"
                     + "3: 2학기" + "\n"
                     + "4: 겨울학기"),
+                parameterWithName("studyDto.gitLink").description("github 주소").optional(),
+                parameterWithName("studyDto.noteLink").description("notion 주소").optional(),
+                parameterWithName("studyDto.etcLink").description("그 외 스터디 링크").optional(),
                 parameterWithName("studyDto.ipAddress").description("IP 주소"),
                 parameterWithName("studyId").description("스터디 Id")
             ),

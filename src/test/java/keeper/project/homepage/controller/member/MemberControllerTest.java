@@ -5,10 +5,9 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -23,7 +22,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -125,21 +123,16 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   @Test
   @DisplayName("팔로우하기")
   public void follow() throws Exception {
-    String content = "{"
-        + "\"followeeLoginId\" : \"" + memberAdmin.getLoginId() + "\""
-        + "}";
     String docMsg = "팔로우할 회원이 존재하지 않는다면 실패합니다.";
     String docCode = "회원이 존재하지 않을 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
         + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
-    mockMvc.perform(MockMvcRequestBuilders.post("/v1/members/follow")
-            .header("Authorization", userToken)
-            .content(content)
-            .contentType(MediaType.APPLICATION_JSON_VALUE))
+    mockMvc.perform(post("/v1/members/follow/{id}", memberAdmin.getId())
+            .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andDo(document("member-follow",
-            requestFields(
-                fieldWithPath("followeeLoginId").description("팔로우할 회원의 로그인 아이디")
+            pathParameters(
+                parameterWithName("id").description("팔로우할 회원의 ID")
             ),
             responseFields(
                 generateCommonResponseFields("성공: true +\n실패: false", docCode, docMsg)
@@ -156,10 +149,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   @Test
   @DisplayName("언팔로우하기")
   public void unfollow() throws Exception {
-    String content = "{"
-        + "\"followeeLoginId\" : \"" + memberAdmin.getLoginId() + "\""
-        + "}";
-    memberService.follow(memberEntity.getId(), memberAdmin.getLoginId());
+    memberService.follow(memberEntity.getId(), memberAdmin.getId());
     List<FriendEntity> followeeList = memberEntity.getFollowee();
     FriendEntity followee = followeeList.get(followeeList.size() - 1);
 
@@ -167,15 +157,13 @@ public class MemberControllerTest extends MemberControllerTestSetup {
     String docMsg = "언팔로우할 회원이 존재하지 않는다면 실패합니다.";
     String docCode = "회원이 존재하지 않을 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
         + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
-    mockMvc.perform(MockMvcRequestBuilders.delete("/v1/members/unfollow")
-            .header("Authorization", userToken)
-            .content(content)
-            .contentType(MediaType.APPLICATION_JSON_VALUE))
+    mockMvc.perform(delete("/v1/members/unfollow/{id}", memberAdmin.getId())
+            .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andDo(document("member-unfollow",
-            requestFields(
-                fieldWithPath("followeeLoginId").description("팔로우한 회원의 로그인 아이디")
+            pathParameters(
+              parameterWithName("id").description("팔로우한 회원의 로그인 아이디")
             ),
             responseFields(
                 generateCommonResponseFields("성공: true +\n실패: false", docCode, docMsg)
@@ -191,7 +179,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   @DisplayName("내가 팔로우한 사람 조회하기")
   public void showFollowee() throws Exception {
     // follow: member -> admin(followee)
-    memberService.follow(memberEntity.getId(), memberAdmin.getLoginId());
+    memberService.follow(memberEntity.getId(), memberAdmin.getId());
 
     String docMsg = "";
     String docCode = "에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
@@ -213,7 +201,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
   @DisplayName("나를 팔로우한 사람 조회하기")
   public void showFollower() throws Exception {
     // follow: admin(follower) -> member
-    memberService.follow(memberAdmin.getId(), memberEntity.getLoginId());
+    memberService.follow(memberAdmin.getId(), memberEntity.getId());
 
     String docMsg = "";
     String docCode = "에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
@@ -264,12 +252,12 @@ public class MemberControllerTest extends MemberControllerTestSetup {
     for (int i = 0; i < followerNum; i++) {
       MemberEntity follower = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원,
           MemberRankName.일반회원);
-      memberService.follow(follower.getId(), memberEntity.getLoginId());
+      memberService.follow(follower.getId(), memberEntity.getId());
     }
     for (int i = 0; i < followeeNum; i++) {
       MemberEntity followee = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원,
           MemberRankName.일반회원);
-      memberService.follow(memberEntity.getId(), followee.getLoginId());
+      memberService.follow(memberEntity.getId(), followee.getId());
     }
 
     // TODO : 예외 처리 & doc 메세지 채우기 (회원 관리 전체적으로 예외 수정할 예정)

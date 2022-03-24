@@ -41,7 +41,7 @@ public class CategoryEntity {
 
   public void updateInfo(CategoryRequest categoryRequest) {
     this.name = categoryRequest.getName();
-    this.parentId = categoryRequest.getParentId();
+    this.parentId = categoryRequest.getParentId() == null ? 0 : categoryRequest.getParentId();
     this.href = categoryRequest.getHref();
   }
 }

@@ -35,6 +35,8 @@ public class StudyControllerTestSetup extends ApiControllerTestHelper {
   protected static final String NEW_INFORMATION = "새로운 스터디 내용";
   protected static final String MODIFY_TITLE = "수정된 스터디 제목";
   protected static final String MODIFY_INFORMATION = "수정된 스터디 내용";
+  protected static final String GIT_LINK = "https://github.com/gusah009"; // 나를 잊지 말아요~
+  protected static final String NOTE_LINK = "https://enormous-button-c5d.notion.site/KEEPER-NEW-HOMEPAGE-PROJECT-c4fd631881d84e4daa6fa14404ac6173";
 
   @BeforeAll
   protected static void createFile() {
@@ -79,9 +81,8 @@ public class StudyControllerTestSetup extends ApiControllerTestHelper {
         .registerTime(LocalDateTime.now())
         .year(VALID_YEAR)
         .season(VALID_SEASON)
-        .gitLink("https://github.com/gusah009") // 나를 잊지 말아요~
-        .noteLink(
-            "https://enormous-button-c5d.notion.site/KEEPER-NEW-HOMEPAGE-PROJECT-c4fd631881d84e4daa6fa14404ac6173")
+        .gitLink(GIT_LINK) // 나를 잊지 말아요~
+        .noteLink(NOTE_LINK)
         .etcLink("")
         .thumbnail(thumbnailEntity)
         .build());
@@ -96,6 +97,7 @@ public class StudyControllerTestSetup extends ApiControllerTestHelper {
         StudyHasMemberEntity.builder()
             .member(memberEntity)
             .study(studyEntity)
+            .registerTime(LocalDateTime.now())
             .build());
     memberEntity.getStudyHasMemberEntities().add(studyHasMemberEntity);
     studyEntity.getStudyHasMemberEntities().add(studyHasMemberEntity);

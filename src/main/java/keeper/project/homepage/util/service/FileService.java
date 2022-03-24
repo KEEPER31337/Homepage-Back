@@ -9,6 +9,8 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import keeper.project.homepage.util.ImageFormatChecking;
 import keeper.project.homepage.util.dto.FileDto;
 import keeper.project.homepage.entity.FileEntity;
@@ -19,6 +21,7 @@ import keeper.project.homepage.exception.file.CustomFileDeleteFailedException;
 import keeper.project.homepage.exception.file.CustomFileEntityNotFoundException;
 import keeper.project.homepage.exception.file.CustomFileTransferFailedException;
 import keeper.project.homepage.repository.FileRepository;
+import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;
 import org.springframework.stereotype.Service;
@@ -130,23 +133,26 @@ public class FileService {
     fileRepository.deleteById(deleteId);
   }
 
+  // TODO : thumbnail delete와 합치기
   public void deleteOriginalThumbnail(ThumbnailEntity deleteThumbnail) {
+    // 기본 썸네일이면 삭제 X
     Long deleteId = deleteThumbnail.getFile().getId();
+    List<Long> defaultIdList = Stream.of(DefaultThumbnailInfo.values())
+        .map(t -> t.getFileId())
+        .collect(Collectors.toList());
+    if (defaultIdList.contains(deleteId)) {
+      return;
+    }
+
     FileEntity deleted = fileRepository.findById(deleteId)
         .orElseThrow(CustomFileEntityNotFoundException::new);
-    if (!(fileRelDirPath + File.separator + defaultImageFileName).equals(
-        deleted.getFilePath())) { // 기본 이미지면 삭제 X
-      File originalImageFile = new File(
-          System.getProperty("user.dir") + File.separator + deleted.getFilePath());
-      String originalImageFileName = originalImageFile.getName();
-      if (originalImageFileName.equals(defaultImageFileName) == false) {
-        if (originalImageFile.exists() == false) {
-          throw new CustomFileNotFoundException();
-        }
-        if (originalImageFile.delete() == false) {
-          throw new CustomFileDeleteFailedException();
-        }
-      }
+    File originalImageFile = new File(
+        System.getProperty("user.dir") + File.separator + deleted.getFilePath());
+    if (originalImageFile.exists() == false) {
+      throw new CustomFileNotFoundException();
+    }
+    if (originalImageFile.delete() == false) {
+      throw new CustomFileDeleteFailedException();
     }
     deleteFileEntityById(deleteId);
   }

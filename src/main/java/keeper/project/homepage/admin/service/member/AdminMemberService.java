@@ -36,11 +36,12 @@ public class AdminMemberService {
   private final MemberHasMemberJobRepository memberHasMemberJobRepository;
   private final MemberJobRepository memberJobRepository;
 
-  public List<MemberDto> getMembers(Pageable pageable) {
+  public List<MemberDto> getMembers() {
     List<MemberDto> memberDtoList = new ArrayList<>();
-    List<MemberEntity> memberEntityList = memberRepository.findAll(pageable).getContent();
+    List<MemberEntity> memberEntityList = memberRepository.findAll();
 
     for(MemberEntity memberEntity : memberEntityList) {
+      if(memberEntity.getId().equals(1L)) continue;
       MemberDto memberDto = new MemberDto(memberEntity);
       memberDtoList.add(memberDto);
     }

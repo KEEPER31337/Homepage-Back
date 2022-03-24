@@ -62,7 +62,7 @@ public class BookManageService {
       throw new CustomBookOverTheMaxException("수량 초과입니다.");
     }
 
-    addBook(title, author, information, total, department, thumbnailEntity);
+    addBook(title, author, information, quantity, department, thumbnailEntity);
 
     return responseService.getSuccessResult();
   }
@@ -70,26 +70,35 @@ public class BookManageService {
   /**
    * 도서 추가
    */
-  public void addBook(String title, String author, String information, Long total,
+  public void addBook(String title, String author, String information, Long quantity,
       BookDepartmentEntity department, ThumbnailEntity thumbnailId) {
 
-    Long borrowState = 0L;
     if (bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
-      borrowState = bookRepository.findByTitleAndAuthor(title, author).get().getBorrow();
-    }
+      BookEntity updateBookEntity = bookRepository.findByTitleAndAuthor(title, author).get();
 
-    bookRepository.save(
-        BookEntity.builder()
-            .title(title)
-            .author(author)
-            .information(information)
-            .department(department)
-            .total(total)
-            .borrow(borrowState)
-            .enable(total - borrowState)
-            .registerDate(new Date())
-            .thumbnailId(thumbnailId)
-            .build());
+      Long nowTotal = updateBookEntity.getTotal();
+      Long nowEnable = updateBookEntity.getEnable();
+
+      updateBookEntity.setTotal(nowTotal + quantity);
+      updateBookEntity.setEnable(nowEnable + quantity);
+
+      bookRepository.save(updateBookEntity);
+
+    } else {
+
+      bookRepository.save(
+          BookEntity.builder()
+              .title(title)
+              .author(author)
+              .information(information)
+              .department(department)
+              .total(quantity)
+              .borrow(0L)
+              .enable(quantity)
+              .registerDate(new Date())
+              .thumbnailId(thumbnailId)
+              .build());
+    }
   }
 
   /**
@@ -243,6 +252,16 @@ public class BookManageService {
     }
     if (borrowedBook == quantity && borrowEntities.size() == 1) {
       bookBorrowRepository.delete(borrowEntities.get(0));
+
+      BookEntity nowBookEntity = bookRepository.findByTitleAndAuthor(title, author)
+          .orElseThrow(() -> new CustomBookNotFoundException());
+      Long nowBorrow = nowBookEntity.getBorrow();
+      Long nowEnable = nowBookEntity.getEnable();
+
+      nowBookEntity.setBorrow(nowBorrow - quantity);
+      nowBookEntity.setEnable(nowEnable + quantity);
+
+      bookRepository.save(nowBookEntity);
     } else {
       returnBook(title, author, returnMemberId, quantity, borrowEntities);
     }

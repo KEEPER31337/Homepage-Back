@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import keeper.project.homepage.repository.attendance.AttendanceRepository;
+import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.user.dto.posting.LikeAndDislikeDto;
 import keeper.project.homepage.user.dto.posting.PostingBestDto;
 import keeper.project.homepage.user.dto.posting.PostingDto;
@@ -40,10 +42,12 @@ public class PostingService {
   private final PostingRepository postingRepository;
   private final CategoryRepository categoryRepository;
   private final MemberRepository memberRepository;
+  private final CommentRepository commentRepository;
   private final FileRepository fileRepository;
   private final ThumbnailRepository thumbnailRepository;
   private final MemberHasPostingLikeRepository memberHasPostingLikeRepository;
   private final MemberHasPostingDislikeRepository memberHasPostingDislikeRepository;
+  private final AttendanceRepository attendanceRepository;
   private final AuthService authService;
 
   public static final Integer isNotTempPosting = 0;
@@ -53,6 +57,12 @@ public class PostingService {
   public static final Integer isNotNoticePosting = 0;
   public static final Integer isNoticePosting = 1;
   public static final Integer bestPostingCount = 10;
+  public static final Integer EXAM_BOARD_ACCESS_POINT = 20000;
+  public static final Integer EXAM_BOARD_ACCESS_COMMENT_COUNT = 5;
+  public static final Integer EXAM_BOARD_ACCESS_ATTEND_COUNT = 10;
+  public static final Long EXAM_CATEGORY_ID = 1377L;
+  public static final String EXAM_ACCESS_DENIED_TITLE = "접근할 수 없습니다.";
+  public static final String EXAM_ACCESS_DENIED_CONTENT = "공지사항을 확인해 주세요.";
 
   public List<PostingResponseDto> findAll(Pageable pageable) {
 
@@ -62,7 +72,7 @@ public class PostingService {
 
     for (PostingEntity postingEntity : postingEntities) {
       postingResponseDtos.add(new PostingResponseDto().initWithEntity(postingEntity,
-          (int) postingEntities.getTotalElements()));
+          (int) postingEntities.getTotalElements(), false));
     }
 
     return postingResponseDtos;
@@ -78,7 +88,7 @@ public class PostingService {
 
     for (PostingEntity postingEntity : postingEntities) {
       postingResponseDtos.add(new PostingResponseDto().initWithEntity(postingEntity,
-          (int) postingEntities.getTotalElements()));
+          (int) postingEntities.getTotalElements(), false));
     }
 
     return postingResponseDtos;
@@ -92,7 +102,7 @@ public class PostingService {
 
     for (PostingEntity postingEntity : postingEntities) {
       postingResponseDtos.add(new PostingResponseDto().initWithEntity(postingEntity,
-          postingEntities.size()));
+          postingEntities.size(), false));
     }
 
     return postingResponseDtos;
@@ -108,7 +118,7 @@ public class PostingService {
 
     for (PostingEntity postingEntity : postingEntities) {
       postingResponseDtos.add(new PostingResponseDto().initWithEntity(postingEntity,
-          postingEntities.size()));
+          postingEntities.size(), false));
     }
 
     return postingResponseDtos;
@@ -148,7 +158,7 @@ public class PostingService {
     // FIXME : request와 response용 dto를 나눴다면 initWithEntity() 대신 생성자로 초기화하는 게 좋을 것 같습니다
     // TODO : postingResponseDto의 initWithEntity가 init하는 동작이 아니라 새로운 dto를 반환해주는 동작을 수행하고 있습니다
     PostingResponseDto postingResponseDto = new PostingResponseDto();
-    return postingResponseDto.initWithEntity(posting, 1);
+    return postingResponseDto.initWithEntity(posting, 1, true);
   }
 
   public List<PostingResponseDto> findAllByMemberId(MemberEntity memberEntity, Pageable pageable) {
@@ -157,7 +167,7 @@ public class PostingService {
     List<PostingResponseDto> postingList = new ArrayList<>();
     for (PostingEntity posting : postingPage) {
       PostingResponseDto dto = new PostingResponseDto();
-      postingList.add(dto.initWithEntity(posting, (int) postingPage.getTotalElements()));
+      postingList.add(dto.initWithEntity(posting, (int) postingPage.getTotalElements(), false));
     }
     return postingList;
   }
@@ -298,7 +308,7 @@ public class PostingService {
 
     for (PostingEntity postingEntity : postingEntities) {
       postingResponseDtos.add(new PostingResponseDto().initWithEntity(postingEntity,
-          (int) postingEntities.getTotalElements()));
+          (int) postingEntities.getTotalElements(), false));
     }
 
     return postingResponseDtos;
@@ -401,5 +411,35 @@ public class PostingService {
       throw new CustomMemberNotFoundException();
     }
     return member.get();
+  }
+
+  public boolean isNotAccessExamBoard(CategoryEntity categoryEntity) {
+    if (!categoryEntity.getId().equals(EXAM_CATEGORY_ID)) {
+      return false;
+    }
+    MemberEntity visitMember = authService.getMemberEntityWithJWT();
+    Integer myPoint = visitMember.getPoint();
+    Long myCommentCount = commentRepository.countByMember(visitMember);
+    Long myAttendCount = attendanceRepository.countByMember(visitMember);
+
+    if (visitMember.getGeneration() < 13) {
+      return false;
+    }
+    if (myPoint >= EXAM_BOARD_ACCESS_POINT &&
+        myCommentCount >= EXAM_BOARD_ACCESS_COMMENT_COUNT &&
+        myAttendCount >= EXAM_BOARD_ACCESS_ATTEND_COUNT
+    ) {
+      return false;
+    }
+    return true;
+  }
+
+  public PostingResponseDto createNotAccessDto(PostingEntity postingEntity) {
+    PostingResponseDto postingResponseDto = new PostingResponseDto().initWithEntity(postingEntity,
+        1, true);
+    postingResponseDto.setTitle(EXAM_ACCESS_DENIED_TITLE);
+    postingResponseDto.setContent(EXAM_ACCESS_DENIED_CONTENT);
+    postingResponseDto.setFiles(new ArrayList<>());
+    return postingResponseDto;
   }
 }

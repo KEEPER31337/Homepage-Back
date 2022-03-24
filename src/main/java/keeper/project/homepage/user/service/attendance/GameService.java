@@ -60,7 +60,7 @@ public class GameService {
   public Boolean isOverDiceTimes() {
 
     GameEntity gameEntity = getOrResetGameEntity();
-    return gameEntity.getDicePerDay() > DICE_MAX_PLAYTIME;
+    return gameEntity.getDicePerDay() >= DICE_MAX_PLAYTIME;
   }
 
   @Transactional
@@ -110,7 +110,7 @@ public class GameService {
   public Boolean isOverRouletteTimes() {
 
     GameEntity gameEntity = getOrResetGameEntity();
-    return gameEntity.getRoulettePerDay() > ROULETTE_MAX_PLAYTIME;
+    return gameEntity.getRoulettePerDay() >= ROULETTE_MAX_PLAYTIME;
   }
 
   public RouletteDto checkRoulleteInfo() {
@@ -167,7 +167,7 @@ public class GameService {
   public Boolean isOverLottoTimes() {
 
     GameEntity gameEntity = getOrResetGameEntity();
-    return gameEntity.getLottoPerDay() > LOTTO_MAX_PLAYTIME;
+    return gameEntity.getLottoPerDay() >= LOTTO_MAX_PLAYTIME;
   }
 
   public LottoDto checkLottoTimes() {

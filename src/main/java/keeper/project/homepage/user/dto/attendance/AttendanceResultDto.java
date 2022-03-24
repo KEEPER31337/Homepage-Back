@@ -1,7 +1,8 @@
 package keeper.project.homepage.user.dto.attendance;
 
-import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.attendance.AttendanceEntity;
+import keeper.project.homepage.util.EnvironmentProperty;
+import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,7 +19,7 @@ public class AttendanceResultDto {
   private Long memberId;
   private String ipAddress;
   private String nickName;
-  private ThumbnailEntity thumbnail;
+  private String thumbnailPath;
   private String greetings;
   private Integer continuousDay;
   private Integer rank;
@@ -31,7 +32,7 @@ public class AttendanceResultDto {
     this.memberId = attendanceEntity.getMember().getId();
     this.ipAddress = hidingIpAddress(attendanceEntity.getIpAddress());
     this.nickName = attendanceEntity.getMember().getNickName();
-    this.thumbnail = attendanceEntity.getMember().getThumbnail();
+    this.thumbnailPath = null;
     this.greetings = attendanceEntity.getGreetings();
     this.continuousDay = attendanceEntity.getContinuousDay();
     this.rank = attendanceEntity.getRank();
@@ -39,6 +40,8 @@ public class AttendanceResultDto {
     this.rankPoint = attendanceEntity.getRankPoint();
     this.continuousPoint = attendanceEntity.getContinuousPoint();
     this.randomPoint = attendanceEntity.getRandomPoint();
+
+    this.thumbnailPath = attendanceEntity.getMember().getThumbnailPath();
   }
 
   private String hidingIpAddress(String ipAddress) {

@@ -8,6 +8,7 @@ import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.util.EnvironmentProperty;
+import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -41,10 +42,11 @@ public class PostingResponseDto {
   private Integer isSecret;
   private Integer isTemp;
   private String category;
+  private Long categoryId;
   private String thumbnailPath;
   private List<FileEntity> files;
 
-  public PostingResponseDto initWithEntity(PostingEntity postingEntity, Integer size) {
+  public PostingResponseDto initWithEntity(PostingEntity postingEntity, Integer size, boolean isOne) {
 
     ThumbnailEntity memberThumbnail = postingEntity.getMemberId().getThumbnail();
     ThumbnailEntity postingThumbnail = postingEntity.getThumbnail();
@@ -52,7 +54,7 @@ public class PostingResponseDto {
     PostingResponseDto postingResponseDto = PostingResponseDto.builder()
         .id(postingEntity.getId())
         .title(postingEntity.getTitle())
-        .content(postingEntity.getContent())
+        .content(isOne ? postingEntity.getContent() : "")
         .writer(postingEntity.getMemberId().getNickName())
         .writerId(postingEntity.getMemberId().getId())
         .writerThumbnailPath(null)
@@ -69,31 +71,24 @@ public class PostingResponseDto {
         .isSecret(postingEntity.getIsSecret())
         .isTemp(postingEntity.getIsTemp())
         .category(postingEntity.getCategoryId().getName())
+        .categoryId(postingEntity.getCategoryId().getId())
         .files(postingEntity.getFiles())
         .thumbnailPath(null)
         .build();
 
     // 썸네일 경로 처리
-    if (memberThumbnail != null) {
-      postingResponseDto.setWriterThumbnailPath(
-          EnvironmentProperty.getThumbnailPath(memberThumbnail.getId()));
-    }
-
-    if (postingThumbnail != null) {
-      postingResponseDto.setThumbnailPath(
-          EnvironmentProperty.getThumbnailPath(postingThumbnail.getId()));
-    }
+    postingResponseDto.setWriterThumbnailPath(postingEntity.getMemberId().getThumbnailPath());
+    postingResponseDto.setThumbnailPath(
+        postingThumbnail == null ?
+            EnvironmentProperty.getThumbnailPath(DefaultThumbnailInfo.ThumbPosting.getThumbnailId())
+            : EnvironmentProperty.getThumbnailPath(postingThumbnail.getId())
+    );
 
     // 익명게시판 처리
     if (postingEntity.getCategoryId().getName().equals("익명게시판")) {
       postingResponseDto.setWriter("익명");
       postingResponseDto.setWriterId(-1L);
       postingResponseDto.setWriterThumbnailPath("");
-    }
-
-    // 비밀글 처리
-    if (postingEntity.getIsSecret() == 1) {
-      postingResponseDto.setContent("비밀 게시글입니다.");
     }
 
     return postingResponseDto;

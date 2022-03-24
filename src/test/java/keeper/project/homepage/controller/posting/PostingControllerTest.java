@@ -24,7 +24,10 @@ import java.io.FileInputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.ApiControllerTestSetUp;
+import keeper.project.homepage.exception.posting.CustomCategoryNotFoundException;
+import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.util.FileConversion;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.dto.sign.SignInDto;
@@ -55,7 +58,7 @@ import org.springframework.util.MultiValueMap;
 
 @Transactional
 @Log4j2
-public class PostingControllerTest extends ApiControllerTestSetUp {
+public class PostingControllerTest extends ApiControllerTestHelper {
 
   final private String adminLoginId = "hyeonmoAdmin";
   final private String adminPassword = "keeper2";
@@ -75,16 +78,22 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
 
   private String userToken;
   private String adminToken;
+  private String freshManToken;
+  private String freshManHasAccessToken;
 
   private MemberEntity memberEntity;
   private MemberEntity adminEntity;
+  private MemberEntity freshMan;
+  private MemberEntity freshManHasAccess;
   private CategoryEntity categoryEntity;
+  private CategoryEntity notAccessCategoryTestEntity;
   private PostingEntity postingGeneralTest;
   private PostingEntity postingDeleteTest;
   private PostingEntity postingDeleteTest2;
   private PostingEntity postingModifyTest;
   private PostingEntity postingNoticeTest;
   private PostingEntity postingNoticeTest2;
+  private PostingEntity notAccessPostingTestEntity;
 
   private ThumbnailEntity generalThumbnail;
   private FileEntity generalImageFile;
@@ -96,19 +105,7 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   private FileEntity modifyImageFile;
 
   private final String userDirectory = System.getProperty("user.dir");
-  private final String generalTestImage = "keeper_files" + File.separator + "image.jpg";
-  private final String generalThumbnailImage =
-      "keeper_files" + File.separator + "thumbnail" + File.separator + "t_image.jpg";
-  private final String deleteTestImage = "keeper_files" + File.separator + "image2.jpg";
-  private final String deleteThumbnailImage =
-      "keeper_files" + File.separator + "thumbnail" + File.separator + "t_image2.jpg";
-  private final String deleteTestImage2 = "keeper_files" + File.separator + "image3.jpg";
-  private final String deleteThumbnailImage2 =
-      "keeper_files" + File.separator + "thumbnail" + File.separator + "t_image3.jpg";
   private final String createTestImage = "keeper_files" + File.separator + "createTest.jpg";
-  private final String modifyBefTestImage = "keeper_files" + File.separator + "modifyBefTest.jpg";
-  private final String modifyBefThumbnailImage =
-      "keeper_files" + File.separator + "thumbnail" + File.separator + "modifyBefTest.jpg";
   private final String modifyAftTestImage = "keeper_files" + File.separator + "modifyAftTest.jpg";
 
   private String getFileName(String filePath) {
@@ -116,331 +113,31 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
     return file.getName();
   }
 
-  @BeforeAll
-  public static void createFile() {
-    final String keeperFilesDirectoryPath = System.getProperty("user.dir") + File.separator
-        + "keeper_files";
-    final String thumbnailDirectoryPath = System.getProperty("user.dir") + File.separator
-        + "keeper_files" + File.separator + "thumbnail";
-    final String generalImagePath = keeperFilesDirectoryPath + File.separator + "image.jpg";
-    final String generalThumbnail = thumbnailDirectoryPath + File.separator + "t_image.jpg";
-    final String deleteTestImage = keeperFilesDirectoryPath + File.separator + "image2.jpg";
-    final String deleteThumbnail = thumbnailDirectoryPath + File.separator + "t_image2.jpg";
-    final String deleteTestImage2 = keeperFilesDirectoryPath + File.separator + "image3.jpg";
-    final String deleteThumbnail2 = thumbnailDirectoryPath + File.separator + "t_image3.jpg";
-    final String createTestImage = keeperFilesDirectoryPath + File.separator + "createTest.jpg";
-    final String modifyBefTestImage =
-        keeperFilesDirectoryPath + File.separator + "modifyBefTest.jpg";
-    final String modifyBefThumbnail =
-        thumbnailDirectoryPath + File.separator + "modifyBefTest.jpg";
-    final String modifyAftTestImage =
-        keeperFilesDirectoryPath + File.separator + "modifyAftTest.jpg";
-
-    File keeperFilesDir = new File(keeperFilesDirectoryPath);
-    File thumbnailDir = new File(thumbnailDirectoryPath);
-
-    if (!keeperFilesDir.exists()) {
-      keeperFilesDir.mkdir();
-    }
-
-    if (!thumbnailDir.exists()) {
-      thumbnailDir.mkdir();
-    }
-
-    createImageForTest(generalImagePath);
-    createImageForTest(generalThumbnail);
-    createImageForTest(deleteTestImage);
-    createImageForTest(deleteThumbnail);
-    createImageForTest(deleteTestImage2);
-    createImageForTest(deleteThumbnail2);
-    createImageForTest(createTestImage);
-    createImageForTest(modifyBefTestImage);
-    createImageForTest(modifyBefThumbnail);
-    createImageForTest(modifyAftTestImage);
-  }
-
-  private static void createImageForTest(String filePath) {
-    FileConversion fileConversion = new FileConversion();
-    fileConversion.makeSampleJPEGImage(filePath);
-  }
-
   @BeforeEach
   public void setUp() throws Exception {
+    createFileForTest(
+        userDirectory + File.separator + createTestImage);
+    createFileForTest(userDirectory + File.separator + modifyAftTestImage);
+    memberEntity = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    adminEntity = generateMemberEntity(MemberJobName.회장, MemberTypeName.정회원, MemberRankName.일반회원);
+    userToken = generateJWTToken(memberEntity);
+    adminToken = generateJWTToken(adminEntity);
 
-    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
-    MemberJobEntity adminJobEntity = memberJobRepository.findByName("ROLE_회장").get();
-    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
-        .memberJobEntity(memberJobEntity)
-        .build();
-    MemberHasMemberJobEntity adminHasMemberJobEntity = MemberHasMemberJobEntity.builder()
-        .memberJobEntity(adminJobEntity)
-        .build();
-    memberEntity = MemberEntity.builder()
-        .loginId(loginId)
-        .password(passwordEncoder.encode(password))
-        .realName(realName)
-        .nickName(nickName)
-        .emailAddress(emailAddress)
-        .studentId(studentId)
-        .generation(0F)
-        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
-        .build();
-    memberRepository.save(memberEntity);
+    categoryEntity = generateCategoryEntity();
+    generalThumbnail = generateThumbnailEntity();
+    deleteThumbnail = generateThumbnailEntity();
+    deleteThumbnail2 = generateThumbnailEntity();
+    modifyThumbnail = generateThumbnailEntity();
+    generalImageFile = generateFileEntity();
 
-    String content = "{\n"
-        + "    \"loginId\": \"" + loginId + "\",\n"
-        + "    \"password\": \"" + password + "\"\n"
-        + "}";
-    MvcResult result = mockMvc.perform(post("/v1/signin")
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(content))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.code").value(0))
-        .andExpect(jsonPath("$.msg").exists())
-        .andExpect(jsonPath("$.data").exists())
-        .andReturn();
+    postingGeneralTest = generatePostingEntity(memberEntity, categoryEntity, 0, 1, 0);
+    postingModifyTest = generatePostingEntity(memberEntity, categoryEntity, 0, 0, 0);
+    postingDeleteTest = generatePostingEntity(memberEntity, categoryEntity, 0, 0, 0);
+    postingDeleteTest2 = generatePostingEntity(memberEntity, categoryEntity, 0, 0, 0);
 
-    String resultString = result.getResponse().getContentAsString();
-    ObjectMapper mapper = new ObjectMapper();
-    SingleResult<SignInDto> sign = mapper.readValue(resultString, new TypeReference<>() {
-    });
-    userToken = sign.getData().getToken();
-
-    adminEntity = memberRepository.save(MemberEntity.builder()
-        .loginId(adminLoginId)
-        .password(passwordEncoder.encode(adminPassword))
-        .realName(adminRealName)
-        .nickName(adminNickName)
-        .emailAddress(adminEmailAddress)
-        .studentId(adminStudentId)
-        .generation(0F)
-        .memberJobs(new ArrayList<>(List.of(adminHasMemberJobEntity)))
-        .build());
-    String adminContent = "{\n"
-        + "    \"loginId\": \"" + adminLoginId + "\",\n"
-        + "    \"password\": \"" + adminPassword + "\"\n"
-        + "}";
-    MvcResult adminResult = mockMvc.perform(post("/v1/signin")
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(adminContent))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.code").value(0))
-        .andExpect(jsonPath("$.msg").exists())
-        .andExpect(jsonPath("$.data").exists())
-        .andReturn();
-
-    String adminResultString = adminResult.getResponse().getContentAsString();
-    SingleResult<SignInDto> adminSign = mapper.readValue(adminResultString, new TypeReference<>() {
-    });
-    adminToken = adminSign.getData().getToken();
-
-    categoryEntity = CategoryEntity.builder()
-        .name("테스트 게시판").build();
-    categoryRepository.save(categoryEntity);
-
-    generalImageFile = FileEntity.builder()
-        .fileName(getFileName(generalTestImage))
-        .filePath(generalTestImage)
-        .fileSize(0L)
-        .ipAddress(ipAddress1)
-        .build();
-    fileRepository.save(generalImageFile);
-
-    generalThumbnail = ThumbnailEntity.builder()
-        .path(generalThumbnailImage)
-        .file(generalImageFile).build();
-    thumbnailRepository.save(generalThumbnail);
-
-    deleteImageFile = FileEntity.builder()
-        .fileName(getFileName(deleteTestImage))
-        .filePath(deleteTestImage)
-        .fileSize(0L)
-        .ipAddress(ipAddress1)
-        .build();
-    fileRepository.save(deleteImageFile);
-
-    deleteThumbnail = ThumbnailEntity.builder()
-        .path(deleteThumbnailImage)
-        .file(deleteImageFile).build();
-    thumbnailRepository.save(deleteThumbnail);
-
-    deleteImageFile2 = FileEntity.builder()
-        .fileName(getFileName(deleteTestImage2))
-        .filePath(deleteTestImage2)
-        .fileSize(0L)
-        .ipAddress(ipAddress1)
-        .build();
-    fileRepository.save(deleteImageFile2);
-
-    deleteThumbnail2 = ThumbnailEntity.builder()
-        .path(deleteThumbnailImage2)
-        .file(deleteImageFile2).build();
-    thumbnailRepository.save(deleteThumbnail2);
-
-    modifyImageFile = FileEntity.builder()
-        .fileName(getFileName(modifyBefTestImage))
-        .filePath(modifyBefTestImage)
-        .fileSize(0L)
-        .ipAddress(ipAddress1)
-        .build();
-    fileRepository.save(modifyImageFile);
-
-    modifyThumbnail = ThumbnailEntity.builder()
-        .path(modifyBefThumbnailImage)
-        .file(modifyImageFile).build();
-    thumbnailRepository.save(modifyThumbnail);
-
-    postingGeneralTest = postingRepository.save(PostingEntity.builder()
-        .title("test 게시판 제목")
-        .content("test 게시판 제목 내용")
-        .memberId(memberEntity)
-        .categoryId(categoryEntity)
-        .thumbnail(generalThumbnail)
-        .ipAddress("192.11.222.333")
-        .allowComment(0)
-        .isNotice(0)
-        .isTemp(0)
-        .isSecret(1)
-        .likeCount(0)
-        .dislikeCount(0)
-        .commentCount(0)
-        .visitCount(0)
-        .registerTime(LocalDateTime.now())
-        .updateTime(LocalDateTime.now())
-        .password("asd")
-        .build());
-    memberEntity.getPosting().add(postingGeneralTest);
-
-    postingModifyTest = postingRepository.save(PostingEntity.builder()
-        .title("test 게시판 수정용 제목")
-        .content("test 게시판 수정용 내용")
-        .memberId(memberEntity)
-        .categoryId(categoryEntity)
-        .thumbnail(modifyThumbnail)
-        .ipAddress("192.11.223")
-        .allowComment(0)
-        .isNotice(0)
-        .isSecret(0)
-        .isTemp(0)
-        .likeCount(0)
-        .dislikeCount(1)
-        .commentCount(0)
-        .visitCount(0)
-        .registerTime(LocalDateTime.now())
-        .updateTime(LocalDateTime.now())
-        .password("asd2")
-        .build());
-    memberEntity.getPosting().add(postingModifyTest);
-
-    postingDeleteTest = postingRepository.save(PostingEntity.builder()
-        .title("test 게시판 제목2")
-        .content("test 게시판 제목 내용2")
-        .memberId(memberEntity)
-        .categoryId(categoryEntity)
-        .thumbnail(deleteThumbnail)
-        .ipAddress("192.11.223")
-        .allowComment(0)
-        .isNotice(0)
-        .isSecret(0)
-        .isTemp(0)
-        .likeCount(0)
-        .dislikeCount(1)
-        .commentCount(0)
-        .visitCount(0)
-        .registerTime(LocalDateTime.now())
-        .updateTime(LocalDateTime.now())
-        .password("asd2")
-        .build());
-    memberEntity.getPosting().add(postingDeleteTest);
-
-    postingDeleteTest2 = postingRepository.save(PostingEntity.builder()
-        .title("test 게시판 제목33")
-        .content("test 게시판 제목 내용33")
-        .memberId(memberEntity)
-        .categoryId(categoryEntity)
-        .thumbnail(deleteThumbnail2)
-        .ipAddress("192.11.223")
-        .allowComment(0)
-        .isNotice(0)
-        .isSecret(0)
-        .isTemp(0)
-        .likeCount(0)
-        .dislikeCount(1)
-        .commentCount(0)
-        .visitCount(0)
-        .registerTime(LocalDateTime.now())
-        .updateTime(LocalDateTime.now())
-        .password("asd2")
-        .build());
-    memberEntity.getPosting().add(postingDeleteTest2);
-
-    PostingEntity postingTempTest = postingRepository.save(PostingEntity.builder()
-        .title("임시 게시글 제목")
-        .content("임시 게시글 내용")
-        .memberId(memberEntity)
-        .categoryId(categoryEntity)
-        .thumbnail(deleteThumbnail)
-        .ipAddress("192.11.223")
-        .allowComment(0)
-        .isNotice(0)
-        .isSecret(0)
-        .isTemp(1)
-        .likeCount(0)
-        .dislikeCount(1)
-        .commentCount(0)
-        .visitCount(0)
-        .registerTime(LocalDateTime.now())
-        .updateTime(LocalDateTime.now())
-        .password("asd2")
-        .build());
-    memberEntity.getPosting().add(postingTempTest);
-
-    postingNoticeTest = postingRepository.save(PostingEntity.builder()
-        .title("test 공지 제목")
-        .content("test 공지 제목 내용")
-        .memberId(memberEntity)
-        .categoryId(categoryEntity)
-        .thumbnail(generalThumbnail)
-        .ipAddress("192.11.222.333")
-        .allowComment(0)
-        .isNotice(1)
-        .isTemp(0)
-        .isSecret(0)
-        .likeCount(0)
-        .dislikeCount(0)
-        .commentCount(0)
-        .visitCount(0)
-        .registerTime(LocalDateTime.now())
-        .updateTime(LocalDateTime.now())
-        .password("")
-        .build());
-    memberEntity.getPosting().add(postingNoticeTest);
-
-    postingNoticeTest2 = postingRepository.save(PostingEntity.builder()
-        .title("test 공지 제목2")
-        .content("test 공지 제목 내용2")
-        .memberId(memberEntity)
-        .categoryId(categoryEntity)
-        .thumbnail(generalThumbnail)
-        .ipAddress("192.11.222.333")
-        .allowComment(0)
-        .isNotice(1)
-        .isTemp(0)
-        .isSecret(0)
-        .likeCount(0)
-        .dislikeCount(0)
-        .commentCount(0)
-        .visitCount(0)
-        .registerTime(LocalDateTime.now())
-        .updateTime(LocalDateTime.now())
-        .password("")
-        .build());
-    memberEntity.getPosting().add(postingNoticeTest2);
-
+    PostingEntity postingTempTest = generatePostingEntity(memberEntity, categoryEntity, 0, 0, 1);
+    postingNoticeTest = generatePostingEntity(memberEntity, categoryEntity, 1, 0, 0);
+    postingNoticeTest2 = generatePostingEntity(memberEntity, categoryEntity, 1, 0, 0);
     FileEntity generalTestFile = FileEntity.builder()
         .postingId(postingGeneralTest)
         .fileName("test file")
@@ -460,6 +157,29 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
         .uploadTime(LocalDateTime.now())
         .ipAddress(postingModifyTest.getIpAddress())
         .build());
+
+    freshMan = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원,
+        MemberRankName.일반회원);
+    freshMan.changeGeneration(13);
+    freshManToken = generateJWTToken(freshMan);
+
+    freshManHasAccess = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원,
+        MemberRankName.일반회원);
+    freshManHasAccess.changeGeneration(13);
+    freshManHasAccess.updatePoint(PostingService.EXAM_BOARD_ACCESS_POINT);
+    for (int i = 0; i < PostingService.EXAM_BOARD_ACCESS_COMMENT_COUNT; i++) {
+      generateCommentEntity(postingGeneralTest, freshManHasAccess, 0L);
+    }
+    for (int i = 0; i < PostingService.EXAM_BOARD_ACCESS_ATTEND_COUNT; i++) {
+      generateNewAttendanceWithTime(LocalDateTime.now().minusDays(i), freshManHasAccess);
+    }
+    freshManHasAccessToken = generateJWTToken(freshManHasAccess);
+
+    notAccessCategoryTestEntity =
+        categoryRepository.findById(PostingService.EXAM_CATEGORY_ID)
+            .orElseThrow(CustomCategoryNotFoundException::new);
+    notAccessPostingTestEntity =
+        generatePostingEntity(memberEntity, notAccessCategoryTestEntity, 0, 0, 0);
   }
 
   @Test
@@ -486,8 +206,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
                 fieldWithPath("list[].id").description("게시물 ID"),
                 fieldWithPath("list[].title").description("게시물 제목"),
-                fieldWithPath("list[].content").description("게시물 내용"),
+                fieldWithPath("list[].content").description("게시물 내용 (하나 조회 아닐경우 빈 문자열)"),
                 fieldWithPath("list[].category").description("카테고리 이름"),
+                fieldWithPath("list[].categoryId").description("카테고리 ID"),
                 fieldWithPath("list[].writer").optional().description("작성자 (비밀 게시글일 경우 익명)"),
                 fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
                 fieldWithPath("list[].writerThumbnailPath").optional().type(JsonFieldType.STRING)
@@ -538,8 +259,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
                 fieldWithPath("list[].id").description("게시물 ID"),
                 fieldWithPath("list[].title").description("게시물 제목"),
-                fieldWithPath("list[].content").description("게시물 내용"),
+                fieldWithPath("list[].content").description("게시물 내용 (하나 조회 아닐경우 빈 문자열)"),
                 fieldWithPath("list[].category").description("카테고리 이름"),
+                fieldWithPath("list[].categoryId").description("카테고리 ID"),
                 fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
                 fieldWithPath("list[].writerThumbnailPath").optional().type(JsonFieldType.STRING)
@@ -585,8 +307,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
                 fieldWithPath("list[].id").description("게시물 ID"),
                 fieldWithPath("list[].title").description("게시물 제목"),
-                fieldWithPath("list[].content").description("게시물 내용"),
+                fieldWithPath("list[].content").description("게시물 내용 (하나 조회 아닐경우 빈 문자열)"),
                 fieldWithPath("list[].category").description("카테고리 이름"),
+                fieldWithPath("list[].categoryId").description("카테고리 ID"),
                 fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
                 fieldWithPath("list[].writerThumbnailPath").optional().type(JsonFieldType.STRING)
@@ -665,8 +388,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
                 fieldWithPath("data.id").description("게시물 ID"),
                 fieldWithPath("data.title").description("게시물 제목"),
-                fieldWithPath("data.content").description("게시물 내용"),
+                fieldWithPath("data.content").description("게시물 내용 (하나 조회 아닐경우 빈 문자열)"),
                 fieldWithPath("data.category").description("카테고리 이름"),
+                fieldWithPath("data.categoryId").description("카테고리 ID"),
                 fieldWithPath("data.writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("data.writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
                 fieldWithPath("data.writerThumbnailPath").optional().type(JsonFieldType.STRING)
@@ -693,6 +417,34 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
   }
 
   @Test
+  @DisplayName("시험 게시판 조건 충족 함")
+  public void getPostingExamAccess() throws Exception {
+
+    ResultActions result2 = mockMvc.perform(
+        RestDocumentationRequestBuilders.get("/v1/post/{pid}", notAccessPostingTestEntity.getId())
+            .header("Authorization", freshManHasAccessToken));
+
+    result2.andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(jsonPath("$.data.title").value(notAccessPostingTestEntity.getTitle()))
+        .andExpect(jsonPath("$.data.content").value(notAccessPostingTestEntity.getContent()))
+        .andDo(print());
+
+  }
+
+  @Test
+  @DisplayName("시험 게시판 조건 충족 안함")
+  public void getPostingAccessDeniedExamPosting() throws Exception {
+    ResultActions result = mockMvc.perform(
+        RestDocumentationRequestBuilders.get("/v1/post/{pid}", notAccessPostingTestEntity.getId())
+            .header("Authorization", freshManToken));
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(jsonPath("$.data.title").value(PostingService.EXAM_ACCESS_DENIED_TITLE))
+        .andExpect(jsonPath("$.data.content").value(PostingService.EXAM_ACCESS_DENIED_CONTENT))
+        .andDo(print());
+  }
+
+  @Test
   @DisplayName("게시글 하나 불러오기 - 비밀글")
   public void getPostingWithSecret() throws Exception {
     ResultActions result = mockMvc.perform(
@@ -715,8 +467,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
                 fieldWithPath("data.id").description("게시물 ID"),
                 fieldWithPath("data.title").description("게시물 제목"),
-                fieldWithPath("data.content").description("게시물 내용"),
+                fieldWithPath("data.content").description("게시물 내용 (하나 조회 아닐경우 빈 문자열)"),
                 fieldWithPath("data.category").description("카테고리 이름"),
+                fieldWithPath("data.categoryId").description("카테고리 ID"),
                 fieldWithPath("data.writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("data.writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
                 fieldWithPath("data.writerThumbnailPath").optional().type(JsonFieldType.STRING)
@@ -984,8 +737,9 @@ public class PostingControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
                 fieldWithPath("list[].id").description("게시물 ID"),
                 fieldWithPath("list[].title").description("게시물 제목"),
-                fieldWithPath("list[].content").description("게시물 내용"),
+                fieldWithPath("list[].content").description("게시물 내용 (하나 조회 아닐경우 빈 문자열)"),
                 fieldWithPath("list[].category").description("카테고리 이름"),
+                fieldWithPath("list[].categoryId").description("카테고리 ID"),
                 fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
                 fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
                 fieldWithPath("list[].writerThumbnailPath").optional().type(JsonFieldType.STRING)

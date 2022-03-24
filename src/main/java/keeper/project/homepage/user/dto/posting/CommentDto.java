@@ -8,6 +8,7 @@ import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.util.EnvironmentProperty;
+import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -46,6 +47,18 @@ public class CommentDto {
     setWriterInfo(commentEntity);
   }
 
+  public void initAnonymousWithEntity(CommentEntity commentEntity) {
+    this.id = commentEntity.getId();
+    this.content = commentEntity.getContent();
+    this.registerTime = commentEntity.getRegisterTime();
+    this.updateTime = commentEntity.getUpdateTime();
+    this.ipAddress = null;
+    this.likeCount = commentEntity.getLikeCount();
+    this.dislikeCount = commentEntity.getDislikeCount();
+    this.parentId = commentEntity.getParentId();
+    setSecretWriterInfo();
+  }
+
   public void setCheckedLike(boolean checkedLike) {
     this.checkedLike = checkedLike;
   }
@@ -59,10 +72,13 @@ public class CommentDto {
     if (member != null) {
       this.writer = member.getNickName();
       this.writerId = member.getId();
-      ThumbnailEntity thumbnail = member.getThumbnail();
-      if (thumbnail != null) {
-        this.writerThumbnailPath = EnvironmentProperty.getThumbnailPath(thumbnail.getId());
-      }
+      this.writerThumbnailPath = member.getThumbnailPath();
     }
+  }
+
+  private void setSecretWriterInfo() {
+    this.writer = "익명";
+    this.writerId = -1L;
+    this.writerThumbnailPath = "";
   }
 }

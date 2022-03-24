@@ -33,10 +33,7 @@ public class RankDto {
     this.id = memberEntity.getId();
     this.nickName = memberEntity.getNickName();
     this.point = memberEntity.getPoint();
-    if (memberEntity.getThumbnail() != null) {
-      this.thumbnailPath = EnvironmentProperty.getThumbnailPath(
-          memberEntity.getThumbnail().getId());
-    }
+    this.thumbnailPath = memberEntity.getThumbnailPath();
     if (memberEntity.getMemberJobs() != null || memberEntity.getMemberJobs().isEmpty() == false) {
       this.jobs = new ArrayList<>();
       memberEntity.getMemberJobs()
