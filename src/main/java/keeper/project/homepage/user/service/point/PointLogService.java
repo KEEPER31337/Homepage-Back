@@ -1,7 +1,9 @@
 package keeper.project.homepage.user.service.point;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import keeper.project.homepage.user.dto.point.request.PointGiftLogRequestDto;
 import keeper.project.homepage.user.dto.point.request.PointLogRequestDto;
 import keeper.project.homepage.user.dto.point.result.PointGiftLogResultDto;
@@ -14,6 +16,7 @@ import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.point.PointLogRepository;
 import keeper.project.homepage.common.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -83,19 +86,23 @@ public class PointLogService {
         updateMember.getPoint(), updatePresented.getPoint());
   }
 
-  public List<PointLogResultDto> getPointLogs(Pageable pageable) {
+  public Map<String, Object> getPointLogs(Pageable pageable) {
     MemberEntity memberEntity = authService.getMemberEntityWithJWT();
 
     List<PointLogResultDto> pointLogResultDtoList = new ArrayList<>();
-    List<PointLogEntity> pointLogEntityList = pointLogRepository.findAllByMemberOrPresentedMember(
+    Map<String, Object> result = new HashMap<>();
+    Page<PointLogEntity> pointLogEntityPage = pointLogRepository.findAllByMemberOrPresentedMember(
         memberEntity, memberEntity, pageable);
 
-    for(PointLogEntity pointLogEntity : pointLogEntityList) {
+    for(PointLogEntity pointLogEntity : pointLogEntityPage.getContent()) {
       PointLogResultDto pointLogResultDto = new PointLogResultDto(pointLogEntity);
       pointLogResultDtoList.add(pointLogResultDto);
     }
 
-    return pointLogResultDtoList;
+    result.put("isLast", pointLogEntityPage.isLast());
+    result.put("content", pointLogResultDtoList);
+
+    return result;
   }
 
 }

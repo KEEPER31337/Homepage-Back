@@ -206,6 +206,7 @@ public class PointLogControllerTest extends ApiControllerTestHelper {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.data.isLast").value(false))
         .andDo(document("point-lists-log",
             requestParameters(
                 parameterWithName("page").optional().description("페이지 번호(default = 0)"),
@@ -215,14 +216,28 @@ public class PointLogControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("list[].memberId").description("해당 포인트 로그를 보유한 멤버의 ID"),
-                fieldWithPath("list[].time").description("해당 포인트 로그가 생성된 시간"),
-                fieldWithPath("list[].point").description("포인트 변화량"),
-                fieldWithPath("list[].detail").description("포인트 변화를 발생시킨 내용"),
-                fieldWithPath("list[].isSpent").description("포인트 사용/적립 여부(0: 적립, 1: 사용)"),
-                fieldWithPath("list[].prePoint").description("포인트 변화가 발생하기 전 멤버의 포인트"),
-                fieldWithPath("list[].finalPoint").description("포인트 변화 발생 후 멤버의 포인트")
+                fieldWithPath("data.isLast").description("true: 마지막 페이지, +\nfalse: 다음 페이지 존재"),
+                fieldWithPath("data.content[].memberId").description("해당 포인트 로그를 보유한 멤버의 ID"),
+                fieldWithPath("data.content[].time").description("해당 포인트 로그가 생성된 시간"),
+                fieldWithPath("data.content[].point").description("포인트 변화량"),
+                fieldWithPath("data.content[].detail").description("포인트 변화를 발생시킨 내용"),
+                fieldWithPath("data.content[].isSpent").description("포인트 사용/적립 여부(0: 적립, 1: 사용)"),
+                fieldWithPath("data.content[].prePoint").description("포인트 변화가 발생하기 전 멤버의 포인트"),
+                fieldWithPath("data.content[].finalPoint").description("포인트 변화 발생 후 멤버의 포인트")
             )));
+  }
+
+  @Test
+  @DisplayName("포인트 내역 조회 - 성공(마지막 페이지)")
+  public void findAllPointLogByMember_Last() throws Exception {
+    mockMvc.perform(get("/v1/points")
+            .param("page", "3")
+            .param("size", "20")
+            .header("Authorization", userToken1))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.data.isLast").value(true));
   }
 
 }

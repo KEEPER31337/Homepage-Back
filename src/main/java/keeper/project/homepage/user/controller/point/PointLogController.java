@@ -1,5 +1,6 @@
 package keeper.project.homepage.user.controller.point;
 
+import java.util.Map;
 import keeper.project.homepage.user.dto.point.request.PointGiftLogRequestDto;
 import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.user.dto.point.result.PointGiftLogResultDto;
@@ -31,10 +32,10 @@ public class PointLogController {
 
   @Secured("ROLE_회원")
   @GetMapping(value = "")
-  public ListResult<PointLogResultDto> getPointLogs(
+  public SingleResult<Map<String, Object>> getPointLogs(
       @PageableDefault(size = 20, sort = "id", direction = Direction.DESC)Pageable pageable
   ) {
-    return responseService.getSuccessListResult(
+    return responseService.getSuccessSingleResult(
         pointLogService.getPointLogs(pageable));
   }
 
