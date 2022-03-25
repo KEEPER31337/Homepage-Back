@@ -135,6 +135,10 @@ include::{snippets}/member-other-posts-list/http-request.adoc[]
 
 include::{snippets}/member-other-posts-list/path-parameters.adoc[]
 
+==== Path Parameters
+
+include::{snippets}/member-other-posts-list/request-parameters.adoc[]
+
 === 응답
 
 ==== Response
