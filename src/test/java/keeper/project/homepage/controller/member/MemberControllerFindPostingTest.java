@@ -8,6 +8,7 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -17,6 +18,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.posting.CategoryEntity;
@@ -25,6 +29,7 @@ import keeper.project.homepage.user.service.posting.PostingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -74,7 +79,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
             .param("page", "0")
             .param("size", "10"))
         .andDo(print())
-        .andExpect(jsonPath("$.list.length()", lessThanOrEqualTo(10)))
+        .andExpect(jsonPath("$.data.content.length()", lessThanOrEqualTo(10)))
         .andExpect(status().isOk())
         .andDo(document("member-show-all-post",
             requestParameters(
@@ -82,10 +87,11 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
                 parameterWithName("size").description("한 페이지에 보이는 게시글 개수 (default : 10)")
             ),
             responseFields(
-                generatePostingResponseFields(ResponseType.LIST, "", docCode, docMsg)
+                generateResultMapPostingResponseFields(ResponseType.SINGLE, "", docCode, docMsg)
             )
         ));
   }
+
   @Test
   @DisplayName("자신이 임시저장한 게시글 조회하기")
   public void findAllTempPostingById() throws Exception {
@@ -96,7 +102,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
             .param("page", "0")
             .param("size", "10"))
         .andDo(print())
-        .andExpect(jsonPath("$.list.length()", lessThanOrEqualTo(10)))
+        .andExpect(jsonPath("$.data.content.length()", lessThanOrEqualTo(10)))
         .andExpect(status().isOk())
         .andDo(document("member-show-all-temp-post",
             requestParameters(
@@ -104,7 +110,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
                 parameterWithName("size").description("한 페이지에 보이는 게시글 개수 (default : 10)")
             ),
             responseFields(
-                generatePostingResponseFields(ResponseType.LIST, "", docCode, docMsg)
+                generateResultMapPostingResponseFields(ResponseType.SINGLE, "", docCode, docMsg)
             )
         ));
   }
@@ -190,10 +196,12 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
         + " +\n" + "그 외 실패한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     Long otherId = memberEntity2.getId();
     mockMvc.perform(get("/v1/members/{memberId}/posts", otherId)
-            .header("Authorization", userToken))
+            .header("Authorization", userToken)
+            .param("page", "0")
+            .param("size", "20"))
         .andDo(print())
-        .andExpect(jsonPath("$.list.length()", greaterThan(0)))
-        .andExpect(jsonPath("$.list.length()", lessThanOrEqualTo(10)))
+        .andExpect(jsonPath("$.data.content.length()", greaterThan(0)))
+        .andExpect(jsonPath("$.data.content.length()", lessThanOrEqualTo(10)))
         .andExpect(jsonPath("$.list.[?(@.writerId != %d)]", otherId).doesNotExist())
         .andExpect(jsonPath("$.list.[?(@.isTemp == %d)]",
             PostingService.isTempPosting).doesNotExist())
@@ -203,8 +211,13 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
             pathParameters(
                 parameterWithName("memberId").description("조회하려는 회원 아이디")
             ),
+            requestParameters(
+                parameterWithName("page").description("페이지 번호 (페이지 시작 번호 : 0)"),
+                parameterWithName("size").description("한 페이지에 보이는 게시글 개수 (default : 10)")
+            ),
             responseFields(
-                generatePostingResponseFields(ResponseType.LIST, "성공 시: success, 실패 시: fail",
+                generateResultMapPostingResponseFields(ResponseType.SINGLE,
+                    "성공 시: success, 실패 시: fail",
                     docCode, docMsg)
             )));
   }
@@ -237,6 +250,46 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
                 generatePostingResponseFields(ResponseType.SINGLE, "성공 시: success, 실패 시: fail",
                     docCode, docMsg)
             )));
+  }
+
+  private List<FieldDescriptor> generateResultMapPostingResponseFields(ResponseType type,
+      String success,
+      String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(Arrays.asList(
+        fieldWithPath(prefix + ".isLast").description("true: 마지막 페이지, +\nfalse: 다음 페이지 존재"),
+        fieldWithPath(prefix + ".content[].id").description("게시물 ID"),
+        fieldWithPath(prefix + ".content[].title").description("게시물 제목"),
+        fieldWithPath(prefix + ".content[].content").description(
+            "게시물 내용 (비밀 게시글일 경우 \"비밀 게시글입니다.\""),
+        fieldWithPath(prefix + ".content[].writer").description("작성자 (비밀 게시글일 경우 \"익명\")"),
+        fieldWithPath(prefix + ".content[].writerId").description("작성자 아이디 (비밀 게시글일 경우 -1)"),
+        fieldWithPath(prefix + ".content[].writerThumbnailPath").description(
+            "작성자 썸네일 이미지 조회 api path (비밀 게시글일 경우 null)").type(String.class).optional(),
+        fieldWithPath(prefix + ".content[].size").description("조건에 따라 조회한 게시글의 총 개수"),
+        fieldWithPath(prefix + ".content[].visitCount").description("조회 수"),
+        fieldWithPath(prefix + ".content[].likeCount").description("좋아요 수"),
+        fieldWithPath(prefix + ".content[].dislikeCount").description("싫어요 수"),
+        fieldWithPath(prefix + ".content[].commentCount").description("댓글 수"),
+        fieldWithPath(prefix + ".content[].registerTime").description("작성 시간"),
+        fieldWithPath(prefix + ".content[].updateTime").description("수정 시간"),
+        fieldWithPath(prefix + ".content[].ipAddress").description("IP 주소"),
+        fieldWithPath(prefix + ".content[].allowComment").description("댓글 허용?"),
+        fieldWithPath(prefix + ".content[].isNotice").description("공지글?"),
+        fieldWithPath(prefix + ".content[].isSecret").description("비밀글?"),
+        fieldWithPath(prefix + ".content[].isTemp").description("임시저장?"),
+        fieldWithPath(prefix + ".content[].category").description("카테고리 이름"),
+        fieldWithPath(prefix + ".content[].categoryId").description("카테고리 ID"),
+        fieldWithPath(prefix + ".content[].thumbnailPath").description("게시글 썸네일 이미지 조회 api path")
+            .type(String.class).optional(),
+        fieldWithPath(prefix + ".content[].files").description("첨부파일")
+    ));
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
+    }
+    return commonFields;
   }
 
 }

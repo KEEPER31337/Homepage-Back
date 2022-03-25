@@ -1,6 +1,8 @@
 package keeper.project.homepage.user.controller.member;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
 import keeper.project.homepage.common.dto.sign.EmailAuthDto;
 import keeper.project.homepage.user.dto.member.MemberDto;
@@ -9,7 +11,6 @@ import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.user.dto.member.OtherMemberInfoResult;
 import keeper.project.homepage.common.dto.result.SingleResult;
-import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.user.dto.posting.PostingResponseDto;
 import keeper.project.homepage.user.service.member.MemberDeleteService;
@@ -111,27 +112,33 @@ public class MemberController {
   // TODO : registerTime 기준으로 정렬이 제대로 안됨.
   @Secured("ROLE_회원")
   @GetMapping(value = "/posts")
-  public ListResult<PostingResponseDto> findAllPosting(
+  public SingleResult<Map<String, Object>> findAllPosting(
       @SortDefault(sort = "registerTime", direction = Direction.DESC)
       @PageableDefault(page = 0, size = 10) Pageable pageable) {
     Long id = authService.getMemberIdByJWT();
 
+    Map<String, Object> result = new HashMap<>();
     Page<PostingResponseDto> page = memberService.findAllPostingByIsTemp(id, pageable,
         PostingService.isNotTempPosting);
-    return responseService.getSuccessListResult(page.getContent());
+    result.put("isLast", page.isLast());
+    result.put("content", page.getContent());
+    return responseService.getSuccessSingleResult(result);
   }
 
   // TODO : registerTime 기준으로 정렬이 제대로 안됨.
   @Secured("ROLE_회원")
   @GetMapping(value = "/temp_posts")
-  public ListResult<PostingResponseDto> findAllTempPosting(
+  public SingleResult<Map<String, Object>> findAllTempPosting(
       @SortDefault(sort = "registerTime", direction = Direction.DESC)
       @PageableDefault(page = 0, size = 10) Pageable pageable) {
     Long id = authService.getMemberIdByJWT();
 
+    Map<String, Object> result = new HashMap<>();
     Page<PostingResponseDto> page = memberService.findAllPostingByIsTemp(id, pageable,
         PostingService.isTempPosting);
-    return responseService.getSuccessListResult(page.getContent());
+    result.put("isLast", page.isLast());
+    result.put("content", page.getContent());
+    return responseService.getSuccessSingleResult(result);
   }
 
   @Secured("ROLE_회원")
@@ -210,13 +217,12 @@ public class MemberController {
 
   @Secured("ROLE_회원")
   @GetMapping("/{memberId}/posts")
-  public ListResult<PostingResponseDto> findPostingListOfOther(
+  public SingleResult<Map<String, Object>> findPostingListOfOther(
       @PathVariable("memberId") Long memberId,
       @PageableDefault(size = 10, page = 0, sort = "registerTime", direction = Direction.DESC) Pageable pageable
   ) {
-    MemberEntity other = memberService.findById(memberId);
-    List<PostingResponseDto> postingList = postingService.findAllByMemberId(other, pageable);
-    return responseService.getSuccessListResult(postingList);
+    return responseService.getSuccessSingleResult(
+        postingService.findAllByMemberId(memberId, pageable));
   }
 
   @Secured("ROLE_회원")

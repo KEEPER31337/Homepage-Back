@@ -3,7 +3,9 @@ package keeper.project.homepage.user.service.posting;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import keeper.project.homepage.repository.attendance.AttendanceRepository;
 import keeper.project.homepage.repository.posting.CommentRepository;
@@ -29,6 +31,7 @@ import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.user.dto.posting.PostingResponseDto;
+import keeper.project.homepage.user.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -49,6 +52,7 @@ public class PostingService {
   private final MemberHasPostingDislikeRepository memberHasPostingDislikeRepository;
   private final AttendanceRepository attendanceRepository;
   private final AuthService authService;
+  private final MemberService memberService;
 
   public static final Integer isNotTempPosting = 0;
   public static final Integer isTempPosting = 1;
@@ -161,15 +165,23 @@ public class PostingService {
     return postingResponseDto.initWithEntity(posting, 1, true);
   }
 
-  public List<PostingResponseDto> findAllByMemberId(MemberEntity memberEntity, Pageable pageable) {
+  public Map<String, Object> findAllByMemberId(Long otherMemberId, Pageable pageable) {
+    MemberEntity other = memberService.findById(otherMemberId);
+
     Page<PostingEntity> postingPage = postingRepository.findAllByMemberIdAndIsTempAndIsSecret(
-        memberEntity, isNotTempPosting, isNotSecretPosting, pageable);
+        other, isNotTempPosting, isNotSecretPosting, pageable);
+
+    Map<String, Object> result = new HashMap<>();
     List<PostingResponseDto> postingList = new ArrayList<>();
-    for (PostingEntity posting : postingPage) {
+    for (PostingEntity posting : postingPage.getContent()) {
       PostingResponseDto dto = new PostingResponseDto();
       postingList.add(dto.initWithEntity(posting, (int) postingPage.getTotalElements(), false));
     }
-    return postingList;
+
+    result.put("isLast", postingPage.isLast());
+    result.put("content", postingList);
+
+    return result;
   }
 
   public PostingEntity save(PostingDto dto) {
