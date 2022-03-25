@@ -62,13 +62,10 @@ src/main/resources/static/docs/**/*.html
 keeper_files/*
 
 ### default 파일들 ###
-!keeper_files/default_thumbnail_lock_clear.png
-!keeper_files/default_thumbnail_input_password_clear.png
-!keeper_files/keeper_logo_key.png
-!keeper_files/keeper_logo_string.png
-!keeper_files/keeper_logo.png
-!keeper_files/default_thumbnail_square_clear.png
-!keeper_files/default_thumbnail_square.png
+!keeper_files/thumbnail/
+keeper_files/thumbnail/*
+!keeper_files/thumbnail/default
+!keeper_files/thumbnail/badge
 
 ### Log ###
 logs
