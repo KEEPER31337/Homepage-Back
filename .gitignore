@@ -59,7 +59,16 @@ ${sys:LOG_PATH}
 src/main/resources/static/docs/**/*.html
 
 ### 파일들 ###
-keeper_files
+keeper_files/*
+
+### default 파일들 ###
+!keeper_files/default_thumbnail_lock_clear.png
+!keeper_files/default_thumbnail_input_password_clear.png
+!keeper_files/keeper_logo_key.png
+!keeper_files/keeper_logo_string.png
+!keeper_files/keeper_logo.png
+!keeper_files/default_thumbnail_square_clear.png
+!keeper_files/default_thumbnail_square.png
 
 ### Log ###
 logs
