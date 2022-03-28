@@ -425,8 +425,11 @@ public class PostingService {
     return member.get();
   }
 
-  public boolean isNotAccessExamBoard(CategoryEntity categoryEntity) {
-    if (!categoryEntity.getId().equals(EXAM_CATEGORY_ID)) {
+  public boolean isNotAccessExamBoard(PostingEntity postingEntity) {
+    if (!postingEntity.getCategoryId().getId().equals(EXAM_CATEGORY_ID)) {
+      return false;
+    }
+    if (postingEntity.getIsNotice() == 1) {
       return false;
     }
     MemberEntity visitMember = authService.getMemberEntityWithJWT();

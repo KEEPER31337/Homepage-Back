@@ -94,6 +94,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
   private PostingEntity postingNoticeTest;
   private PostingEntity postingNoticeTest2;
   private PostingEntity notAccessPostingTestEntity;
+  private PostingEntity accessNoticePostingTestEntity;
 
   private ThumbnailEntity generalThumbnail;
   private FileEntity generalImageFile;
@@ -180,6 +181,8 @@ public class PostingControllerTest extends ApiControllerTestHelper {
             .orElseThrow(CustomCategoryNotFoundException::new);
     notAccessPostingTestEntity =
         generatePostingEntity(memberEntity, notAccessCategoryTestEntity, 0, 0, 0);
+    accessNoticePostingTestEntity =
+        generatePostingEntity(memberEntity, notAccessCategoryTestEntity, 1, 0, 0);
   }
 
   @Test
@@ -441,6 +444,20 @@ public class PostingControllerTest extends ApiControllerTestHelper {
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andExpect(jsonPath("$.data.title").value(PostingService.EXAM_ACCESS_DENIED_TITLE))
         .andExpect(jsonPath("$.data.content").value(PostingService.EXAM_ACCESS_DENIED_CONTENT))
+        .andDo(print());
+  }
+
+  @Test
+  @DisplayName("공지글은 조건 충족 안하더라도 열람 가능")
+  public void getPostingAccessSuccessNoticePosting() throws Exception {
+    ResultActions result = mockMvc.perform(
+        RestDocumentationRequestBuilders.get("/v1/post/{pid}",
+                accessNoticePostingTestEntity.getId())
+            .header("Authorization", freshManToken));
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andExpect(jsonPath("$.data.title").value(accessNoticePostingTestEntity.getTitle()))
+        .andExpect(jsonPath("$.data.content").value(accessNoticePostingTestEntity.getContent()))
         .andDo(print());
   }
 
