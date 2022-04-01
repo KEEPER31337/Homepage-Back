@@ -683,6 +683,26 @@ public class PostingControllerTest extends ApiControllerTestHelper {
   }
 
   @Test
+  @DisplayName("파일 삭제")
+  public void deleteFile() throws Exception {
+    ResultActions result = mockMvc.perform(
+        RestDocumentationRequestBuilders.get("/v1/post/delete/{fileId}", generalImageFile.getId().toString())
+            .header("Authorization", userToken));
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(print())
+        .andDo(document("post-file-delete",
+            pathParameters(
+                parameterWithName("fileId").description("삭제할 파일 ID")
+            ), responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("성공 : 0")
+            )
+        ));
+  }
+
+  @Test
   @DisplayName("게시글 삭제")
   public void deletePosting() throws Exception {
     ResultActions result = mockMvc.perform(
