@@ -232,7 +232,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("list[].size").description("총 게시물 수"),
                 subsectionWithPath("list[].files").description(
                         "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
-                    .optional()
+                    .optional().type(JsonFieldType.ARRAY)
             )
         ));
   }
@@ -285,7 +285,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("list[].size").description("총 게시물 수"),
                 subsectionWithPath("list[].files").description(
                         "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
-                    .optional()
+                    .optional().type(JsonFieldType.ARRAY)
             )
         ));
   }
@@ -333,7 +333,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("list[].size").description("총 게시물 수"),
                 subsectionWithPath("list[].files").description(
                         "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
-                    .optional()
+                    .optional().type(JsonFieldType.ARRAY)
             )
         ));
   }
@@ -751,7 +751,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
   public void searchPosting() throws Exception {
     ResultActions result = mockMvc.perform(get("/v1/post/search")
         .param("type", "T")
-        .param("keyword", "2")
+        .param("keyword", postingGeneralTest.getTitle())
         .param("page", "0")
         .param("size", "5")
         .param("category", categoryEntity.getId().toString())
@@ -797,7 +797,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("list[].size").description("총 게시물 수"),
                 subsectionWithPath("list[].files").description(
                         "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
-                    .optional()
+                    .optional().type(JsonFieldType.ARRAY)
             )
         ));
   }
