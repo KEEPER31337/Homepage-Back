@@ -26,7 +26,7 @@ public class MemberJobEntity implements Serializable {
   @Column(name = "name", length = 45)
   private String name;
 
-  @OneToMany(mappedBy = "memberJobEntity")
+  @OneToMany(mappedBy = "memberJobEntity", fetch = FetchType.EAGER)
   @JsonBackReference(value = "member-jobs")
   @Builder.Default
   private List<MemberHasMemberJobEntity> members = new ArrayList<>();
