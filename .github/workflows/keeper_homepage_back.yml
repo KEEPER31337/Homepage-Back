@@ -52,7 +52,9 @@ jobs:
         run: |
           echo "Building... please wait..."
           while [ ! -d application ];
-
+            do
+              sleep 1
+            done
           echo "Compress"
           tar -zcvf $(date +%Y%m%d).tar.gz dependencies snapshot-dependencies spring-boot-loader application
 
