@@ -40,6 +40,7 @@ import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.user.service.posting.PostingService;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -229,10 +230,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("list[].isNotice").description("공지글?"),
                 fieldWithPath("list[].isSecret").description("비밀글?"),
                 fieldWithPath("list[].isTemp").description("임시저장?"),
-                fieldWithPath("list[].size").description("총 게시물 수"),
-                subsectionWithPath("list[].files").description(
-                        "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
-                    .optional()
+                fieldWithPath("list[].size").description("총 게시물 수")
             )
         ));
   }
@@ -282,10 +280,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("list[].isNotice").description("공지글?"),
                 fieldWithPath("list[].isSecret").description("비밀글?"),
                 fieldWithPath("list[].isTemp").description("임시저장?"),
-                fieldWithPath("list[].size").description("총 게시물 수"),
-                subsectionWithPath("list[].files").description(
-                        "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
-                    .optional()
+                fieldWithPath("list[].size").description("총 게시물 수")
             )
         ));
   }
@@ -330,10 +325,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("list[].isNotice").description("공지글?"),
                 fieldWithPath("list[].isSecret").description("비밀글?"),
                 fieldWithPath("list[].isTemp").description("임시저장?"),
-                fieldWithPath("list[].size").description("총 게시물 수"),
-                subsectionWithPath("list[].files").description(
-                        "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
-                    .optional()
+                fieldWithPath("list[].size").description("총 게시물 수")
             )
         ));
   }
@@ -683,6 +675,28 @@ public class PostingControllerTest extends ApiControllerTestHelper {
   }
 
   @Test
+  @DisplayName("파일 삭제")
+  public void deleteFile() throws Exception {
+    ResultActions result = mockMvc.perform(
+        RestDocumentationRequestBuilders.get("/v1/post/delete/{fileId}", generalImageFile.getId().toString())
+            .header("Authorization", userToken));
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(print())
+        .andDo(document("post-file-delete",
+            pathParameters(
+                parameterWithName("fileId").description("삭제할 파일 ID")
+            ), responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("성공 : 0")
+            )
+        ));
+
+    Assertions.assertTrue(fileRepository.findById(generalImageFile.getId()).isEmpty());
+  }
+
+  @Test
   @DisplayName("게시글 삭제")
   public void deletePosting() throws Exception {
     ResultActions result = mockMvc.perform(
@@ -731,7 +745,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
   public void searchPosting() throws Exception {
     ResultActions result = mockMvc.perform(get("/v1/post/search")
         .param("type", "T")
-        .param("keyword", "2")
+        .param("keyword", postingGeneralTest.getTitle())
         .param("page", "0")
         .param("size", "5")
         .param("category", categoryEntity.getId().toString())
@@ -774,10 +788,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("list[].isNotice").description("공지글?"),
                 fieldWithPath("list[].isSecret").description("비밀글?"),
                 fieldWithPath("list[].isTemp").description("임시저장?"),
-                fieldWithPath("list[].size").description("총 게시물 수"),
-                subsectionWithPath("list[].files").description(
-                        "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
-                    .optional()
+                fieldWithPath("list[].size").description("총 게시물 수")
             )
         ));
   }
