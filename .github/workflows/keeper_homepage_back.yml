@@ -57,7 +57,7 @@ jobs:
               sleep 1
             done
 
-          echo "Compress
+          echo "Compress"
           sleep 5
           tar -zcvf $(date +%Y%m%d).tar.gz dependencies snapshot-dependencies spring-boot-loader application
 
