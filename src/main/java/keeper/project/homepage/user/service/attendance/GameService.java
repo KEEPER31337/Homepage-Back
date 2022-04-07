@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import keeper.project.homepage.exception.attendance.CustomGameIsOverException;
 import keeper.project.homepage.user.dto.point.request.PointLogRequestDto;
 import keeper.project.homepage.user.dto.attendance.GameInfoDto;
 import keeper.project.homepage.user.dto.attendance.LottoDto;
@@ -72,6 +73,10 @@ public class GameService {
 
     MemberEntity memberEntity = getMemberEntityWithJWT();
     GameEntity gameEntity = getOrResetGameEntity();
+
+    if (isOverDiceTimes()) {
+      throw new CustomGameIsOverException();
+    }
     gameEntity.increaseDiceTimes();
     gameEntity.setLastPlayTime(LocalDateTime.now());
     gameRepository.save(gameEntity);
@@ -128,6 +133,10 @@ public class GameService {
     RouletteDto rouletteDto = new RouletteDto();
     MemberEntity memberEntity = getMemberEntityWithJWT();
     GameEntity gameEntity = getOrResetGameEntity();
+
+    if (isOverRouletteTimes()) {
+      throw new CustomGameIsOverException();
+    }
     gameEntity.increaseRouletteTimes();
     rouletteDto.setRoulettePerDay(gameEntity.getRoulettePerDay());
     gameEntity.setLastPlayTime(LocalDateTime.now());
@@ -184,6 +193,9 @@ public class GameService {
 
     MemberEntity memberEntity = getMemberEntityWithJWT();
     GameEntity gameEntity = getOrResetGameEntity();
+    if (isOverLottoTimes()) {
+      throw new CustomGameIsOverException();
+    }
     gameEntity.increaseLottoTimes();
     gameEntity.setLastPlayTime(LocalDateTime.now());
 
