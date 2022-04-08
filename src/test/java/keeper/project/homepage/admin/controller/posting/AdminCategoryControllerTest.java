@@ -17,12 +17,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
+import jdk.jfr.Category;
+import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.ApiControllerTestSetUp;
-import keeper.project.homepage.dto.result.SingleResult;
-import keeper.project.homepage.dto.sign.SignInDto;
+import keeper.project.homepage.common.dto.result.SingleResult;
+import keeper.project.homepage.common.dto.sign.SignInDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
+import keeper.project.homepage.entity.posting.CategoryEntity;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,7 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @Log4j2
-public class AdminCategoryControllerTest extends ApiControllerTestSetUp {
+public class AdminCategoryControllerTest extends ApiControllerTestHelper {
 
   final private String loginId = "hyeonmomo";
   final private String password = "keeper";
@@ -44,6 +47,7 @@ public class AdminCategoryControllerTest extends ApiControllerTestSetUp {
   final private Integer point = 200;
 
   private MemberEntity member, admin;
+  private CategoryEntity categoryEntity;
   private String memberToken, adminToken;
 
   private MemberEntity generateTestMember(String role) {
@@ -97,6 +101,7 @@ public class AdminCategoryControllerTest extends ApiControllerTestSetUp {
     admin = generateTestMember("ROLE_회장");
     memberToken = generateTestMemberJWT(member);
     adminToken = generateTestMemberJWT(admin);
+    categoryEntity = generateCategoryEntity();
   }
 
   @Test
@@ -153,7 +158,7 @@ public class AdminCategoryControllerTest extends ApiControllerTestSetUp {
   @Test
   @DisplayName("카테고리 삭제 - 성공")
   public void deleteCategoryByIdSuccess() throws Exception {
-    mockMvc.perform(delete("/v1/admin/category/delete/{id}", 5125)
+    mockMvc.perform(delete("/v1/admin/category/delete/{id}", categoryEntity.getId())
             .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -199,11 +204,11 @@ public class AdminCategoryControllerTest extends ApiControllerTestSetUp {
   public void modifyCategoryByIdSuccess() throws Exception {
     String content = "{\n"
         + "    \"name\": \"" + "카테고리 수정 테스트" + "\",\n"
-        + "    \"parentId\": \"" + 2 + "\",\n"
+        + "    \"parentId\": \"" + null + "\",\n"
         + "    \"href\": \"" + "test" + "\"\n"
         + "}";
 
-    mockMvc.perform(put("/v1/admin/category/modify/{id}", 5125)
+    mockMvc.perform(put("/v1/admin/category/modify/{id}", categoryEntity.getId())
             .header("Authorization", adminToken)
             .content(content)
             .contentType(MediaType.APPLICATION_JSON))

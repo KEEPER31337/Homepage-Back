@@ -15,17 +15,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
-import keeper.project.homepage.dto.attendance.AttendanceDto;
-import keeper.project.homepage.dto.result.SingleResult;
-import keeper.project.homepage.dto.sign.SignInDto;
+import keeper.project.homepage.user.dto.attendance.AttendanceDto;
+import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.entity.attendance.AttendanceEntity;
+import keeper.project.homepage.common.dto.sign.SignInDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
@@ -271,7 +269,8 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.ipAddress").description("출석 당시 IP 주소 (앞의 두 자리는 가려집니다.)"),
                 fieldWithPath("data.memberId").description("출석자의 Id"),
                 fieldWithPath("data.nickName").description("출석자의 nickname"),
-                subsectionWithPath("data.thumbnail").description("출석자의 썸네일 정보"),
+                fieldWithPath("data.thumbnailPath").description(
+                    "출석자 썸네일 경로(썸네일을 등록하지 않았을 경우 null)"),
                 fieldWithPath("data.greetings").description("해당일 출석 메시지"),
                 fieldWithPath("data.continuousDay").description("현재 개근 일 수"),
                 fieldWithPath("data.rank").description("랭킹"),
@@ -317,7 +316,8 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
                 fieldWithPath("list[].memberId").description("출석자의 Id"),
                 fieldWithPath("list[].nickName").description("출석자의 nickname"),
-                subsectionWithPath("list[].thumbnail").description("출석자의 썸네일 정보"),
+                subsectionWithPath("list[].thumbnailPath").description(
+                    "출석자 썸네일 경로(썸네일을 등록하지 않았을 경우 null)"),
                 fieldWithPath("list[].greetings").description("해당일 출석 메시지"),
                 fieldWithPath("list[].continuousDay").description("현재 개근 일 수"),
                 fieldWithPath("list[].rank").description("랭킹"),

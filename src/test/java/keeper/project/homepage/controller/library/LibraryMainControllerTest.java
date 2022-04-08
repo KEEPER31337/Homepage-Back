@@ -5,7 +5,6 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -22,9 +21,8 @@ import java.util.Date;
 import java.util.List;
 import javax.transaction.Transactional;
 import keeper.project.homepage.ApiControllerTestSetUp;
-import keeper.project.homepage.dto.result.SingleResult;
-import keeper.project.homepage.dto.sign.SignInDto;
-import keeper.project.homepage.entity.library.BookDepartmentEntity;
+import keeper.project.homepage.common.dto.result.SingleResult;
+import keeper.project.homepage.common.dto.sign.SignInDto;
 import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
@@ -32,7 +30,6 @@ import keeper.project.homepage.entity.member.MemberJobEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.LinkedMultiValueMap;
@@ -186,7 +183,7 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].enable").description("대여 가능한 수"),
                 fieldWithPath("list[].registerDate").description("등록된 날짜"),
                 fieldWithPath("list[].department").description("도서 분류 코드").optional(),
-                fieldWithPath("list[].thumbnailId").description("썸네일 ID").optional()
+                fieldWithPath("list[].thumbnailPath").description("썸네일 조회 api path").optional()
             )));
   }
 
@@ -223,7 +220,7 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("list[].enable").description("대여 가능한 수"),
                 fieldWithPath("list[].registerDate").description("등록된 날짜"),
                 fieldWithPath("list[].department").description("도서 분류 코드").optional(),
-                fieldWithPath("list[].thumbnailId").description("썸네일 ID").optional()
+                fieldWithPath("list[].thumbnailPath").description("썸네일 조회 api path").optional()
             )));
   }
 
@@ -258,7 +255,7 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.enable").description("대여 가능한 수"),
                 fieldWithPath("data.registerDate").description("등록된 날짜"),
                 fieldWithPath("data.department").description("도서 분류 코드").optional(),
-                fieldWithPath("data.thumbnailId").description("썸네일 ID").optional()
+                fieldWithPath("data.thumbnailPath").description("썸네일 조회 api path").optional()
             )));
   }
 }

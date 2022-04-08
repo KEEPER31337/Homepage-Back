@@ -1,7 +1,6 @@
 package keeper.project.homepage.entity.library;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,11 +15,11 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import keeper.project.homepage.entity.ThumbnailEntity;
-import keeper.project.homepage.entity.posting.CategoryEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @Entity
@@ -43,15 +42,18 @@ public class BookEntity {
   @JoinColumn(name = "department")
   private BookDepartmentEntity department;
   @Column(name = "total", nullable = false)
+  @Setter
   private Long total;
   @Column(name = "borrow", nullable = false)
+  @Setter
   private Long borrow;
   @Column(name = "enable", nullable = false)
+  @Setter
   private Long enable;
   @Column(name = "register_date", nullable = false)
   @Temporal(TemporalType.TIMESTAMP)
   private Date registerDate;
-  @OneToOne(targetEntity = ThumbnailEntity.class, fetch = FetchType.LAZY)
+  @ManyToOne(targetEntity = ThumbnailEntity.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "thumbnail_id")
   @JsonIgnore
   private ThumbnailEntity thumbnailId;
