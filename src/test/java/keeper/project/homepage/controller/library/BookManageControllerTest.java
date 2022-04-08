@@ -27,7 +27,10 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import javax.transaction.Transactional;
+import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.ApiControllerTestSetUp;
+import keeper.project.homepage.entity.posting.CommentEntity;
+import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.util.FileConversion;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.dto.sign.SignInDto;
@@ -49,254 +52,39 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 @Transactional
-public class BookManageControllerTest extends ApiControllerTestSetUp {
+public class BookManageControllerTest extends ApiControllerTestHelper {
 
   private String userToken;
   private String adminToken;
 
-  final private String bookTitle1 = "Do it! 점프 투 파이썬";
-  final private String bookAuthor1 = "박응용";
-  final private String bookPicture1 = "JumpToPython.png";
-  final private String bookInformation1 = "파이썬의 기본이 잘 정리된 책이다.";
-  final private Long bookDepartment1 = 1L;
-  final private Long bookQuantity1 = 3L;
-  final private Long bookBorrow1 = 0L;
-  final private Long bookEnable1 = bookQuantity1 - bookBorrow1;
-  final private String bookRegisterDate1 = "20220116";
-
-  final private String bookTitle2 = "일반물리학";
-  final private String bookAuthor2 = "우웩";
-  final private String bookPicture2 = "우우웩.png";
-  final private String bookInformation2 = "우웩우웩";
-  final private Long bookQuantity2 = 2L;
-  final private Long bookBorrow2 = 1L;
-  final private Long bookEnable2 = bookQuantity2 - bookBorrow2;
-  final private String bookRegisterDate2 = "20220116";
-
-  final private String bookTitle3 = "일반물리학";
-  final private String bookAuthor3 = "우웩1";
-  final private String bookPicture3 = "우우웩1.png";
-  final private String bookInformation3 = "우웩우웩1";
-  final private Long bookQuantity3 = 2L;
-  final private Long bookBorrow3 = 0L;
-  final private Long bookEnable3 = bookQuantity3 - bookBorrow3;
-  final private String bookRegisterDate3 = "20220116";
-
-  final private String loginId = "hyeonmomo";
-  final private String password = "keeper3456";
-  final private String realName = "JeongHyeonMo";
-  final private String nickName = "JeongHyeonMo";
-  final private String emailAddress = "gusah@naver.com";
-  final private String studentId = "201724579";
-  final private String ipAddress1 = "127.0.0.1";
-
-  final private String adminLoginId = "hyeonmoAdmin";
-  final private String adminPassword = "keeper2345";
-  final private String adminRealName = "JeongHyeonMo2";
-  final private String adminNickName = "JeongHyeonMo2";
-  final private String adminEmailAddress = "test2@k33p3r.com";
-  final private String adminStudentId = "201724580";
-
-  final private long epochTime = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
-
-  private MemberEntity memberEntity;
-
-  private ThumbnailEntity generalThumbnail;
-  private FileEntity generalImageFile;
-
-  private final String userDirectory = System.getProperty("user.dir");
-  private final String generalTestImage = "keeper_files" + File.separator + "image.jpg";
-  private final String generalThumbnailImage =
-      "keeper_files" + File.separator + "thumbnail" + File.separator + "t_image.jpg";
-  private final String createTestImage = "keeper_files" + File.separator + "createTest.jpg";
-
-  private String getFileName(String filePath) {
-    File file = new File(filePath);
-    return file.getName();
-  }
-
-  @BeforeAll
-  public static void createFile() {
-    final String keeperFilesDirectoryPath = System.getProperty("user.dir") + File.separator
-        + "keeper_files";
-    final String thumbnailDirectoryPath = System.getProperty("user.dir") + File.separator
-        + "keeper_files" + File.separator + "thumbnail";
-    final String generalImagePath = keeperFilesDirectoryPath + File.separator + "image.jpg";
-    final String generalThumbnail = thumbnailDirectoryPath + File.separator + "t_image.jpg";
-    final String createTestImage = keeperFilesDirectoryPath + File.separator + "createTest.jpg";
-
-    File keeperFilesDir = new File(keeperFilesDirectoryPath);
-    File thumbnailDir = new File(thumbnailDirectoryPath);
-
-    if (!keeperFilesDir.exists()) {
-      keeperFilesDir.mkdir();
-    }
-
-    if (!thumbnailDir.exists()) {
-      thumbnailDir.mkdir();
-    }
-
-    createImageForTest(generalImagePath);
-    createImageForTest(generalThumbnail);
-    createImageForTest(createTestImage);
-  }
-
-  private static void createImageForTest(String filePath) {
-    FileConversion fileConversion = new FileConversion();
-    fileConversion.makeSampleJPEGImage(filePath);
-  }
+  private MemberEntity userEntity;
+  private MemberEntity adminEntity;
 
 
   @BeforeEach
   public void setUp() throws Exception {
-    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회장").get();
-    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
-        .memberJobEntity(memberJobEntity)
-        .build();
-    memberEntity = MemberEntity.builder()
-        .loginId(loginId)
-        .password(passwordEncoder.encode(password))
-        .realName(realName)
-        .nickName(nickName)
-        .emailAddress(emailAddress)
-        .studentId(studentId)
-        .generation(0F)
-        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
-        .build();
-    memberRepository.save(memberEntity);
+    userEntity = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    userToken = generateJWTToken(userEntity);
+    adminEntity = generateMemberEntity(MemberJobName.회장, MemberTypeName.정회원, MemberRankName.우수회원);
+    adminToken = generateJWTToken(adminEntity);
 
-    MemberJobEntity memberAdminJobEntity = memberJobRepository.findByName("ROLE_회장").get();
-    MemberHasMemberJobEntity hasMemberAdminJobEntity = MemberHasMemberJobEntity.builder()
-        .memberJobEntity(memberAdminJobEntity)
-        .build();
-    MemberEntity memberAdmin = MemberEntity.builder()
-        .loginId(adminLoginId)
-        .password(passwordEncoder.encode(adminPassword))
-        .realName(adminRealName)
-        .nickName(adminNickName)
-        .emailAddress(adminEmailAddress)
-        .studentId(adminStudentId)
-        .generation(0F)
-        .memberJobs(new ArrayList<>(List.of(hasMemberAdminJobEntity)))
-        .build();
-    memberRepository.save(memberAdmin);
+    ThumbnailEntity thumbnailEntity = generateThumbnailEntity();
 
-    String content = "{\n"
-        + "    \"loginId\": \"" + loginId + "\",\n"
-        + "    \"password\": \"" + password + "\"\n"
-        + "}";
-    MvcResult result = mockMvc.perform(post("/v1/signin")
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(content))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.code").value(0))
-        .andExpect(jsonPath("$.msg").exists())
-        .andExpect(jsonPath("$.data").exists())
-        .andReturn();
+    BookEntity bookEntity1 = generateBookEntity("점프 투 파이썬", "박응용", "파이썬이 잘 설명된 책이다", 2L, 0L,
+        thumbnailEntity);
+    BookEntity bookEntity2 = generateBookEntity("일반물리학", "Randall D. Knight", "", 3L, 1L,
+        thumbnailEntity);
+    BookEntity bookEntity3 = generateBookEntity("일반물리학", "박재열", "내가 쓴 물리학책", 1L, 0L,
+        thumbnailEntity);
 
-    String resultString = result.getResponse().getContentAsString();
-    ObjectMapper mapper = new ObjectMapper();
-    SingleResult<SignInDto> sign = mapper.readValue(resultString, new TypeReference<>() {
-    });
-    userToken = sign.getData().getToken();
+    BookBorrowEntity bookBorrowEntity1 = generateBookBorrowEntity(userEntity, bookEntity1, 1L,
+        java.sql.Date.valueOf(getDate(-17)), java.sql.Date.valueOf(getDate(-3)));
 
-    String adminContent = "{\n"
-        + "    \"loginId\": \"" + adminLoginId + "\",\n"
-        + "    \"password\": \"" + adminPassword + "\"\n"
-        + "}";
-    MvcResult adminResult = mockMvc.perform(post("/v1/signin")
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(adminContent))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.code").value(0))
-        .andExpect(jsonPath("$.msg").exists())
-        .andExpect(jsonPath("$.data").exists())
-        .andReturn();
-
-    String adminResultString = adminResult.getResponse().getContentAsString();
-    SingleResult<SignInDto> adminSign = mapper.readValue(adminResultString, new TypeReference<>() {
-    });
-    adminToken = adminSign.getData().getToken();
-
-    generalImageFile = FileEntity.builder()
-        .fileName(getFileName(generalTestImage))
-        .filePath(generalTestImage)
-        .fileSize(0L)
-        .ipAddress(ipAddress1)
-        .build();
-    fileRepository.save(generalImageFile);
-
-    generalThumbnail = ThumbnailEntity.builder()
-        .path(generalThumbnailImage)
-        .file(generalImageFile).build();
-    thumbnailRepository.save(generalThumbnail);
-
-    SimpleDateFormat stringToDate = new SimpleDateFormat("yyyymmdd");
-    Date registerDate1 = stringToDate.parse(bookRegisterDate1);
-    Date registerDate2 = stringToDate.parse(bookRegisterDate2);
-    Date registerDate3 = stringToDate.parse(bookRegisterDate3);
-
-    bookRepository.save(
-        BookEntity.builder()
-            .title(bookTitle1)
-            .author(bookAuthor1)
-            .information(bookInformation1)
-            .total(bookQuantity1)
-            .borrow(bookBorrow1)
-            .enable(bookEnable1)
-            .registerDate(registerDate1)
-            .build());
-
-    bookRepository.save(
-        BookEntity.builder()
-            .title(bookTitle2)
-            .author(bookAuthor2)
-            .information(bookInformation2)
-            .total(bookQuantity2)
-            .borrow(bookBorrow2)
-            .enable(bookEnable2)
-            .registerDate(registerDate2)
-            .thumbnailId(generalThumbnail)
-            .build());
-
-    bookRepository.save(
-        BookEntity.builder()
-            .title(bookTitle3)
-            .author(bookAuthor3)
-            .information(bookInformation3)
-            .total(bookQuantity3)
-            .borrow(bookBorrow3)
-            .enable(bookEnable3)
-            .registerDate(registerDate3)
-            .build());
-
-    BookEntity bookId = bookRepository.findByTitleAndAuthor(bookTitle1, bookAuthor1).get();
-    MemberEntity memberId = memberRepository.findByLoginId(loginId).get();
-
-    bookBorrowRepository.save(
-        BookBorrowEntity.builder()
-            .member(memberId)
-            .book(bookId)
-            .quantity(1L)
-            .borrowDate(java.sql.Date.valueOf(getDate(-17)))
-            .expireDate(java.sql.Date.valueOf(getDate(-3)))
-            .build());
-
-    bookBorrowRepository.save(
-        BookBorrowEntity.builder()
-            .member(memberId)
-            .book(bookId)
-            .quantity(1L)
-            .borrowDate(java.sql.Date.valueOf(getDate(-8)))
-            .expireDate(java.sql.Date.valueOf(getDate(1)))
-            .build());
+    BookBorrowEntity bookBorrowEntity2 = generateBookBorrowEntity(adminEntity, bookEntity1, 1L,
+        java.sql.Date.valueOf(getDate(-8)), java.sql.Date.valueOf(getDate(1)));
   }
 
-  private String getDate(int date) {
+  private String getDate(Integer date) {
     Calendar calendar = Calendar.getInstance();
     calendar.setTime(new Date());
     calendar.add(Calendar.DATE, date);
