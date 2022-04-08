@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import keeper.project.homepage.dto.etc.StaticWriteContentDto;
+import keeper.project.homepage.admin.dto.etc.StaticWriteContentDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

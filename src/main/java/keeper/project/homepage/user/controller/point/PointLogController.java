@@ -1,11 +1,12 @@
 package keeper.project.homepage.user.controller.point;
 
-import keeper.project.homepage.dto.point.request.PointGiftLogRequest;
-import keeper.project.homepage.dto.result.ListResult;
-import keeper.project.homepage.dto.point.result.PointGiftLogResult;
-import keeper.project.homepage.dto.point.result.PointLogResult;
-import keeper.project.homepage.dto.result.SingleResult;
-import keeper.project.homepage.service.ResponseService;
+import java.util.Map;
+import keeper.project.homepage.user.dto.point.request.PointGiftLogRequestDto;
+import keeper.project.homepage.common.dto.result.ListResult;
+import keeper.project.homepage.user.dto.point.result.PointGiftLogResultDto;
+import keeper.project.homepage.user.dto.point.result.PointLogResultDto;
+import keeper.project.homepage.common.dto.result.SingleResult;
+import keeper.project.homepage.common.service.ResponseService;
 
 import keeper.project.homepage.user.service.point.PointLogService;
 import lombok.RequiredArgsConstructor;
@@ -23,45 +24,28 @@ import org.springframework.web.bind.annotation.RestController;
 @Log4j2
 @RequiredArgsConstructor
 @RestController
-@RequestMapping(value = "/v1/point")
+@RequestMapping(value = "/v1/points")
 public class PointLogController {
 
   private final ResponseService responseService;
   private final PointLogService pointLogService;
 
   @Secured("ROLE_회원")
-  @PostMapping(value = "/transfer")
-  public SingleResult<PointGiftLogResult> transferPoint(
-      @RequestBody PointGiftLogRequest pointGiftLogRequest
+  @GetMapping(value = "")
+  public SingleResult<Map<String, Object>> getPointLogs(
+      @PageableDefault(size = 20, sort = "id", direction = Direction.DESC)Pageable pageable
   ) {
     return responseService.getSuccessSingleResult(
-        pointLogService.transferPoint(pointGiftLogRequest));
+        pointLogService.getPointLogs(pageable));
   }
 
   @Secured("ROLE_회원")
-  @GetMapping(value = "/lists/log")
-  public ListResult<PointLogResult> findAllPointLogByMember(
-      @PageableDefault(size = 20, sort = "time", direction = Direction.DESC)Pageable pageable
+  @PostMapping(value = "/present")
+  public SingleResult<PointGiftLogResultDto> presentingPoint(
+      @RequestBody PointGiftLogRequestDto pointGiftLogRequestDto
   ) {
-    return responseService.getSuccessListResult(
-        pointLogService.findAllPointLogByMember(pageable));
+    return responseService.getSuccessSingleResult(
+        pointLogService.presentingPoint(pointGiftLogRequestDto));
   }
 
-  @Secured("ROLE_회원")
-  @GetMapping(value = "/lists/gift/sent")
-  public ListResult<PointGiftLogResult> findAllSentPointGiftLog(
-      @PageableDefault(size = 20, sort = "time", direction = Direction.DESC)Pageable pageable
-  ) {
-    return responseService.getSuccessListResult(
-        pointLogService.findAllSentPointGiftLog(pageable));
-  }
-
-  @Secured("ROLE_회원")
-  @GetMapping(value = "/lists/gift/received")
-  public ListResult<PointGiftLogResult> findAllReceivedPointGiftLog(
-      @PageableDefault(size = 20, sort = "time", direction = Direction.DESC)Pageable pageable
-  ) {
-    return responseService.getSuccessListResult(
-        pointLogService.findAllReceivedPointGiftLog(pageable));
-  }
 }

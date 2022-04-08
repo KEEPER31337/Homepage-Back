@@ -19,8 +19,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.entity.study.StudyHasMemberEntity;
+import keeper.project.homepage.util.EnvironmentProperty;
+import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -100,18 +104,21 @@ public class MemberEntity implements UserDetails, Serializable {
   @Column(name = "generation")
   private Float generation;
 
-  @OneToOne
+  @ManyToOne
   @JoinColumn(name = "thumbnail_id")
-  // DEFAULT 1
   private ThumbnailEntity thumbnail;
-
-  @OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE)
-  @Builder.Default
-  private List<FriendEntity> follower = new ArrayList<>();
 
   @OneToMany(mappedBy = "followee", cascade = CascadeType.REMOVE)
   @Builder.Default
+  private List<FriendEntity> follower = new ArrayList<>();
+
+  @OneToMany(mappedBy = "follower", cascade = CascadeType.REMOVE)
+  @Builder.Default
   private List<FriendEntity> followee = new ArrayList<>();
+
+  @OneToMany(mappedBy = "member", orphanRemoval = true, fetch = FetchType.LAZY)
+  @Builder.Default
+  private List<StudyHasMemberEntity> studyHasMemberEntities = new ArrayList<>();
 
   public void changePassword(String newPassword) {
     this.password = newPassword;
@@ -213,6 +220,22 @@ public class MemberEntity implements UserDetails, Serializable {
 
   public void changeGeneration(float generation) {
     this.generation = generation;
+  }
+
+  public List<String> getJobs() {
+    List<String> jobs = new ArrayList<>();
+    if (getMemberJobs() != null || getMemberJobs().isEmpty() == false) {
+      getMemberJobs()
+          .forEach(job ->
+              jobs.add(job.getMemberJobEntity().getName()));
+    }
+    return jobs;
+  }
+
+  public String getThumbnailPath() {
+    return getThumbnail() == null ?
+        EnvironmentProperty.getThumbnailPath(DefaultThumbnailInfo.ThumbMember.getThumbnailId())
+        : EnvironmentProperty.getThumbnailPath(getThumbnail().getId());
   }
 
   @PrePersist

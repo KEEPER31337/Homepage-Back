@@ -53,12 +53,19 @@ src/main/resources/application.properties
 ._.DS_Store
 **/.DS_Store
 **/._.DS_Store
+${sys:LOG_PATH}
 
 ### API 문서 ###
 src/main/resources/static/docs/**/*.html
 
 ### 파일들 ###
-keeper_files
+keeper_files/*
+
+### default 파일들 ###
+!keeper_files/thumbnail/
+keeper_files/thumbnail/*
+!keeper_files/thumbnail/default
+!keeper_files/thumbnail/badge
 
 ### Log ###
 logs
@@ -71,3 +78,5 @@ docker/config
 docker/app.jar
 docker/ESSENTIAL
 docker/ESSENTIAL.zip
+
+src/main/generated

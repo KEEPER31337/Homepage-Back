@@ -2,8 +2,8 @@ package keeper.project.homepage.user.service.posting;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import keeper.project.homepage.dto.posting.category.result.CategoryResult;
-import keeper.project.homepage.dto.posting.category.result.CategoryWithChildResult;
+import keeper.project.homepage.admin.dto.category.result.CategoryResult;
+import keeper.project.homepage.admin.dto.category.result.CategoryWithChildResult;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +16,12 @@ public class CategoryService {
   private final CategoryRepository categoryRepository;
 
   public List<CategoryWithChildResult> getAllHeadCategoryAndChild() {
-    List<CategoryEntity> categoryEntities = categoryRepository.findAllByParentIdIsNull();
+    List<CategoryEntity> categoryEntities = categoryRepository.findAllByParentId(0L);
     return categoryEntities.stream().map(CategoryWithChildResult::new).collect(Collectors.toList());
   }
 
   public List<CategoryResult> getAllHeadCategory() {
-    List<CategoryEntity> categoryEntities = categoryRepository.findAllByParentIdIsNull();
+    List<CategoryEntity> categoryEntities = categoryRepository.findAllByParentId(0L);
     return categoryEntities.stream().map(CategoryResult::new).collect(Collectors.toList());
   }
 

@@ -1,6 +1,5 @@
 package keeper.project.homepage.user.service.library;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -14,13 +13,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import keeper.project.homepage.user.dto.library.BookResult;
 import keeper.project.homepage.entity.library.BookEntity;
+import keeper.project.homepage.exception.library.CustomBookNotFoundException;
 import keeper.project.homepage.repository.library.BookRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -28,7 +26,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import reactor.core.Exceptions;
 
 @Service
 @RequiredArgsConstructor
@@ -38,14 +35,15 @@ public class LibraryMainService {
   private ObjectMapper objectMapper;
 
 
-  public List<BookEntity> displayTenBooks(Pageable pageable) {
+  public List<BookResult> displayTenBooks(Pageable pageable) {
 
     List<BookEntity> bookEntityPage = bookRepository.findAll(pageable).getContent();
 
-    return bookEntityPage;
+    return getBookResults(bookEntityPage);
   }
 
-  public List<BookEntity> searchBooks(String keyword, Pageable pageable) {
+
+  public List<BookResult> searchBooks(String keyword, Pageable pageable) {
     List<BookEntity> bookEntitiesTitle = bookRepository.findByTitleContaining(keyword, pageable);
     List<BookEntity> bookEntitiesAuthor = bookRepository.findByAuthorContaining(keyword, pageable);
     List<BookEntity> bookEntitiesInformation = bookRepository.findByInformationContaining(keyword,
@@ -57,11 +55,29 @@ public class LibraryMainService {
 
     List<BookEntity> bookEntities = new ArrayList<>(bookEntitySet);
 
-    return bookEntities;
+    return getBookResults(bookEntities);
   }
 
-  public BookEntity selectedBook(String title, String author) {
-    return bookRepository.findByTitleAndAuthor(title, author).get();
+  public BookResult selectedBook(String title, String author) {
+    BookEntity book = bookRepository.findByTitleAndAuthor(title, author).orElseThrow(
+        CustomBookNotFoundException::new);
+
+    return getBookResult(book);
+  }
+
+  private BookResult getBookResult(BookEntity book) {
+    BookResult bookDto = new BookResult();
+    bookDto.initWithEntity(book);
+    return bookDto;
+  }
+
+  private List<BookResult> getBookResults(List<BookEntity> bookEntityPage) {
+    List<BookResult> bookDtoList = new ArrayList<>();
+    for (BookEntity book : bookEntityPage) {
+      BookResult bookDto = getBookResult(book);
+      bookDtoList.add(bookDto);
+    }
+    return bookDtoList;
   }
 
   public void sendBorrowMessage(String title, String author, Long quantity)
@@ -93,15 +109,15 @@ public class LibraryMainService {
 
   }
 
-  private String getLoginCode() throws Exception{
-      HttpClient httpClient = HttpClient.newBuilder().version(Version.HTTP_1_1).build();
-      String result = httpClient.sendAsync(
-          HttpRequest.newBuilder(
-              new URI(
-                  "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=0e34aed4f97818cc672325fe03160328&redirect_uri=https://localhost:8080/v1/selectedbook/borrow")
-          ).GET().build(),
-          HttpResponse.BodyHandlers.ofString()
-      ).thenApply(HttpResponse::body).get();
+  private String getLoginCode() throws Exception {
+    HttpClient httpClient = HttpClient.newBuilder().version(Version.HTTP_1_1).build();
+    String result = httpClient.sendAsync(
+        HttpRequest.newBuilder(
+            new URI(
+                "https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=0e34aed4f97818cc672325fe03160328&redirect_uri=https://localhost:8080/v1/selectedbook/borrow")
+        ).GET().build(),
+        HttpResponse.BodyHandlers.ofString()
+    ).thenApply(HttpResponse::body).get();
     System.out.println(result);
 
     return result;

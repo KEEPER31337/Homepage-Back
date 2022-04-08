@@ -7,34 +7,34 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
-import keeper.project.homepage.common.ImageCenterCrop;
-import keeper.project.homepage.dto.EmailAuthDto;
-import keeper.project.homepage.dto.member.MemberDto;
-import keeper.project.homepage.dto.posting.PostingDto;
-import keeper.project.homepage.dto.result.OtherMemberInfoResult;
+import keeper.project.homepage.exception.member.CustomAccessVirtualMemberException;
+import keeper.project.homepage.user.dto.posting.PostingResponseDto;
+import keeper.project.homepage.user.dto.member.MemberFollowDto;
+import keeper.project.homepage.util.ImageCenterCrop;
+import keeper.project.homepage.common.dto.sign.EmailAuthDto;
+import keeper.project.homepage.user.dto.member.MemberDto;
+import keeper.project.homepage.user.dto.member.OtherMemberInfoResult;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.EmailAuthRedisEntity;
 import keeper.project.homepage.entity.member.FriendEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.exception.CustomAuthenticationEntryPointException;
+import keeper.project.homepage.exception.sign.CustomAuthenticationEntryPointException;
 import keeper.project.homepage.exception.member.CustomMemberDuplicateException;
 import keeper.project.homepage.exception.member.CustomMemberEmptyFieldException;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.member.EmailAuthRedisRepository;
 import keeper.project.homepage.repository.member.FriendRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
-import keeper.project.homepage.service.FileService;
-import keeper.project.homepage.service.ThumbnailService;
-import keeper.project.homepage.service.ThumbnailService.ThumbnailSize;
-import keeper.project.homepage.service.mail.MailService;
-import keeper.project.homepage.service.sign.DuplicateCheckService;
-import keeper.project.homepage.service.util.AuthService;
+import keeper.project.homepage.util.service.FileService;
+import keeper.project.homepage.util.service.ThumbnailService;
+import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;
+import keeper.project.homepage.common.service.mail.MailService;
+import keeper.project.homepage.common.service.sign.DuplicateCheckService;
+import keeper.project.homepage.common.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -59,58 +59,78 @@ public class MemberService {
     return memberRepository.findById(id).orElseThrow(CustomMemberNotFoundException::new);
   }
 
+  public MemberEntity findByRealName(String realName) {
+    return memberRepository.findByRealName(realName)
+        .orElseThrow(CustomMemberNotFoundException::new);
+  }
+
   public MemberEntity findByLoginId(String loginId) {
     return memberRepository.findByLoginId(loginId).orElseThrow(CustomMemberNotFoundException::new);
   }
 
-  private Boolean checkFollowing(MemberEntity other) {
+  private Boolean isMyFollowee(MemberEntity other) {
     MemberEntity me = authService.getMemberEntityWithJWT();
-    if (me.getFollowee().contains(other) == false) {
-      return false;
+    List<FriendEntity> followeeList = me.getFollowee();
+    for (FriendEntity followee : followeeList) {
+      if (followee.getFollowee().equals(other)) {
+        return true;
+      }
     }
-    return true;
+    return false;
   }
 
-  private Boolean checkFollower(MemberEntity other) {
+  private Boolean isMyFollower(MemberEntity other) {
     MemberEntity me = authService.getMemberEntityWithJWT();
-    if (me.getFollower().contains(other) == false) {
-      return false;
+    List<FriendEntity> followerList = me.getFollower();
+    for (FriendEntity follower : followerList) {
+      if (follower.getFollower().equals(other)) {
+        return true;
+      }
     }
-    return true;
+    return false;
   }
 
-  public OtherMemberInfoResult getOtherMemberInfoById(Long otherMemberId) {
-    MemberEntity memberEntity = memberRepository.findById(otherMemberId)
+  private void checkVirtualMember(Long id) {
+    if(id.equals(VIRTUAL_MEMBER_ID)) {
+      throw new CustomAccessVirtualMemberException();
+    }
+  }
+
+  public MemberDto getMember(Long id) {
+    MemberEntity memberEntity = memberRepository.findById(id)
         .orElseThrow(CustomMemberNotFoundException::new);
 
-    OtherMemberInfoResult result = new OtherMemberInfoResult(memberEntity);
-    result.setCheckFollow(checkFollowing(memberEntity), checkFollower(memberEntity));
+    return new MemberDto(memberEntity);
+  }
+
+  public OtherMemberInfoResult getOtherMember(Long otherMemberId) {
+    checkVirtualMember(otherMemberId);
+
+    MemberEntity other = findById(otherMemberId);
+
+    OtherMemberInfoResult result = new OtherMemberInfoResult(other);
+    result.setCheckFollow(isMyFollowee(other), isMyFollower(other));
     return result;
   }
 
-  public OtherMemberInfoResult getOtherMemberInfoByRealName(String realName) {
-    MemberEntity memberEntity = memberRepository.findByRealName(realName)
-        .orElseThrow(CustomMemberNotFoundException::new);
+  public List<OtherMemberInfoResult> getOtherMembers() {
+    List<OtherMemberInfoResult> otherMemberInfoResultList = new ArrayList<>();
+    List<MemberEntity> memberEntityList = memberRepository.findAll();
 
-    OtherMemberInfoResult result = new OtherMemberInfoResult(memberEntity);
-    result.setCheckFollow(checkFollowing(memberEntity), checkFollower(memberEntity));
-    return result;
+    for (MemberEntity memberEntity : memberEntityList) {
+      if(memberEntity.getMemberType() != null && memberEntity.getMemberType().getId() == 5) continue;
+      if(memberEntity.getId().equals(VIRTUAL_MEMBER_ID)) continue;
+      OtherMemberInfoResult otherMemberInfoResult = new OtherMemberInfoResult(memberEntity);
+      otherMemberInfoResult.setCheckFollow(isMyFollowee(memberEntity), isMyFollower(memberEntity));
+      otherMemberInfoResultList.add(otherMemberInfoResult);
+    }
+
+    return otherMemberInfoResultList;
   }
 
-  public List<OtherMemberInfoResult> getAllOtherMemberInfo(Pageable pageable) {
-    return memberRepository.findAll(pageable).stream()
-        .map(member -> {
-          OtherMemberInfoResult other = new OtherMemberInfoResult(member);
-          other.setCheckFollow(checkFollowing(member), checkFollower(member));
-          return other;
-        })
-        .sorted(Comparator.comparing(OtherMemberInfoResult::getRegisterDate).reversed())
-        .collect(Collectors.toList());
-  }
-
-  public void follow(Long myId, String followLoginId) {
+  public void follow(Long myId, Long memberId) {
     MemberEntity me = findById(myId);
-    MemberEntity followee = findByLoginId(followLoginId);
+    MemberEntity followee = findById(memberId);
 
     FriendEntity friend = FriendEntity.builder()
         .follower(me)
@@ -123,9 +143,9 @@ public class MemberService {
     followee.getFollower().add(friend);
   }
 
-  public void unfollow(Long myId, String followLoginId) {
+  public void unfollow(Long myId, Long memberId) {
     MemberEntity me = findById(myId);
-    MemberEntity followee = findByLoginId(followLoginId);
+    MemberEntity followee = findById(memberId);
 
     FriendEntity friend = friendRepository.findByFolloweeAndFollower(followee, me);
     me.getFollowee().remove(friend);
@@ -264,21 +284,41 @@ public class MemberService {
     // 출처: https://www.baeldung.com/java-random-string
   }
 
-  public Page<PostingDto> findAllPostingByIsTemp(Long id, Pageable pageable, Integer isTemp) {
+  public Page<PostingResponseDto> findAllPostingByIsTemp(Long id, Pageable pageable,
+      Integer isTemp) {
     MemberEntity memberEntity = memberRepository.findById(id).orElseThrow(
         () -> new CustomMemberNotFoundException(id.toString() + "인 id를 가진 member가 존재하지 않습니다."));
 
-    List<PostingDto> postings = new ArrayList<>();
+    List<PostingResponseDto> postings = new ArrayList<>();
+    PostingResponseDto postingResponseDto = new PostingResponseDto();
+    Integer postingSize = memberEntity.getPosting().size();
     memberEntity.getPosting().forEach(posting -> {
       if (posting.getIsTemp() == isTemp) {
-        postings.add(PostingDto.create(posting));
+        PostingResponseDto dto = postingResponseDto.initWithEntity(posting, postingSize, false);
+        postings.add(dto);
       }
     });
     final int start = (int) pageable.getOffset();
     final int end = Math.min((start + pageable.getPageSize()), postings.size());
-    final Page<PostingDto> page = new PageImpl<>(postings.subList(start, end), pageable,
+    final Page<PostingResponseDto> page = new PageImpl<>(postings.subList(start, end), pageable,
         postings.size());
 
     return page;
+  }
+
+  private Integer getFolloweeNumber(MemberEntity member) {
+    return member.getFollowee().size();
+  }
+
+  private Integer getFollowerNumber(MemberEntity member) {
+    return member.getFollower().size();
+  }
+
+  public MemberFollowDto getFollowerAndFolloweeNumber(Long id) {
+    MemberEntity member = findById(id);
+    return MemberFollowDto.builder()
+        .followeeNumber(getFolloweeNumber(member))
+        .followerNumber(getFollowerNumber(member))
+        .build();
   }
 }

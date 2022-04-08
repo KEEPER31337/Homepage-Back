@@ -2,9 +2,9 @@ package keeper.project.homepage.entity.etc;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -13,7 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import keeper.project.homepage.dto.etc.StaticWriteSubtitleImageDto;
+import keeper.project.homepage.admin.dto.etc.StaticWriteSubtitleImageDto;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,11 +42,12 @@ public class StaticWriteSubtitleImageEntity {
   @JoinColumn(name = "static_write_title_id", nullable = false)
   private StaticWriteTitleEntity staticWriteTitle;
 
-  @OneToOne
+  @ManyToOne(cascade = CascadeType.REMOVE)
   @JoinColumn(name = "thumbnail_id")
   private ThumbnailEntity thumbnail;
 
-  @OneToMany(mappedBy = "staticWriteSubtitleImage", fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "staticWriteSubtitleImage", cascade = CascadeType.REMOVE)
+  @Builder.Default
   private List<StaticWriteContentEntity> staticWriteContents = new ArrayList<>();
 
   public void updateInfo(StaticWriteSubtitleImageDto staticWriteSubtitleImageDto,

@@ -1,23 +1,16 @@
 package keeper.project.homepage.service.member;
 
 import java.io.File;
-import java.time.LocalDateTime;
 import java.util.Optional;
-import keeper.project.homepage.dto.point.request.PointLogRequest;
-import keeper.project.homepage.dto.point.result.PointLogResult;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.point.PointLogEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.member.CustomAccountDeleteFailedException;
-import keeper.project.homepage.repository.point.PointLogRepository;
 import keeper.project.homepage.user.service.member.MemberService;
-import keeper.project.homepage.user.service.point.PointLogService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;

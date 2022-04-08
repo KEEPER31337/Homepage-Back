@@ -1,7 +1,6 @@
 package keeper.project.homepage.repository.attendance;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.entity.attendance.AttendanceEntity;
@@ -22,4 +21,5 @@ public interface AttendanceRepository extends JpaRepository<AttendanceEntity, Lo
   List<AttendanceEntity> findByMemberAndTimeBetween(
       MemberEntity member, LocalDateTime time, LocalDateTime time2);
 
+  Long countByMember(MemberEntity memberEntity);
 }

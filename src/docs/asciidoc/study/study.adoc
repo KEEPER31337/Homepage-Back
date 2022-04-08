@@ -1,0 +1,164 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+// 자동으로 생성된 snippet 설정하는 부분
+
+= KEEPER API 문서
+:icons: font
+// NOTE, TIP, WARNING, CAUTION, IMPORTANT 같은 경고구들 아이콘화 해줌
+:source-highlighter: highlight.js
+// source code 블럭에서 사용되는 highlighter 설정, 4개 정도 있던데 차이를 아직 잘 모르겠음.
+:toc: left
+// table of contents(toc) 왼쪽정렬하여 생성
+:toclevels: 1
+// default : 2 (==,  ===) 까지 toc에 보여줌.
+:sectlinks:
+// section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== 스터디 년도 불러오기
+
+=== 요청
+
+==== Request
+
+include::{snippets}/study-years/http-request.adoc[]
+
+NOTE: Bearer JWT 토큰이 필요합니다.
+
+=== 응답
+
+==== Response
+
+include::{snippets}/study-years/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/study-years/response-body.adoc[]
+
+== 스터디 목록 불러오기
+
+=== 요청
+
+==== Request
+
+include::{snippets}/study-list/http-request.adoc[]
+
+NOTE: Bearer JWT 토큰이 필요합니다.
+
+==== Request Parameters
+
+include::{snippets}/study-list/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/study-list/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/study-list/response-fields.adoc[]
+
+== 스터디 생성
+
+=== 요청
+
+==== Request
+
+include::{snippets}/study-create/http-request.adoc[]
+
+NOTE: Bearer JWT 토큰이 필요합니다.
+
+==== Request Parameters
+
+include::{snippets}/study-create/request-parameters.adoc[]
+
+include::{snippets}/study-create/request-parts.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/study-create/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/study-create/response-fields.adoc[]
+
+== 스터디 수정
+
+=== 요청
+
+==== Request
+
+include::{snippets}/study-modify/http-request.adoc[]
+
+NOTE: Bearer JWT 토큰이 필요합니다.
+
+==== Request Parameters
+
+include::{snippets}/study-modify/request-parameters.adoc[]
+
+include::{snippets}/study-modify/request-parts.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/study-modify/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/study-modify/response-fields.adoc[]
+
+== 스터디원 추가
+
+=== 요청
+
+==== Request
+
+include::{snippets}/study-member-add/http-request.adoc[]
+
+NOTE: 스터디장의 Bearer JWT 토큰이 필요합니다.
+
+==== Request Parameters
+
+include::{snippets}/study-member-add/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/study-member-add/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/study-member-add/response-fields.adoc[]
+
+== 스터디원 삭제
+
+=== 요청
+
+==== Request
+
+include::{snippets}/study-member-remove/http-request.adoc[]
+
+NOTE: 스터디장의 Bearer JWT 토큰이 필요합니다.
+
+==== Request Parameters
+
+include::{snippets}/study-member-remove/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/study-member-remove/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/study-member-remove/response-fields.adoc[]

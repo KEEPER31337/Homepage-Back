@@ -1,13 +1,11 @@
 package keeper.project.homepage.admin.service.library;
 
-import java.awt.print.Book;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import keeper.project.homepage.dto.library.BookDto;
-import keeper.project.homepage.dto.result.CommonResult;
+import keeper.project.homepage.admin.dto.library.BookDto;
+import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.library.BookBorrowEntity;
 import keeper.project.homepage.entity.library.BookDepartmentEntity;
@@ -22,7 +20,7 @@ import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.library.BookDepartmentRepository;
 import keeper.project.homepage.repository.library.BookRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
-import keeper.project.homepage.service.ResponseService;
+import keeper.project.homepage.common.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -64,7 +62,7 @@ public class BookManageService {
       throw new CustomBookOverTheMaxException("수량 초과입니다.");
     }
 
-    addBook(title, author, information, total, department, thumbnailEntity);
+    addBook(title, author, information, quantity, department, thumbnailEntity);
 
     return responseService.getSuccessResult();
   }
@@ -72,26 +70,35 @@ public class BookManageService {
   /**
    * 도서 추가
    */
-  public void addBook(String title, String author, String information, Long total,
+  public void addBook(String title, String author, String information, Long quantity,
       BookDepartmentEntity department, ThumbnailEntity thumbnailId) {
 
-    Long borrowState = 0L;
     if (bookRepository.findByTitleAndAuthor(title, author).isPresent()) {
-      borrowState = bookRepository.findByTitleAndAuthor(title, author).get().getBorrow();
-    }
+      BookEntity updateBookEntity = bookRepository.findByTitleAndAuthor(title, author).get();
 
-    bookRepository.save(
-        BookEntity.builder()
-            .title(title)
-            .author(author)
-            .information(information)
-            .department(department)
-            .total(total)
-            .borrow(borrowState)
-            .enable(total - borrowState)
-            .registerDate(new Date())
-            .thumbnailId(thumbnailId)
-            .build());
+      Long nowTotal = updateBookEntity.getTotal();
+      Long nowEnable = updateBookEntity.getEnable();
+
+      updateBookEntity.setTotal(nowTotal + quantity);
+      updateBookEntity.setEnable(nowEnable + quantity);
+
+      bookRepository.save(updateBookEntity);
+
+    } else {
+
+      bookRepository.save(
+          BookEntity.builder()
+              .title(title)
+              .author(author)
+              .information(information)
+              .department(department)
+              .total(quantity)
+              .borrow(0L)
+              .enable(quantity)
+              .registerDate(new Date())
+              .thumbnailId(thumbnailId)
+              .build());
+    }
   }
 
   /**
@@ -119,24 +126,16 @@ public class BookManageService {
    * 도서 삭제 업데이트
    */
   public void updateDeleteInformation(String title, String author, Long quantity) {
-    String information = bookRepository.findByTitleAndAuthor(title, author).get().getInformation();
-    Long borrow = bookRepository.findByTitleAndAuthor(title, author).get().getBorrow();
-    Long total = bookRepository.findByTitleAndAuthor(title, author).get().getTotal();
-    Long enable = bookRepository.findByTitleAndAuthor(title, author).get().getEnable();
-    BookDepartmentEntity department = bookRepository.findByTitleAndAuthor(title, author).get()
-        .getDepartment();
 
-    bookRepository.save(
-        BookEntity.builder()
-            .title(title)
-            .author(author)
-            .information(information)
-            .department(department)
-            .total(total - quantity)
-            .borrow(borrow)
-            .enable(enable - quantity)
-            .registerDate(new Date())
-            .build());
+    BookEntity updateBookEntity = bookRepository.findByTitleAndAuthor(title, author)
+        .orElseThrow(() -> new CustomBookNotFoundException());
+    Long nowTotal = bookRepository.findByTitleAndAuthor(title, author).get().getTotal();
+    Long nowEnable = bookRepository.findByTitleAndAuthor(title, author).get().getEnable();
+
+    updateBookEntity.setTotal(nowTotal - quantity);
+    updateBookEntity.setEnable(nowEnable - quantity);
+
+    bookRepository.save(updateBookEntity);
   }
 
   /**
@@ -174,8 +173,10 @@ public class BookManageService {
    * 도서 대여
    */
   public void borrowBook(String title, String author, Long borrowMemberId, Long quantity) {
-    BookEntity bookId = bookRepository.findByTitleAndAuthor(title, author).get();
-    MemberEntity memberId = memberRepository.findById(borrowMemberId).get();
+    BookEntity bookId = bookRepository.findByTitleAndAuthor(title, author)
+        .orElseThrow(() -> new CustomBookNotFoundException());
+    MemberEntity memberId = memberRepository.findById(borrowMemberId)
+        .orElseThrow(() -> new CustomMemberNotFoundException());
     String borrowDate = transferFormat(new Date());
     String expireDate = getExpireDate(14);
 
@@ -188,25 +189,15 @@ public class BookManageService {
             .expireDate(java.sql.Date.valueOf(expireDate))
             .build());
 
-    BookEntity nowBookEntity = bookRepository.findByTitleAndAuthor(title, author).get();
-    String infromation = nowBookEntity.getInformation();
-    Long total = nowBookEntity.getTotal();
-    Long borrow = nowBookEntity.getBorrow() + quantity;
-    Long enable = nowBookEntity.getEnable() - quantity;
-    Date registerDate = nowBookEntity.getRegisterDate();
-    BookDepartmentEntity bookDepartment = nowBookEntity.getDepartment();
+    BookEntity nowBookEntity = bookRepository.findByTitleAndAuthor(title, author)
+        .orElseThrow(() -> new CustomBookNotFoundException());
+    Long nowBorrow = nowBookEntity.getBorrow();
+    Long nowEnable = nowBookEntity.getEnable();
 
-    bookRepository.save(
-        BookEntity.builder()
-            .title(title)
-            .author(author)
-            .information(infromation)
-            .total(total)
-            .borrow(borrow)
-            .enable(enable)
-            .registerDate(registerDate)
-            .build()
-    );
+    nowBookEntity.setBorrow(nowBorrow + quantity);
+    nowBookEntity.setEnable(nowEnable - quantity);
+
+    bookRepository.save(nowBookEntity);
   }
 
   /**
@@ -261,6 +252,16 @@ public class BookManageService {
     }
     if (borrowedBook == quantity && borrowEntities.size() == 1) {
       bookBorrowRepository.delete(borrowEntities.get(0));
+
+      BookEntity nowBookEntity = bookRepository.findByTitleAndAuthor(title, author)
+          .orElseThrow(() -> new CustomBookNotFoundException());
+      Long nowBorrow = nowBookEntity.getBorrow();
+      Long nowEnable = nowBookEntity.getEnable();
+
+      nowBookEntity.setBorrow(nowBorrow - quantity);
+      nowBookEntity.setEnable(nowEnable + quantity);
+
+      bookRepository.save(nowBookEntity);
     } else {
       returnBook(title, author, returnMemberId, quantity, borrowEntities);
     }
@@ -291,25 +292,14 @@ public class BookManageService {
             .expireDate(java.sql.Date.valueOf(expireDate))
             .build());
 
-    BookEntity nowBookEntity = bookRepository.findByTitleAndAuthor(title, author).get();
-    String infromation = nowBookEntity.getInformation();
-    Long total = nowBookEntity.getTotal();
-    Long borrow = nowBookEntity.getBorrow() - quantity;
-    Long enable = nowBookEntity.getEnable() + quantity;
-    Date registerDate = nowBookEntity.getRegisterDate();
-    BookDepartmentEntity department = nowBookEntity.getDepartment();
+    BookEntity nowBookEntity = bookRepository.findByTitleAndAuthor(title, author)
+        .orElseThrow(() -> new CustomBookNotFoundException());
+    Long nowBorrow = nowBookEntity.getBorrow();
+    Long nowEnable = nowBookEntity.getEnable();
 
-    bookRepository.save(
-        BookEntity.builder()
-            .title(title)
-            .author(author)
-            .information(infromation)
-            .department(department)
-            .total(total)
-            .borrow(borrow)
-            .enable(enable)
-            .registerDate(registerDate)
-            .build()
-    );
+    nowBookEntity.setBorrow(nowBorrow - quantity);
+    nowBookEntity.setEnable(nowEnable + quantity);
+
+    bookRepository.save(nowBookEntity);
   }
 }

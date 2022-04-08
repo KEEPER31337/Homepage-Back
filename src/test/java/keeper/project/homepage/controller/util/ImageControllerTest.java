@@ -7,8 +7,8 @@ import static org.springframework.restdocs.request.RequestDocumentation.pathPara
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 import java.io.File;
-import keeper.project.homepage.ApiControllerTestSetUp;
-import keeper.project.homepage.common.FileConversion;
+import keeper.project.homepage.ApiControllerTestHelper;
+import keeper.project.homepage.util.FileConversion;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import org.junit.jupiter.api.BeforeAll;
@@ -19,57 +19,15 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-class ImageControllerTest extends ApiControllerTestSetUp {
+class ImageControllerTest extends ApiControllerTestHelper {
 
-  final private String ipAddress = "127.0.0.1";
   private ThumbnailEntity thumbnailEntity;
   private FileEntity fileEntity;
 
-  @BeforeAll
-  public static void createFile() {
-    final String keeperFilesDirectoryPath = System.getProperty("user.dir") + File.separator
-        + "keeper_files";
-    final String thumbnailDirectoryPath = System.getProperty("user.dir") + File.separator
-        + "keeper_files" + File.separator + "thumbnail";
-    final String imageFilePath = System.getProperty("user.dir") + File.separator
-        + "keeper_files" + File.separator + "test_file.jpg";
-
-    File keeperFilesDir = new File(keeperFilesDirectoryPath);
-    File thumbnailDir = new File(thumbnailDirectoryPath);
-
-    if (!keeperFilesDir.exists()) {
-      keeperFilesDir.mkdir();
-    }
-
-    if (!thumbnailDir.exists()) {
-      thumbnailDir.mkdir();
-    }
-
-    createImageForTest(imageFilePath);
-  }
-
-  private static void createImageForTest(String filePath) {
-    FileConversion fileConversion = new FileConversion();
-    fileConversion.makeSampleJPEGImage(filePath);
-  }
-
   @BeforeEach
   public void setUp() throws Exception {
-
-    fileEntity = FileEntity.builder()
-        .fileName("test_file.jpg")
-        .filePath("keeper_files" + File.separator + "test_file.jpg")
-        .fileSize(0L)
-        .ipAddress(ipAddress)
-        .build();
-    fileRepository.save(fileEntity);
-
-    thumbnailEntity = ThumbnailEntity.builder()
-        .path("keeper_files/thumbnail/thumb_default.jpg")
-        .file(fileEntity)
-        .build();
-    thumbnailRepository.save(thumbnailEntity);
-
+    fileEntity = generateFileEntity();
+    thumbnailEntity = generateThumbnailEntity();
   }
 
   @Test

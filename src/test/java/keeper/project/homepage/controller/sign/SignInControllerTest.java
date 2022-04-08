@@ -18,10 +18,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.ApiControllerTestSetUp;
-import keeper.project.homepage.common.FileConversion;
-import keeper.project.homepage.dto.result.SingleResult;
-import keeper.project.homepage.dto.sign.SignInDto;
+import keeper.project.homepage.util.FileConversion;
+import keeper.project.homepage.common.dto.result.SingleResult;
+import keeper.project.homepage.common.dto.sign.SignInDto;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -34,7 +33,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.json.JacksonJsonParser;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MvcResult;
@@ -162,7 +160,7 @@ public class SignInControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("data.member.jobs").description(
                         "동아리 직책: [null/ROLE_회장/ROLE_부회장/ROLE_대외부장/ROLE_학술부장/ROLE_전산관리자/ROLE_서기/ROLE_총무/ROLE_사서]")
                     .optional(),
-                fieldWithPath("data.member.thumbnailId").description("썸네일 Id").optional()
+                fieldWithPath("data.member.thumbnailPath").description("썸네일 Url").optional()
             )));
   }
 

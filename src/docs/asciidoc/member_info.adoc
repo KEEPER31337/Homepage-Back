@@ -29,9 +29,9 @@ link:member.html[회원 API 목록으로 돌아가기]
 
 include::{snippets}/member-follow/http-request.adoc[]
 
-==== Request Fields
+==== Path Parameters
 
-include::{snippets}/member-follow/request-fields.adoc[]
+include::{snippets}/member-follow/path-parameters.adoc[]
 
 === 응답
 
@@ -51,9 +51,9 @@ include::{snippets}/member-follow/response-fields.adoc[]
 
 include::{snippets}/member-unfollow/http-request.adoc[]
 
-==== Request Fields
+==== Path Parameters
 
-include::{snippets}/member-unfollow/request-fields.adoc[]
+include::{snippets}/member-unfollow/path-parameters.adoc[]
 
 === 응답
 
@@ -71,17 +71,17 @@ include::{snippets}/member-unfollow/response-fields.adoc[]
 
 ==== Request
 
-include::{snippets}/friend-show-followee/http-request.adoc[]
+include::{snippets}/member-show-followee/http-request.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/friend-show-followee/http-response.adoc[]
+include::{snippets}/member-show-followee/http-response.adoc[]
 
 ==== Response Fields
 
-include::{snippets}/friend-show-followee/response-fields.adoc[]
+include::{snippets}/member-show-followee/response-fields.adoc[]
 
 == *팔로워 조회*
 
@@ -89,17 +89,35 @@ include::{snippets}/friend-show-followee/response-fields.adoc[]
 
 ==== Request
 
-include::{snippets}/friend-show-follower/http-request.adoc[]
+include::{snippets}/member-show-follower/http-request.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/friend-show-follower/http-response.adoc[]
+include::{snippets}/member-show-follower/http-response.adoc[]
 
 ==== Response Fields
 
-include::{snippets}/friend-show-follower/response-fields.adoc[]
+include::{snippets}/member-show-follower/response-fields.adoc[]
+
+== *팔로우, 팔로워 숫자 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/member-follow-number/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/member-follow-number/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/member-follow-number/response-fields.adoc[]
 
 == *회원 탈퇴*
 
@@ -122,6 +140,46 @@ include::{snippets}/member-delete/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/member-delete/response-fields.adoc[]
+
+== *내 정보 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/member-info/http-request.adoc[]
+
+==== Response
+
+include::{snippets}/member-info/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/member-info/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/member-info/response-fields.adoc[]
+
+== *권한 없이 회원 정보 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/common-members/http-request.adoc[]
+
+==== Response
+
+include::{snippets}/common-members/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/common-members/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/common-members/response-fields.adoc[]
 
 == *다른 회원 정보 목록 조회*
 
@@ -170,28 +228,3 @@ include::{snippets}/member-otherInfo-ById/response-body.adoc[]
 ==== Response Fields
 
 include::{snippets}/member-otherInfo-ById/response-fields.adoc[]
-
-== *다른 회원 정보 조회 (실제 이름을 통해)*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/member-otherInfo-ByRealName/http-request.adoc[]
-
-==== Path Parameters
-
-include::{snippets}/member-otherInfo-ByRealName/path-parameters.adoc[]
-
-==== Response
-
-include::{snippets}/member-otherInfo-ByRealName/http-response.adoc[]
-
-==== Response Body
-
-include::{snippets}/member-otherInfo-ByRealName/response-body.adoc[]
-
-==== Response Fields
-
-include::{snippets}/member-otherInfo-ByRealName/response-fields.adoc[]
-
