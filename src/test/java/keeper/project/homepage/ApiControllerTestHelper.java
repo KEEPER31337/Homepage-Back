@@ -22,6 +22,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.entity.attendance.AttendanceEntity;
+import keeper.project.homepage.entity.library.BookBorrowEntity;
+import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.util.FileConversion;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.dto.sign.SignInDto;
@@ -551,5 +553,36 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
       commonFields.addAll(Arrays.asList(descriptors));
     }
     return commonFields;
+  }
+
+  public BookEntity generateBookEntity(String title, String author, String information, Long total,
+      Long borrow,
+      ThumbnailEntity thumbnailEntity) {
+    Date registerDate = new Date();
+
+    return bookRepository.save(
+        BookEntity.builder()
+            .title(title)
+            .author(author)
+            .information(information)
+            .total(total)
+            .borrow(borrow)
+            .enable(total - borrow)
+            .registerDate(registerDate)
+            .thumbnailId(thumbnailEntity)
+            .build());
+  }
+
+  public BookBorrowEntity generateBookBorrowEntity(MemberEntity memberId, BookEntity bookId, Long quantity,
+      Date borrowDate, Date expireDate) {
+
+    return bookBorrowRepository.save(
+        BookBorrowEntity.builder()
+            .member(memberId)
+            .book(bookId)
+            .quantity(quantity)
+            .borrowDate(borrowDate)
+            .expireDate(expireDate)
+            .build());
   }
 }
