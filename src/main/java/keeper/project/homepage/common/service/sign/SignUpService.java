@@ -139,8 +139,8 @@ public class SignUpService {
   }
 
   private boolean checkSpecialCharacter(String val) {
-    String pattern = "\\W"; // a-z,A-Z,0-9, '_'를 제외한 모든 특수문자
-    return Pattern.matches(pattern, val);
+    String pattern = "^[가-힣|a-z|A-Z|0-9|_|]+$"; // 한글, a-z, A-Z, 0-9, '_'를 제외한 모든 특수문자
+    return !Pattern.matches(pattern, val);
   }
 
   private boolean isLoginIdValid(String loginId) {

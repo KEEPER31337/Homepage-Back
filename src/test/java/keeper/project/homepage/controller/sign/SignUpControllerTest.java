@@ -37,8 +37,8 @@ public class SignUpControllerTest extends ApiControllerTestSetUp {
   final private String loginId = "hyeonmomo";
   final private String emailAddress = "test@k33p3r.com";
   final private String password = "keeperlove123";
-  final private String realName = "JeongHyeonMo";
-  final private String nickName = "HyeonMoJeong";
+  final private String realName = "가";
+  final private String nickName = "afds나다라343";
   final private String birthday = "1998-01-01";
   final private String studentId = "201724579";
 
@@ -58,8 +58,8 @@ public class SignUpControllerTest extends ApiControllerTestSetUp {
     MemberEntity memberEntity = MemberEntity.builder()
         .loginId(loginId)
         .password(passwordEncoder.encode(password))
-        .realName(realName)
-        .nickName(nickName)
+        .realName(realName + "가")
+        .nickName(nickName + "a")
         .emailAddress(emailAddress)
         .studentId(studentId)
         .generation(0F)
@@ -77,8 +77,8 @@ public class SignUpControllerTest extends ApiControllerTestSetUp {
         + "    \"loginId\": \"" + loginId + "1" + "\",\n"
         + "    \"emailAddress\": \"" + emailAddress + "1" + "\",\n"
         + "    \"password\": \"" + password + "\",\n"
-        + "    \"realName\": \"" + realName + "a" + "\",\n"
-        + "    \"nickName\": \"" + nickName + "1" + "\",\n"
+        + "    \"realName\": \"" + realName + "\",\n"
+        + "    \"nickName\": \"" + nickName + "\",\n"
         + "    \"authCode\": \"" + emailAuthDtoForSend.getAuthCode() + "\",\n"
         + "    \"birthday\": \"" + birthday + "\",\n"
         + "    \"studentId\": \"" + studentId + "1" + "\"\n"
