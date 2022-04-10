@@ -35,10 +35,6 @@ link:signin.html[API 문서 보기]
 
 link:bookmanage.html[API 문서 보기]
 
-== *카테고리*
-
-link:posting/category.html[API 문서 보기]
-
 == *페이지 블럭*
 
 link:about.html[API 문서 보기]

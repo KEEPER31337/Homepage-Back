@@ -9,7 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import keeper.project.homepage.admin.dto.category.reqeust.CategoryRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,9 +38,4 @@ public class CategoryEntity {
   @OneToMany(mappedBy = "parentId")
   private List<CategoryEntity> children = new ArrayList<>();
 
-  public void updateInfo(CategoryRequest categoryRequest) {
-    this.name = categoryRequest.getName();
-    this.parentId = categoryRequest.getParentId() == null ? 0 : categoryRequest.getParentId();
-    this.href = categoryRequest.getHref();
-  }
 }

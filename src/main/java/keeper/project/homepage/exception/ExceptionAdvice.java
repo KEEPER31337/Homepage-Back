@@ -26,7 +26,6 @@ import keeper.project.homepage.exception.posting.CustomAccessRootCategoryExcepti
 import keeper.project.homepage.exception.posting.CustomCategoryNotFoundException;
 import keeper.project.homepage.exception.posting.CustomCommentEmptyFieldException;
 import keeper.project.homepage.exception.posting.CustomCommentNotFoundException;
-import keeper.project.homepage.exception.posting.CustomParentCategoryNotFoundException;
 import keeper.project.homepage.exception.sign.CustomAuthenticationEntryPointException;
 import keeper.project.homepage.exception.sign.CustomLoginIdSigninFailedException;
 import keeper.project.homepage.exception.sign.CustomSignUpFailedException;
@@ -296,15 +295,6 @@ public class ExceptionAdvice {
       CustomCategoryNotFoundException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("categoryNotFound.code")),
         getMessage("categoryNotFound.msg"));
-  }
-
-  @ExceptionHandler(CustomParentCategoryNotFoundException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  protected CommonResult parentCategoryNotFoundException(HttpServletRequest request,
-      CustomParentCategoryNotFoundException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(getMessage("parentCategoryNotFound.code")),
-        getMessage("parentCategoryNotFound.msg"));
   }
 
   @ExceptionHandler(CustomAccessRootCategoryException.class)
