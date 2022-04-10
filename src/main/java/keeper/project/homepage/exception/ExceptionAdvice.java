@@ -1,6 +1,8 @@
 package keeper.project.homepage.exception;
 
 import keeper.project.homepage.common.dto.result.CommonResult;
+import keeper.project.homepage.exception.attendance.CustomAttendanceException;
+import keeper.project.homepage.exception.attendance.CustomGameIsOverException;
 import keeper.project.homepage.exception.file.CustomFileDeleteFailedException;
 import keeper.project.homepage.exception.file.CustomFileEntityNotFoundException;
 import keeper.project.homepage.exception.file.CustomFileNotFoundException;
@@ -142,6 +144,13 @@ public class ExceptionAdvice {
       CustomAttendanceException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("attendanceFailed.code")),
         e.getMessage() == null ? getMessage("attendanceFailed.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomGameIsOverException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  public CommonResult gameIsOverException(HttpServletRequest request, CustomGameIsOverException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("gameIsOver.code")),
+        e.getMessage() == null ? getMessage("gameIsOver.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomBookNotFoundException.class)

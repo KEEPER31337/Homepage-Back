@@ -72,7 +72,7 @@ public class PostingResponseDto {
         .isTemp(postingEntity.getIsTemp())
         .category(postingEntity.getCategoryId().getName())
         .categoryId(postingEntity.getCategoryId().getId())
-        .files(postingEntity.getFiles())
+        .files(isOne ? postingEntity.getFiles() : null)
         .thumbnailPath(null)
         .build();
 

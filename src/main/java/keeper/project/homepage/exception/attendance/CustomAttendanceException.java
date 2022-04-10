@@ -1,4 +1,4 @@
-package keeper.project.homepage.exception;
+package keeper.project.homepage.exception.attendance;
 
 public class CustomAttendanceException extends RuntimeException {
 
