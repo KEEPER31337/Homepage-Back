@@ -289,8 +289,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".content[].category").description("카테고리 이름"),
         fieldWithPath(prefix + ".content[].categoryId").description("카테고리 ID"),
         fieldWithPath(prefix + ".content[].thumbnailPath").description("게시글 썸네일 이미지 조회 api path")
-            .type(String.class).optional(),
-        fieldWithPath(prefix + ".content[].files").description("첨부파일")
+            .type(String.class).optional()
     ));
     if (addDescriptors.length > 0) {
       commonFields.addAll(Arrays.asList(addDescriptors));

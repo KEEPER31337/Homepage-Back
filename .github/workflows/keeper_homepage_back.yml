@@ -9,6 +9,7 @@ on:
 jobs:
   Build_And_Test:
     runs-on: ubuntu-18.04
+    timeout-minutes: 10
 
     steps:
       - name: Checkout
@@ -47,13 +48,17 @@ jobs:
       - name: Start Containers
         working-directory: ./docker
         run: docker-compose -p keeper up -d
-      
+
       - name: Compress JAR
         run: |
           echo "Building... please wait..."
           while [ ! -d application ];
+            do
+              sleep 1
+            done
 
           echo "Compress"
+          sleep 5
           tar -zcvf $(date +%Y%m%d).tar.gz dependencies snapshot-dependencies spring-boot-loader application
 
       - name: Upload to S3
@@ -61,7 +66,7 @@ jobs:
           aws s3 mv --region ap-northeast-2 \
           $(date +%Y%m%d).tar.gz \
           ${{ secrets.S3_DEV_BACK_LOCATION }}/$(date +%Y%m%d).tar.gz
-          
+
       - name: Deploy
         uses: appleboy/ssh-action@master
         with:

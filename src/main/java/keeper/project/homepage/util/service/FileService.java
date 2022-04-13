@@ -133,6 +133,20 @@ public class FileService {
     fileRepository.deleteById(deleteId);
   }
 
+  public void deleteFileById(Long deleteId) {
+    FileEntity deletedFileEntity = fileRepository.findById(deleteId)
+        .orElseThrow(CustomFileEntityNotFoundException::new);
+    File deleteFile = new File(
+        System.getProperty("user.dir") + File.separator + deletedFileEntity.getFilePath());
+    if (deleteFile.exists() == false) {
+      throw new CustomFileNotFoundException();
+    }
+    if (deleteFile.delete() == false) {
+      throw new CustomFileDeleteFailedException();
+    }
+    deleteFileEntityById(deleteId);
+  }
+
   // TODO : thumbnail delete와 합치기
   public void deleteOriginalThumbnail(ThumbnailEntity deleteThumbnail) {
     // 기본 썸네일이면 삭제 X
