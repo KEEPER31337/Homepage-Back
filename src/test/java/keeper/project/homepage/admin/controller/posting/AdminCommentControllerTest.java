@@ -12,6 +12,7 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,6 +44,11 @@ public class AdminCommentControllerTest extends ApiControllerTestHelper {
     replyEntity = generateCommentEntity(postingEntity, userEntity, commentEntity.getId());
   }
 
+  @AfterAll
+  public static void clearFiles() {
+    deleteTestFiles();
+  }
+  
   @Test
   @DisplayName("관리자 권한 댓글 삭제 - 성공")
   public void adminCommentDeleteTest() throws Exception {

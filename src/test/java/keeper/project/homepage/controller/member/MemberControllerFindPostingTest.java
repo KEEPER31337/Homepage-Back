@@ -26,6 +26,7 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.user.service.posting.PostingService;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -67,6 +68,11 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
           PostingService.isNotNoticePosting, PostingService.isNotSecretPosting,
           PostingService.isTempPosting);
     }
+  }
+
+  @AfterAll
+  public static void clearFiles() {
+    deleteTestFiles();
   }
 
   @Test

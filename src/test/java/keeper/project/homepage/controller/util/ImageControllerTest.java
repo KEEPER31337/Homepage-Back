@@ -11,6 +11,7 @@ import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.util.FileConversion;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,6 +29,11 @@ class ImageControllerTest extends ApiControllerTestHelper {
   public void setUp() throws Exception {
     fileEntity = generateFileEntity();
     thumbnailEntity = generateThumbnailEntity();
+  }
+
+  @AfterAll
+  public static void clearFiles() {
+    deleteTestFiles();
   }
 
   @Test

@@ -17,6 +17,7 @@ import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.point.PointLogEntity;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,16 +43,21 @@ public class PointLogControllerTest extends ApiControllerTestHelper {
     userToken1 = generateJWTToken(memberEntity1);
     userToken2 = generateJWTToken(memberEntity2);
     userToken3 = generateJWTToken(memberEntity3);
-    for(int i = 0; i < 38; i++) {
+    for (int i = 0; i < 38; i++) {
       generateTestPointLog();
       generateTestPointGiftLog();
     }
 
-    for(int i = 0; i < 10; i++) {
+    for (int i = 0; i < 10; i++) {
       generateTestOtherPointLog();
       generateTestOtherPointGiftLog();
     }
 
+  }
+
+  @AfterAll
+  public static void clearFiles() {
+    deleteTestFiles();
   }
 
   private void generateTestPointLog() {

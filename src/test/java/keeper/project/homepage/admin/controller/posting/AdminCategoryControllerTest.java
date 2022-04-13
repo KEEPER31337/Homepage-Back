@@ -27,6 +27,7 @@ import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -104,6 +105,11 @@ public class AdminCategoryControllerTest extends ApiControllerTestHelper {
     categoryEntity = generateCategoryEntity();
   }
 
+  @AfterAll
+  public static void clearFiles() {
+    deleteTestFiles();
+  }
+  
   @Test
   @DisplayName("카테고리 생성 - 성공")
   public void createCategorySuccess() throws Exception {

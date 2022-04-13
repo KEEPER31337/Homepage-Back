@@ -3,6 +3,7 @@ package keeper.project.homepage.service.member;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasCommentEntityPK;
 import keeper.project.homepage.entity.member.MemberHasCommentLikeEntity;
@@ -31,28 +32,10 @@ import org.springframework.transaction.annotation.Transactional;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Transactional
-public class MemberHasCommentLikeServiceTest {
-
-  @Autowired
-  private PasswordEncoder passwordEncoder;
+public class MemberHasCommentLikeServiceTest extends ApiControllerTestHelper {
 
   @Autowired
   private MemberHasCommentLikeRepository memberHasCommentLikeRepository;
-
-  @Autowired
-  private CommentRepository commentRepository;
-
-  @Autowired
-  private CategoryRepository categoryRepository;
-
-  @Autowired
-  private PostingRepository postingRepository;
-
-  @Autowired
-  private MemberRepository memberRepository;
-
-  @Autowired
-  private MemberJobRepository memberJobRepository;
 
   @Autowired
   private MemberHasCommentLikeService memberHasCommentLikeService;
@@ -77,67 +60,15 @@ public class MemberHasCommentLikeServiceTest {
 
   @BeforeEach
   public void setup() {
-    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
-    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
-        .memberJobEntity(memberJobEntity)
-        .build();
-    memberEntity = MemberEntity.builder()
-        .loginId(loginId)
-        .password(passwordEncoder.encode(password))
-        .realName(realName)
-        .nickName(nickName)
-        .emailAddress(emailAddress)
-        .studentId(studentId)
-        .generation(0F)
-        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
-        .build();
-    memberRepository.save(memberEntity);
+    memberEntity = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
 
-    CategoryEntity categoryEntity = categoryRepository.save(
-        CategoryEntity.builder().name("test category").build());
+    CategoryEntity categoryEntity = generateCategoryEntity();
 
-    PostingEntity posting = postingRepository.save(PostingEntity.builder()
-        .title("posting 제목")
-        .content("posting 내용")
-        .categoryId(categoryEntity)
-        .ipAddress("192.111.222.333")
-        .allowComment(0)
-        .isNotice(0)
-        .isSecret(1)
-        .isTemp(0)
-        .likeCount(10)
-        .dislikeCount(1)
-        .commentCount(0)
-        .visitCount(0)
-        .registerTime(LocalDateTime.now())
-        .updateTime(LocalDateTime.now())
-        .memberId(memberEntity)
-        .password("asdsdf")
-        .build());
+    PostingEntity posting = generatePostingEntity(memberEntity, categoryEntity, 0, 0, 0);
 
-    parentComment = commentRepository.save(CommentEntity.builder()
-        .content("부모 댓글 내용")
-        .registerTime(registerTime)
-        .updateTime(updateTime)
-        .ipAddress(ipAddress)
-        .likeCount(likeCount)
-        .dislikeCount(dislikeCount)
-        .parentId(0L)
-        .member(memberEntity)
-        .postingId(posting)
-        .build());
+    parentComment = generateCommentEntity(posting, memberEntity, 1L);
 
-    commentEntity = commentRepository.save(CommentEntity.builder()
-        .content("댓글 내용")
-        .registerTime(registerTime)
-        .updateTime(updateTime)
-        .ipAddress(ipAddress)
-        .likeCount(likeCount)
-        .dislikeCount(dislikeCount)
-        .parentId(parentComment.getId())
-        .member(memberEntity)
-        .postingId(posting)
-        .build());
+    commentEntity = generateCommentEntity(posting, memberEntity, parentComment.getId());
 
     memberHasCommentLikeEntity = memberHasCommentLikeRepository.save(
         MemberHasCommentLikeEntity.builder().memberHasCommentEntityPK(

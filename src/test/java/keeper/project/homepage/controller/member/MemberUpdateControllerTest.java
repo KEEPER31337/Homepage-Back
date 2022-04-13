@@ -15,210 +15,52 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.ArrayList;
-import java.util.List;
-import keeper.project.homepage.util.FileConversion;
+import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.common.dto.sign.EmailAuthDto;
-import keeper.project.homepage.common.dto.result.SingleResult;
-import keeper.project.homepage.common.dto.sign.SignInDto;
-import keeper.project.homepage.entity.FileEntity;
-import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
-import keeper.project.homepage.entity.member.MemberRankEntity;
-import keeper.project.homepage.entity.member.MemberTypeEntity;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @Log4j2
-public class MemberUpdateControllerTest extends MemberControllerTestSetup {
+public class MemberUpdateControllerTest extends ApiControllerTestHelper {
 
   private String userToken;
   private String adminToken;
 
-  final private String loginId = "hyeonmomo";
-  final private String password = "keeper";
-  final private String realName = "JeongHyeonMo";
-  final private String nickName = "JeongHyeonMo";
-  final private String emailAddress = "test@k33p3r.com";
-  final private String studentId = "201724579";
-  final private int point = 100;
-
-  final private String adminLoginId = "hyeonmoAdmin";
-  final private String adminPassword = "keeper2";
-  final private String adminRealName = "JeongHyeonMo2";
-  final private String adminNickName = "JeongHyeonMo2";
-  final private String adminEmailAddress = "test2@k33p3r.com";
-  final private String adminStudentId = "201724580";
-  final private String adminPhoneNumber = "0100100101";
-  final private int adminPoint = 50;
-
-  final private String ipAddress1 = "127.0.0.1";
-
   private MemberEntity memberEntity;
-  private ThumbnailEntity thumbnailEntity;
-  private FileEntity imageEntity;
-
-  @BeforeAll
-  public static void createFile() {
-    final String keeperFilesDirectoryPath = System.getProperty("user.dir") + File.separator
-        + "keeper_files";
-    final String thumbnailDirectoryPath = System.getProperty("user.dir") + File.separator
-        + "keeper_files" + File.separator + "thumbnail";
-    final String befUpdateImage = keeperFilesDirectoryPath + File.separator + "bef.jpg";
-    final String befUpdateThumbnail = thumbnailDirectoryPath + File.separator + "thumb_bef.jpg";
-    final String aftUpdateImage = keeperFilesDirectoryPath + File.separator + "aft.jpg";
-
-    File keeperFilesDir = new File(keeperFilesDirectoryPath);
-    File thumbnailDir = new File(thumbnailDirectoryPath);
-
-    if (!keeperFilesDir.exists()) {
-      keeperFilesDir.mkdir();
-    }
-
-    if (!thumbnailDir.exists()) {
-      thumbnailDir.mkdir();
-    }
-
-    createImageForTest(befUpdateImage);
-    createImageForTest(befUpdateThumbnail);
-    createImageForTest(aftUpdateImage);
-  }
-
-  private static void createImageForTest(String filePath) {
-    FileConversion fileConversion = new FileConversion();
-    fileConversion.makeSampleJPEGImage(filePath);
-  }
 
   @BeforeEach
   public void setUp() throws Exception {
-    imageEntity = FileEntity.builder()
-        .fileName("bef.jpg")
-        .filePath("keeper_files" + File.separator + "bef.jpg")
-        .fileSize(0L)
-        .ipAddress(ipAddress1)
-        .build();
-    fileRepository.save(imageEntity);
+    memberEntity = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    userToken = generateJWTToken(memberEntity);
+    MemberEntity memberAdmin = generateMemberEntity(MemberJobName.회장, MemberTypeName.정회원,
+        MemberRankName.일반회원);
+    adminToken = generateJWTToken(memberAdmin);
+  }
 
-    thumbnailEntity = ThumbnailEntity.builder()
-        .path("keeper_files" + File.separator + "thumbnail" + File.separator + "thumb_bef.jpg")
-        .file(imageEntity).build();
-    thumbnailRepository.save(thumbnailEntity);
-
-    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
-    MemberTypeEntity memberTypeEntity = memberTypeRepository.findByName("정회원").get();
-    MemberRankEntity memberRankEntity = memberRankRepository.findByName("일반회원").get();
-    memberEntity = MemberEntity.builder()
-        .loginId(loginId)
-        .password(passwordEncoder.encode(password))
-        .realName(realName)
-        .nickName(nickName)
-        .emailAddress(emailAddress)
-        .studentId(studentId)
-        .point(point)
-        .memberType(memberTypeEntity)
-        .memberRank(memberRankEntity)
-        .thumbnail(thumbnailEntity)
-        .generation(getMemberGeneration())
-//        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
-        .build();
-    memberEntity = memberRepository.save(memberEntity);
-    memberTypeEntity.getMembers().add(memberEntity);
-    memberRankEntity.getMembers().add(memberEntity);
-
-    MemberHasMemberJobEntity mj = memberHasMemberJobRepository.save(
-        MemberHasMemberJobEntity.builder()
-            .memberJobEntity(memberJobEntity)
-            .memberEntity(memberEntity)
-            .build());
-    memberJobEntity.getMembers().add(mj);
-    memberJobRepository.save(memberJobEntity);
-    memberEntity.getMemberJobs().add(mj);
-    memberRepository.save(memberEntity);
-
-    String content = "{\n"
-        + "    \"loginId\": \"" + loginId + "\",\n"
-        + "    \"password\": \"" + password + "\"\n"
-        + "}";
-    MvcResult result = mockMvc.perform(post("/v1/signin")
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(content))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.code").value(0))
-        .andExpect(jsonPath("$.msg").exists())
-        .andExpect(jsonPath("$.data").exists())
-        .andReturn();
-
-    String resultString = result.getResponse().getContentAsString();
-    ObjectMapper mapper = new ObjectMapper();
-    SingleResult<SignInDto> sign = mapper.readValue(resultString, new TypeReference<>() {
-    });
-    userToken = sign.getData().getToken();
-
-    MemberJobEntity memberAdminJobEntity = memberJobRepository.findByName("ROLE_회장").get();
-    MemberHasMemberJobEntity hasMemberAdminJobEntity = MemberHasMemberJobEntity.builder()
-        .memberJobEntity(memberAdminJobEntity)
-        .build();
-    MemberEntity memberAdmin = MemberEntity.builder()
-        .loginId(adminLoginId)
-        .password(passwordEncoder.encode(adminPassword))
-        .realName(adminRealName)
-        .nickName(adminNickName)
-        .emailAddress(adminEmailAddress)
-        .studentId(adminStudentId)
-        .point(adminPoint)
-        .memberType(memberTypeEntity)
-        .memberRank(memberRankEntity)
-        .thumbnail(thumbnailEntity)
-        .generation(getMemberGeneration())
-        .memberJobs(new ArrayList<>(List.of(hasMemberAdminJobEntity)))
-        .build();
-    memberRepository.save(memberAdmin);
-
-    String adminContent = "{\n"
-        + "    \"loginId\": \"" + adminLoginId + "\",\n"
-        + "    \"password\": \"" + adminPassword + "\"\n"
-        + "}";
-    MvcResult adminResult = mockMvc.perform(post("/v1/signin")
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(adminContent))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.code").value(0))
-        .andExpect(jsonPath("$.msg").exists())
-        .andExpect(jsonPath("$.data").exists())
-        .andReturn();
-
-    String adminResultString = adminResult.getResponse().getContentAsString();
-    SingleResult<SignInDto> adminSign = mapper.readValue(adminResultString, new TypeReference<>() {
-    });
-    adminToken = adminSign.getData().getToken();
+  @AfterAll
+  public static void clearFiles() {
+    deleteTestFiles();
   }
 
   @Test
   @DisplayName("Admin 권한으로 회원 기수 변경하기")
   public void updateGeneration() throws Exception {
     String content = "{"
-        + "\"memberLoginId\" : \"" + loginId + "\","
+        + "\"memberLoginId\" : \"" + memberEntity.getLoginId() + "\","
         + "\"generation\" : \"" + 7.5 + "\""
         + "}";
     String docMsg = "변경할 기수를 입력하지 않았다면 실패합니다.";
@@ -251,6 +93,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
   @Test
   @DisplayName("Admin 권한으로 회원 등급 변경하기")
   public void updateRank() throws Exception {
+    String loginId = memberEntity.getLoginId();
     String content = "{\n"
         + "\"memberLoginId\" : \"" + loginId + "\",\n"
         + "\"name\" : \"우수회원\"\n"
@@ -290,6 +133,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
   @Test
   @DisplayName("Admin 권한으로 회원 유형 변경하기")
   public void updateType() throws Exception {
+    String loginId = memberEntity.getLoginId();
     String content = "{\n"
         + "\"memberLoginId\" : \"" + loginId + "\",\n"
         + "\"name\" : \"탈퇴\"\n"
@@ -329,7 +173,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
   @Test
   @DisplayName("Admin 권한으로 회원 직책 변경하기")
   public void updateJob() throws Exception {
-//    memberJobRepository.findAll().forEach(memberJobEntity -> log.info(memberJobEntity.getName()));
+    String loginId = memberEntity.getLoginId();
     String content = "{\n"
         + "\"memberLoginId\" : \"" + loginId + "\",\n"
         + "\"names\" : [\"ROLE_사서\",\"ROLE_총무\"]\n"
@@ -418,6 +262,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
   @Test
   @DisplayName("기본 권한으로 학번 변경 실패 - 중복 학번")
   public void updateStudentId_DuplFail() throws Exception {
+    String studentId = memberEntity.getStudentId();
     String content = "{"
         + "\"realName\":\"Changed\","
         + "\"nickName\":\"Changed Nick\","
@@ -480,6 +325,7 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
   @Test
   @DisplayName("기본 권한으로 이메일 변경하기 - 이메일 중복으로 실패")
   public void updateEmailAddress_DuplFail() throws Exception {
+    String emailAddress = memberEntity.getEmailAddress();
     EmailAuthDto emailAuthDto = new EmailAuthDto(emailAddress, "");
     EmailAuthDto emailAuthDtoForSend = memberService.generateEmailAuth(emailAuthDto);
     String content = "{\n"
@@ -524,11 +370,15 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
   @Test
   @DisplayName("기본 권한으로 본인의 썸네일 변경하기")
   public void updateThumbnails() throws Exception {
-    MockMultipartFile image = new MockMultipartFile("thumbnail", "aft.jpg", "image/jpg",
-        new FileInputStream(new File(
-            System.getProperty("user.dir") + File.separator + "keeper_files" + File.separator
-                + "aft.jpg")));
+    String befFilePath = memberEntity.getThumbnailPath();
+    String testFilePath = testFileRelDir + File.separator + "test.jpg";
+    createFileForTest(usrDir + testFilePath);
+    MockMultipartFile image = new MockMultipartFile("thumbnail", "test.jpg", "image/jpg",
+        new FileInputStream(new File(testFilePath)));
 
+    System.out.println("Error");
+    System.out.println(memberEntity.getThumbnail().getPath());
+    System.out.println(memberEntity.getThumbnailPath());
     String docMsg = "첨부 파일이 비어있을 경우, 기본 썸네일 이미지가 설정됩니다. +\n"
         + "다음과 같은 상황에 실패합니다. +\n"
         + "* 첨부한 파일이 이미지 파일이 아닌 경우" + " +\n"
@@ -539,14 +389,11 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
         "기존 파일이 서버에 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
             + "기존 파일을 삭제하는 데 실패한 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
             + "새 파일을 저장하는 데 실패한 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-            + "DB에 파일 레코드가 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberNotFound.code")
-            + " +\n"
-            + "DB에 썸네일 레코드가 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberNotFound.code")
-            + " +\n"
+            + "DB에 파일 레코드가 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+            + "DB에 썸네일 레코드가 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
             + "이미지 파일 형식이 잘못된 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-            + "이미지 파일을 읽고 쓰는 것에 실패한 경우: " + exceptionAdvice.getMessage("memberNotFound.code")
-            + " +\n"
-            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+            + "이미지 파일을 읽고 쓰는 것에 실패한 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
+            + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     // @formatter:on
     mockMvc.perform(RestDocumentationRequestBuilders.fileUpload("/v1/members/thumbnail")
             .file(image)
@@ -571,9 +418,8 @@ public class MemberUpdateControllerTest extends MemberControllerTestSetup {
                     "성공: true +\n실패: false", docCode, docMsg)
             )
         ));
-    Assertions.assertTrue(
-        memberEntity.getThumbnail().getPath().equals(
-            "keeper_files" + File.separator + "aft.jpg") == false);
+    Assertions.assertFalse(memberEntity.getThumbnail().getPath().equals(befFilePath));
+    deleteTestThumbnailFile(memberEntity.getThumbnail());
   }
 
   @Test

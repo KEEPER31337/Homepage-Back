@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 import keeper.project.homepage.ApiControllerTestHelper;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,11 @@ public class MemberControllerTest extends ApiControllerTestHelper {
     generateMemberEntity(MemberJobName.회장, MemberTypeName.정회원, MemberRankName.우수회원);
   }
 
+  @AfterAll
+  public static void clearFiles() {
+    deleteTestFiles();
+  }
+  
   @Test
   @DisplayName("전체 회원 정보 불러오기")
   public void getAllCommonMembersInfo() throws Exception {
@@ -38,7 +44,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
         .andDo(document("common-members",
             responseFields(
                 generateCommonMemberCommonResponseFields(ResponseType.LIST,
-                "성공: true +\n실패: false", docCode, docMsg)
+                    "성공: true +\n실패: false", docCode, docMsg)
             )
         ));
   }

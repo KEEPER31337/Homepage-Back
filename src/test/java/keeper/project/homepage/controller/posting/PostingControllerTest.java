@@ -40,6 +40,7 @@ import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.user.service.posting.PostingService;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -106,8 +107,8 @@ public class PostingControllerTest extends ApiControllerTestHelper {
   private FileEntity modifyImageFile;
 
   private final String userDirectory = System.getProperty("user.dir");
-  private final String createTestImage = "keeper_files" + File.separator + "createTest.jpg";
-  private final String modifyAftTestImage = "keeper_files" + File.separator + "modifyAftTest.jpg";
+  private final String createTestImage = testFileRelDir + File.separator + "createTest.jpg";
+  private final String modifyAftTestImage = testFileRelDir + File.separator + "modifyAftTest.jpg";
 
   private String getFileName(String filePath) {
     File file = new File(filePath);
@@ -116,9 +117,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
 
   @BeforeEach
   public void setUp() throws Exception {
-    createFileForTest(
-        userDirectory + File.separator + createTestImage);
-    createFileForTest(userDirectory + File.separator + modifyAftTestImage);
+    createFileForTest(usrDir + createTestImage);
     memberEntity = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
     adminEntity = generateMemberEntity(MemberJobName.회장, MemberTypeName.정회원, MemberRankName.일반회원);
     userToken = generateJWTToken(memberEntity);
@@ -183,6 +182,11 @@ public class PostingControllerTest extends ApiControllerTestHelper {
         generatePostingEntity(memberEntity, notAccessCategoryTestEntity, 0, 0, 0);
     accessNoticePostingTestEntity =
         generatePostingEntity(memberEntity, notAccessCategoryTestEntity, 1, 0, 0);
+  }
+
+  @AfterAll
+  public static void clearFiles() {
+    deleteTestFiles();
   }
 
   @Test
@@ -619,12 +623,13 @@ public class PostingControllerTest extends ApiControllerTestHelper {
   @Test
   @DisplayName("게시글 수정")
   public void modifyPosting() throws Exception {
+    createFileForTest(usrDir + modifyAftTestImage);
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     MockMultipartFile file = new MockMultipartFile("file", "modifyImage.png", "image/png",
         "<<png data>>".getBytes());
     MockMultipartFile thumbnail = new MockMultipartFile("thumbnail",
         getFileName(modifyAftTestImage), "image/jpg",
-        new FileInputStream(userDirectory + File.separator + modifyAftTestImage));
+        new FileInputStream(usrDir + modifyAftTestImage));
     params.add("title", "수정 mvc제목");
     params.add("content", "수정 mvc내용");
     params.add("categoryId", categoryEntity.getId().toString());
