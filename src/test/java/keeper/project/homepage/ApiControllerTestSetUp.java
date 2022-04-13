@@ -30,6 +30,7 @@ import keeper.project.homepage.admin.service.library.BookManageService;
 import keeper.project.homepage.repository.study.StudyHasMemberRepository;
 import keeper.project.homepage.repository.study.StudyRepository;
 import keeper.project.homepage.user.service.attendance.AttendanceService;
+import keeper.project.homepage.user.service.member.MemberDeleteService;
 import keeper.project.homepage.user.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.user.service.member.MemberHasCommentLikeService;
 import keeper.project.homepage.user.service.posting.CommentService;
@@ -37,6 +38,8 @@ import keeper.project.homepage.common.service.sign.SignUpService;
 import keeper.project.homepage.user.service.member.MemberService;
 import keeper.project.homepage.user.service.posting.PostingService;
 import keeper.project.homepage.user.service.study.StudyService;
+import keeper.project.homepage.util.service.FileService;
+import keeper.project.homepage.util.service.ThumbnailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,6 +143,9 @@ public abstract class ApiControllerTestSetUp {
   protected MemberService memberService;
 
   @Autowired
+  protected MemberDeleteService memberDeleteService;
+
+  @Autowired
   protected CommentService commentService;
 
   @Autowired
@@ -147,6 +153,12 @@ public abstract class ApiControllerTestSetUp {
 
   @Autowired
   protected StudyService studyService;
+
+  @Autowired
+  protected ThumbnailService thumbnailService;
+
+  @Autowired
+  protected FileService fileService;
 
   /********* Others Start ********/
   @Autowired
