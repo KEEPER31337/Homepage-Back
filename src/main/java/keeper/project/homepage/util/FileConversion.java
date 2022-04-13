@@ -82,13 +82,22 @@ public class FileConversion {
      * fileToBinaryString 으로 변환된 String을 다시 file로 복구하고 싶을 때 사용.
      */
     byte[] fileArray = binaryStringToByteArray(binString);
+    FileOutputStream fos = null;
     try {
-      FileOutputStream fos = new FileOutputStream(file);
+      fos = new FileOutputStream(file);
       fos.write(fileArray);
-      fos.close();
-    } catch (IOException e) {
+    } catch (Exception e) {
       System.out.println(
           "Exception position : FileUtil - binaryToFile(String binaryFile, String filePath, String fileName)");
+      e.printStackTrace();
+    } finally {
+      try {
+        if (fos != null) {
+          fos.close();
+        }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
   }
 

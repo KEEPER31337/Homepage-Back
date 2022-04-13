@@ -149,10 +149,12 @@ public class FileService {
     File originalImageFile = new File(
         System.getProperty("user.dir") + File.separator + deleted.getFilePath());
     if (originalImageFile.exists() == false) {
-      throw new CustomFileNotFoundException();
+      throw new CustomFileNotFoundException(
+          "썸네일 원본 파일이 존재하지 않습니다." + " (file path : " + originalImageFile.getPath() + ")");
     }
     if (originalImageFile.delete() == false) {
-      throw new CustomFileDeleteFailedException();
+      throw new CustomFileDeleteFailedException(
+          "썸네일 원본 파일 삭제를 실패하였습니다." + " (file path : " + originalImageFile.getPath() + ")");
     }
     deleteFileEntityById(deleteId);
   }
