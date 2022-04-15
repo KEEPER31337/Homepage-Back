@@ -9,6 +9,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.user.service.member.MemberDeleteService;
 import keeper.project.homepage.user.service.posting.CommentService;
 import keeper.project.homepage.util.FileConversion;
@@ -59,85 +60,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import keeper.project.homepage.user.service.member.MemberService;
 
-public class MemberServiceTestSetup {
-
-  // repository
-  @Autowired
-  public MemberRepository memberRepository;
+public class MemberServiceTestSetup extends ApiControllerTestHelper {
 
   @Autowired
-  public MemberJobRepository memberJobRepository;
+  protected MemberHasCommentLikeRepository memberHasCommentLikeRepository;
 
   @Autowired
-  public MemberHasMemberJobRepository memberHasMemberJobRepository;
-
-  @Autowired
-  public FriendRepository friendRepository;
-
-  @Autowired
-  public AttendanceRepository attendanceRepository;
-
-  @Autowired
-  public MemberRankRepository memberRankRepository;
-
-  @Autowired
-  public MemberTypeRepository memberTypeRepository;
-
-  @Autowired
-  public CommentRepository commentRepository;
-
-  @Autowired
-  public PostingRepository postingRepository;
-
-  @Autowired
-  public CategoryRepository categoryRepository;
-
-  @Autowired
-  public MemberHasCommentLikeRepository memberHasCommentLikeRepository;
-
-  @Autowired
-  public MemberHasCommentDislikeRepository memberHasCommentDislikeRepository;
-
-  @Autowired
-  public MemberHasPostingLikeRepository memberHasPostingLikeRepository;
-
-  @Autowired
-  public MemberHasPostingDislikeRepository memberHasPostingDislikeRepository;
-
-  @Autowired
-  public FileRepository fileRepository;
-
-  @Autowired
-  public ThumbnailRepository thumbnailRepository;
-
-  @Autowired
-  public BookRepository bookRepository;
-
-  @Autowired
-  public BookBorrowRepository bookBorrowRepository;
-
-  @Autowired
-  public PointLogRepository pointLogRepository;
-
-  // service
-  @Autowired
-  public MemberService memberService;
-
-  @Autowired
-  public MemberDeleteService memberDeleteService;
-
-  @Autowired
-  public CommentService commentService;
-
-  @Autowired
-  public PostingService postingService;
-
-  @Autowired
-  public PointLogService pointLogService;
-
-  // etc
-  @Autowired
-  public PasswordEncoder passwordEncoder;
+  protected MemberHasCommentDislikeRepository memberHasCommentDislikeRepository;
 
   public MemberEntity virtualMember;
   public MemberEntity deletedMember;
@@ -173,108 +102,6 @@ public class MemberServiceTestSetup {
 
   public PointLogEntity pointLogTest;
 
-  final private String loginId = "hyeonmomo";
-  final private String password = "keeper";
-  final private String realName = "JeongHyeonMo";
-  final private String nickName = "JeongHyeonMo";
-  final private String emailAddress = "gusah@naver.com";
-  final private String studentId = "201724579";
-
-
-  public MemberEntity generateMemberEntity(Integer numPreventDupl) {
-    return memberRepository.save(MemberEntity.builder()
-        .loginId(loginId + numPreventDupl.toString())
-        .password(passwordEncoder.encode(password + numPreventDupl.toString()))
-        .realName(realName + numPreventDupl.toString())
-        .nickName(nickName + numPreventDupl.toString())
-        .emailAddress(emailAddress + numPreventDupl.toString())
-        .studentId(studentId + numPreventDupl.toString())
-        .generation(0F)
-        .build());
-  }
-
-  public PostingEntity generatePostingEntity(Integer numPreventDupl, MemberEntity memberEntity,
-      Integer checkTemp) {
-    CategoryEntity categoryEntity = categoryRepository.save(
-        CategoryEntity.builder()
-            .name("test category" + numPreventDupl)
-            .build());
-    return postingRepository.save(PostingEntity.builder()
-        .title("posting 제목" + numPreventDupl)
-        .content("posting 내용" + numPreventDupl)
-        .categoryId(categoryEntity)
-        .ipAddress("192.111.222.333")
-        .allowComment(0)
-        .isNotice(0)
-        .isSecret(1)
-        .isTemp(checkTemp)
-        .likeCount(10)
-        .dislikeCount(1)
-        .commentCount(0)
-        .visitCount(0)
-        .registerTime(LocalDateTime.now())
-        .updateTime(LocalDateTime.now())
-        .memberId(memberEntity)
-        .password("pw" + numPreventDupl)
-        .build());
-  }
-
-  public CommentEntity generateCommentEntity(Integer numPreventDupl, MemberEntity memberEntity,
-      PostingEntity postingEntity) {
-    return commentRepository.save(CommentEntity.builder()
-        .content("댓글 내용" + numPreventDupl)
-        .registerTime(LocalDateTime.now())
-        .updateTime(LocalDateTime.now())
-        .ipAddress("111.111.111.111")
-        .likeCount(0)
-        .dislikeCount(0)
-        .parentId(0L)
-        .member(memberEntity)
-        .postingId(postingEntity)
-        .build());
-  }
-
-  public ThumbnailEntity generateThumbnailEntity(Integer numPreventDupl) {
-    final String userDirectory = System.getProperty("user.dir");
-    final String keeperFilesDirectoryPath = "keeper_files";
-    final String thumbnailDirectoryPath = "keeper_files" + File.separator + "thumbnail";
-    final String imageName = "mem_image" + numPreventDupl.toString() + ".jpg";
-    final String thumbnailName = "thumb_mem_image" + numPreventDupl.toString() + ".jpg";
-
-    File keeperFilesDir = new File(userDirectory + File.separator + keeperFilesDirectoryPath);
-    File thumbnailDir = new File(userDirectory + File.separator + thumbnailDirectoryPath);
-    if (!keeperFilesDir.exists()) {
-      keeperFilesDir.mkdir();
-    }
-    if (!thumbnailDir.exists()) {
-      thumbnailDir.mkdir();
-    }
-
-    long imageSize = createImageForTest(
-        userDirectory + File.separator + keeperFilesDirectoryPath + File.separator + imageName);
-    createImageForTest(
-        userDirectory + File.separator + thumbnailDirectoryPath + File.separator + thumbnailName);
-
-    FileEntity file = fileRepository.save(
-        FileEntity.builder()
-            .fileName(imageName)
-            .filePath(keeperFilesDirectoryPath + File.separator + imageName)
-            .fileSize(imageSize)
-            .ipAddress("111.111.111.111")
-            .build());
-    return thumbnailRepository.save(
-        ThumbnailEntity.builder()
-            .path(thumbnailDirectoryPath + File.separator + thumbnailName)
-            .file(file)
-            .build());
-  }
-
-  private long createImageForTest(String filePath) {
-    FileConversion fileConversion = new FileConversion();
-    fileConversion.makeSampleJPEGImage(filePath);
-    File createdFile = new File(filePath);
-    return createdFile.length();
-  }
 
   public BookBorrowEntity generateBookBorrowEntity(Integer numPreventDupl, MemberEntity member) {
 
@@ -327,16 +154,17 @@ public class MemberServiceTestSetup {
 
   // 각 test별 필요한 객체 생성
   public void generateThumbnailRemoveTestcase() {
-    thumbnailRemoveTest = generateThumbnailEntity(1);
-    deletedMember = generateMemberEntity(1);
+    thumbnailRemoveTest = generateThumbnailEntity();
+    deletedMember = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
     deletedMember.changeThumbnail(thumbnailRemoveTest);
     memberRepository.save(deletedMember);
   }
 
   public void generatePostingDislikeRemoveTestcase() {
-    writer = generateMemberEntity(1);
-    deletedMember = generateMemberEntity(2);
-    postDislikeTest = generatePostingEntity(1, writer, PostingService.isNotTempPosting);
+    CategoryEntity categoryEntity = generateCategoryEntity();
+    writer = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    deletedMember = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    postDislikeTest = generatePostingEntity(writer, categoryEntity, 0, 0, 0);
     mhpDislike = MemberHasPostingDislikeEntity.builder()
         .memberId(deletedMember)
         .postingId(postDislikeTest)
@@ -349,9 +177,10 @@ public class MemberServiceTestSetup {
   }
 
   public void generatePostingLikeRemoveTestcase() {
-    writer = generateMemberEntity(1);
-    deletedMember = generateMemberEntity(2);
-    postLikeTest = generatePostingEntity(1, writer, PostingService.isNotTempPosting);
+    CategoryEntity categoryEntity = generateCategoryEntity();
+    writer = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    deletedMember = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    postLikeTest = generatePostingEntity(writer, categoryEntity, 0, 0, 0);
     mhpLike = MemberHasPostingLikeEntity.builder()
         .memberId(deletedMember)
         .postingId(postLikeTest)
@@ -364,33 +193,37 @@ public class MemberServiceTestSetup {
   }
 
   public void generateTempPostingRemovedTestcase() {
-    deletedMember = generateMemberEntity(1);
+    CategoryEntity categoryEntity = generateCategoryEntity();
+    deletedMember = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
     for (int i = 0; i < 3; i++) {
       removeTestTempPosts.add(
-          generatePostingEntity(i, deletedMember, PostingService.isTempPosting));
+          generatePostingEntity(deletedMember, categoryEntity, 0, 0, 1));
     }
   }
 
   public void generatePostingChangeToVirtualMemberTestcase() {
-    deletedMember = generateMemberEntity(1);
+    CategoryEntity categoryEntity = generateCategoryEntity();
+    deletedMember = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
     for (int i = 0; i < 3; i++) {
       virtualTestPosts.add(
-          generatePostingEntity(i, deletedMember, PostingService.isNotTempPosting));
+          generatePostingEntity(deletedMember, categoryEntity, 0, 0, 0));
     }
   }
 
   public void generateCommentChangeToVirtualMemberTestcase() {
-    deletedMember = generateMemberEntity(1);
-    PostingEntity post = generatePostingEntity(1, deletedMember, PostingService.isNotTempPosting);
-    updatedComment = generateCommentEntity(1, deletedMember, post);
+    CategoryEntity categoryEntity = generateCategoryEntity();
+    deletedMember = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    PostingEntity post = generatePostingEntity(deletedMember, categoryEntity, 0, 0, 0);
+    updatedComment = generateCommentEntity(post, deletedMember, deletedMember.getId());
   }
 
 
   public void generateCommentDislikeRemoveTestcase() {
-    writer = generateMemberEntity(1);
-    deletedMember = generateMemberEntity(2);
-    PostingEntity post = generatePostingEntity(1, writer, PostingService.isNotTempPosting);
-    commentDislikeTest = generateCommentEntity(1, writer, post);
+    CategoryEntity categoryEntity = generateCategoryEntity();
+    writer = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    deletedMember = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    PostingEntity post = generatePostingEntity(writer, categoryEntity, 0, 0, 0);
+    commentDislikeTest = generateCommentEntity(post, writer, writer.getId());
     commentService.updateDislikeCount(deletedMember.getId(), commentDislikeTest.getId());
     mhcDislike = memberHasCommentDislikeRepository.findById(
         new MemberHasCommentEntityPK(deletedMember, commentDislikeTest)).orElse(null);
@@ -399,10 +232,11 @@ public class MemberServiceTestSetup {
   }
 
   public void generateCommentLikeRemoveTestcase() {
-    writer = generateMemberEntity(1);
-    deletedMember = generateMemberEntity(2);
-    PostingEntity post = generatePostingEntity(1, writer, PostingService.isNotTempPosting);
-    commentLikeTest = generateCommentEntity(1, writer, post);
+    CategoryEntity categoryEntity = generateCategoryEntity();
+    writer = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    deletedMember = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    PostingEntity post = generatePostingEntity(writer, categoryEntity, 0, 0, 0);
+    commentLikeTest = generateCommentEntity(post, writer, writer.getId());
     commentService.updateLikeCount(deletedMember.getId(), commentLikeTest.getId());
     mhcLike = memberHasCommentLikeRepository.findById(
         new MemberHasCommentEntityPK(deletedMember, commentLikeTest)).orElse(null);
@@ -411,28 +245,23 @@ public class MemberServiceTestSetup {
   }
 
   public void generateRankAndTypeRemoveTestcase() {
-    deletedMember = generateMemberEntity(1);
-    rank = memberRankRepository.findByName("우수회원").get();
-    type = memberTypeRepository.findByName("정회원").get();
-    deletedMember.changeMemberRank(rank);
-    deletedMember.changeMemberType(type);
+    // extra member
+    generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.우수회원);
+    deletedMember = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.우수회원);
+    rank = deletedMember.getMemberRank();
+    type = deletedMember.getMemberType();
   }
 
   public void generateJobCascadeRemoveTestcase() {
-    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
-    deletedMember = generateMemberEntity(1);
-    hasMemberJobEntity = MemberHasMemberJobEntity.builder()
-        .memberEntity(deletedMember)
-        .memberJobEntity(memberJobEntity)
-        .build();
-    memberHasMemberJobRepository.save(hasMemberJobEntity);
-    deletedMember.getMemberJobs().add(hasMemberJobEntity);
-
+    // extra member
+    generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.우수회원);
+    deletedMember = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    hasMemberJobEntity = deletedMember.getMemberJobs().get(0);
   }
 
   public void generateFriendCascadeRemoveTestcase() {
-    follower = generateMemberEntity(1);
-    followee = generateMemberEntity(2);
+    follower = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    followee = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
     follow = friendRepository.save(
         FriendEntity.builder()
             .follower(follower)
@@ -444,7 +273,7 @@ public class MemberServiceTestSetup {
   }
 
   public void generateAttendanceRemoveTestcase() {
-    deletedMember = generateMemberEntity(1);
+    deletedMember = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
     Random random = new Random();
     System.out.println(LocalDateTime.now().toLocalDate());
     System.out.println(LocalDate.now());
@@ -467,7 +296,8 @@ public class MemberServiceTestSetup {
             .build());
 
     // 다른 출석 기록에 영향을 안 끼치는 지 확인용
-    MemberEntity otherMember = generateMemberEntity(2);
+    MemberEntity otherMember = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원,
+        MemberRankName.일반회원);
     attendanceRepository.save(
         AttendanceEntity.builder()
             .point(10)
@@ -484,16 +314,16 @@ public class MemberServiceTestSetup {
   }
 
   public void generateCheckRemainBorrowInfoTestcase() {
-    deletedMember = generateMemberEntity(1);
+    deletedMember = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
     borrow = generateBookBorrowEntity(1, deletedMember);
   }
 
   public void generateCheckCorrectPasswordTestcase() {
-    deletedMember = generateMemberEntity(1);
+    deletedMember = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
   }
 
   public void generatePointLogRemoveTestcase() {
-    deletedMember = generateMemberEntity(1);
+    deletedMember = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
     PointLogRequestDto pointLog = new PointLogRequestDto();
     pointLog.setTime(LocalDateTime.now());
     pointLog.setPoint(10);
@@ -504,7 +334,8 @@ public class MemberServiceTestSetup {
     pointLogTest = pointLogRepository.save(pointLog.toEntity(deletedMember, 0));
 
     // 다른 회원 로그는 삭제되지 않는지 테스트 용
-    MemberEntity another = generateMemberEntity(2);
+    MemberEntity another = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원,
+        MemberRankName.일반회원);
 
     another.updatePoint(pointLog.getPoint());
     memberRepository.save(another);

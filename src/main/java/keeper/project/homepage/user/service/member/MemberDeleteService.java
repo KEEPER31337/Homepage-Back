@@ -8,8 +8,12 @@ import keeper.project.homepage.entity.library.BookBorrowEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasCommentDislikeEntity;
 import keeper.project.homepage.entity.member.MemberHasCommentLikeEntity;
+import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberHasPostingDislikeEntity;
 import keeper.project.homepage.entity.member.MemberHasPostingLikeEntity;
+import keeper.project.homepage.entity.member.MemberJobEntity;
+import keeper.project.homepage.entity.member.MemberRankEntity;
+import keeper.project.homepage.entity.member.MemberTypeEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.member.CustomAccountDeleteFailedException;
@@ -200,6 +204,9 @@ public class MemberDeleteService {
     deleteAttendance(deleted);
     deletePointLog(deleted);
     deleteGameInfo(deleted);
+    deleteMemberRank(deleted);
+    deleteMemberType(deleted);
+    deleteMemberJob(deleted);
 
     MemberEntity virtualMember = memberService.findById(MemberService.VIRTUAL_MEMBER_ID);
     commentChangeToVirtualMember(virtualMember, deleted);
@@ -207,5 +214,28 @@ public class MemberDeleteService {
 
     deleteMember(deleted);
     deleteThumbnail(deleted);
+  }
+
+  public void deleteMemberRank(MemberEntity memberEntity) {
+    MemberRankEntity rank = memberEntity.getMemberRank();
+    if (rank != null) {
+      rank.getMembers().remove(memberEntity);
+    }
+  }
+
+  public void deleteMemberType(MemberEntity memberEntity) {
+    MemberTypeEntity type = memberEntity.getMemberType();
+    if (type != null) {
+      type.getMembers().remove(memberEntity);
+    }
+  }
+
+  public void deleteMemberJob(MemberEntity memberEntity) {
+    List<MemberHasMemberJobEntity> memberHasMemberJobEntities = memberEntity.getMemberJobs();
+    for (MemberHasMemberJobEntity hasMemberJobEntity : memberHasMemberJobEntities) {
+      MemberJobEntity memberJobEntity = hasMemberJobEntity.getMemberJobEntity();
+      memberJobEntity.getMembers().remove(hasMemberJobEntity);
+    }
+    // memberEntity가 삭제 시, MemberHasMemberJobEntity는 자동으로 삭제
   }
 }

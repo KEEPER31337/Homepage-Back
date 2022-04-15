@@ -26,6 +26,7 @@ import keeper.project.homepage.user.dto.posting.CommentDto;
 import keeper.project.homepage.user.service.posting.PostingService;
 import keeper.project.homepage.util.ImageFormatChecking;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -61,6 +62,11 @@ public class CommentControllerTest extends ApiControllerTestHelper {
     postingEntity = generatePostingEntity(userEntity, categoryEntity, 0, 1, 0);
     commentEntity = generateCommentEntity(postingEntity, userEntity, 0L);
     replyEntity = generateCommentEntity(postingEntity, userEntity, commentEntity.getId());
+  }
+
+  @AfterAll
+  public static void clearFiles() {
+    deleteTestFiles();
   }
 
   @Test

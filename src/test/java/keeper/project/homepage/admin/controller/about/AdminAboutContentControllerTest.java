@@ -22,6 +22,7 @@ import keeper.project.homepage.entity.etc.StaticWriteSubtitleImageEntity;
 import keeper.project.homepage.entity.etc.StaticWriteTitleEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,23 +56,17 @@ public class AdminAboutContentControllerTest extends ApiControllerTestHelper {
     generalToken = generateJWTToken(generalMember.getLoginId(), memberPassword);
     adminToken = generateJWTToken(adminMember.getLoginId(), memberPassword);
 
-    fileEntity = FileEntity.builder()
-        .fileName(getFileName(generalTestImage))
-        .filePath(generalTestImage)
-        .fileSize(0L)
-        .ipAddress(ipAddress1)
-        .build();
-    fileRepository.save(fileEntity);
-
-    thumbnailEntity = ThumbnailEntity.builder()
-        .path(generalThumbnailImage)
-        .file(fileEntity).build();
-    thumbnailRepository.save(thumbnailEntity);
+    thumbnailEntity = generateThumbnailEntity();
 
     staticWriteTitleEntity = generateTestTitle(1);
     staticWriteSubtitleImageEntity = generateTestSubtitle(1);
     staticWriteContentEntity = generateTestContent(1);
 
+  }
+
+  @AfterAll
+  public static void clearFiles() {
+    deleteTestFiles();
   }
 
   private String getFileName(String filePath) {

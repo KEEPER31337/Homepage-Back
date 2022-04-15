@@ -29,6 +29,7 @@ import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.member.MemberRankEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -51,52 +52,12 @@ public class SignInControllerTest extends ApiControllerTestHelper {
 
   private final String ipAddress = "127.0.0.1";
 
-  @BeforeAll
-  public static void createFile() {
-    final String keeperFilesDirectoryPath = System.getProperty("user.dir") + File.separator
-        + "keeper_files";
-    final String thumbnailDirectoryPath = System.getProperty("user.dir") + File.separator
-        + "keeper_files" + File.separator + "thumbnail";
-    final String updateImage = keeperFilesDirectoryPath + File.separator + "test.jpg";
-    final String updateThumbnail = thumbnailDirectoryPath + File.separator + "thumb_test.jpg";
-
-    File keeperFilesDir = new File(keeperFilesDirectoryPath);
-    File thumbnailDir = new File(thumbnailDirectoryPath);
-
-    if (!keeperFilesDir.exists()) {
-      keeperFilesDir.mkdir();
-    }
-
-    if (!thumbnailDir.exists()) {
-      thumbnailDir.mkdir();
-    }
-
-    createImageForTest(updateImage);
-    createImageForTest(updateThumbnail);
-  }
-
-  private static void createImageForTest(String filePath) {
-    FileConversion fileConversion = new FileConversion();
-    fileConversion.makeSampleJPEGImage(filePath);
-  }
-
   @BeforeEach
   public void setUp() throws Exception {
-    FileEntity imageEntity = FileEntity.builder()
-        .fileName("test.jpg")
-        .filePath("keeper_files" + File.separator + "test.jpg")
-        .fileSize(0L)
-        .ipAddress(ipAddress)
-        .build();
-    fileRepository.save(imageEntity);
-
     SimpleDateFormat stringToDate = new SimpleDateFormat("yyyymmdd");
     Date birthdayDate = stringToDate.parse(birthday);
 
-    ThumbnailEntity thumbnailEntity = ThumbnailEntity.builder()
-        .path("keeper_files" + File.separator + "thumbnail" + File.separator + "thumb_test.jpg")
-        .file(imageEntity).build();
-    thumbnailRepository.save(thumbnailEntity);
+    ThumbnailEntity thumbnailEntity = generateThumbnailEntity();
     MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
     MemberTypeEntity memberTypeEntity = memberTypeRepository.findByName("정회원").get();
     MemberRankEntity memberRankEntity = memberRankRepository.findByName("일반회원").get();
@@ -117,6 +78,11 @@ public class SignInControllerTest extends ApiControllerTestHelper {
         .generation(0F)
         .build();
     memberRepository.save(memberEntity);
+  }
+
+  @AfterAll
+  public static void clearFiles() {
+    deleteTestFiles();
   }
 
   @Test

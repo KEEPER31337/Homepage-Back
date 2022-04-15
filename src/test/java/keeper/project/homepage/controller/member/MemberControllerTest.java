@@ -14,10 +14,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
+import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.entity.member.FriendEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -27,12 +29,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @Log4j2
-public class MemberControllerTest extends MemberControllerTestSetup {
+public class MemberControllerTest extends ApiControllerTestHelper {
 
   private String userToken;
+  private String deleteToken;
   private String adminToken;
 
   private MemberEntity memberEntity;
+  private MemberEntity deleteMemberEntity;
   private MemberEntity memberAdmin;
 
   @BeforeEach
@@ -41,8 +45,16 @@ public class MemberControllerTest extends MemberControllerTestSetup {
     memberEntity = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
     userToken = generateJWTToken(memberEntity);
 
+    deleteMemberEntity = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    deleteToken = generateJWTToken(deleteMemberEntity);
+
     memberAdmin = generateMemberEntity(MemberJobName.회장, MemberTypeName.정회원, MemberRankName.우수회원);
     adminToken = generateJWTToken(memberAdmin);
+  }
+
+  @AfterAll
+  public static void clearFiles() {
+    deleteTestFiles();
   }
 
   @Test
@@ -163,7 +175,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
         .andExpect(status().isOk())
         .andDo(document("member-unfollow",
             pathParameters(
-              parameterWithName("id").description("팔로우한 회원의 로그인 아이디")
+                parameterWithName("id").description("팔로우한 회원의 로그인 아이디")
             ),
             responseFields(
                 generateCommonResponseFields("성공: true +\n실패: false", docCode, docMsg)
@@ -227,7 +239,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
             + " +\n" + "그 외 실패한 경우: " + exceptionAdvice.getMessage("unKnown.code");
     mockMvc.perform(delete("/v1/members")
             .param("password", memberPassword)
-            .header("Authorization", userToken))
+            .header("Authorization", deleteToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andDo(document("member-delete",
@@ -240,7 +252,7 @@ public class MemberControllerTest extends MemberControllerTestSetup {
         ));
 
     Assertions.assertThrows(CustomMemberNotFoundException.class, () -> {
-      memberService.findById(memberEntity.getId());
+      memberService.findById(deleteMemberEntity.getId());
     });
   }
 

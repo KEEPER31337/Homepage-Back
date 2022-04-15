@@ -5,7 +5,6 @@ import static keeper.project.homepage.common.service.sign.SignUpService.KEEPER_F
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -15,12 +14,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import keeper.project.homepage.entity.attendance.AttendanceEntity;
 import keeper.project.homepage.util.FileConversion;
 import keeper.project.homepage.common.dto.result.SingleResult;
@@ -35,14 +38,21 @@ import keeper.project.homepage.entity.member.MemberTypeEntity;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.util.service.ThumbnailService;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.test.web.servlet.MvcResult;
 
 public class ApiControllerTestHelper extends ApiControllerTestSetUp {
 
-  final public String memberPassword = "memberPassword";
-  final public String postingPassword = "postingPassword";
+  public final String memberPassword = "memberPassword";
+  public final String postingPassword = "postingPassword";
+
+  public static final String usrDir = System.getProperty("user.dir") + File.separator;
+  public static final String testFileRelDir =
+      "keeper_files" + File.separator + "test";
+  public static final String testThumbRelDir =
+      testFileRelDir + File.separator + "thumbnail";
 
   public enum MemberJobName {
     회장("ROLE_회장"),
@@ -126,6 +136,13 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
   }
 
   public void deleteTestFile(FileEntity fileEntity) {
+    List<Long> defaultFileIds = Stream.of(ThumbnailService.DefaultThumbnailInfo.values())
+        .map(m -> m.getFileId())
+        .collect(Collectors.toList());
+    if (defaultFileIds.contains(fileEntity.getId())) {
+      return;
+    }
+
     final String usrDir = System.getProperty("user.dir") + File.separator;
     File file = new File(usrDir + fileEntity.getFilePath());
     try {
@@ -136,6 +153,13 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
   }
 
   public void deleteTestThumbnailFile(ThumbnailEntity thumbnailEntity) {
+    List<Long> defaultThumbnailIds = Stream.of(ThumbnailService.DefaultThumbnailInfo.values())
+        .map(m -> m.getThumbnailId())
+        .collect(Collectors.toList());
+    if (defaultThumbnailIds.contains(thumbnailEntity.getId())) {
+      return;
+    }
+
     final String usrDir = System.getProperty("user.dir") + File.separator;
     File file = new File(usrDir + thumbnailEntity.getPath());
     try {
@@ -143,39 +167,87 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     } catch (IOException e) {
       e.printStackTrace();
     }
+    deleteTestFile(thumbnailEntity.getFile());
+  }
+
+  private static void deleteFolder(String dirPath) {
+    Path path = Paths.get(dirPath);
+    try {
+      if (Files.exists(path) && Files.isDirectory(path)) {
+        List<Path> folder_list = Files.list(path).toList(); //파일리스트 얻어오기
+
+        for (int i = 0; i < folder_list.size(); i++) {
+          if (Files.isRegularFile(folder_list.get(i))) {
+            if (Files.deleteIfExists(folder_list.get(i))) {
+              System.out.println("파일이 삭제되었습니다.");
+            } else {
+              System.out.println("파일이 삭제되지 않았습니다. (파일 경로: " + folder_list.get(i).toString() + ")");
+            }
+          } else if (Files.isDirectory(folder_list.get(i))) {
+            deleteFolder(folder_list.get(i).toString()); //재귀함수호출
+          }
+        }
+        if (Files.deleteIfExists(path)) { //폴더 삭제
+          System.out.println("폴더가 삭제되었습니다.");
+        } else {
+          System.out.println("폴더가 삭제되지 않았습니다. (파일 경로: " + path.toString() + ")");
+        }
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  public static void deleteTestFiles() {
+    // fixme :
+    //  Bug : file delete가 제대로 수행되지 않음
+    //  Exception Msg : "다른 프로세스가 파일을 사용 중이기 때문에 프로세스가 액세스 할 수 없습니다"
+    //  Caused By : (추측) file output stream을 close했지만, gc가 메모리 상에서 완전히 풀어주기 전에 삭제를 시도하려 해서 그런 듯 함.
+    //  Solve : System.gc()를 호출해서 gc가 stream을 정리하게 함.
+    //    하지만 System.gc()를 사용자가 호출하는 것은 성능에 매우 안좋은 영향을 끼침. 테스트가 아니면 사용하지 말 것.
+    System.gc();
+    deleteFolder(usrDir + testFileRelDir);
+  }
+
+  private void checkFileDirectoryExist() {
+    if (!new File(usrDir + testFileRelDir).exists()) {
+      new File(usrDir + testFileRelDir).mkdir();
+    }
+  }
+
+  private void checkThumbnailDirectoryExist() {
+    checkFileDirectoryExist();
+    if (!new File(usrDir + testThumbRelDir).exists()) {
+      new File(usrDir + testThumbRelDir).mkdir();
+    }
   }
 
   public FileEntity generateFileEntity() {
-    final String usrDir = System.getProperty("user.dir") + File.separator;
-    final String fileRelDir = "keeper_files" + File.separator;
-
     final String epochTime = Long.toHexString(System.nanoTime());
     final String fileName = epochTime + ".jpg";
 
-    createFileForTest(usrDir + fileRelDir + fileName);
+    checkFileDirectoryExist();
+    createFileForTest(usrDir + testFileRelDir + File.separator + fileName);
 
     return fileRepository.save(FileEntity.builder()
         .fileName(fileName)
-        .filePath(fileRelDir + fileName)
+        .filePath(testFileRelDir + File.separator + fileName)
         .fileSize(0L)
         .ipAddress("111.111.111.111")
         .build());
   }
 
   public ThumbnailEntity generateThumbnailEntity() {
-    final String usrDir = System.getProperty("user.dir") + File.separator;
-    final String fileRelDir = "keeper_files" + File.separator;
-    final String thumbRelDir = fileRelDir + "thumbnail" + File.separator;
-
     final String epochTime = Long.toHexString(System.nanoTime());
     final String thumbName = "thumb_" + epochTime + ".jpg";
 
-    createFileForTest(usrDir + thumbRelDir + thumbName);
+    checkThumbnailDirectoryExist();
+    createFileForTest(usrDir + testThumbRelDir + File.separator + thumbName);
 
     FileEntity fileEntity = generateFileEntity();
 
     return thumbnailRepository.save(ThumbnailEntity.builder()
-        .path(thumbRelDir + thumbName)
+        .path(testThumbRelDir + File.separator + thumbName)
         .file(fileEntity).build());
   }
 

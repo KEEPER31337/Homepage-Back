@@ -159,9 +159,11 @@ public class ThumbnailService {
     File thumbnailFile = new File(
         System.getProperty("user.dir") + File.separator + deleted.getPath());
     if (thumbnailFile.exists() == false) {
-      throw new CustomFileNotFoundException();
+      throw new CustomFileNotFoundException(
+          "썸네일 파일이 존재하지 않습니다." + " (file path : " + thumbnailFile.getPath() + ")");
     } else if (thumbnailFile.delete() == false) {
-      throw new CustomFileDeleteFailedException();
+      throw new CustomFileDeleteFailedException(
+          "썸네일 파일 삭제를 실패하였습니다." + " (file path : " + thumbnailFile.getPath() + ")");
     }
     thumbnailRepository.deleteById(deleteId);
   }

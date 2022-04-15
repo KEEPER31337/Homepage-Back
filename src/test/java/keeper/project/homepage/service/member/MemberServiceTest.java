@@ -3,9 +3,12 @@ package keeper.project.homepage.service.member;
 import java.io.File;
 import java.util.Optional;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
+import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.member.CustomAccountDeleteFailedException;
 import keeper.project.homepage.user.service.member.MemberService;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,10 +29,16 @@ public class MemberServiceTest extends MemberServiceTestSetup {
     Assertions.assertNotNull(virtualMember, "id=1인 가상 멤버 레코드가 존재하지 않습니다.");
   }
 
+  @AfterAll
+  public static void clearFiles() {
+    deleteTestFiles();
+  }
+
   @Test
   @DisplayName("Member id로 조회")
   public void findByIdTest() {
-    MemberEntity findTest = generateMemberEntity(1);
+    MemberEntity findTest = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원,
+        MemberRankName.일반회원);
 
     Long findId = findTest.getId();
     Optional<MemberEntity> findMember = memberRepository.findById(findId);
@@ -54,15 +63,31 @@ public class MemberServiceTest extends MemberServiceTestSetup {
   public void jobCascadeRemoveTest() {
     generateJobCascadeRemoveTestcase();
 
+    System.out.println("삭제 멤버 아이디: " + deletedMember.getId());
+    MemberJobEntity jobEntity = hasMemberJobEntity.getMemberJobEntity();
+
+//    for (MemberHasMemberJobEntity memberFromJob : jobEntity.getMembers()) {
+//      System.out.println(memberFromJob.getMemberEntity().getId());
+//      System.out.println("\t" + memberFromJob.getMemberJobEntity().getName());
+//    }
+
     // 삭제 전 연관관계 확인
     Assertions.assertTrue(deletedMember.getMemberJobs().contains(hasMemberJobEntity));
+    Assertions.assertTrue(jobEntity.getMembers().contains(hasMemberJobEntity));
 
+    memberDeleteService.deleteMemberJob(deletedMember);
     memberDeleteService.deleteMember(deletedMember);
+
+    for (MemberHasMemberJobEntity memberFromJob : jobEntity.getMembers()) {
+      System.out.println(memberFromJob.getMemberEntity().getId());
+      System.out.println("\t" + memberFromJob.getMemberJobEntity().getName());
+    }
 
     // CascadeType.REMOVE - 삭제 후 하위 레코드까지 삭제 됐는지 확인
     Assertions.assertTrue(memberRepository.findById(deletedMember.getId()).isEmpty());
     Assertions.assertTrue(
         memberHasMemberJobRepository.findById(hasMemberJobEntity.getId()).isEmpty());
+    Assertions.assertFalse(jobEntity.getMembers().contains(hasMemberJobEntity));
   }
 
   @Test
@@ -91,6 +116,11 @@ public class MemberServiceTest extends MemberServiceTestSetup {
   public void rankAndTypeRemoveTest() {
     generateRankAndTypeRemoveTestcase();
 
+    Assertions.assertTrue(rank.getMembers().contains(deletedMember));
+    Assertions.assertTrue(type.getMembers().contains(deletedMember));
+
+    memberDeleteService.deleteMemberType(deletedMember);
+    memberDeleteService.deleteMemberRank(deletedMember);
     memberDeleteService.deleteMember(deletedMember);
 
     Assertions.assertFalse(rank.getMembers().contains(deletedMember));
@@ -266,7 +296,7 @@ public class MemberServiceTest extends MemberServiceTestSetup {
   public void correctPasswordTest() {
     generateCheckCorrectPasswordTestcase();
 
-    final String correctPassword = "keeper1";
+    final String correctPassword = memberPassword;
     Assertions.assertDoesNotThrow(() -> {
       memberDeleteService.checkCorrectPassword(deletedMember, correctPassword);
     });
