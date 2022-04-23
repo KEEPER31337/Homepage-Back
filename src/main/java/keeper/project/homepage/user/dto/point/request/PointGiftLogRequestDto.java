@@ -23,11 +23,20 @@ public class PointGiftLogRequestDto {
   private Long presentedId;
 
   public PointLogEntity toEntity(MemberEntity member, MemberEntity presented, Integer isSpent) {
+    String detailValue = detail;
+    if (detailValue == null || detailValue.trim().isEmpty()) {
+      if (isSpent == 0) {
+        detailValue = "선물받은 포인트";
+      } else if (isSpent == 1) {
+        detailValue = "선물한 포인트";
+      }
+    }
+
     return PointLogEntity.builder()
         .member(member)
         .time(time)
         .point(point)
-        .detail(detail)
+        .detail(detailValue)
         .presentedMember(presented)
         .isSpent(isSpent)
         .build();
