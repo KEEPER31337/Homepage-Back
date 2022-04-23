@@ -2,9 +2,7 @@ package keeper.project.homepage.user.controller.point;
 
 import java.util.Map;
 import keeper.project.homepage.user.dto.point.request.PointGiftLogRequestDto;
-import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.user.dto.point.result.PointGiftLogResultDto;
-import keeper.project.homepage.user.dto.point.result.PointLogResultDto;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.service.ResponseService;
 
