@@ -1,10 +1,9 @@
 package keeper.project.homepage.user.dto.point.request;
 
-import com.sun.istack.NotNull;
 import java.time.LocalDateTime;
-import java.util.Date;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.point.PointLogEntity;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,6 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 public class PointGiftLogRequestDto {
 
   private LocalDateTime time;
@@ -22,14 +22,14 @@ public class PointGiftLogRequestDto {
 
   private Long presentedId;
 
-  public PointLogEntity toEntity(MemberEntity member, MemberEntity presented) {
+  public PointLogEntity toEntity(MemberEntity member, MemberEntity presented, Integer isSpent) {
     return PointLogEntity.builder()
         .member(member)
         .time(time)
         .point(point)
         .detail(detail)
         .presentedMember(presented)
-        .isSpent(1)
+        .isSpent(isSpent)
         .build();
   }
 
