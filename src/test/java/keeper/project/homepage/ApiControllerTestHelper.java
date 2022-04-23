@@ -1,5 +1,6 @@
 package keeper.project.homepage;
 
+import static java.util.stream.Collectors.toList;
 import static keeper.project.homepage.common.service.sign.SignUpService.HALF_GENERATION_MONTH;
 import static keeper.project.homepage.common.service.sign.SignUpService.KEEPER_FOUNDING_YEAR;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import keeper.project.homepage.entity.attendance.AttendanceEntity;
+import keeper.project.homepage.entity.point.PointLogEntity;
 import keeper.project.homepage.util.FileConversion;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.dto.sign.SignInDto;
@@ -138,7 +140,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
   public void deleteTestFile(FileEntity fileEntity) {
     List<Long> defaultFileIds = Stream.of(ThumbnailService.DefaultThumbnailInfo.values())
         .map(m -> m.getFileId())
-        .collect(Collectors.toList());
+        .collect(toList());
     if (defaultFileIds.contains(fileEntity.getId())) {
       return;
     }
@@ -155,7 +157,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
   public void deleteTestThumbnailFile(ThumbnailEntity thumbnailEntity) {
     List<Long> defaultThumbnailIds = Stream.of(ThumbnailService.DefaultThumbnailInfo.values())
         .map(m -> m.getThumbnailId())
-        .collect(Collectors.toList());
+        .collect(toList());
     if (defaultThumbnailIds.contains(thumbnailEntity.getId())) {
       return;
     }
@@ -174,7 +176,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     Path path = Paths.get(dirPath);
     try {
       if (Files.exists(path) && Files.isDirectory(path)) {
-        List<Path> folder_list = Files.list(path).toList(); //파일리스트 얻어오기
+        List<Path> folder_list = Files.list(path).collect(toList()); //파일리스트 얻어오기
 
         for (int i = 0; i < folder_list.size(); i++) {
           if (Files.isRegularFile(folder_list.get(i))) {
@@ -354,6 +356,55 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         .build());
     writer.getPosting().add(posting);
     return posting;
+  }
+
+  public PointLogEntity generatePointLogEntity(MemberEntity member, Integer point,
+      Integer isSpent) {
+    final long epochTime = System.nanoTime();
+    final LocalDateTime now = LocalDateTime.now();
+    String pointUse = null;
+    if (isSpent == 0) {
+      pointUse = "적립";
+    } else if (isSpent == 1) {
+      pointUse = "사용";
+    } else {
+      pointUse = "예외";
+    }
+    return pointLogRepository.save(
+        PointLogEntity.builder()
+            .member(member)
+            .point(point)
+            .detail(pointUse + epochTime)
+            .time(now)
+            .isSpent(isSpent)
+            .build()
+    );
+  }
+
+  public PointLogEntity generatePointGiftLogEntity(MemberEntity sender, MemberEntity receiver,
+      Integer point) {
+    final long epochTime = System.nanoTime();
+    final LocalDateTime now = LocalDateTime.now();
+    pointLogRepository.save(
+        PointLogEntity.builder()
+            .member(receiver)
+            .point(point)
+            .detail("받은 선물" + epochTime)
+            .time(now)
+            .presentedMember(sender)
+            .isSpent(0)
+            .build()
+    );
+    return pointLogRepository.save(
+        PointLogEntity.builder()
+            .member(sender)
+            .point(point)
+            .detail("준 선물" + epochTime)
+            .time(now)
+            .presentedMember(receiver)
+            .isSpent(1)
+            .build()
+    );
   }
 
   public CommentEntity generateCommentEntity(PostingEntity posting, MemberEntity writer,
