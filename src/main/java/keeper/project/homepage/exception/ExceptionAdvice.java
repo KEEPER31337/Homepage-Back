@@ -315,7 +315,7 @@ public class ExceptionAdvice {
   }
 
   @ExceptionHandler(CustomPointLogRequestNullException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult pointLogRequestNullException(HttpServletRequest request,
       CustomPointLogRequestNullException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
