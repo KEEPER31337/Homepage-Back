@@ -15,7 +15,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDateTime;
 import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.point.PointLogEntity;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,98 +27,35 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 public class PointLogControllerTest extends ApiControllerTestHelper {
 
-  private MemberEntity memberEntity1, memberEntity2, memberEntity3;
-  private String userToken1, userToken2, userToken3;
+  private MemberEntity memberEntity1, memberEntity2;
+  private String userToken1, userToken2;
 
   private final LocalDateTime now = LocalDateTime.now();
 
-  int index = 0;
-
   @BeforeEach
   public void setUp() throws Exception {
-    memberEntity1 = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
-    memberEntity2 = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
-    memberEntity3 = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    memberEntity1 = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원,
+        MemberRankName.일반회원);
+    memberEntity2 = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원,
+        MemberRankName.일반회원);
     userToken1 = generateJWTToken(memberEntity1);
     userToken2 = generateJWTToken(memberEntity2);
-    userToken3 = generateJWTToken(memberEntity3);
-    for (int i = 0; i < 38; i++) {
-      generateTestPointLog();
-      generateTestPointGiftLog();
+    int isSpent = 0;
+    for (int i = 1; i < 22; i++) {
+      generatePointLogEntity(memberEntity1, i, isSpent);
+      generatePointLogEntity(memberEntity2, i, isSpent);
+      generatePointGiftLogEntity(memberEntity1, memberEntity2, i);
+      if (isSpent == 0) {
+        isSpent = 1;
+      } else {
+        isSpent = 0;
+      }
     }
-
-    for (int i = 0; i < 10; i++) {
-      generateTestOtherPointLog();
-      generateTestOtherPointGiftLog();
-    }
-
   }
 
   @AfterAll
   public static void clearFiles() {
     deleteTestFiles();
-  }
-
-  private void generateTestPointLog() {
-    index += 1;
-    final long epochTime = System.nanoTime();
-    final LocalDateTime now = LocalDateTime.now();
-    PointLogEntity pointLogEntity = PointLogEntity.builder()
-        .member(memberEntity1)
-        .point(index)
-        .detail("적립" + epochTime)
-        .time(now)
-        .isSpent(0)
-        .build();
-
-    pointLogRepository.save(pointLogEntity);
-  }
-
-  private void generateTestOtherPointLog() {
-    index += 1;
-    final long epochTime = System.nanoTime();
-    final LocalDateTime now = LocalDateTime.now();
-    PointLogEntity pointLogEntity = PointLogEntity.builder()
-        .member(memberEntity3)
-        .point(index)
-        .detail("적립" + epochTime)
-        .time(now)
-        .isSpent(0)
-        .build();
-
-    pointLogRepository.save(pointLogEntity);
-  }
-
-  private void generateTestPointGiftLog() {
-    index += 1;
-    final long epochTime = System.nanoTime();
-    final LocalDateTime now = LocalDateTime.now();
-    PointLogEntity pointLogEntity = PointLogEntity.builder()
-        .member(memberEntity1)
-        .point(index)
-        .detail("선물" + epochTime)
-        .time(now)
-        .presentedMember(memberEntity2)
-        .isSpent(1)
-        .build();
-
-    pointLogRepository.save(pointLogEntity);
-  }
-
-  private void generateTestOtherPointGiftLog() {
-    index += 1;
-    final long epochTime = System.nanoTime();
-    final LocalDateTime now = LocalDateTime.now();
-    PointLogEntity pointLogEntity = PointLogEntity.builder()
-        .member(memberEntity2)
-        .point(index)
-        .detail("선물" + epochTime)
-        .time(now)
-        .presentedMember(memberEntity3)
-        .isSpent(1)
-        .build();
-
-    pointLogRepository.save(pointLogEntity);
   }
 
   @Test
@@ -150,11 +86,11 @@ public class PointLogControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("data.memberName").description("포인트를 선물한 멤버의 실제 이름"),
+                fieldWithPath("data.memberId").description("포인트를 선물한 멤버의 ID"),
                 fieldWithPath("data.time").description("선물한 포인트 로그가 생성된 시간"),
                 fieldWithPath("data.point").description("선물한 포인트 값"),
                 fieldWithPath("data.detail").description("선물 시 작성한 내용"),
-                fieldWithPath("data.presentedMemberName").description("포인트를 선물받은 멤버의 실제 이름"),
+                fieldWithPath("data.presentedMemberId").description("포인트를 선물받은 멤버의 ID"),
                 fieldWithPath("data.prePointMember").description("포인트를 선물한 멤버의 선물 보내기 전 포인트"),
                 fieldWithPath("data.finalPointMember").description("포인트를 선물한 멤버의 선물 보낸 후 포인트"),
                 fieldWithPath("data.prePointPresented").description("포인트를 선물받은 멤버의 선물 받기 전 포인트"),
@@ -203,7 +139,27 @@ public class PointLogControllerTest extends ApiControllerTestHelper {
   }
 
   @Test
-  @DisplayName("포인트 내역 조회 - 성공")
+  @DisplayName("포인트 선물하기 - 실패(요청에 Null 값 존재)")
+  public void transferPointFailByNull() throws Exception {
+    String content = "{\n"
+        + "    \"time\": \"" + now + "\",\n"
+        + "    \"point\": \"" + null + "\",\n"
+        + "    \"detail\": \"" + "선물 드릴께용" + "\",\n"
+        + "    \"presentedId\": \"" + memberEntity2.getId() + "\"\n"
+        + "}";
+
+    mockMvc.perform(post("/v1/points/present")
+            .header("Authorization", userToken1)
+            .content(content)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().is4xxClientError())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.msg").value("포인트 요청에 대한 필요한 값이 전달되지 않습니다."));
+  }
+
+  @Test
+  @DisplayName("포인트 내역 조회 - 성공(선물 준 멤버)")
   public void findAllPointLogByMember() throws Exception {
     mockMvc.perform(get("/v1/points")
             .param("page", "0")
@@ -234,10 +190,23 @@ public class PointLogControllerTest extends ApiControllerTestHelper {
   }
 
   @Test
+  @DisplayName("포인트 내역 조회 - 성공(선물 받은 멤버)")
+  public void findAllPointLogByPresentedMember() throws Exception {
+    mockMvc.perform(get("/v1/points")
+            .param("page", "0")
+            .param("size", "20")
+            .header("Authorization", userToken2))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.data.isLast").value(false));
+  }
+
+  @Test
   @DisplayName("포인트 내역 조회 - 성공(마지막 페이지)")
   public void findAllPointLogByMember_Last() throws Exception {
     mockMvc.perform(get("/v1/points")
-            .param("page", "3")
+            .param("page", "2")
             .param("size", "20")
             .header("Authorization", userToken1))
         .andDo(print())

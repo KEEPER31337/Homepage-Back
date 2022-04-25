@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import keeper.project.homepage.exception.point.CustomPointLogRequestNullException;
 import keeper.project.homepage.user.dto.point.request.PointGiftLogRequestDto;
 import keeper.project.homepage.user.dto.point.request.PointLogRequestDto;
 import keeper.project.homepage.user.dto.point.result.PointGiftLogResultDto;
@@ -34,13 +35,30 @@ public class PointLogService {
     return memberRepository.save(member);
   }
 
+  private void checkPointLack(int previousPoint, int requestPoint) {
+    if (previousPoint < requestPoint) {
+      throw new CustomPointLackException();
+    }
+  }
+
+  private void checkPointLogRequest(PointLogRequestDto pointLogRequestDto) {
+    if (pointLogRequestDto.getTime() == null || pointLogRequestDto.getPoint() == null) {
+      throw new CustomPointLogRequestNullException();
+    }
+  }
+
+  private void checkPointGiftLogRequest(PointGiftLogRequestDto pointGiftLogRequestDto) {
+    if (pointGiftLogRequestDto.getTime() == null || pointGiftLogRequestDto.getPoint() == null) {
+      throw new CustomPointLogRequestNullException();
+    }
+  }
+
   public PointLogResultDto createPointUseLog(MemberEntity member,
       PointLogRequestDto pointLogRequestDto) {
     int previousPoint = member.getPoint();
 
-    if (previousPoint < pointLogRequestDto.getPoint()) {
-      throw new CustomPointLackException("잔여 포인트가 부족합니다.");
-    }
+    checkPointLogRequest(pointLogRequestDto);
+    checkPointLack(previousPoint, pointLogRequestDto.getPoint());
 
     int finalPoint = updateMemberPoint(member,
         previousPoint - pointLogRequestDto.getPoint()).getPoint();
@@ -52,6 +70,8 @@ public class PointLogService {
 
   public PointLogResultDto createPointSaveLog(MemberEntity member,
       PointLogRequestDto pointLogRequestDto) {
+    checkPointLogRequest(pointLogRequestDto);
+
     int previousPoint = member.getPoint();
     int finalPoint = updateMemberPoint(member,
         previousPoint + pointLogRequestDto.getPoint()).getPoint();
@@ -62,15 +82,14 @@ public class PointLogService {
   }
 
   public PointGiftLogResultDto presentingPoint(PointGiftLogRequestDto pointGiftLogRequestDto) {
+    checkPointGiftLogRequest(pointGiftLogRequestDto);
     MemberEntity presentedMember = memberRepository.findById(
             pointGiftLogRequestDto.getPresentedId())
         .orElseThrow(CustomMemberNotFoundException::new);
 
     MemberEntity memberEntity = authService.getMemberEntityWithJWT();
 
-    if (memberEntity.getPoint() < pointGiftLogRequestDto.getPoint()) {
-      throw new CustomPointLackException("잔여 포인트가 부족합니다.");
-    }
+    checkPointLack(memberEntity.getPoint(), pointGiftLogRequestDto.getPoint());
 
     int prePointMember = memberEntity.getPoint();
     int prePointPresented = presentedMember.getPoint();
@@ -80,7 +99,9 @@ public class PointLogService {
     MemberEntity updatePresented = updateMemberPoint(presentedMember,
         prePointPresented + pointGiftLogRequestDto.getPoint());
 
-    PointLogEntity pointLogEntity = pointGiftLogRequestDto.toEntity(updateMember, updatePresented);
+    PointLogEntity pointLogEntity = pointLogRepository.save(
+        pointGiftLogRequestDto.toEntity(updateMember, updatePresented, 1));
+    pointLogRepository.save(pointGiftLogRequestDto.toEntity(updatePresented, updateMember, 0));
 
     return new PointGiftLogResultDto(pointLogEntity, prePointMember, prePointPresented,
         updateMember.getPoint(), updatePresented.getPoint());
@@ -91,10 +112,10 @@ public class PointLogService {
 
     List<PointLogResultDto> pointLogResultDtoList = new ArrayList<>();
     Map<String, Object> result = new HashMap<>();
-    Page<PointLogEntity> pointLogEntityPage = pointLogRepository.findAllByMemberOrPresentedMember(
-        memberEntity, memberEntity, pageable);
+    Page<PointLogEntity> pointLogEntityPage = pointLogRepository.findAllByMember(
+        memberEntity, pageable);
 
-    for(PointLogEntity pointLogEntity : pointLogEntityPage.getContent()) {
+    for (PointLogEntity pointLogEntity : pointLogEntityPage.getContent()) {
       PointLogResultDto pointLogResultDto = new PointLogResultDto(pointLogEntity);
       pointLogResultDtoList.add(pointLogResultDto);
     }
