@@ -26,6 +26,7 @@ import keeper.project.homepage.exception.posting.CustomAccessRootCategoryExcepti
 import keeper.project.homepage.exception.posting.CustomCategoryNotFoundException;
 import keeper.project.homepage.exception.posting.CustomCommentEmptyFieldException;
 import keeper.project.homepage.exception.posting.CustomCommentNotFoundException;
+import keeper.project.homepage.exception.posting.CustomPostingAccessDeniedException;
 import keeper.project.homepage.exception.posting.CustomPostingIncorrectException;
 import keeper.project.homepage.exception.posting.CustomPostingNotFoundException;
 import keeper.project.homepage.exception.posting.CustomPostingTempException;
@@ -403,9 +404,17 @@ public class ExceptionAdvice {
 
   @ExceptionHandler(CustomPostingTempException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult postingNotFound(HttpServletRequest request,
+  protected CommonResult postingTemp(HttpServletRequest request,
       CustomPostingTempException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("postingTemp.code")),
         e.getMessage() == null ? getMessage("postingTemp.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomPostingAccessDeniedException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult postingAccessDenied(HttpServletRequest request,
+      CustomPostingAccessDeniedException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("postingAccessDenied.code")),
+        e.getMessage() == null ? getMessage("postingAccessDenied.msg") : e.getMessage());
   }
 }

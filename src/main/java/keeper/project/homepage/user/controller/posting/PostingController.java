@@ -7,14 +7,11 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
-import keeper.project.homepage.exception.posting.CustomPostingIncorrectException;
-import keeper.project.homepage.exception.posting.CustomPostingTempException;
 import keeper.project.homepage.user.dto.posting.LikeAndDislikeDto;
 import keeper.project.homepage.user.dto.posting.PostingBestDto;
 import keeper.project.homepage.user.dto.posting.PostingDto;
 import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.common.dto.result.ListResult;
-import keeper.project.homepage.common.dto.result.PostingResult;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
@@ -113,17 +110,11 @@ public class PostingController {
 
     ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
         thumbnail, ThumbnailSize.LARGE, dto.getIpAddress());
-
-    if (thumbnailEntity == null) {
-      return responseService.getFailResult();
-    }
-
     dto.setThumbnailId(thumbnailEntity.getId());
     PostingEntity postingEntity = postingService.save(dto);
     fileService.saveFiles(files, dto.getIpAddress(), postingEntity);
 
-    return postingEntity.getId() != null ? responseService.getSuccessResult()
-        : responseService.getFailResult();
+    return responseService.getSuccessResult();
   }
 
   @Secured("ROLE_회원")
@@ -131,28 +122,10 @@ public class PostingController {
   public SingleResult<PostingResponseDto> getPosting(@PathVariable("pid") Long postingId,
       @RequestParam(value = "password", required = false) String password) {
 
-    PostingEntity postingEntity = postingService.getPostingById(postingId);
-    Long visitMemberId = authService.getMemberIdByJWT();
+    PostingResponseDto postingResponseDto = postingService.getPostingResponseById(postingId,
+        authService.getMemberIdByJWT(), password);
 
-    // 키퍼 13기 이후부터 시험 게시판에 접근하려면 조건 충족해야함.
-    if (postingService.isNotAccessExamBoard(postingEntity)) {
-      return responseService.getSuccessSingleResult(
-          postingService.createNotAccessDto(postingEntity));
-    }
-    if (visitMemberId != postingEntity.getMemberId().getId()) {
-      if (postingEntity.getIsTemp() == PostingService.isTempPosting) {
-        throw new CustomPostingTempException();
-      } else if (postingEntity.getIsSecret() == 1) {
-        if (!(postingEntity.getPassword().equals(password))) {
-          throw new CustomPostingIncorrectException();
-        }
-      }
-      postingEntity.increaseVisitCount();
-      postingService.updateInfoById(postingEntity, postingId);
-    }
-
-    return responseService.getSuccessSingleResult(
-        new PostingResponseDto().initWithEntity(postingEntity, 1, true));
+    return responseService.getSuccessSingleResult(postingResponseDto);
   }
 
   @GetMapping(value = "/attach/{pid}")
@@ -187,28 +160,20 @@ public class PostingController {
       PostingDto dto, @PathVariable("pid") Long postingId) {
 
     ThumbnailEntity newThumbnail = saveThumbnail(thumbnail, dto);
-
     PostingEntity postingEntity = postingService.updateById(dto, postingId, newThumbnail);
     fileService.saveFiles(files, dto.getIpAddress(), postingEntity);
-
     deletePrevThumbnail(dto);
 
     return responseService.getSuccessResult();
   }
 
   @GetMapping(value = "/delete/{fileId}")
-  public CommonResult deleteFile(@PathVariable("fileId") Long fileId){
+  public CommonResult deleteFile(@PathVariable("fileId") Long fileId) {
     fileService.deleteFileById(fileId);
 
     return responseService.getSuccessResult();
   }
-
-  private void deletePrevFiles(PostingEntity postingEntity) {
-    List<FileEntity> fileEntities = fileService.findFileEntitiesByPostingId(
-        postingEntity);
-    fileService.deleteFiles(fileEntities);
-  }
-
+  
   private ThumbnailEntity saveThumbnail(MultipartFile thumbnail, PostingDto dto) {
     ThumbnailEntity newThumbnail = thumbnailService.saveThumbnail(new ImageCenterCrop(), thumbnail,
         ThumbnailSize.LARGE, dto.getIpAddress());
@@ -230,7 +195,6 @@ public class PostingController {
   public CommonResult removePosting(@PathVariable("pid") Long postingId) {
 
     PostingEntity postingEntity = postingService.getPostingById(postingId);
-
     // NOTE: 게시글에 연결 된 댓글 FK 삭제
     commentService.deleteByPostingId(postingEntity);
 
@@ -242,12 +206,18 @@ public class PostingController {
     deletePrevFiles(postingEntity);
     postingService.delete(postingEntity);
 
-    if (postingEntity.getThumbnail() != null) {
+    if (deleteThumbnail != null) {
       thumbnailService.deleteById(deleteThumbnail.getId());
       fileService.deleteOriginalThumbnail(deleteThumbnail);
     }
 
     return responseService.getSuccessResult();
+  }
+
+  private void deletePrevFiles(PostingEntity postingEntity) {
+    List<FileEntity> fileEntities = fileService.findFileEntitiesByPostingId(
+        postingEntity);
+    fileService.deleteFiles(fileEntities);
   }
 
 

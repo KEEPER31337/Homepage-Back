@@ -230,7 +230,8 @@ public class MemberController {
   public SingleResult<PostingResponseDto> findSinglePostingOfOther(
       @PathVariable("memberId") Long memberId,
       @PathVariable("postId") Long postId) {
-    PostingResponseDto posting = postingService.findByPostId(postId);
+    PostingResponseDto posting = postingService.getPostingResponseById(postId,
+        authService.getMemberIdByJWT(), null);
     System.out.println("In Controller : " + posting.getId());
     return responseService.getSuccessSingleResult(posting);
   }
