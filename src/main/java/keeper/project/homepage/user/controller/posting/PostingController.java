@@ -7,6 +7,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
+import keeper.project.homepage.exception.posting.CustomPostingIncorrectException;
+import keeper.project.homepage.exception.posting.CustomPostingTempException;
 import keeper.project.homepage.user.dto.posting.LikeAndDislikeDto;
 import keeper.project.homepage.user.dto.posting.PostingBestDto;
 import keeper.project.homepage.user.dto.posting.PostingDto;
@@ -64,9 +66,6 @@ public class PostingController {
   private final AuthService authService;
   private final CommentService commentService;
 
-  /* ex) http://localhost:8080/v1/posts?category=6&page=1
-   * page default 0, size default 10
-   */
   @GetMapping(value = "/latest")
   public ListResult<PostingResponseDto> findAllPosting(
       @PageableDefault(size = 10, sort = "registerTime", direction = Direction.DESC)
@@ -142,10 +141,10 @@ public class PostingController {
     }
     if (visitMemberId != postingEntity.getMemberId().getId()) {
       if (postingEntity.getIsTemp() == PostingService.isTempPosting) {
-        return responseService.getFailSingleResult(null, -11100, "임시저장 게시물입니다.");
+        throw new CustomPostingTempException();
       } else if (postingEntity.getIsSecret() == 1) {
         if (!(postingEntity.getPassword().equals(password))) {
-          return responseService.getFailSingleResult(null, -11000, "비밀번호가 일치하지 않습니다.");
+          throw new CustomPostingIncorrectException();
         }
       }
       postingEntity.increaseVisitCount();
