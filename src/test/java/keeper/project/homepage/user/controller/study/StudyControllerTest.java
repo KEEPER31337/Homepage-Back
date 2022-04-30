@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.study.StudyEntity;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -53,6 +54,11 @@ public class StudyControllerTest extends StudyControllerTestSetup {
     addMember(studyEntity, memberEntity3);
   }
 
+  @AfterAll
+  public static void clearFiles() {
+    deleteTestFiles();
+  }
+  
   @Test
   @DisplayName("스터디 년도 불러오기 성공")
   public void getAllStudyYearsAndSeasonSuccess() throws Exception {

@@ -19,13 +19,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Optional;
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.etc.StaticWriteContentEntity;
 import keeper.project.homepage.entity.etc.StaticWriteSubtitleImageEntity;
 import keeper.project.homepage.entity.etc.StaticWriteTitleEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,47 +46,17 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
 
   private ThumbnailEntity thumbnailEntity;
   private Optional<ThumbnailEntity> defaultThumbnailEntity;
-  private FileEntity fileEntity;
   private StaticWriteTitleEntity staticWriteTitleEntity;
   private StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity, defaultStaticWirteSubtitleImageEntity;
   private StaticWriteContentEntity staticWriteContentEntity;
 
-  private final String ipAddress1 = "127.0.0.1";
-
-  public void createFile() {
-    final String keeperFilesDirectoryPath = System.getProperty("user.dir") + File.separator
-        + "keeper_files";
-    final String thumbnailDirectoryPath = System.getProperty("user.dir") + File.separator
-        + "keeper_files" + File.separator + "thumbnail";
-    final String befUpdateImage = keeperFilesDirectoryPath + File.separator + "bef.jpg";
-    final String befUpdateThumbnail = thumbnailDirectoryPath + File.separator + "thumb_bef.jpg";
-    final String aftUpdateImage = keeperFilesDirectoryPath + File.separator + "aft.jpg";
-
-    File keeperFilesDir = new File(keeperFilesDirectoryPath);
-    File thumbnailDir = new File(thumbnailDirectoryPath);
-
-    if (!keeperFilesDir.exists()) {
-      keeperFilesDir.mkdir();
-    }
-
-    if (!thumbnailDir.exists()) {
-      thumbnailDir.mkdir();
-    }
-
-    createFileForTest(befUpdateImage);
-    createFileForTest(befUpdateThumbnail);
-    createFileForTest(aftUpdateImage);
-  }
-
   @BeforeEach
   public void setUp() throws Exception {
-    createFile();
     generalMember = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
     adminMember = generateMemberEntity(MemberJobName.회장, MemberTypeName.정회원, MemberRankName.우수회원);
     generalToken = generateJWTToken(generalMember.getLoginId(), memberPassword);
     adminToken = generateJWTToken(adminMember.getLoginId(), memberPassword);
 
-    fileEntity = generateFileEntity();
     thumbnailEntity = generateThumbnailEntity();
     defaultThumbnailEntity = thumbnailRepository.findById(9L);
 
@@ -95,6 +65,11 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
     defaultStaticWirteSubtitleImageEntity = generateTestSubtitle(2, defaultThumbnailEntity.get());
     staticWriteContentEntity = generateTestContent(1);
 
+  }
+
+  @AfterAll
+  public static void clearFiles() {
+    deleteTestFiles();
   }
 
   public StaticWriteTitleEntity generateTestTitle(Integer index) {
@@ -129,10 +104,10 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
   @DisplayName("페이지 블럭 서브 타이틀 생성 - 성공")
   public void createSubTitleSuccess() throws Exception {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    MockMultipartFile image = new MockMultipartFile("thumbnail", "aft.jpg", "image/jpg",
-        new FileInputStream(new File(
-            System.getProperty("user.dir") + File.separator + "keeper_files" + File.separator
-                + "aft.jpg")));
+    String testImagePath = testFileRelDir + File.separator + "test.jpg";
+    createFileForTest(testImagePath);
+    MockMultipartFile image = new MockMultipartFile("thumbnail", "test.jpg", "image/jpg",
+        new FileInputStream(new File(testImagePath)));
 
     params.add("subtitle", "테스트 서브 타이틀");
     params.add("staticWriteTitleId", "1");
@@ -206,10 +181,10 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
   @DisplayName("페이지 블럭 서브 타이틀 생성 - 실패(권한이 부족한 경우)")
   public void createSubTitleFail_Auth() throws Exception {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    MockMultipartFile image = new MockMultipartFile("thumbnail", "aft.jpg", "image/jpg",
-        new FileInputStream(new File(
-            System.getProperty("user.dir") + File.separator + "keeper_files" + File.separator
-                + "aft.jpg")));
+    String testImagePath = testFileRelDir + File.separator + "test.jpg";
+    createFileForTest(testImagePath);
+    MockMultipartFile image = new MockMultipartFile("thumbnail", "test.jpg", "image/jpg",
+        new FileInputStream(new File(testImagePath)));
 
     params.add("subtitle", "테스트 서브 타이틀");
     params.add("staticWriteTitleId", "1");
@@ -234,10 +209,10 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
   @DisplayName("페이지 블럭 서브 타이틀 생성 - 실패(존재하지 않는 타이틀)")
   public void createSubTitleFail_Title() throws Exception {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    MockMultipartFile image = new MockMultipartFile("thumbnail", "aft.jpg", "image/jpg",
-        new FileInputStream(new File(
-            System.getProperty("user.dir") + File.separator + "keeper_files" + File.separator
-                + "aft.jpg")));
+    String testImagePath = usrDir + testFileRelDir + File.separator + "test.jpg";
+    createFileForTest(testImagePath);
+    MockMultipartFile image = new MockMultipartFile("thumbnail", "test.jpg", "image/jpg",
+        new FileInputStream(new File(testImagePath)));
 
     params.add("subtitle", "테스트 서브 타이틀");
     params.add("staticWriteTitleId", "7");
@@ -263,10 +238,10 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
   @DisplayName("페이지 블럭 서브 타이틀 수정 - 성공")
   public void modifySubtitleByIdSuccess() throws Exception {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    MockMultipartFile image = new MockMultipartFile("thumbnail", "aft.jpg", "image/jpg",
-        new FileInputStream(new File(
-            System.getProperty("user.dir") + File.separator + "keeper_files" + File.separator
-                + "aft.jpg")));
+    String testImagePath = testFileRelDir + File.separator + "test.jpg";
+    createFileForTest(testImagePath);
+    MockMultipartFile image = new MockMultipartFile("thumbnail", "test.jpg", "image/jpg",
+        new FileInputStream(new File(testImagePath)));
 
     params.add("subtitle", "수정된 서브 타이틀");
     params.add("staticWriteTitleId", "1");
@@ -344,10 +319,10 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
   @DisplayName("페이지 블럭 서브 타이틀 수정 - 성공(디폴트 이미지로 설정된 서브 타이틀)")
   public void modifySubtitleByIdSuccess_DefaultThumbnail() throws Exception {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    MockMultipartFile image = new MockMultipartFile("thumbnail", "aft.jpg", "image/jpg",
-        new FileInputStream(new File(
-            System.getProperty("user.dir") + File.separator + "keeper_files" + File.separator
-                + "aft.jpg")));
+    String testImagePath = testFileRelDir + File.separator + "test.jpg";
+    createFileForTest(testImagePath);
+    MockMultipartFile image = new MockMultipartFile("thumbnail", "test.jpg", "image/jpg",
+        new FileInputStream(new File(testImagePath)));
 
     params.add("subtitle", "수정된 서브 타이틀");
     params.add("staticWriteTitleId", "1");
@@ -373,10 +348,10 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
   @DisplayName("페이지 블럭 서브 타이틀 수정 - 실패(존재하지 않는 서브 타이틀 ID)")
   public void modifySubtitleByIdFail_ID() throws Exception {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    MockMultipartFile image = new MockMultipartFile("thumbnail", "aft.jpg", "image/jpg",
-        new FileInputStream(new File(
-            System.getProperty("user.dir") + File.separator + "keeper_files" + File.separator
-                + "aft.jpg")));
+    String testImagePath = testFileRelDir + File.separator + "test.jpg";
+    createFileForTest(testImagePath);
+    MockMultipartFile image = new MockMultipartFile("thumbnail", "test.jpg", "image/jpg",
+        new FileInputStream(new File(testImagePath)));
 
     params.add("subtitle", "수정된 서브 타이틀");
     params.add("staticWriteTitleId", "1");

@@ -80,3 +80,5 @@ docker/ESSENTIAL
 docker/ESSENTIAL.zip
 
 src/main/generated
+
+.github

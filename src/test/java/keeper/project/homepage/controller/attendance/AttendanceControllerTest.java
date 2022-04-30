@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.user.dto.attendance.AttendanceDto;
 import keeper.project.homepage.common.dto.result.SingleResult;
@@ -28,6 +29,7 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,7 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @Log4j2
-public class AttendanceControllerTest extends ApiControllerTestSetUp {
+public class AttendanceControllerTest extends ApiControllerTestHelper {
 
   final private String loginId = "hyeonmomo";
   final private String password = "keeper";
@@ -77,6 +79,11 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
     generateNewAttendanceWithTime(oneDayAgo, memberEntity1);
 
     generateNewAttendanceWithTime(threeDaysAgo, memberEntity2);
+  }
+
+  @AfterAll
+  public static void clearFiles() {
+    deleteTestFiles();
   }
 
   @Test
@@ -353,24 +360,6 @@ public class AttendanceControllerTest extends ApiControllerTestSetUp {
                 fieldWithPath("data.MONTH_ATTENDANCE_POINT").description("월 개근 추가 포인트"),
                 fieldWithPath("data.YEAR_ATTENDANCE_POINT").description("연 개근 추가 포인트")
             )));
-  }
-
-  private void generateNewAttendanceWithTime(LocalDateTime time, MemberEntity memberEntity)
-      throws Exception {
-    attendanceRepository.save(
-        AttendanceEntity.builder()
-            .time(time)
-            .date(time.toLocalDate())
-            .point(10)
-            .rankPoint(500)
-            .continuousPoint(0)
-            .randomPoint((int) (Math.random() * 900 + 100))
-            .ipAddress(ipAddress1)
-            .greetings("hi")
-            .continuousDay(1)
-            .rank(3)
-            .member(memberEntity)
-            .build());
   }
 
   private String generateTestMemberJWT(MemberEntity member) throws Exception {

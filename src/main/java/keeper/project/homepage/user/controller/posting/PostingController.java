@@ -190,10 +190,16 @@ public class PostingController {
     ThumbnailEntity newThumbnail = saveThumbnail(thumbnail, dto);
 
     PostingEntity postingEntity = postingService.updateById(dto, postingId, newThumbnail);
-    deletePrevFiles(postingId);
     fileService.saveFiles(files, dto.getIpAddress(), postingEntity);
 
     deletePrevThumbnail(dto);
+
+    return responseService.getSuccessResult();
+  }
+
+  @GetMapping(value = "/delete/{fileId}")
+  public CommonResult deleteFile(@PathVariable("fileId") Long fileId){
+    fileService.deleteFileById(fileId);
 
     return responseService.getSuccessResult();
   }
@@ -202,10 +208,6 @@ public class PostingController {
     List<FileEntity> fileEntities = fileService.findFileEntitiesByPostingId(
         postingEntity);
     fileService.deleteFiles(fileEntities);
-  }
-
-  private void deletePrevFiles(Long postingId) {
-    deletePrevFiles(postingService.getPostingById(postingId));
   }
 
   private ThumbnailEntity saveThumbnail(MultipartFile thumbnail, PostingDto dto) {

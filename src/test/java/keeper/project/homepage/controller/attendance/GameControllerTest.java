@@ -14,6 +14,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
+import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.dto.sign.SignInDto;
@@ -21,6 +22,7 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @Log4j2
-public class GameControllerTest extends ApiControllerTestSetUp {
+public class GameControllerTest extends ApiControllerTestHelper {
 
   final private String loginId = "hyeonmomo";
   final private String password = "keeper";
@@ -50,6 +52,11 @@ public class GameControllerTest extends ApiControllerTestSetUp {
 
     memberEntity1 = generateTestMember();
     userToken1 = generateTestMemberJWT(memberEntity1);
+  }
+
+  @AfterAll
+  public static void clearFiles() {
+    deleteTestFiles();
   }
 
   @Test

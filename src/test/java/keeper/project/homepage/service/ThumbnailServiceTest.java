@@ -3,6 +3,7 @@ package keeper.project.homepage.service;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -19,6 +20,7 @@ import keeper.project.homepage.util.service.ThumbnailService;
 import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
 import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,57 +40,21 @@ import org.springframework.web.multipart.MultipartFile;
 @Log4j2
 public class ThumbnailServiceTest extends ApiControllerTestHelper {
 
-  @Autowired
-  private ThumbnailService thumbnailService;
-
-  @Autowired
-  private FileService fileService;
-
-  private final DefaultThumbnailInfo defaultThumbnail = DefaultThumbnailInfo.ThumbPosting;
-  private String defaultFilePath;
-  private String imageFilePath;
-  private String ipAddress = "127.0.0.1";
-
-  private MultipartFile originalImage;
-
-  private FileEntity fileEntity;
-  private ThumbnailEntity thumbnailEntity;
-  private ThumbnailEntity defaultThumbnailEntity;
-
-
-  private static void createDefaultFile(String filePath) {
-    FileConversion fileConversion = new FileConversion();
-    fileConversion.makeSampleJPEGImage(filePath);
-  }
-
-  @BeforeEach
-  public void setup() throws IOException {
-    // fileService를 static으로 돌릴 수 없어서 BeforeEach에 넣어둠
-    List<String> defaultFilePathList = Stream.of(DefaultThumbnailInfo.values())
-        .map(d -> System.getProperty("user.dir") + File.separator
-            + fileService.findFileEntityById(d.getFileId()).getFilePath())
-        .collect(Collectors.toList());
-    for (String filePath : defaultFilePathList) {
-      File defaultFile = new File(filePath);
-      if (defaultFile.exists()) {
-        continue;
-      }
-      createDefaultFile(filePath);
-    }
-
-    fileEntity = generateFileEntity();
-    imageFilePath = System.getProperty("user.dir") + File.separator + fileEntity.getFilePath();
-    thumbnailEntity = generateThumbnailEntity();
-    defaultThumbnailEntity = thumbnailService.findById(defaultThumbnail.getThumbnailId());
-    defaultFilePath = System.getProperty("user.dir") + File.separator
-        + fileService.findFileEntityById(defaultThumbnail.getFileId()).getFilePath();
-
-    originalImage = new MockMultipartFile("test", fileEntity.getFileName(),
-        "image/jpg", new FileInputStream(new File(imageFilePath)));
+  @AfterAll
+  public static void clearFiles() {
+    deleteTestFiles();
   }
 
   @Test
-  public void createTest() {
+  public void createTest() throws IOException {
+    //given
+    String ipAddress = "127.0.0.1";
+    FileEntity fileEntity = generateFileEntity();
+    String imageFilePath = usrDir + fileEntity.getFilePath();
+    MultipartFile originalImage = new MockMultipartFile("test", fileEntity.getFileName(),
+        "image/jpg", new FileInputStream(new File(imageFilePath)));
+
+    //test
     Assertions.assertTrue(new File(imageFilePath).exists(), "test할 이미지 파일이 없습니다.");
     ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
         originalImage, ThumbnailSize.LARGE, ipAddress);
@@ -98,10 +64,25 @@ public class ThumbnailServiceTest extends ApiControllerTestHelper {
         "thumbnail file이 저장되지 않았습니다.");
     Assertions.assertNotNull(thumbnailService.findById(thumbnailEntity.getId()),
         "thumbnail Entity가 저장되지 않았습니다.");
+
+    // clear
+    deleteTestThumbnailFile(thumbnailEntity);
   }
 
   @Test
   public void createDefaultTest() {
+    //given
+    String ipAddress = "127.0.0.1";
+    Long defaultFileId = DefaultThumbnailInfo.ThumbPosting.getFileId();
+    FileEntity defaultFileEntity = fileService.findFileEntityById(defaultFileId);
+    String defaultFilePath = usrDir + defaultFileEntity.getFilePath();
+    Boolean isFileCreated = false;
+    if (!(new File(defaultFilePath).exists())) {
+      createFileForTest(defaultFilePath);
+      isFileCreated = true;
+    }
+
+    //test
     Assertions.assertTrue(new File(defaultFilePath).exists(), "test할 이미지 파일이 없습니다.");
     ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
         null, ThumbnailSize.LARGE, ipAddress);
@@ -113,15 +94,24 @@ public class ThumbnailServiceTest extends ApiControllerTestHelper {
         "thumbnail file이 저장되지 않았습니다.");
     Assertions.assertNotNull(thumbnailService.findById(thumbnailEntity.getId()),
         "thumbnail Entity가 저장되지 않았습니다.");
+
+    // clear
+    if (isFileCreated) {
+      deleteTestFile(defaultFileEntity);
+    }
   }
 
   @Test
   @DisplayName("썸네일 삭제")
   public void deleteTest() {
+    //given
+    ThumbnailEntity thumbnailEntity = generateThumbnailEntity();
     String thumbnailPath =
         System.getProperty("user.dir") + File.separator + thumbnailEntity.getPath();
     String filePath =
         System.getProperty("user.dir") + File.separator + thumbnailEntity.getFile().getFilePath();
+
+    // test
     thumbnailService.deleteById(thumbnailEntity.getId());
     fileService.deleteOriginalThumbnail(thumbnailEntity);
 
@@ -135,14 +125,28 @@ public class ThumbnailServiceTest extends ApiControllerTestHelper {
   @Test
   @DisplayName("기본 이미지로 생성한 썸네일 삭제")
   public void deleteDefaultTest() {
-    String thumbnailPath = System.getProperty("user.dir") + File.separator
-        + thumbnailService.findById(defaultThumbnail.getThumbnailId()).getPath();
-    thumbnailService.deleteById(1L);
+    //given
+    Long defaultThumbnailId = DefaultThumbnailInfo.ThumbPosting.getThumbnailId();
+    ThumbnailEntity defaultThumbnailEntity = thumbnailService.findById(defaultThumbnailId);
+    String defaultThumbnailPath = usrDir + defaultThumbnailEntity.getPath();
+    Boolean isFileCreated = false;
+    if (!(new File(defaultThumbnailPath).exists())) {
+      createFileForTest(defaultThumbnailPath);
+      isFileCreated = true;
+    }
+
+    // test
+    thumbnailService.deleteById(defaultThumbnailId);
     fileService.deleteOriginalThumbnail(defaultThumbnailEntity);
 
     Assertions.assertTrue(thumbnailRepository.findById(defaultThumbnailEntity.getId()).isPresent());
     Assertions.assertTrue(
         fileRepository.findById(defaultThumbnailEntity.getFile().getId()).isPresent());
-    Assertions.assertTrue(new File(thumbnailPath).exists());
+    Assertions.assertTrue(new File(defaultThumbnailPath).exists());
+
+    // clear
+    if (isFileCreated) {
+      deleteTestThumbnailFile(defaultThumbnailEntity);
+    }
   }
 }

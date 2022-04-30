@@ -133,6 +133,20 @@ public class FileService {
     fileRepository.deleteById(deleteId);
   }
 
+  public void deleteFileById(Long deleteId) {
+    FileEntity deletedFileEntity = fileRepository.findById(deleteId)
+        .orElseThrow(CustomFileEntityNotFoundException::new);
+    File deleteFile = new File(
+        System.getProperty("user.dir") + File.separator + deletedFileEntity.getFilePath());
+    if (deleteFile.exists() == false) {
+      throw new CustomFileNotFoundException();
+    }
+    if (deleteFile.delete() == false) {
+      throw new CustomFileDeleteFailedException();
+    }
+    deleteFileEntityById(deleteId);
+  }
+
   // TODO : thumbnail delete와 합치기
   public void deleteOriginalThumbnail(ThumbnailEntity deleteThumbnail) {
     // 기본 썸네일이면 삭제 X
@@ -149,10 +163,12 @@ public class FileService {
     File originalImageFile = new File(
         System.getProperty("user.dir") + File.separator + deleted.getFilePath());
     if (originalImageFile.exists() == false) {
-      throw new CustomFileNotFoundException();
+      throw new CustomFileNotFoundException(
+          "썸네일 원본 파일이 존재하지 않습니다." + " (file path : " + originalImageFile.getPath() + ")");
     }
     if (originalImageFile.delete() == false) {
-      throw new CustomFileDeleteFailedException();
+      throw new CustomFileDeleteFailedException(
+          "썸네일 원본 파일 삭제를 실패하였습니다." + " (file path : " + originalImageFile.getPath() + ")");
     }
     deleteFileEntityById(deleteId);
   }

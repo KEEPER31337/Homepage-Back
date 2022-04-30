@@ -34,7 +34,7 @@ public class MultipartFileWrapper implements MultipartFile {
     try {
       this.tmpFile = File.createTempFile("temp_", null, this.tmpFileDirPath);
       request.transferTo(tmpFile);
-      System.out.println("임시파일 경로: " + tmpFile.getAbsolutePath());
+//      System.out.println("임시파일 경로: " + tmpFile.getAbsolutePath());
     } catch (Exception e) {
       e.printStackTrace();
     }

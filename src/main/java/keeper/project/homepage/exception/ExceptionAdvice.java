@@ -1,6 +1,8 @@
 package keeper.project.homepage.exception;
 
 import keeper.project.homepage.common.dto.result.CommonResult;
+import keeper.project.homepage.exception.attendance.CustomAttendanceException;
+import keeper.project.homepage.exception.attendance.CustomGameIsOverException;
 import keeper.project.homepage.exception.file.CustomFileDeleteFailedException;
 import keeper.project.homepage.exception.file.CustomFileEntityNotFoundException;
 import keeper.project.homepage.exception.file.CustomFileNotFoundException;
@@ -24,7 +26,6 @@ import keeper.project.homepage.exception.posting.CustomAccessRootCategoryExcepti
 import keeper.project.homepage.exception.posting.CustomCategoryNotFoundException;
 import keeper.project.homepage.exception.posting.CustomCommentEmptyFieldException;
 import keeper.project.homepage.exception.posting.CustomCommentNotFoundException;
-import keeper.project.homepage.exception.posting.CustomParentCategoryNotFoundException;
 import keeper.project.homepage.exception.sign.CustomAuthenticationEntryPointException;
 import keeper.project.homepage.exception.sign.CustomLoginIdSigninFailedException;
 import keeper.project.homepage.exception.sign.CustomSignUpFailedException;
@@ -143,6 +144,13 @@ public class ExceptionAdvice {
       CustomAttendanceException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("attendanceFailed.code")),
         e.getMessage() == null ? getMessage("attendanceFailed.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomGameIsOverException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  public CommonResult gameIsOverException(HttpServletRequest request, CustomGameIsOverException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("gameIsOver.code")),
+        e.getMessage() == null ? getMessage("gameIsOver.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomBookNotFoundException.class)
@@ -289,15 +297,6 @@ public class ExceptionAdvice {
         getMessage("categoryNotFound.msg"));
   }
 
-  @ExceptionHandler(CustomParentCategoryNotFoundException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  protected CommonResult parentCategoryNotFoundException(HttpServletRequest request,
-      CustomParentCategoryNotFoundException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(getMessage("parentCategoryNotFound.code")),
-        getMessage("parentCategoryNotFound.msg"));
-  }
-
   @ExceptionHandler(CustomAccessRootCategoryException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult accessRootCategoryException(HttpServletRequest request,
@@ -316,7 +315,7 @@ public class ExceptionAdvice {
   }
 
   @ExceptionHandler(CustomPointLogRequestNullException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult pointLogRequestNullException(HttpServletRequest request,
       CustomPointLogRequestNullException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정

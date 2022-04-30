@@ -250,10 +250,7 @@ public class MemberService {
     MemberEntity memberEntity = memberRepository.findById(memberId)
         .orElseThrow(CustomMemberNotFoundException::new);
 
-    ThumbnailEntity prevThumbnail = null;
-    if (memberEntity.getThumbnail() != null) {
-      prevThumbnail = thumbnailService.findById(memberEntity.getThumbnail().getId());
-    }
+    ThumbnailEntity prevThumbnail = memberEntity.getThumbnail();
 
     ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(), image,
         ThumbnailSize.LARGE, ipAddress);

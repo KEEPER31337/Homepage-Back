@@ -8,6 +8,7 @@ import keeper.project.homepage.entity.etc.StaticWriteContentEntity;
 import keeper.project.homepage.entity.etc.StaticWriteSubtitleImageEntity;
 import keeper.project.homepage.entity.etc.StaticWriteTitleEntity;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -23,30 +24,13 @@ public class AdminAboutTitleServiceTest extends ApiControllerTestHelper {
   private AdminAboutTitleService adminAboutTitleService;
 
   private ThumbnailEntity thumbnailEntity;
-  private FileEntity fileEntity;
   private StaticWriteTitleEntity staticWriteTitleEntity;
   private StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity;
   private StaticWriteContentEntity staticWriteContentEntity;
 
-  private final String ipAddress1 = "127.0.0.1";
-  private final String generalTestImage = "keeper_files" + File.separator + "image.jpg";
-  private final String generalThumbnailImage =
-      "keeper_files" + File.separator + "thumbnail" + File.separator + "t_image.jpg";
-
   @BeforeEach
   public void setUp() throws Exception {
-    fileEntity = FileEntity.builder()
-        .fileName(getFileName(generalTestImage))
-        .filePath(generalTestImage)
-        .fileSize(0L)
-        .ipAddress(ipAddress1)
-        .build();
-    fileRepository.save(fileEntity);
-
-    thumbnailEntity = ThumbnailEntity.builder()
-        .path(generalThumbnailImage)
-        .file(fileEntity).build();
-    thumbnailRepository.save(thumbnailEntity);
+    thumbnailEntity = generateThumbnailEntity();
 
     staticWriteTitleEntity = generateTestTitle(1);
     staticWriteSubtitleImageEntity = generateTestSubtitle(1);
@@ -54,6 +38,11 @@ public class AdminAboutTitleServiceTest extends ApiControllerTestHelper {
 
     staticWriteTitleEntity.getStaticWriteSubtitleImages().add(staticWriteSubtitleImageEntity);
     staticWriteSubtitleImageEntity.getStaticWriteContents().add(staticWriteContentEntity);
+  }
+
+  @AfterAll
+  public static void clearFiles() {
+    deleteTestFiles();
   }
 
   private String getFileName(String filePath) {

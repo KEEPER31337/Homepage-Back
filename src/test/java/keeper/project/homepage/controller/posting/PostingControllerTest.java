@@ -40,6 +40,8 @@ import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.user.service.posting.PostingService;
 import lombok.extern.log4j.Log4j2;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -106,8 +108,8 @@ public class PostingControllerTest extends ApiControllerTestHelper {
   private FileEntity modifyImageFile;
 
   private final String userDirectory = System.getProperty("user.dir");
-  private final String createTestImage = "keeper_files" + File.separator + "createTest.jpg";
-  private final String modifyAftTestImage = "keeper_files" + File.separator + "modifyAftTest.jpg";
+  private final String createTestImage = testFileRelDir + File.separator + "createTest.jpg";
+  private final String modifyAftTestImage = testFileRelDir + File.separator + "modifyAftTest.jpg";
 
   private String getFileName(String filePath) {
     File file = new File(filePath);
@@ -116,9 +118,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
 
   @BeforeEach
   public void setUp() throws Exception {
-    createFileForTest(
-        userDirectory + File.separator + createTestImage);
-    createFileForTest(userDirectory + File.separator + modifyAftTestImage);
+    createFileForTest(usrDir + createTestImage);
     memberEntity = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
     adminEntity = generateMemberEntity(MemberJobName.회장, MemberTypeName.정회원, MemberRankName.일반회원);
     userToken = generateJWTToken(memberEntity);
@@ -185,6 +185,11 @@ public class PostingControllerTest extends ApiControllerTestHelper {
         generatePostingEntity(memberEntity, notAccessCategoryTestEntity, 1, 0, 0);
   }
 
+  @AfterAll
+  public static void clearFiles() {
+    deleteTestFiles();
+  }
+
   @Test
   @DisplayName("최신 글 목록 불러오기")
   public void findAllPosting() throws Exception {
@@ -229,10 +234,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("list[].isNotice").description("공지글?"),
                 fieldWithPath("list[].isSecret").description("비밀글?"),
                 fieldWithPath("list[].isTemp").description("임시저장?"),
-                fieldWithPath("list[].size").description("총 게시물 수"),
-                subsectionWithPath("list[].files").description(
-                        "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
-                    .optional()
+                fieldWithPath("list[].size").description("총 게시물 수")
             )
         ));
   }
@@ -282,10 +284,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("list[].isNotice").description("공지글?"),
                 fieldWithPath("list[].isSecret").description("비밀글?"),
                 fieldWithPath("list[].isTemp").description("임시저장?"),
-                fieldWithPath("list[].size").description("총 게시물 수"),
-                subsectionWithPath("list[].files").description(
-                        "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
-                    .optional()
+                fieldWithPath("list[].size").description("총 게시물 수")
             )
         ));
   }
@@ -330,10 +329,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("list[].isNotice").description("공지글?"),
                 fieldWithPath("list[].isSecret").description("비밀글?"),
                 fieldWithPath("list[].isTemp").description("임시저장?"),
-                fieldWithPath("list[].size").description("총 게시물 수"),
-                subsectionWithPath("list[].files").description(
-                        "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
-                    .optional()
+                fieldWithPath("list[].size").description("총 게시물 수")
             )
         ));
   }
@@ -619,12 +615,13 @@ public class PostingControllerTest extends ApiControllerTestHelper {
   @Test
   @DisplayName("게시글 수정")
   public void modifyPosting() throws Exception {
+    createFileForTest(usrDir + modifyAftTestImage);
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     MockMultipartFile file = new MockMultipartFile("file", "modifyImage.png", "image/png",
         "<<png data>>".getBytes());
     MockMultipartFile thumbnail = new MockMultipartFile("thumbnail",
         getFileName(modifyAftTestImage), "image/jpg",
-        new FileInputStream(userDirectory + File.separator + modifyAftTestImage));
+        new FileInputStream(usrDir + modifyAftTestImage));
     params.add("title", "수정 mvc제목");
     params.add("content", "수정 mvc내용");
     params.add("categoryId", categoryEntity.getId().toString());
@@ -683,6 +680,29 @@ public class PostingControllerTest extends ApiControllerTestHelper {
   }
 
   @Test
+  @DisplayName("파일 삭제")
+  public void deleteFile() throws Exception {
+    ResultActions result = mockMvc.perform(
+        RestDocumentationRequestBuilders.get("/v1/post/delete/{fileId}",
+                generalImageFile.getId().toString())
+            .header("Authorization", userToken));
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(print())
+        .andDo(document("post-file-delete",
+            pathParameters(
+                parameterWithName("fileId").description("삭제할 파일 ID")
+            ), responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("성공 : 0")
+            )
+        ));
+
+    Assertions.assertTrue(fileRepository.findById(generalImageFile.getId()).isEmpty());
+  }
+
+  @Test
   @DisplayName("게시글 삭제")
   public void deletePosting() throws Exception {
     ResultActions result = mockMvc.perform(
@@ -731,7 +751,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
   public void searchPosting() throws Exception {
     ResultActions result = mockMvc.perform(get("/v1/post/search")
         .param("type", "T")
-        .param("keyword", "2")
+        .param("keyword", postingGeneralTest.getTitle())
         .param("page", "0")
         .param("size", "5")
         .param("category", categoryEntity.getId().toString())
@@ -774,10 +794,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("list[].isNotice").description("공지글?"),
                 fieldWithPath("list[].isSecret").description("비밀글?"),
                 fieldWithPath("list[].isTemp").description("임시저장?"),
-                fieldWithPath("list[].size").description("총 게시물 수"),
-                subsectionWithPath("list[].files").description(
-                        "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
-                    .optional()
+                fieldWithPath("list[].size").description("총 게시물 수")
             )
         ));
   }
