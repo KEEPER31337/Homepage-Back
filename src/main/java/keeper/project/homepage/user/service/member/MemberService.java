@@ -141,13 +141,13 @@ public class MemberService {
       if (member.isPresent()) {
         if (member.get().getId().equals(VIRTUAL_MEMBER_ID)) {
           multiMemberResponseDtos.add(
-              MultiMemberResponseDto.builder().msg("Fail: Access Virtual Member").build());
+              MultiMemberResponseDto.builder().id(id).msg("Fail: Access Virtual Member").build());
         } else {
           multiMemberResponseDtos.add(member.get().toMultiMemberResponseDto());
         }
       } else {
         multiMemberResponseDtos.add(
-            MultiMemberResponseDto.builder().msg("Fail: Not Exist Member").build());
+            MultiMemberResponseDto.builder().id(id).msg("Fail: Not Exist Member").build());
       }
     }
 

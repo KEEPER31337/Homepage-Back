@@ -174,7 +174,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("list[].id").description("멤버 ID").optional(),
+                fieldWithPath("list[].id").description("멤버 ID"),
                 fieldWithPath("list[].nickName").description("멤버 닉네임").optional(),
                 fieldWithPath("list[].thumbnailPath").description("회원의 썸네일 이미지 조회 api path")
                     .optional(),
