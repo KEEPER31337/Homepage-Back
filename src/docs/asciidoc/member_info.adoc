@@ -228,3 +228,27 @@ include::{snippets}/member-otherInfo-ById/response-body.adoc[]
 ==== Response Fields
 
 include::{snippets}/member-otherInfo-ById/response-fields.adoc[]
+
+== *다중 회원 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/member-multi/http-request.adoc[]
+
+==== Request Parameters
+
+include::{snippets}/member-multi/request-parameters.adoc[]
+
+==== Response
+
+include::{snippets}/member-multi/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/member-multi/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/member-multi/response-fields.adoc[]
