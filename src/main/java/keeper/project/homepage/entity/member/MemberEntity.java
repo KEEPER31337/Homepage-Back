@@ -23,6 +23,7 @@ import javax.persistence.Transient;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.entity.study.StudyHasMemberEntity;
+import keeper.project.homepage.user.dto.member.MultiMemberResponseDto;
 import keeper.project.homepage.util.EnvironmentProperty;
 import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
 import lombok.AllArgsConstructor;
@@ -244,5 +245,17 @@ public class MemberEntity implements UserDetails, Serializable {
     this.level = (this.level == null ? 0 : this.level);
     this.merit = (this.merit == null ? 0 : this.merit);
     this.demerit = (this.demerit == null ? 0 : this.demerit);
+  }
+
+  public MultiMemberResponseDto toMultiMemberResponseDto() {
+    return MultiMemberResponseDto.builder()
+        .id(this.id)
+        .nickname(this.nickName)
+        .thumbnailPath(this.getThumbnailPath())
+        .generation(this.generation)
+        .memberJobs(this.getJobs())
+        .memberType(this.memberType.getName())
+        .msg("Success")
+        .build();
   }
 }
