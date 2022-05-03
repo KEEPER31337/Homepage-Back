@@ -13,11 +13,11 @@ import lombok.NoArgsConstructor;
 public class MultiMemberResponseDto {
 
   private Long id;
-  private String nickname;
+  private String nickName;
   private String thumbnailPath;
   private Float generation;
-  private List<String> memberJobs;
-  private String memberType;
+  private List<String> jobs;
+  private String type;
   private String msg;
 
 }

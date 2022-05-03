@@ -250,11 +250,11 @@ public class MemberEntity implements UserDetails, Serializable {
   public MultiMemberResponseDto toMultiMemberResponseDto() {
     return MultiMemberResponseDto.builder()
         .id(this.id)
-        .nickname(this.nickName)
+        .nickName(this.nickName)
         .thumbnailPath(this.getThumbnailPath())
         .generation(this.generation)
-        .memberJobs(this.getJobs())
-        .memberType(this.memberType.getName())
+        .jobs(this.getJobs())
+        .type(this.memberType.getName())
         .msg("Success")
         .build();
   }
