@@ -9,6 +9,7 @@ import keeper.project.homepage.user.dto.member.MemberDto;
 import keeper.project.homepage.user.dto.member.MemberFollowDto;
 import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.common.dto.result.ListResult;
+import keeper.project.homepage.user.dto.member.MultiMemberResponseDto;
 import keeper.project.homepage.user.dto.member.OtherMemberInfoResult;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.service.ResponseService;
@@ -62,6 +63,14 @@ public class MemberController {
   ) {
     return responseService.getSuccessSingleResult(
         memberService.getOtherMember(otherMemberId));
+  }
+
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/multi")
+  public ListResult<MultiMemberResponseDto> getMultiMembers(
+      @RequestParam List<Long> ids
+  ) {
+    return responseService.getSuccessListResult(memberService.getMultiMembers(ids));
   }
 
   @GetMapping(value = "")
