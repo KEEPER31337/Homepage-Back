@@ -186,4 +186,38 @@ public class MemberControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("list[].msg").description("멤버 조회 성공 여부 (실패 시 이유 반환)")
             )));
   }
+
+  @Test
+  @DisplayName("다중 회원 조회 - Virtual Member")
+  public void getMultiMembersWithVirtualMember() throws Exception {
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    String ids = "1";
+
+    params.add("ids", ids);
+    mockMvc.perform(get("/v1/members/multi")
+            .header("Authorization", userToken)
+            .params(params))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.list[0].id").value(1))
+        .andExpect(jsonPath("$.list[0].msg").value("Fail: Access Virtual Member"));
+  }
+
+  @Test
+  @DisplayName("다중 회원 조회 - 존재하지 않는 Member")
+  public void getMultiMembersWithNotExistMember() throws Exception {
+    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    String ids = "3";
+
+    params.add("ids", ids);
+    mockMvc.perform(get("/v1/members/multi")
+            .header("Authorization", userToken)
+            .params(params))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.list[0].id").value(3))
+        .andExpect(jsonPath("$.list[0].msg").value("Fail: Not Exist Member"));
+  }
 }
