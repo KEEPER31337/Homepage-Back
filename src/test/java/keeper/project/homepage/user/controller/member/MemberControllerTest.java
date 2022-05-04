@@ -208,7 +208,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
   @DisplayName("다중 회원 조회 - 존재하지 않는 Member")
   public void getMultiMembersWithNotExistMember() throws Exception {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    String ids = "3";
+    String ids = "-999";
 
     params.add("ids", ids);
     mockMvc.perform(get("/v1/members/multi")
@@ -217,7 +217,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.list[0].id").value(3))
+        .andExpect(jsonPath("$.list[0].id").value(-999))
         .andExpect(jsonPath("$.list[0].msg").value("Fail: Not Exist Member"));
   }
 }
