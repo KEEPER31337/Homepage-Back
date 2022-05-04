@@ -147,6 +147,12 @@ public class FileService {
     deleteFileEntityById(deleteId);
   }
 
+  public void deleteFilesByIdList(List<Long> deleteIdList) {
+    for (Long deleteId : deleteIdList) {
+      deleteFileById(deleteId);
+    }
+  }
+
   // TODO : thumbnail delete와 합치기
   public void deleteOriginalThumbnail(ThumbnailEntity deleteThumbnail) {
     // 기본 썸네일이면 삭제 X

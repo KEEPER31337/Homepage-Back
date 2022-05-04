@@ -703,6 +703,37 @@ public class PostingControllerTest extends ApiControllerTestHelper {
   }
 
   @Test
+  @DisplayName("파일 ID 리스트를 받아 파일들 삭제")
+  public void deleteFiles() throws Exception {
+    FileEntity generalImageFile2 = generateFileEntity();
+    FileEntity generalImageFile3 = generateFileEntity();
+    String params = generalImageFile.getId().toString() + "," +
+        generalImageFile2.getId().toString() + "," +
+        generalImageFile3.getId().toString();
+
+    ResultActions result = mockMvc.perform(
+        RestDocumentationRequestBuilders.delete("/v1/post/files")
+            .param("fileIdList", params)
+            .header("Authorization", userToken));
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(print())
+        .andDo(document("post-delete-files",
+            requestParameters(
+                parameterWithName("fileIdList").description("삭제할 파일 ID 리스트")
+            ), responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("성공 : 0")
+            )
+        ));
+
+    Assertions.assertTrue(fileRepository.findById(generalImageFile.getId()).isEmpty());
+    Assertions.assertTrue(fileRepository.findById(generalImageFile2.getId()).isEmpty());
+    Assertions.assertTrue(fileRepository.findById(generalImageFile3.getId()).isEmpty());
+
+  }
+
+  @Test
   @DisplayName("게시글 삭제")
   public void deletePosting() throws Exception {
     ResultActions result = mockMvc.perform(
