@@ -36,9 +36,9 @@ public class AuthService {
   public Long getMemberIdByJWT() {
 
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    Long memberId;
+    long memberId;
     try {
-      memberId = Long.valueOf(authentication.getName());
+      memberId = Long.parseLong(authentication.getName());
     } catch (Exception e) {
       throw new AccessDeniedException("");
     }
