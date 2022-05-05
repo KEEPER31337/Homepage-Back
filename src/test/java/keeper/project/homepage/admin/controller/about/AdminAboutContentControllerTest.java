@@ -69,11 +69,6 @@ public class AdminAboutContentControllerTest extends ApiControllerTestHelper {
     deleteTestFiles();
   }
 
-  private String getFileName(String filePath) {
-    File file = new File(filePath);
-    return file.getName();
-  }
-
   public StaticWriteTitleEntity generateTestTitle(Integer index) {
     StaticWriteTitleEntity staticWriteTitleEntity = StaticWriteTitleEntity.builder()
         .title("테스트 타이틀" + index)

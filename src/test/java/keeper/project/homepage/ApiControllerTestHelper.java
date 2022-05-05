@@ -5,7 +5,9 @@ import static keeper.project.homepage.common.service.sign.SignUpService.HALF_GEN
 import static keeper.project.homepage.common.service.sign.SignUpService.KEEPER_FOUNDING_YEAR;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,9 +42,11 @@ import keeper.project.homepage.entity.member.MemberTypeEntity;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.util.dto.FileDto;
 import keeper.project.homepage.util.service.ThumbnailService;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.test.web.servlet.MvcResult;
 
 public class ApiControllerTestHelper extends ApiControllerTestSetUp {
@@ -130,6 +134,11 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
       generation += 0.5F;
     }
     return generation;
+  }
+
+  public String getFileName(String filePath) {
+    File file = new File(filePath);
+    return file.getName();
   }
 
   public void createFileForTest(String filePath) {
@@ -627,7 +636,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         fieldWithPath(prefix + ".categoryId").description("카테고리 ID"),
         fieldWithPath(prefix + ".thumbnailPath").description("게시글 썸네일 이미지 조회 api path")
             .type(String.class).optional(),
-        fieldWithPath(prefix + ".files").description("첨부파일")
+        subsectionWithPath(prefix + ".files").description("첨부파일").type(FileDto.class).optional()
     ));
     if (addDescriptors.length > 0) {
       commonFields.addAll(Arrays.asList(addDescriptors));
@@ -670,6 +679,19 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     commonFields.addAll(Arrays.asList(
         fieldWithPath(prefix + ".followerNumber").description("팔로워 숫자"),
         fieldWithPath(prefix + ".followeeNumber").description("팔로우 숫자")));
+    if (descriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(descriptors));
+    }
+    return commonFields;
+  }
+
+  public List<ParameterDescriptor> generateCommonPagingParameters(String sizeDescription,
+      ParameterDescriptor... descriptors) {
+    List<ParameterDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(Arrays.asList(
+        parameterWithName("page").optional().description("페이지 번호(default = 0)"),
+        parameterWithName("size").optional().description(sizeDescription)
+    ));
     if (descriptors.length > 0) {
       commonFields.addAll(Arrays.asList(descriptors));
     }

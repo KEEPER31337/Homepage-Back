@@ -63,7 +63,7 @@ public class StudyControllerTestSetup extends ApiControllerTestHelper {
     fileConversion.makeSampleJPEGImage(filePath);
   }
 
-  protected String getFileName(String filePath) {
+  public String getFileName(String filePath) {
     File file = new File(filePath);
     return file.getName();
   }
