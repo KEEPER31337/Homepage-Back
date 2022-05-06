@@ -6,10 +6,14 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import java.security.Principal;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -28,9 +32,7 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
   @Value("spring.jwt.secret")
   private String secretKey;
 
-  private long tokenValidMilisecond = 1000L * 60 * 60; // 1시간만 토큰 유효
-
-  private final UserDetailsService userDetailsService;
+  private final long tokenValidMilisecond = 1000L * 60 * 60; // 1시간만 토큰 유효
 
   @PostConstruct
   protected void init() {
@@ -51,15 +53,18 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
   }
 
   // Jwt 토큰으로 인증 정보를 조회
-  @Transactional
   public Authentication getAuthentication(String token) {
-    UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserPk(token));
+    Claims claims = getClaim(token);
+    String rolesString = claims.get("roles").toString();
+    List<String> roles = Arrays.stream(
+        rolesString.substring(1, rolesString.length() - 1).split(", ")).toList();
+    UserDetails userDetails = new JwtMemberEntity(claims.getSubject(), roles);
     return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
   }
 
-  // Jwt 토큰에서 회원 구별 정보 추출
-  public String getUserPk(String token) {
-    return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+  // Jwt 토큰을 Claim 으로 변경
+  private Claims getClaim(String token) {
+    return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
   }
 
   // Request의 Header에서 token 파싱 : "Authorization: jwt토큰"

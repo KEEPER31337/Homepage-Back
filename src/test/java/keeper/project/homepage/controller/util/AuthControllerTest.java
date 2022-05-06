@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.dto.sign.SignInDto;
@@ -27,67 +28,25 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-class AuthControllerTest extends ApiControllerTestSetUp {
+class AuthControllerTest extends ApiControllerTestHelper {
 
   private String userToken;
-
-  final private String loginId = "hyeonmomo";
-  final private String emailAddress = "test@k33p3r.com";
-  final private String password = "keeper";
-  final private String realName = "JeongHyeonMo";
-  final private String nickName = "HyeonMoJeong";
-  final private String birthday = "1998-01-01";
-  final private String studentId = "201724579";
 
   MemberEntity memberEntity;
 
   @BeforeEach
   public void setUp() throws Exception {
-
-    memberEntity = MemberEntity.builder()
-        .loginId(loginId)
-        .password(passwordEncoder.encode(password))
-        .realName(realName)
-        .nickName(nickName)
-        .emailAddress(emailAddress)
-        .studentId(studentId)
-        .generation(0F)
-        .build();
-    memberRepository.save(memberEntity);
-
-    MemberJobEntity memberJobEntity1 = memberJobRepository.findByName("ROLE_사서").get();
-    MemberHasMemberJobEntity hasMemberJobEntity1 = MemberHasMemberJobEntity.builder()
-        .memberEntity(memberEntity)
-        .memberJobEntity(memberJobEntity1)
-        .build();
-    memberHasMemberJobRepository.save(hasMemberJobEntity1);
-    MemberJobEntity memberJobEntity2 = memberJobRepository.findByName("ROLE_전산관리자").get();
-    MemberHasMemberJobEntity hasMemberJobEntity2 = MemberHasMemberJobEntity.builder()
-        .memberEntity(memberEntity)
-        .memberJobEntity(memberJobEntity2)
-        .build();
-    memberHasMemberJobRepository.save(hasMemberJobEntity2);
-
-    String content = "{\n"
-        + "    \"loginId\": \"" + loginId + "\",\n"
-        + "    \"password\": \"" + password + "\"\n"
-        + "}";
-    MvcResult result = mockMvc.perform(post("/v1/signin")
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .content(content))
-        .andDo(print())
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.success").value(true))
-        .andExpect(jsonPath("$.code").value(0))
-        .andExpect(jsonPath("$.msg").exists())
-        .andExpect(jsonPath("$.data").exists())
-        .andReturn();
-
-    String resultString = result.getResponse().getContentAsString();
-    ObjectMapper mapper = new ObjectMapper();
-    SingleResult<SignInDto> sign = mapper.readValue(resultString, new TypeReference<>() {
-    });
-    userToken = sign.getData().getToken();
+    memberEntity = generateMemberEntity(MemberJobName.사서, MemberTypeName.정회원, MemberRankName.일반회원);
+    MemberJobEntity memberJob = memberJobRepository.findByName(MemberJobName.전산관리자.getJobName())
+        .get();
+    MemberHasMemberJobEntity hasMemberJobEntity = memberHasMemberJobRepository.save(
+        MemberHasMemberJobEntity.builder()
+            .memberJobEntity(memberJob)
+            .memberEntity(memberEntity)
+            .build());
+    memberJob.getMembers().add(hasMemberJobEntity);
+    memberEntity.getMemberJobs().add(hasMemberJobEntity);
+    userToken = generateJWTToken(memberEntity);
   }
 
   @Test
