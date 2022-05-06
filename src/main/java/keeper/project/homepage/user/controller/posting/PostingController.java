@@ -180,12 +180,6 @@ public class PostingController {
     return responseService.getSuccessResult();
   }
 
-  private void deletePrevFiles(PostingEntity postingEntity) {
-    List<FileEntity> fileEntities = fileService.findFileEntitiesByPostingId(
-        postingEntity);
-    fileService.deleteFiles(fileEntities);
-  }
-
   private ThumbnailEntity saveThumbnail(MultipartFile thumbnail, PostingDto dto) {
     ThumbnailEntity newThumbnail = thumbnailService.saveThumbnail(new ImageCenterCrop(), thumbnail,
         ThumbnailSize.LARGE, dto.getIpAddress());
