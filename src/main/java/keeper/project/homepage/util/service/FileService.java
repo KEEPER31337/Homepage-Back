@@ -134,6 +134,11 @@ public class FileService {
   }
 
   public void deleteFileById(Long deleteId) {
+    // 기본 썸네일이면 삭제하지 않는다.
+    if (isDefaultFileId(deleteId)) {
+      throw new CustomFileDeleteFailedException("삭제할 수 없는 기본 이미지입니다.");
+    }
+
     FileEntity deletedFileEntity = fileRepository.findById(deleteId)
         .orElseThrow(CustomFileEntityNotFoundException::new);
     File deleteFile = new File(
@@ -145,6 +150,22 @@ public class FileService {
       throw new CustomFileDeleteFailedException();
     }
     deleteFileEntityById(deleteId);
+  }
+
+  public void deleteFilesByIdList(List<Long> fileIdList) {
+    for (Long fileId : fileIdList) {
+      deleteFileById(fileId);
+    }
+  }
+
+  public boolean isDefaultFileId(Long fileId) {
+    List<Long> defaultIdList = Stream.of(DefaultThumbnailInfo.values()).map(t -> t.getFileId())
+        .collect(Collectors.toList());
+    if (defaultIdList.contains(fileId)) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   // TODO : thumbnail delete와 합치기

@@ -271,6 +271,27 @@ include::{snippets}/post-file-delete/http-response.adoc[]
 
 include::{snippets}/post-file-delete/response-body.adoc[]
 
+== 게시글 첨부파일 여러개 삭제
+
+=== 요청
+
+==== Request
+
+include::{snippets}/post-delete-files/request-body.adoc[]
+
+==== Request Parameters
+
+include::{snippets}/post-delete-files/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/post-delete-files/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/post-delete-files/response-body.adoc[]
 
 == 게시글 삭제
 

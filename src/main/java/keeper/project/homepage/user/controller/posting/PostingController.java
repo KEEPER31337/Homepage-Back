@@ -198,9 +198,15 @@ public class PostingController {
   }
 
   @GetMapping(value = "/delete/{fileId}")
-  public CommonResult deleteFile(@PathVariable("fileId") Long fileId){
+  public CommonResult deleteFile(@PathVariable("fileId") Long fileId) {
     fileService.deleteFileById(fileId);
 
+    return responseService.getSuccessResult();
+  }
+
+  @DeleteMapping(value = "/files")
+  public CommonResult deleteFiles(@RequestParam(value = "fileIdList") List<Long> fileIdList) {
+    fileService.deleteFilesByIdList(fileIdList);
     return responseService.getSuccessResult();
   }
 
