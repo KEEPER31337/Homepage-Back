@@ -2,10 +2,8 @@ package keeper.project.homepage.controller.posting;
 
 import static org.hamcrest.Matchers.lessThanOrEqualTo;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.partWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
@@ -15,24 +13,15 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.File;
 import java.io.FileInputStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.exception.posting.CustomCategoryNotFoundException;
-import keeper.project.homepage.repository.posting.CategoryRepository;
-import keeper.project.homepage.util.FileConversion;
-import keeper.project.homepage.common.dto.result.SingleResult;
-import keeper.project.homepage.common.dto.sign.SignInDto;
-import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
-import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
@@ -42,16 +31,13 @@ import keeper.project.homepage.user.service.posting.PostingService;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
-import org.springframework.restdocs.payload.FieldDescriptor;
-import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.restdocs.request.ParameterDescriptor;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,22 +47,6 @@ import org.springframework.util.MultiValueMap;
 @Transactional
 @Log4j2
 public class PostingControllerTest extends ApiControllerTestHelper {
-
-  final private String adminLoginId = "hyeonmoAdmin";
-  final private String adminPassword = "keeper2";
-  final private String adminRealName = "JeongHyeonMo2";
-  final private String adminNickName = "JeongHyeonMo2";
-  final private String adminEmailAddress = "test2@k33p3r.com";
-  final private String adminStudentId = "201724580";
-
-  final private String loginId = "hyeonmomo";
-  final private String password = "keeper";
-  final private String realName = "JeongHyeonMo";
-  final private String nickName = "JeongHyeonMo";
-  final private String emailAddress = "test@k33p3r.com";
-  final private String studentId = "201724579";
-  final private String ipAddress1 = "127.0.0.1";
-  final private String ipAddress2 = "127.0.0.2";
 
   private String userToken;
   private String adminToken;
@@ -102,19 +72,11 @@ public class PostingControllerTest extends ApiControllerTestHelper {
   private FileEntity generalImageFile;
   private ThumbnailEntity deleteThumbnail;
   private ThumbnailEntity deleteThumbnail2;
-  private FileEntity deleteImageFile;
-  private FileEntity deleteImageFile2;
   private ThumbnailEntity modifyThumbnail;
-  private FileEntity modifyImageFile;
 
   private final String userDirectory = System.getProperty("user.dir");
   private final String createTestImage = testFileRelDir + File.separator + "createTest.jpg";
   private final String modifyAftTestImage = testFileRelDir + File.separator + "modifyAftTest.jpg";
-
-  private String getFileName(String filePath) {
-    File file = new File(filePath);
-    return file.getName();
-  }
 
   @BeforeEach
   public void setUp() throws Exception {
@@ -135,29 +97,16 @@ public class PostingControllerTest extends ApiControllerTestHelper {
     postingModifyTest = generatePostingEntity(memberEntity, categoryEntity, 0, 0, 0);
     postingDeleteTest = generatePostingEntity(memberEntity, categoryEntity, 0, 0, 0);
     postingDeleteTest2 = generatePostingEntity(memberEntity, categoryEntity, 0, 0, 0);
-
-    PostingEntity postingTempTest = generatePostingEntity(memberEntity, categoryEntity, 0, 0, 1);
     postingNoticeTest = generatePostingEntity(memberEntity, categoryEntity, 1, 0, 0);
     postingNoticeTest2 = generatePostingEntity(memberEntity, categoryEntity, 1, 0, 0);
-    FileEntity generalTestFile = FileEntity.builder()
-        .postingId(postingGeneralTest)
-        .fileName("test file")
-        .filePath("test/file.txt")
-        .fileSize(12345L)
-        .uploadTime(LocalDateTime.now())
-        .ipAddress(postingGeneralTest.getIpAddress())
-        .build();
+
+    FileEntity generalTestFile = generateFileEntity();
+    generalTestFile.setPostingId(postingGeneralTest);
     fileRepository.save(generalTestFile);
     postingGeneralTest.getFiles().add(generalTestFile);
-
-    fileRepository.save(FileEntity.builder()
-        .postingId(postingModifyTest)
-        .fileName("test file")
-        .filePath("test/file.txt")
-        .fileSize(12345L)
-        .uploadTime(LocalDateTime.now())
-        .ipAddress(postingModifyTest.getIpAddress())
-        .build());
+    FileEntity generalModifyFile = generateFileEntity();
+    generalModifyFile.setPostingId(postingModifyTest);
+    fileRepository.save(generalModifyFile);
 
     freshMan = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원,
         MemberRankName.일반회원);
@@ -205,36 +154,11 @@ public class PostingControllerTest extends ApiControllerTestHelper {
         .andExpect(jsonPath("$.list.length()", lessThanOrEqualTo(10)))
         .andDo(document("post-getLatest",
             requestParameters(
-                parameterWithName("page").optional().description("페이지 번호(default = 0)"),
-                parameterWithName("size").optional().description("한 페이지당 출력 수(default = 10)")
+                generateCommonPagingParameters("한 페이지당 출력 수(default = 10)")
             ),
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
-                fieldWithPath("list[].id").description("게시물 ID"),
-                fieldWithPath("list[].title").description("게시물 제목"),
-                fieldWithPath("list[].content").description("게시물 내용 (하나 조회 아닐경우 빈 문자열)"),
-                fieldWithPath("list[].category").description("카테고리 이름"),
-                fieldWithPath("list[].categoryId").description("카테고리 ID"),
-                fieldWithPath("list[].writer").optional().description("작성자 (비밀 게시글일 경우 익명)"),
-                fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
-                fieldWithPath("list[].writerThumbnailPath").optional().type(JsonFieldType.STRING)
-                    .description("작성자 썸네일 경로(비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
-                fieldWithPath("list[].thumbnailPath").optional().type(JsonFieldType.STRING)
-                    .description("게시물 썸네일 경로 / 썸네일 등록하지 않았을 경우 null"),
-                fieldWithPath("list[].visitCount").description("조회 수"),
-                fieldWithPath("list[].likeCount").description("좋아요 수"),
-                fieldWithPath("list[].dislikeCount").description("싫어요 수"),
-                fieldWithPath("list[].commentCount").description("댓글 수"),
-                fieldWithPath("list[].registerTime").description("작성 시간"),
-                fieldWithPath("list[].updateTime").description("수정 시간"),
-                fieldWithPath("list[].ipAddress").description("IP 주소"),
-                fieldWithPath("list[].allowComment").description("댓글 허용?"),
-                fieldWithPath("list[].isNotice").description("공지글?"),
-                fieldWithPath("list[].isSecret").description("비밀글?"),
-                fieldWithPath("list[].isTemp").description("임시저장?"),
-                fieldWithPath("list[].size").description("총 게시물 수")
+                generatePostingResponseFields(ResponseType.LIST, "성공 : true + \n실패 : false",
+                    "성공 : 0, 실패 시 : -11000", "")
             )
         ));
   }
@@ -254,37 +178,12 @@ public class PostingControllerTest extends ApiControllerTestHelper {
         .andExpect(jsonPath("$.list.length()", lessThanOrEqualTo(10)))
         .andDo(document("post-getList",
             requestParameters(
-                parameterWithName("category").description("게시판 종류 ID"),
-                parameterWithName("page").optional().description("페이지 번호(default = 0)"),
-                parameterWithName("size").optional().description("한 페이지당 출력 수(default = 10)")
+                generateCommonPagingParameters("한 페이지당 출력 수(default = 10)",
+                    parameterWithName("category").description("게시판 종류 ID"))
             ),
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
-                fieldWithPath("list[].id").description("게시물 ID"),
-                fieldWithPath("list[].title").description("게시물 제목"),
-                fieldWithPath("list[].content").description("게시물 내용 (하나 조회 아닐경우 빈 문자열)"),
-                fieldWithPath("list[].category").description("카테고리 이름"),
-                fieldWithPath("list[].categoryId").description("카테고리 ID"),
-                fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
-                fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
-                fieldWithPath("list[].writerThumbnailPath").optional().type(JsonFieldType.STRING)
-                    .description("작성자 썸네일 경로(비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
-                fieldWithPath("list[].thumbnailPath").optional().type(JsonFieldType.STRING)
-                    .description("게시물 썸네일 경로 / 썸네일 등록하지 않았을 경우 null"),
-                fieldWithPath("list[].visitCount").description("조회 수"),
-                fieldWithPath("list[].likeCount").description("좋아요 수"),
-                fieldWithPath("list[].dislikeCount").description("싫어요 수"),
-                fieldWithPath("list[].commentCount").description("댓글 수"),
-                fieldWithPath("list[].registerTime").description("작성 시간"),
-                fieldWithPath("list[].updateTime").description("수정 시간"),
-                fieldWithPath("list[].ipAddress").description("IP 주소"),
-                fieldWithPath("list[].allowComment").description("댓글 허용?"),
-                fieldWithPath("list[].isNotice").description("공지글?"),
-                fieldWithPath("list[].isSecret").description("비밀글?"),
-                fieldWithPath("list[].isTemp").description("임시저장?"),
-                fieldWithPath("list[].size").description("총 게시물 수")
+                generatePostingResponseFields(ResponseType.LIST, "성공 : true + \n실패 : false",
+                    "성공 : 0, 실패 시 : -11000", "")
             )
         ));
   }
@@ -304,32 +203,8 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 parameterWithName("category").description("게시판 종류 ID / 주지 않을시 전체 카테고리 공지글 불러옴")
             ),
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
-                fieldWithPath("list[].id").description("게시물 ID"),
-                fieldWithPath("list[].title").description("게시물 제목"),
-                fieldWithPath("list[].content").description("게시물 내용 (하나 조회 아닐경우 빈 문자열)"),
-                fieldWithPath("list[].category").description("카테고리 이름"),
-                fieldWithPath("list[].categoryId").description("카테고리 ID"),
-                fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
-                fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
-                fieldWithPath("list[].writerThumbnailPath").optional().type(JsonFieldType.STRING)
-                    .description("작성자 썸네일 경로(비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
-                fieldWithPath("list[].thumbnailPath").optional().type(JsonFieldType.STRING)
-                    .description("게시물 썸네일 경로 / 썸네일 등록하지 않았을 경우 null"),
-                fieldWithPath("list[].visitCount").description("조회 수"),
-                fieldWithPath("list[].likeCount").description("좋아요 수"),
-                fieldWithPath("list[].dislikeCount").description("싫어요 수"),
-                fieldWithPath("list[].commentCount").description("댓글 수"),
-                fieldWithPath("list[].registerTime").description("작성 시간"),
-                fieldWithPath("list[].updateTime").description("수정 시간"),
-                fieldWithPath("list[].ipAddress").description("IP 주소"),
-                fieldWithPath("list[].allowComment").description("댓글 허용?"),
-                fieldWithPath("list[].isNotice").description("공지글?"),
-                fieldWithPath("list[].isSecret").description("비밀글?"),
-                fieldWithPath("list[].isTemp").description("임시저장?"),
-                fieldWithPath("list[].size").description("총 게시물 수")
+                generatePostingResponseFields(ResponseType.LIST, "성공 : true + \n실패 : false",
+                    "성공 : 0, 실패 시 : -11000", "")
             )
         ));
   }
@@ -382,35 +257,8 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 parameterWithName("pid").description("게시물 ID")
             ),
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
-                fieldWithPath("data.id").description("게시물 ID"),
-                fieldWithPath("data.title").description("게시물 제목"),
-                fieldWithPath("data.content").description("게시물 내용 (하나 조회 아닐경우 빈 문자열)"),
-                fieldWithPath("data.category").description("카테고리 이름"),
-                fieldWithPath("data.categoryId").description("카테고리 ID"),
-                fieldWithPath("data.writer").description("작성자  (비밀 게시글일 경우 익명)"),
-                fieldWithPath("data.writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
-                fieldWithPath("data.writerThumbnailPath").optional().type(JsonFieldType.STRING)
-                    .description("작성자 썸네일 경로(비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
-                fieldWithPath("data.thumbnailPath").optional().type(JsonFieldType.STRING)
-                    .description("게시물 썸네일 경로 / 썸네일 등록하지 않았을 경우 null"),
-                fieldWithPath("data.visitCount").description("조회 수"),
-                fieldWithPath("data.likeCount").description("좋아요 수"),
-                fieldWithPath("data.dislikeCount").description("싫어요 수"),
-                fieldWithPath("data.commentCount").description("댓글 수"),
-                fieldWithPath("data.registerTime").description("작성 시간"),
-                fieldWithPath("data.updateTime").description("수정 시간"),
-                fieldWithPath("data.ipAddress").description("IP 주소"),
-                fieldWithPath("data.allowComment").description("댓글 허용?"),
-                fieldWithPath("data.isNotice").description("공지글?"),
-                fieldWithPath("data.isSecret").description("비밀글?"),
-                fieldWithPath("data.isTemp").description("임시저장?"),
-                fieldWithPath("data.size").description("총 게시물 수(getPosting 에선 1개)"),
-                subsectionWithPath("data.files").description(
-                        "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
-                    .optional()
+                generatePostingResponseFields(ResponseType.SINGLE, "성공 : true + \n실패 : false",
+                    "성공 : 0, 실패 시 : -11000", "")
             )
         ));
   }
@@ -475,35 +323,8 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 parameterWithName("pid").description("게시물 ID")
             ),
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
-                fieldWithPath("data.id").description("게시물 ID"),
-                fieldWithPath("data.title").description("게시물 제목"),
-                fieldWithPath("data.content").description("게시물 내용 (하나 조회 아닐경우 빈 문자열)"),
-                fieldWithPath("data.category").description("카테고리 이름"),
-                fieldWithPath("data.categoryId").description("카테고리 ID"),
-                fieldWithPath("data.writer").description("작성자  (비밀 게시글일 경우 익명)"),
-                fieldWithPath("data.writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
-                fieldWithPath("data.writerThumbnailPath").optional().type(JsonFieldType.STRING)
-                    .description("작성자 썸네일 경로(비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
-                fieldWithPath("data.thumbnailPath").optional().type(JsonFieldType.STRING)
-                    .description("게시물 썸네일 경로 / 썸네일 등록하지 않았을 경우 null"),
-                fieldWithPath("data.visitCount").description("조회 수"),
-                fieldWithPath("data.likeCount").description("좋아요 수"),
-                fieldWithPath("data.dislikeCount").description("싫어요 수"),
-                fieldWithPath("data.commentCount").description("댓글 수"),
-                fieldWithPath("data.registerTime").description("작성 시간"),
-                fieldWithPath("data.updateTime").description("수정 시간"),
-                fieldWithPath("data.ipAddress").description("IP 주소"),
-                fieldWithPath("data.allowComment").description("댓글 허용?"),
-                fieldWithPath("data.isNotice").description("공지글?"),
-                fieldWithPath("data.isSecret").description("비밀글?"),
-                fieldWithPath("data.isTemp").description("임시저장?"),
-                fieldWithPath("data.size").description("총 게시물 수(getPosting 에선 1개)"),
-                subsectionWithPath("data.files").description(
-                        "첨부파일 정보 (.id, .fileName, .filePath, .fileSize, .uploadTime, .ipAddress)")
-                    .optional()
+                generatePostingResponseFields(ResponseType.SINGLE, "성공 : true + \n실패 : false",
+                    "성공 : 0, 실패 시 : -11000", "")
             )
         ));
   }
@@ -553,15 +374,8 @@ public class PostingControllerTest extends ApiControllerTestHelper {
         ));
   }
 
-  @Test
-  @DisplayName("게시글 생성")
-  public void createPosting() throws Exception {
+  public MultiValueMap<String, String> generatePostingParams(boolean isModify) {
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-    MockMultipartFile file = new MockMultipartFile("file", "image.png", "image/png",
-        "<<png data>>".getBytes());
-    MockMultipartFile thumbnail = new MockMultipartFile("thumbnail", getFileName(createTestImage),
-        "image/jpg", new FileInputStream(userDirectory + File.separator + createTestImage));
-
     params.add("title", "mvc제목");
     params.add("content", "mvc내용");
     params.add("categoryId", categoryEntity.getId().toString());
@@ -571,6 +385,40 @@ public class PostingControllerTest extends ApiControllerTestHelper {
     params.add("isSecret", "1");
     params.add("isTemp", "0");
     params.add("password", "asd");
+    if (isModify) {
+      params.add("thumbnailId", modifyThumbnail.getId().toString());
+    }
+
+    return params;
+  }
+
+  public List<ParameterDescriptor> generateCommonPostingParameters(boolean isModify) {
+    List<ParameterDescriptor> parameterDescriptors = new ArrayList<>(Arrays.asList(
+        parameterWithName("title").description("제목"),
+        parameterWithName("content").description("내용"),
+        parameterWithName("categoryId").description("게시판 종류 ID"),
+        parameterWithName("ipAddress").description("IP 주소"),
+        parameterWithName("allowComment").description("댓글 허용?"),
+        parameterWithName("isNotice").description("공지글?"),
+        parameterWithName("isSecret").description("비밀글?"),
+        parameterWithName("isTemp").description("임시저장?"),
+        parameterWithName("password").optional().description("비밀번호").optional()
+    ));
+    if (isModify) {
+      parameterDescriptors.add(parameterWithName("thumbnailId").description("썸네일 ID"));
+    }
+
+    return parameterDescriptors;
+  }
+
+  @Test
+  @DisplayName("게시글 생성")
+  public void createPosting() throws Exception {
+    MultiValueMap<String, String> params = generatePostingParams(false);
+    MockMultipartFile file = new MockMultipartFile("file", "image.png", "image/png",
+        "<<png data>>".getBytes());
+    MockMultipartFile thumbnail = new MockMultipartFile("thumbnail", getFileName(createTestImage),
+        "image/jpg", new FileInputStream(userDirectory + File.separator + createTestImage));
 
     ResultActions result = mockMvc.perform(
         multipart("/v1/post/new")
@@ -588,15 +436,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
         .andDo(print())
         .andDo(document("post-create",
             requestParameters(
-                parameterWithName("title").description("제목"),
-                parameterWithName("content").description("내용"),
-                parameterWithName("categoryId").description("게시판 종류 ID"),
-                parameterWithName("ipAddress").description("IP 주소"),
-                parameterWithName("allowComment").description("댓글 허용?"),
-                parameterWithName("isNotice").description("공지글?"),
-                parameterWithName("isSecret").description("비밀글?"),
-                parameterWithName("isTemp").description("임시저장?"),
-                parameterWithName("password").optional().description("비밀번호").optional()
+                generateCommonPostingParameters(false)
             ),
             requestParts(
                 partWithName("file").description("첨부 파일들 (form-data 에서 file= parameter 부분)"),
@@ -604,34 +444,21 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                     "썸네일 용 이미지 (form-data 에서 thumbnail= parameter 부분)")
             ),
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시 : -1")
+                generateCommonResponseFields("성공: true +\n실패: false", "성공 : 0, 실패 시 : -11000", "")
             )
         ));
   }
-
 
   @Test
   @DisplayName("게시글 수정")
   public void modifyPosting() throws Exception {
     createFileForTest(usrDir + modifyAftTestImage);
-    MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    MultiValueMap<String, String> params = generatePostingParams(true);
     MockMultipartFile file = new MockMultipartFile("file", "modifyImage.png", "image/png",
         "<<png data>>".getBytes());
     MockMultipartFile thumbnail = new MockMultipartFile("thumbnail",
         getFileName(modifyAftTestImage), "image/jpg",
         new FileInputStream(usrDir + modifyAftTestImage));
-    params.add("title", "수정 mvc제목");
-    params.add("content", "수정 mvc내용");
-    params.add("categoryId", categoryEntity.getId().toString());
-    params.add("thumbnailId", modifyThumbnail.getId().toString());
-    params.add("ipAddress", "192.111.222");
-    params.add("allowComment", "0");
-    params.add("isNotice", "0");
-    params.add("isSecret", "0");
-    params.add("password", "asd");
-    params.add("isTemp", "0");
 
     log.info("mockMVc 시작");
     ResultActions result = mockMvc.perform(
@@ -650,21 +477,8 @@ public class PostingControllerTest extends ApiControllerTestHelper {
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
         .andDo(document("post-modify",
-//            multipart() 요청에서는 pathParameter가 요청이 안됨. -> adoc에서 따로 작성
-//            pathParameters(
-//                parameterWithName("pid").description("게시물 ID")
-//            ),
             requestParameters(
-                parameterWithName("title").description("제목"),
-                parameterWithName("content").description("내용"),
-                parameterWithName("categoryId").description("게시판 종류 ID"),
-                parameterWithName("thumbnailId").description("썸네일 ID"),
-                parameterWithName("ipAddress").description("IP 주소"),
-                parameterWithName("allowComment").description("댓글 허용?"),
-                parameterWithName("isNotice").description("공지글?"),
-                parameterWithName("isSecret").description("비밀글?"),
-                parameterWithName("isTemp").description("임시저장?"),
-                parameterWithName("password").optional().description("비밀번호").optional()
+                generateCommonPostingParameters(true)
             ),
             requestParts(
                 partWithName("file").description("첨부 파일들 (form-data 에서 file= parameter 부분)"),
@@ -672,9 +486,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                     "썸네일 용 이미지 (form-data 에서 thumbnail= parameter 부분)")
             ),
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시 : -1")
+                generateCommonResponseFields("성공: true +\n실패: false", "성공 : 0, 실패 시 : -11000", "")
             )
         ));
   }
@@ -693,9 +505,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
             pathParameters(
                 parameterWithName("fileId").description("삭제할 파일 ID")
             ), responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0")
+                generateCommonResponseFields("성공: true +\n실패: false", "성공 : 0, 실패 시 : -11000", "")
             )
         ));
 
@@ -748,9 +558,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 parameterWithName("pid").description("게시물 ID")
             ),
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시 : -1")
+                generateCommonResponseFields("성공: true +\n실패: false", "성공 : 0, 실패 시 : -11000", "")
             )
         ));
   }
@@ -770,9 +578,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 parameterWithName("pid").description("게시물 ID")
             ),
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시 : -1")
+                generateCommonResponseFields("성공: true +\n실패: false", "성공 : 0, 실패 시 : -11000", "")
             )
         ));
   }
@@ -792,40 +598,15 @@ public class PostingControllerTest extends ApiControllerTestHelper {
         .andDo(print())
         .andDo(document("post-search",
             requestParameters(
-                parameterWithName("type").description(
-                    "검색 타입 (T : 제목, C: 내용, TC: 제목 또는 내용, W : 작성자)"),
-                parameterWithName("keyword").description("검색어"),
-                parameterWithName("category").description("게시판 종류 ID"),
-                parameterWithName("page").optional().description("페이지 번호(default = 0)"),
-                parameterWithName("size").optional().description("한 페이지당 출력 수(default = 10)")
+                generateCommonPagingParameters("한 페이지당 출력 수(default = 10)",
+                    parameterWithName("type").description(
+                        "검색 타입 (T : 제목, C: 내용, TC: 제목 또는 내용, W : 작성자)"),
+                    parameterWithName("keyword").description("검색어"),
+                    parameterWithName("category").description("게시판 종류 ID"))
             ),
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
-                fieldWithPath("list[].id").description("게시물 ID"),
-                fieldWithPath("list[].title").description("게시물 제목"),
-                fieldWithPath("list[].content").description("게시물 내용 (하나 조회 아닐경우 빈 문자열)"),
-                fieldWithPath("list[].category").description("카테고리 이름"),
-                fieldWithPath("list[].categoryId").description("카테고리 ID"),
-                fieldWithPath("list[].writer").description("작성자  (비밀 게시글일 경우 익명)"),
-                fieldWithPath("list[].writerId").optional().description("작성자 (비밀 게시글일 경우 null)"),
-                fieldWithPath("list[].writerThumbnailPath").optional().type(JsonFieldType.STRING)
-                    .description("작성자 썸네일 경로(비밀 게시글일 경우 / 썸네일을 등록하지 않았을 경우 null)"),
-                fieldWithPath("list[].thumbnailPath").optional().type(JsonFieldType.STRING)
-                    .description("게시물 썸네일 경로 / 썸네일 등록하지 않았을 경우 null"),
-                fieldWithPath("list[].visitCount").description("조회 수"),
-                fieldWithPath("list[].likeCount").description("좋아요 수"),
-                fieldWithPath("list[].dislikeCount").description("싫어요 수"),
-                fieldWithPath("list[].commentCount").description("댓글 수"),
-                fieldWithPath("list[].registerTime").description("작성 시간"),
-                fieldWithPath("list[].updateTime").description("수정 시간"),
-                fieldWithPath("list[].ipAddress").description("IP 주소"),
-                fieldWithPath("list[].allowComment").description("댓글 허용?"),
-                fieldWithPath("list[].isNotice").description("공지글?"),
-                fieldWithPath("list[].isSecret").description("비밀글?"),
-                fieldWithPath("list[].isTemp").description("임시저장?"),
-                fieldWithPath("list[].size").description("총 게시물 수")
+                generatePostingResponseFields(ResponseType.LIST, "성공 : true + \n실패 : false",
+                    "성공 : 0, 실패 시 : -11000", "")
             )
         ));
   }
@@ -840,8 +621,6 @@ public class PostingControllerTest extends ApiControllerTestHelper {
         .header("Authorization", userToken)
         .contentType(MediaType.APPLICATION_JSON));
 
-//    result.andDo(print());
-
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
         .andDo(document("post-like",
@@ -850,9 +629,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 parameterWithName("postingId").description("게시판 ID")
             ),
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시 : -1")
+                generateCommonResponseFields("성공: true +\n실패: false", "성공 : 0, 실패 시 : -11000", "")
             )
         ));
   }
@@ -874,9 +651,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 parameterWithName("postingId").description("게시판 ID")
             ),
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("msg").description(""),
-                fieldWithPath("code").description("성공 : 0, 실패 시 : -1")
+                generateCommonResponseFields("성공: true +\n실패: false", "성공 : 0, 실패 시 : -11000", "")
             )
         ));
   }

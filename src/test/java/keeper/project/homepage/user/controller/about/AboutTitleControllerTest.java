@@ -72,11 +72,6 @@ public class AboutTitleControllerTest extends ApiControllerTestHelper {
 
   }
 
-  private String getFileName(String filePath) {
-    File file = new File(filePath);
-    return file.getName();
-  }
-
   public StaticWriteSubtitleImageEntity generateTestSubTitle(
       StaticWriteTitleEntity staticWriteTitleEntity, Integer index) {
     StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity = StaticWriteSubtitleImageEntity.builder()
