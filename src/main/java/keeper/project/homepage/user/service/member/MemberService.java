@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 import keeper.project.homepage.exception.member.CustomAccessVirtualMemberException;
+import keeper.project.homepage.user.dto.member.MultiMemberResponseDto;
 import keeper.project.homepage.user.dto.posting.PostingResponseDto;
 import keeper.project.homepage.user.dto.member.MemberFollowDto;
 import keeper.project.homepage.util.ImageCenterCrop;
@@ -91,7 +92,7 @@ public class MemberService {
   }
 
   private void checkVirtualMember(Long id) {
-    if(id.equals(VIRTUAL_MEMBER_ID)) {
+    if (id.equals(VIRTUAL_MEMBER_ID)) {
       throw new CustomAccessVirtualMemberException();
     }
   }
@@ -118,14 +119,39 @@ public class MemberService {
     List<MemberEntity> memberEntityList = memberRepository.findAll();
 
     for (MemberEntity memberEntity : memberEntityList) {
-      if(memberEntity.getMemberType() != null && memberEntity.getMemberType().getId() == 5) continue;
-      if(memberEntity.getId().equals(VIRTUAL_MEMBER_ID)) continue;
+      if (memberEntity.getMemberType() != null && memberEntity.getMemberType().getId() == 5) {
+        continue;
+      }
+      if (memberEntity.getId().equals(VIRTUAL_MEMBER_ID)) {
+        continue;
+      }
       OtherMemberInfoResult otherMemberInfoResult = new OtherMemberInfoResult(memberEntity);
       otherMemberInfoResult.setCheckFollow(isMyFollowee(memberEntity), isMyFollower(memberEntity));
       otherMemberInfoResultList.add(otherMemberInfoResult);
     }
 
     return otherMemberInfoResultList;
+  }
+
+  public List<MultiMemberResponseDto> getMultiMembers(List<Long> ids) {
+    List<MultiMemberResponseDto> multiMemberResponseDtos = new ArrayList<>();
+
+    for (Long id : ids) {
+      Optional<MemberEntity> member = memberRepository.findById(id);
+      if (member.isPresent()) {
+        if (member.get().getId().equals(VIRTUAL_MEMBER_ID)) {
+          multiMemberResponseDtos.add(
+              MultiMemberResponseDto.builder().id(id).msg("Fail: Access Virtual Member").build());
+        } else {
+          multiMemberResponseDtos.add(member.get().toMultiMemberResponseDto());
+        }
+      } else {
+        multiMemberResponseDtos.add(
+            MultiMemberResponseDto.builder().id(id).msg("Fail: Not Exist Member").build());
+      }
+    }
+
+    return multiMemberResponseDtos;
   }
 
   public void follow(Long myId, Long memberId) {
