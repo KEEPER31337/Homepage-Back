@@ -2,11 +2,9 @@ package keeper.project.homepage.user.service.member;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Collectors;
 import keeper.project.homepage.exception.member.CustomAccessVirtualMemberException;
 import keeper.project.homepage.user.dto.member.MultiMemberResponseDto;
 import keeper.project.homepage.user.dto.posting.PostingResponseDto;
@@ -217,7 +215,7 @@ public class MemberService {
     if (memberDto.getStudentId().isBlank()) {
       throw new CustomMemberEmptyFieldException("변경할 학번의 내용이 비어있습니다.");
     }
-    if (duplicateCheckService.checkStudentIdDuplicate(memberDto.getStudentId())) {
+    if (duplicateCheckService.isStudentIdDuplicate(memberDto.getStudentId())) {
       throw new CustomMemberDuplicateException("이미 사용중인 학번입니다.");
     }
     updateEntity.changeRealName(memberDto.getRealName());
@@ -250,7 +248,7 @@ public class MemberService {
     if (memberDto.getEmailAddress().isBlank()) {
       throw new CustomMemberEmptyFieldException("변경할 이메일의 내용이 비어있습니다.");
     }
-    if (duplicateCheckService.checkEmailAddressDuplicate(memberDto.getEmailAddress())) {
+    if (duplicateCheckService.isEmailAddressDuplicate(memberDto.getEmailAddress())) {
       throw new CustomMemberDuplicateException("이미 사용중인 이메일 입니다.");
     }
     String memberEmail = memberDto.getEmailAddress();
