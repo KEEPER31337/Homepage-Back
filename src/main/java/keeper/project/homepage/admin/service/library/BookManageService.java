@@ -244,16 +244,14 @@ public class BookManageService {
       throw new CustomBookBorrowNotFoundException("대출 내역이 존재하지 않습니다.");
     }
 
-    Long borrowedBook = 0L;
-    for (BookBorrowEntity bookBorrow : borrowEntities) {
-      borrowedBook += bookBorrow.getQuantity();
-    }
+    Long borrowedBook = Long.valueOf(borrowEntities.size());
 
     if (borrowedBook < quantity) {
       throw new CustomBookOverTheMaxException("수량 초과입니다.");
-    }
-    if (borrowedBook == quantity && borrowEntities.size() == 1) {
-      bookBorrowRepository.delete(borrowEntities.get(0));
+    } else {
+      for (int deletedCount = 0; deletedCount < borrowedBook; deletedCount++) {
+        bookBorrowRepository.delete(borrowEntities.get(0));
+      }
 
       BookEntity nowBookEntity = bookRepository.findByTitleAndAuthor(title, author)
           .orElseThrow(() -> new CustomBookNotFoundException());
@@ -264,44 +262,8 @@ public class BookManageService {
       nowBookEntity.setEnable(nowEnable + quantity);
 
       bookRepository.save(nowBookEntity);
-    } else {
-      returnBook(title, author, returnMemberId, quantity, borrowEntities);
     }
+
     return responseService.getSuccessResult();
-  }
-
-  private void returnBook(String title, String author, Long returnMemberId, Long quantity,
-      List<BookBorrowEntity> borrowEntities) {
-
-    BookEntity book = bookRepository.findByTitleAndAuthor(title, author)
-        .orElseThrow(() -> new CustomBookNotFoundException("책이 존재하지 않습니다."));
-    MemberEntity member = memberRepository.findById(returnMemberId).orElseThrow(
-        CustomMemberNotFoundException::new);
-    BookBorrowEntity borrowEntity = borrowEntities.get(0);
-
-    String borrowDate = String.valueOf(
-        borrowEntity.getBorrowDate());
-    String expireDate = String.valueOf(
-        borrowEntity.getExpireDate());
-    Long borrowedBook = borrowEntity.getQuantity();
-
-    bookBorrowRepository.save(
-        BookBorrowEntity.builder()
-            .member(member)
-            .book(book)
-            .quantity(borrowedBook - quantity)
-            .borrowDate(java.sql.Date.valueOf(borrowDate))
-            .expireDate(java.sql.Date.valueOf(expireDate))
-            .build());
-
-    BookEntity nowBookEntity = bookRepository.findByTitleAndAuthor(title, author)
-        .orElseThrow(() -> new CustomBookNotFoundException());
-    Long nowBorrow = nowBookEntity.getBorrow();
-    Long nowEnable = nowBookEntity.getEnable();
-
-    nowBookEntity.setBorrow(nowBorrow - quantity);
-    nowBookEntity.setEnable(nowEnable + quantity);
-
-    bookRepository.save(nowBookEntity);
   }
 }
