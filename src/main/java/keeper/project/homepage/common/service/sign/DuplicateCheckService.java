@@ -10,15 +10,15 @@ public class DuplicateCheckService {
 
   private final MemberRepository memberRepository;
 
-  public boolean checkLoginIdDuplicate(String loginId) {
+  public boolean isLoginIdDuplicate(String loginId) {
     return memberRepository.existsByLoginId(loginId);
   }
 
-  public boolean checkEmailAddressDuplicate(String emailAddress) {
+  public boolean isEmailAddressDuplicate(String emailAddress) {
     return memberRepository.existsByEmailAddress(emailAddress);
   }
 
-  public boolean checkStudentIdDuplicate(String studentId) {
+  public boolean isStudentIdDuplicate(String studentId) {
     return memberRepository.existsByStudentId(studentId);
   }
 

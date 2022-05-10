@@ -124,9 +124,9 @@ public class SignUpService {
   }
 
   private boolean isDuplicate(MemberDto memberDto) {
-    return duplicateCheckService.checkEmailAddressDuplicate(memberDto.getEmailAddress()) ||
-        duplicateCheckService.checkLoginIdDuplicate(memberDto.getLoginId()) ||
-        duplicateCheckService.checkStudentIdDuplicate(memberDto.getStudentId());
+    return duplicateCheckService.isEmailAddressDuplicate(memberDto.getEmailAddress()) ||
+        duplicateCheckService.isLoginIdDuplicate(memberDto.getLoginId()) ||
+        duplicateCheckService.isStudentIdDuplicate(memberDto.getStudentId());
   }
 
   private boolean isValid(MemberDto memberDto) {
@@ -138,14 +138,14 @@ public class SignUpService {
         isStudentIdValid(memberDto.getStudentId());
   }
 
-  private boolean checkSpecialCharacter(String val) {
+  private boolean isSpecialCharacter(String val) {
     String pattern = "^[가-힣|a-z|A-Z|0-9|_|]+$"; // 한글, a-z, A-Z, 0-9, '_'를 제외한 모든 특수문자
     return !Pattern.matches(pattern, val);
   }
 
   private boolean isLoginIdValid(String loginId) {
 
-    if (checkSpecialCharacter(loginId)) {
+    if (isSpecialCharacter(loginId)) {
       return false;
     }
     String pattern = "^[a-zA-Z\\d_]{4,12}$"; // 4 ~ 12자 영어, 숫자, '_' 가능
@@ -160,7 +160,7 @@ public class SignUpService {
 
   private boolean isNicknameValid(String nickname) {
 
-    if (checkSpecialCharacter(nickname)) {
+    if (isSpecialCharacter(nickname)) {
       return false;
     }
     String pattern = "^[a-zA-Z가-힣0-9].{0,16}$"; // 1~16자 한글, 영어, 숫자 가능
@@ -169,7 +169,7 @@ public class SignUpService {
 
   private boolean isRealnameValid(String realname) {
 
-    if (checkSpecialCharacter(realname)) {
+    if (isSpecialCharacter(realname)) {
       return false;
     }
     String pattern = "^[a-zA-Z가-힣].{0,20}$"; // 1~20자 한글, 영어 가능
@@ -184,7 +184,7 @@ public class SignUpService {
 
   private boolean isStudentIdValid(String studentId) {
 
-    if (checkSpecialCharacter(studentId)) {
+    if (isSpecialCharacter(studentId)) {
       return false;
     }
     String pattern = "^[0-9]*$"; // 숫자 형식인지 아닌지
