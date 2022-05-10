@@ -154,9 +154,6 @@ public class SignUpService {
 
   private boolean isPasswordValid(String password) {
 
-    if (checkSpecialCharacter(password)) {
-      return false;
-    }
     String pattern = "^(?=.*[a-zA-Z])(?=.*\\d).{8,20}$"; // 8자 이상 영어, 숫자 조합 필수
     return Pattern.matches(pattern, password);
   }
