@@ -116,7 +116,7 @@ public class StudyService {
     ThumbnailEntity studyThumbnail = saveThumbnail(studyDto.getIpAddress(), thumbnail);
     studyEntity.setThumbnail(studyThumbnail);
     studyEntity.setHeadMember(headMember);
-    studyEntity.setMemberNumber(memberIdList.size());
+    studyEntity.setMemberNumber(0);
     studyRepository.save(studyEntity);
 
     for (Long memberId : memberIdList) {
@@ -196,7 +196,7 @@ public class StudyService {
 
     checkStudyIsMine(myId, studyEntity);
 
-    if (!isHeadMember(myId, memberId) && !isAlreadyStudyMember(studyEntity, memberId)) {
+    if (!isHeadMember(myId, memberId)) {
       addStudyMember(memberId, studyEntity);
     }
 
@@ -204,6 +204,9 @@ public class StudyService {
   }
 
   private void addStudyMember(Long memberId, StudyEntity studyEntity) {
+    if (isAlreadyStudyMember(studyEntity, memberId)) {
+      return;
+    }
     MemberEntity addMemberEntity = memberRepository.findById(memberId)
         .orElseThrow(CustomMemberNotFoundException::new);
     StudyHasMemberEntity studyHasMemberEntity = StudyHasMemberEntity.builder()
@@ -227,7 +230,7 @@ public class StudyService {
 
     checkStudyIsMine(myId, studyEntity);
 
-    if (!isHeadMember(myId, memberId) && isAlreadyStudyMember(studyEntity, memberId)) {
+    if (!isHeadMember(myId, memberId)) {
       removeStudyMember(memberId, studyEntity);
     }
 
@@ -247,6 +250,9 @@ public class StudyService {
   }
 
   private void removeStudyMember(Long memberId, StudyEntity studyEntity) {
+    if (!isAlreadyStudyMember(studyEntity, memberId)) {
+      return;
+    }
     MemberEntity removeMemberEntity = memberRepository.findById(memberId)
         .orElseThrow(CustomMemberNotFoundException::new);
     studyEntity.getStudyHasMemberEntities().removeIf(studyHasMemberEntity -> (
