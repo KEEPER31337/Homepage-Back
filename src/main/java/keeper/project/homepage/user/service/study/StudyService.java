@@ -250,7 +250,7 @@ public class StudyService {
   }
 
   private void removeStudyMember(Long memberId, StudyEntity studyEntity) {
-    if (isAlreadyStudyMember(studyEntity, memberId)) {
+    if (!isAlreadyStudyMember(studyEntity, memberId)) {
       return;
     }
     MemberEntity removeMemberEntity = memberRepository.findById(memberId)
