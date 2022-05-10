@@ -180,14 +180,16 @@ public class BookManageService {
     String borrowDate = transferFormat(new Date());
     String expireDate = getExpireDate(14);
 
-    bookBorrowRepository.save(
-        BookBorrowEntity.builder()
-            .member(memberId)
-            .book(bookId)
-            .quantity(quantity)
-            .borrowDate(java.sql.Date.valueOf(borrowDate))
-            .expireDate(java.sql.Date.valueOf(expireDate))
-            .build());
+    for (int count = 0; count < quantity; count++) {
+      bookBorrowRepository.save(
+          BookBorrowEntity.builder()
+              .member(memberId)
+              .book(bookId)
+              .quantity(1L)
+              .borrowDate(java.sql.Date.valueOf(borrowDate))
+              .expireDate(java.sql.Date.valueOf(expireDate))
+              .build());
+    }
 
     BookEntity nowBookEntity = bookRepository.findByTitleAndAuthor(title, author)
         .orElseThrow(() -> new CustomBookNotFoundException());
