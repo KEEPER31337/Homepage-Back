@@ -138,56 +138,87 @@ public class SignUpService {
         isStudentIdValid(memberDto.getStudentId());
   }
 
-  private boolean isSpecialCharacter(String val) {
+  private boolean hasSpecialCharacter(String val) {
     String pattern = "^[가-힣|a-z|A-Z|0-9|_|]+$"; // 한글, a-z, A-Z, 0-9, '_'를 제외한 모든 특수문자
-    return !Pattern.matches(pattern, val);
+    if (!Pattern.matches(pattern, val)) {
+      return true;
+    }
+    return false;
   }
 
   private boolean isLoginIdValid(String loginId) {
 
-    if (isSpecialCharacter(loginId)) {
+    if (hasSpecialCharacter(loginId)) {
+      log.info("loginId: '" + loginId + "'에는 특수문자가 존재할 수 없습니다.");
       return false;
     }
     String pattern = "^[a-zA-Z\\d_]{4,12}$"; // 4 ~ 12자 영어, 숫자, '_' 가능
-    return Pattern.matches(pattern, loginId);
+    if (!Pattern.matches(pattern, loginId)) {
+      log.info("유효성 검사에 실패하였습니다. loginId: " + loginId);
+      return false;
+    }
+    return true;
   }
 
   private boolean isPasswordValid(String password) {
 
     String pattern = "^(?=.*[a-zA-Z])(?=.*\\d).{8,20}$"; // 8자 이상 영어, 숫자 조합 필수
-    return Pattern.matches(pattern, password);
+    if (!Pattern.matches(pattern, password)) {
+      log.info("유효성 검사에 실패하였습니다. password: " + password);
+      return false;
+    }
+    return true;
   }
 
   private boolean isNicknameValid(String nickname) {
 
-    if (isSpecialCharacter(nickname)) {
+    if (hasSpecialCharacter(nickname)) {
+      log.info("nickname: '" + nickname + "'에는 특수문자가 존재할 수 없습니다.");
       return false;
     }
     String pattern = "^[a-zA-Z가-힣0-9].{0,16}$"; // 1~16자 한글, 영어, 숫자 가능
-    return Pattern.matches(pattern, nickname);
+    if (!Pattern.matches(pattern, nickname)) {
+      log.info("유효성 검사에 실패하였습니다. nickname: " + nickname);
+      return false;
+    }
+    return true;
   }
 
   private boolean isRealnameValid(String realname) {
 
-    if (isSpecialCharacter(realname)) {
+    if (hasSpecialCharacter(realname)) {
+      log.info("realname: '" + realname + "'에는 특수문자가 존재할 수 없습니다.");
       return false;
     }
     String pattern = "^[a-zA-Z가-힣].{0,20}$"; // 1~20자 한글, 영어 가능
-    return Pattern.matches(pattern, realname);
+    if (!Pattern.matches(pattern, realname)) {
+      log.info("유효성 검사에 실패하였습니다. realname: " + realname);
+      return false;
+    }
+    return true;
   }
 
   private boolean isEmailValid(String emailAddress) {
 
     String pattern = "\\w+@\\w+\\.\\w+(\\.\\w+)?"; //Email 형식인지 아닌지
-    return Pattern.matches(pattern, emailAddress);
+    if (!Pattern.matches(pattern, emailAddress)) {
+      log.info("유효성 검사에 실패하였습니다. emailAddress: " + emailAddress);
+      return false;
+    }
+    return true;
   }
 
   private boolean isStudentIdValid(String studentId) {
 
-    if (isSpecialCharacter(studentId)) {
+    if (hasSpecialCharacter(studentId)) {
+      log.info("studentId: '" + studentId + "'에는 특수문자가 존재할 수 없습니다.");
       return false;
     }
     String pattern = "^[0-9]*$"; // 숫자 형식인지 아닌지
-    return Pattern.matches(pattern, studentId);
+    if (!Pattern.matches(pattern, studentId)) {
+      log.info("유효성 검사에 실패하였습니다. studentId: " + studentId);
+      return false;
+    }
+    return true;
   }
 }
