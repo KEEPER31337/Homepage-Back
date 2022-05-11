@@ -555,34 +555,4 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     return commonFields;
   }
 
-  public BookEntity generateBookEntity(String title, String author, String information, Long total,
-      Long borrow,
-      ThumbnailEntity thumbnailEntity) {
-    Date registerDate = new Date();
-
-    return bookRepository.save(
-        BookEntity.builder()
-            .title(title)
-            .author(author)
-            .information(information)
-            .total(total)
-            .borrow(borrow)
-            .enable(total - borrow)
-            .registerDate(registerDate)
-            .thumbnailId(thumbnailEntity)
-            .build());
-  }
-
-  public BookBorrowEntity generateBookBorrowEntity(MemberEntity memberId, BookEntity bookId, Long quantity,
-      Date borrowDate, Date expireDate) {
-
-    return bookBorrowRepository.save(
-        BookBorrowEntity.builder()
-            .member(memberId)
-            .book(bookId)
-            .quantity(quantity)
-            .borrowDate(borrowDate)
-            .expireDate(expireDate)
-            .build());
-  }
 }
