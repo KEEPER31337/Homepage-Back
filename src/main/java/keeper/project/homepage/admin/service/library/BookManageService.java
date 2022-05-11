@@ -180,7 +180,7 @@ public class BookManageService {
     String borrowDate = transferFormat(new Date());
     String expireDate = getExpireDate(14);
 
-    for (int count = 0; count < quantity; count++) {
+    for (int i = 0; i < quantity; i++) {
       bookBorrowRepository.save(
           BookBorrowEntity.builder()
               .member(memberId)
