@@ -54,6 +54,18 @@ import org.springframework.util.MultiValueMap;
 sealed class BookManageTestHelper extends ApiControllerTestHelper
     permits BookManageControllerTest {
 
+  public String bookTitle1 = "점프 투 파이썬";
+  public String bookAuthor1 = "박응용";
+
+  public String bookTitle2 = "일반물리학";
+  public String bookAuthor2 = "멋진타우렌";
+
+  public String bookInformation = "우웩 우우웩";
+  public Long bookDepartment = 0L;
+  public Long epochTime = LocalDateTime.now().atZone(ZoneId.systemDefault()).toEpochSecond();
+  public String userDirectory = System.getProperty("user.dir");
+  public String createTestImage = "keeper_files" + File.separator + "createTest.jpg";
+
   public BookEntity generateBookEntity(String title, String author, String information, Long total,
       Long borrow,
       ThumbnailEntity thumbnailEntity) {
@@ -84,6 +96,11 @@ sealed class BookManageTestHelper extends ApiControllerTestHelper
             .borrowDate(borrowDate)
             .expireDate(expireDate)
             .build());
+  }
+
+  public String getFileName(String filePath) {
+    File file = new File(filePath);
+    return file.getName();
   }
 }
 
@@ -133,6 +150,7 @@ public non-sealed class BookManageControllerTest extends BookManageTestHelper {
   @DisplayName("책 등록 성공(기존 책)")
   public void addBook() throws Exception {
     Long bookQuantity1 = 1L;
+    bookDepartment = 1L;
 
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     MockMultipartFile thumbnail = new MockMultipartFile("thumbnail", getFileName(createTestImage),
@@ -140,8 +158,8 @@ public non-sealed class BookManageControllerTest extends BookManageTestHelper {
 
     params.add("title", bookTitle1);
     params.add("author", bookAuthor1);
-    params.add("information", bookInformation1);
-    params.add("department", String.valueOf(bookDepartment1));
+    params.add("information", bookInformation);
+    params.add("department", String.valueOf(bookDepartment));
     params.add("quantity", String.valueOf(bookQuantity1));
 
     mockMvc.perform(multipart("/v1/admin/addbook")
@@ -181,10 +199,12 @@ public non-sealed class BookManageControllerTest extends BookManageTestHelper {
   @DisplayName("수량 초과 책 등록 실패(기존 책)")
   public void addBookFailedOverMax() throws Exception {
     Long bookQuantity1 = 3L;
+    bookDepartment = 1L;
+
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1);
     params.add("author", bookAuthor1);
-    params.add("department", String.valueOf(bookDepartment1));
+    params.add("department", String.valueOf(bookDepartment));
     params.add("quantity", String.valueOf(bookQuantity1));
 
     mockMvc.perform(post("/v1/admin/addbook")
@@ -203,10 +223,12 @@ public non-sealed class BookManageControllerTest extends BookManageTestHelper {
   public void addNewBook() throws Exception {
     Long bookQuantity2 = 4L;
     String newTitle = "일반물리학2";
+    bookDepartment = 3L;
+
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", newTitle);
     params.add("author", bookAuthor1);
-    params.add("department", String.valueOf(bookDepartment1));
+    params.add("department", String.valueOf(bookDepartment));
     params.add("quantity", String.valueOf(bookQuantity2));
 
     mockMvc.perform(post("/v1/admin/addbook")
@@ -226,10 +248,12 @@ public non-sealed class BookManageControllerTest extends BookManageTestHelper {
     Long bookQuantity2 = 4L;
     String newTitle = "Do it! 점프 투 파이썬";
     String newAuthor = "박재열";
+    bookDepartment = 1L;
+
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", newTitle);
     params.add("author", newAuthor);
-    params.add("department", String.valueOf(bookDepartment1));
+    params.add("department", String.valueOf(bookDepartment));
     params.add("quantity", String.valueOf(bookQuantity2));
 
     mockMvc.perform(post("/v1/admin/addbook")
@@ -247,10 +271,12 @@ public non-sealed class BookManageControllerTest extends BookManageTestHelper {
   @DisplayName("수량 초과 새 책 등록 실패")
   public void addNewBookFailedOverMax() throws Exception {
     Long bookQuantity3 = 5L;
+    bookDepartment = 1L;
+
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1 + epochTime);
     params.add("author", bookAuthor1);
-    params.add("department", String.valueOf(bookDepartment1));
+    params.add("department", String.valueOf(bookDepartment));
     params.add("quantity", String.valueOf(bookQuantity3));
 
     mockMvc.perform(post("/v1/admin/addbook")
@@ -269,6 +295,7 @@ public non-sealed class BookManageControllerTest extends BookManageTestHelper {
   @DisplayName("책 삭제 성공(일부 삭제)")
   public void deleteBook() throws Exception {
     Long bookQuantity1 = 1L;
+
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1);
     params.add("author", bookAuthor1);
@@ -301,6 +328,7 @@ public non-sealed class BookManageControllerTest extends BookManageTestHelper {
   @DisplayName("책 삭제 성공(전체 삭제)")
   public void deleteBookMax() throws Exception {
     Long bookQuantity3 = 3L;
+
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1);
     params.add("author", bookAuthor1);
@@ -320,6 +348,7 @@ public non-sealed class BookManageControllerTest extends BookManageTestHelper {
   @DisplayName("책 삭제 실패(없는 책)")
   public void deleteBookFailedNoExist() throws Exception {
     Long bookQuantity3 = 1L;
+
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1 + epochTime);
     params.add("author", bookAuthor1 + epochTime);
@@ -339,6 +368,7 @@ public non-sealed class BookManageControllerTest extends BookManageTestHelper {
   @DisplayName("책 삭제 실패(기존보다 많은 수량-total기준)")
   public void deleteBookFailedOverMax1() throws Exception {
     Long bookQuantity3 = 5L;
+
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1);
     params.add("author", bookAuthor1);
@@ -358,6 +388,7 @@ public non-sealed class BookManageControllerTest extends BookManageTestHelper {
   @DisplayName("책 삭제 실패(기존보다 많은 수량-enable기준)")
   public void deleteBookFailedOverMax2() throws Exception {
     Long bookQuantity3 = 2L;
+
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle2);
     params.add("author", bookAuthor2);
@@ -378,6 +409,7 @@ public non-sealed class BookManageControllerTest extends BookManageTestHelper {
   @DisplayName("책 대여 성공")
   public void borrowBook() throws Exception {
     Long borrowQuantity = 2L;
+
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1);
     params.add("author", bookAuthor1);
@@ -408,6 +440,7 @@ public non-sealed class BookManageControllerTest extends BookManageTestHelper {
   @DisplayName("책 대여 실패(수량 초과)")
   public void borrowBookFailedOverMax() throws Exception {
     Long borrowQuantity = 2L;
+
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle2);
     params.add("author", bookAuthor2);
@@ -425,6 +458,7 @@ public non-sealed class BookManageControllerTest extends BookManageTestHelper {
   @DisplayName("책 대여 실패(없는 책)")
   public void borrowBookFailedNotExist() throws Exception {
     Long borrowQuantity = 1L;
+
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle2 + epochTime);
     params.add("author", bookAuthor2);
@@ -443,6 +477,7 @@ public non-sealed class BookManageControllerTest extends BookManageTestHelper {
   @DisplayName("책 반납 성공(전부 반납)")
   public void returnBookAll() throws Exception {
     Long returnQuantity = 1L;
+
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1);
     params.add("author", bookAuthor1);
@@ -475,6 +510,7 @@ public non-sealed class BookManageControllerTest extends BookManageTestHelper {
   @DisplayName("책 반납 성공(일부 반납)")
   public void returnBookPart() throws Exception {
     Long returnQuantity = 1L;
+
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1);
     params.add("author", bookAuthor1);
@@ -494,6 +530,7 @@ public non-sealed class BookManageControllerTest extends BookManageTestHelper {
   @DisplayName("책 반납 실패(수량 초과)")
   public void returnBookFailedOverMax() throws Exception {
     Long borrowQuantity = 3L;
+
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle1);
     params.add("author", bookAuthor1);
@@ -513,6 +550,7 @@ public non-sealed class BookManageControllerTest extends BookManageTestHelper {
   @DisplayName("책 반납 실패(없는 책)")
   public void returnBookFailedNotExist() throws Exception {
     Long borrowQuantity = 1L;
+
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle2 + epochTime);
     params.add("author", bookAuthor2);
@@ -532,6 +570,7 @@ public non-sealed class BookManageControllerTest extends BookManageTestHelper {
   @DisplayName("책 반납 실패(대출 안 한 책)")
   public void returnBookFailedNotBorrowExist() throws Exception {
     Long borrowQuantity = 1L;
+
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     params.add("title", bookTitle2);
     params.add("author", bookAuthor2);
