@@ -21,7 +21,7 @@ import keeper.project.homepage.user.dto.posting.PostingResponseDto;
 import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.util.service.ThumbnailService;
-import keeper.project.homepage.util.ImageCenterCrop;
+import keeper.project.homepage.util.ImageCenterCropping;
 import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;
 import keeper.project.homepage.user.service.posting.CommentService;
 import keeper.project.homepage.user.service.posting.PostingService;
@@ -108,7 +108,7 @@ public class PostingController {
       @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
       PostingDto dto) {
 
-    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
+    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCropping(),
         thumbnail, ThumbnailSize.LARGE, dto.getIpAddress());
     dto.setThumbnailId(thumbnailEntity.getId());
     PostingEntity postingEntity = postingService.save(dto);
@@ -181,7 +181,7 @@ public class PostingController {
   }
 
   private ThumbnailEntity saveThumbnail(MultipartFile thumbnail, PostingDto dto) {
-    ThumbnailEntity newThumbnail = thumbnailService.saveThumbnail(new ImageCenterCrop(), thumbnail,
+    ThumbnailEntity newThumbnail = thumbnailService.saveThumbnail(new ImageCenterCropping(), thumbnail,
         ThumbnailSize.LARGE, dto.getIpAddress());
     if (newThumbnail == null) {
       throw new CustomThumbnailEntityNotFoundException("썸네일 저장 중에 에러가 발생했습니다.");

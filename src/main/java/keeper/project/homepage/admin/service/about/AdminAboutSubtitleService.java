@@ -9,7 +9,7 @@ import keeper.project.homepage.exception.CustomAboutFailedException;
 import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
 import keeper.project.homepage.repository.etc.StaticWriteSubtitleImageRepository;
 import keeper.project.homepage.repository.etc.StaticWriteTitleRepository;
-import keeper.project.homepage.util.ImageCenterCrop;
+import keeper.project.homepage.util.ImageCenterCropping;
 import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.util.service.ThumbnailService;
 import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;
@@ -58,7 +58,7 @@ public class AdminAboutSubtitleService {
       thumbnailEntity = thumbnailService.findById(9L);
       System.out.println("디폴트 이미지로 설정되었습니다.");
     } else {
-      thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(), thumbnail,
+      thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCropping(), thumbnail,
           ThumbnailSize.LARGE, ipAddress);
       System.out.println("새로운 이미지가 생성되었습니다.");
     }
@@ -96,7 +96,7 @@ public class AdminAboutSubtitleService {
       newThumbnail = thumbnailService.findById(9L);
       System.out.println("디폴트 이미지로 설정되었습니다.");
     } else {
-      newThumbnail = thumbnailService.saveThumbnail(new ImageCenterCrop(), thumbnail,
+      newThumbnail = thumbnailService.saveThumbnail(new ImageCenterCropping(), thumbnail,
           ThumbnailSize.LARGE, ipAddress);
       System.out.println("새로운 이미지가 생성되었습니다.");
     }

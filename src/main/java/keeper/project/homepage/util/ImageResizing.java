@@ -8,7 +8,7 @@ import keeper.project.homepage.exception.file.CustomImageIOException;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public class ImageResize implements ImageProcessing {
+public class ImageResizing implements ImageProcessing {
 
   public void imageProcessing(File image, int width, int height, String fileFormat) {
     BufferedImage bo_image;
