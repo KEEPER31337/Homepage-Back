@@ -42,7 +42,7 @@ public class CtfChallengeEntity {
   MemberEntity creator;
 
   @Column(nullable = false)
-  Integer isSolvable;
+  Boolean isSolvable;
 
   @ManyToOne
   @JoinColumn(name = "type_id", nullable = false)

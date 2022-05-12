@@ -39,5 +39,5 @@ public class CtfContestEntity {
   MemberEntity creator;
 
   @Column(nullable = false)
-  Integer isJoinable;
+  Boolean isJoinable;
 }

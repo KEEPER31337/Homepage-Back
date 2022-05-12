@@ -44,5 +44,5 @@ public class CtfSubmitLogEntity {
   String flagSubmitted;
 
   @Column(nullable = false)
-  Integer isCorrect;
+  Boolean isCorrect;
 }

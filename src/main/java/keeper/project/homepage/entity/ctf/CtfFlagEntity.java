@@ -35,5 +35,5 @@ public class CtfFlagEntity {
   CtfChallengeEntity ctfChallengeEntity;
 
   @Column(nullable = false)
-  Integer isCorrect;
+  Boolean isCorrect;
 }
