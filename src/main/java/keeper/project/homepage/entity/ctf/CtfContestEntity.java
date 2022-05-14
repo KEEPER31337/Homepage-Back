@@ -3,6 +3,8 @@ package keeper.project.homepage.entity.ctf;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -12,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @Getter
@@ -23,6 +26,7 @@ public class CtfContestEntity {
 
   @Id
   @Column(nullable = false)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   Long id;
 
   @Column(nullable = false, length = 45)
@@ -39,5 +43,6 @@ public class CtfContestEntity {
   MemberEntity creator;
 
   @Column(nullable = false)
+  @Setter
   Boolean isJoinable;
 }

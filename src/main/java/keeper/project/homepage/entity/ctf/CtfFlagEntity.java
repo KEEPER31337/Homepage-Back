@@ -2,6 +2,8 @@ package keeper.project.homepage.entity.ctf;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
@@ -10,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @Getter
@@ -20,6 +23,7 @@ import lombok.NoArgsConstructor;
 public class CtfFlagEntity {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(nullable = false)
   Long id;
 
@@ -35,5 +39,6 @@ public class CtfFlagEntity {
   CtfChallengeEntity ctfChallengeEntity;
 
   @Column(nullable = false)
+  @Setter
   Boolean isCorrect;
 }

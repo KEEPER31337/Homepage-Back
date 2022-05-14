@@ -14,6 +14,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @Getter
@@ -24,7 +25,7 @@ import lombok.NoArgsConstructor;
 public class CtfChallengeEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(nullable = false)
   Long id;
 
@@ -42,6 +43,7 @@ public class CtfChallengeEntity {
   MemberEntity creator;
 
   @Column(nullable = false)
+  @Setter
   Boolean isSolvable;
 
   @ManyToOne
@@ -53,6 +55,7 @@ public class CtfChallengeEntity {
   CtfChallengeCategoryEntity ctfChallengeCategoryEntity;
 
   @Column(nullable = false)
+  @Setter
   Long score;
 
   @ManyToOne
