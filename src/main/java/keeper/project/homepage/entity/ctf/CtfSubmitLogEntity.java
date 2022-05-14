@@ -37,7 +37,7 @@ public class CtfSubmitLogEntity {
   CtfTeamEntity ctfTeamEntity;
 
   @OneToOne
-  @JoinColumn
+  @JoinColumn(name = "submitter")
   MemberEntity submitter;
 
   @OneToOne

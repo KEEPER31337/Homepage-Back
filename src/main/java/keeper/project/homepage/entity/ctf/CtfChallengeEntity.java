@@ -39,7 +39,7 @@ public class CtfChallengeEntity {
   LocalDateTime registerTime;
 
   @ManyToOne
-  @JoinColumn(nullable = false)
+  @JoinColumn(name = "creator", nullable = false)
   MemberEntity creator;
 
   @Column(nullable = false)

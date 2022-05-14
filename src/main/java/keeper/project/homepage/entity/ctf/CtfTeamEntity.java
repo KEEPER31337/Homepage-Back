@@ -39,7 +39,7 @@ public class CtfTeamEntity {
   LocalDateTime registerTime;
 
   @ManyToOne
-  @JoinColumn
+  @JoinColumn(name = "creator")
   MemberEntity creator;
 
   @Column(nullable = false)
