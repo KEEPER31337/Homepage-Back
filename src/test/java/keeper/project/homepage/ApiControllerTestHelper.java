@@ -69,7 +69,8 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     서기("ROLE_서기"),
     총무("ROLE_총무"),
     사서("ROLE_사서"),
-    회원("ROLE_회원");
+    회원("ROLE_회원"),
+    출제자("ROLE_출제자");
 
     private String jobName;
 
