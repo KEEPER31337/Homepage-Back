@@ -3,6 +3,7 @@ package keeper.project.homepage.exception;
 import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.exception.attendance.CustomAttendanceException;
 import keeper.project.homepage.exception.attendance.CustomGameIsOverException;
+import keeper.project.homepage.exception.ctf.CustomContestNotFoundException;
 import keeper.project.homepage.exception.file.CustomFileDeleteFailedException;
 import keeper.project.homepage.exception.file.CustomFileEntityNotFoundException;
 import keeper.project.homepage.exception.file.CustomFileNotFoundException;
@@ -416,5 +417,13 @@ public class ExceptionAdvice {
       CustomPostingAccessDeniedException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("postingAccessDenied.code")),
         e.getMessage() == null ? getMessage("postingAccessDenied.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomContestNotFoundException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult postingAccessDenied(HttpServletRequest request,
+      CustomContestNotFoundException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("contestNotFound.code")),
+        e.getMessage() == null ? getMessage("contestNotFound.msg") : e.getMessage());
   }
 }
