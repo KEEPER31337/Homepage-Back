@@ -1,6 +1,8 @@
 package keeper.project.homepage.entity.ctf;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,7 +10,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -61,4 +66,13 @@ public class CtfChallengeEntity {
   @ManyToOne
   @JoinColumn(name = "contest_id", nullable = false)
   CtfContestEntity ctfContestEntity;
+
+  @OneToOne
+  @JoinColumn(name = "file_id")
+  FileEntity fileEntity;
+
+  @OneToMany(
+      mappedBy = "ctfChallengeEntity",
+      cascade = CascadeType.REMOVE)
+  List<CtfFlagEntity> ctfFlagEntity;
 }

@@ -19,6 +19,19 @@ import lombok.NoArgsConstructor;
 @Table(name = "ctf_challenge_category")
 public class CtfChallengeCategoryEntity {
 
+  public static final CtfChallengeCategoryEntity MISC =
+      new CtfChallengeCategoryEntity(1L, "Misc");
+  public static final CtfChallengeCategoryEntity SYSTEM =
+      new CtfChallengeCategoryEntity(2L, "System");
+  public static final CtfChallengeCategoryEntity REVERSING =
+      new CtfChallengeCategoryEntity(3L, "Reversing");
+  public static final CtfChallengeCategoryEntity FORENSIC =
+      new CtfChallengeCategoryEntity(4L, "Forensic");
+  public static final CtfChallengeCategoryEntity WEB =
+      new CtfChallengeCategoryEntity(5L, "Web");
+  public static final CtfChallengeCategoryEntity CRYPTO =
+      new CtfChallengeCategoryEntity(6L, "Crypto");
+
   @Id
   @Column(nullable = false)
   @GeneratedValue(strategy = GenerationType.IDENTITY)

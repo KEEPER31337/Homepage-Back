@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -30,11 +31,11 @@ public class CtfFlagEntity {
   @Column(nullable = false, length = 200)
   String content;
 
-  @OneToOne
+  @ManyToOne
   @JoinColumn(name = "team_id")
   CtfTeamEntity ctfTeamEntity;
 
-  @OneToOne
+  @ManyToOne
   @JoinColumn(name = "challenge_id")
   CtfChallengeEntity ctfChallengeEntity;
 

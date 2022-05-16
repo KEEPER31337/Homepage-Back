@@ -35,6 +35,16 @@ public class CtfContestDto {
   @JsonProperty(access = Access.READ_ONLY)
   private CommonMemberDto creator;
 
+  public static CtfContestDto toDto(CtfContestEntity ctfContestEntity) {
+    return CtfContestDto.builder()
+        .ctfId(ctfContestEntity.getId())
+        .name(ctfContestEntity.getName())
+        .description(ctfContestEntity.getDescription())
+        .joinable(ctfContestEntity.getIsJoinable())
+        .creator(CommonMemberDto.toDto(ctfContestEntity.getCreator()))
+        .build();
+  }
+
   public CtfContestEntity toEntity(MemberEntity creator) {
     return CtfContestEntity.builder()
         .name(name)
