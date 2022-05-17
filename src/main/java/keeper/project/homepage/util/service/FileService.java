@@ -107,6 +107,17 @@ public class FileService {
   }
 
   @Transactional
+  public FileEntity saveFile(MultipartFile multipartFile, String ipAddress) {
+    if (multipartFile == null) {
+      return null;
+    }
+
+    File file = saveFileInServer(multipartFile, fileRelDirPath);
+    return saveFileEntity(file, fileRelDirPath, ipAddress, multipartFile.getOriginalFilename(),
+        null);
+  }
+
+  @Transactional
   public FileEntity findFileEntityById(Long id) {
     return fileRepository.findById(id).orElseThrow(CustomFileEntityNotFoundException::new);
   }

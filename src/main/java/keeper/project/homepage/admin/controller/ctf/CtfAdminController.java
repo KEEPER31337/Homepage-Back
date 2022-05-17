@@ -1,9 +1,12 @@
 package keeper.project.homepage.admin.controller.ctf;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.admin.dto.ctf.CtfChallengeAdminDto;
 import keeper.project.homepage.admin.dto.ctf.CtfContestDto;
 import keeper.project.homepage.admin.dto.ctf.CtfProbMakerDto;
+import keeper.project.homepage.admin.dto.ctf.CtfSubmitLogDto;
 import keeper.project.homepage.admin.service.ctf.CtfAdminService;
 import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.common.dto.result.SingleResult;
@@ -11,6 +14,8 @@ import keeper.project.homepage.common.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +24,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @Log4j2
 @RestController
@@ -59,10 +66,13 @@ public class CtfAdminController {
   }
 
   @Secured("ROLE_출제자")
-  @PostMapping("/prob")
+  @PostMapping(value = "/prob", consumes = "multipart/form-data")
   public SingleResult<CtfChallengeAdminDto> createProblem(
-      @RequestBody CtfChallengeAdminDto challengeAdminDto) {
-    return responseService.getSuccessSingleResult(ctfAdminService.createProblem(challengeAdminDto));
+      @RequestParam(value = "file", required = false) MultipartFile file,
+      @RequestParam CtfChallengeAdminDto challengeAdminDto,
+      HttpServletRequest request) {
+    return responseService.getSuccessSingleResult(
+        ctfAdminService.createProblem(request, challengeAdminDto, file));
   }
 
   @Secured("ROLE_출제자")
@@ -79,7 +89,8 @@ public class CtfAdminController {
 
   @Secured("ROLE_출제자")
   @DeleteMapping("/prob/{pid}")
-  public SingleResult<CtfChallengeAdminDto> deleteProblem(@PathVariable("pid") Long problemId) {
+  public SingleResult<CtfChallengeAdminDto> deleteProblem(@PathVariable("pid") Long problemId)
+      throws AccessDeniedException {
     return responseService.getSuccessSingleResult(ctfAdminService.deleteProblem(problemId));
   }
 }

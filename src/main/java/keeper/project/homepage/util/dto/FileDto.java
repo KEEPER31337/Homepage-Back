@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -14,6 +15,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class FileDto {
 
   private Long id;
@@ -31,5 +33,17 @@ public class FileDto {
         .build();
 
     return fileEntity;
+  }
+
+  public static FileDto toDto(FileEntity fileEntity) {
+
+    return FileDto.builder()
+        .id(fileEntity.getId())
+        .fileName(fileEntity.getFileName())
+        .filePath(fileEntity.getFilePath())
+        .fileSize(fileEntity.getFileSize())
+        .uploadTime(fileEntity.getUploadTime())
+        .ipAddress(fileEntity.getIpAddress())
+        .build();
   }
 }

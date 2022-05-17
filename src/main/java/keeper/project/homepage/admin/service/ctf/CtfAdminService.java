@@ -1,11 +1,15 @@
 package keeper.project.homepage.admin.service.ctf;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.admin.dto.ctf.CtfChallengeAdminDto;
 import keeper.project.homepage.admin.dto.ctf.CtfContestDto;
 import keeper.project.homepage.admin.dto.ctf.CtfProbMakerDto;
+import keeper.project.homepage.admin.dto.ctf.CtfSubmitLogDto;
 import keeper.project.homepage.common.service.util.AuthService;
+import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeTypeEntity;
@@ -25,6 +29,7 @@ import keeper.project.homepage.repository.ctf.CtfChallengeRepository;
 import keeper.project.homepage.repository.ctf.CtfChallengeTypeRepository;
 import keeper.project.homepage.repository.ctf.CtfContestRepository;
 import keeper.project.homepage.repository.ctf.CtfFlagRepository;
+import keeper.project.homepage.repository.ctf.CtfSubmitLogRepository;
 import keeper.project.homepage.repository.ctf.CtfTeamRepository;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
@@ -32,8 +37,11 @@ import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.util.service.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Pageable;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Log4j2
 @Service
@@ -47,6 +55,7 @@ public class CtfAdminService {
   private final CtfContestRepository ctfContestRepository;
   private final CtfTeamRepository ctfTeamRepository;
   private final CtfChallengeCategoryRepository ctfChallengeCategoryRepository;
+  private final CtfSubmitLogRepository ctfSubmitLogRepository;
   private final CtfChallengeTypeRepository ctfChallengeTypeRepository;
   private final CtfChallengeRepository challengeRepository;
   private final CtfFlagRepository ctfFlagRepository;
@@ -93,13 +102,28 @@ public class CtfAdminService {
   }
 
   @Transactional
-  public CtfChallengeAdminDto createProblem(CtfChallengeAdminDto challengeAdminDto) {
-    CtfChallengeEntity challenge = getChallengeEntity(challengeAdminDto);
-    challengeRepository.save(challenge);
+  public CtfChallengeAdminDto createProblem(HttpServletRequest request,
+      CtfChallengeAdminDto challengeAdminDto, @Nullable MultipartFile file) {
+    String ipAddress = request.getHeader("X-FORWARDED-FOR");
+    FileEntity saveFile = fileService.saveFile(file, ipAddress);
 
-    setFlagAllTeam(challengeAdminDto.getFlag(), challenge);
+    CtfChallengeAdminDto returnDto = null;
+    try {
+      CtfChallengeEntity challenge = getChallengeEntity(challengeAdminDto, saveFile);
+      challengeRepository.save(challenge);
 
-    return CtfChallengeAdminDto.toDto(challenge);
+      setFlagAllTeam(challengeAdminDto.getFlag(), challenge);
+
+      returnDto = CtfChallengeAdminDto.toDto(challenge);
+
+    } catch (Exception e) {
+      log.info(e.getMessage());
+      if (saveFile != null) {
+        fileService.deleteFileById(saveFile.getId());
+      }
+      throw new RuntimeException("문제 생성 실패!");
+    }
+    return returnDto;
   }
 
   private void setFlagAllTeam(String flag, CtfChallengeEntity challenge) {
@@ -115,13 +139,15 @@ public class CtfAdminService {
     }
   }
 
-  private CtfChallengeEntity getChallengeEntity(CtfChallengeAdminDto challengeAdminDto) {
+  private CtfChallengeEntity getChallengeEntity(
+      CtfChallengeAdminDto challengeAdminDto, FileEntity fileEntity) {
     CtfContestEntity contest = getCtfContestEntity(challengeAdminDto.getContest().getCtfId());
     CtfChallengeCategoryEntity category = getCategoryEntity(challengeAdminDto);
     CtfChallengeTypeEntity type = getTypeEntity(challengeAdminDto);
     MemberEntity creator = authService.getMemberEntityWithJWT();
 
-    CtfChallengeEntity challenge = challengeAdminDto.toEntity(contest, type, category, creator);
+    CtfChallengeEntity challenge = challengeAdminDto
+        .toEntity(contest, type, category, fileEntity, creator);
     return challenge;
   }
 
@@ -162,10 +188,16 @@ public class CtfAdminService {
   }
 
   @Transactional
-  public CtfChallengeAdminDto deleteProblem(Long problemId) {
+  public CtfChallengeAdminDto deleteProblem(Long problemId) throws AccessDeniedException {
+    Long requestMemberId = authService.getMemberIdByJWT();
     CtfChallengeEntity challenge = challengeRepository.findById(problemId)
         .orElseThrow(CustomCtfChallengeNotFoundException::new);
+    if (!challenge.getCreator().getId().equals(requestMemberId)) {
+      throw new AccessDeniedException("문제 생성자나 회장만 삭제할 수 있습니다.");
+    }
     challengeRepository.delete(challenge);
+
+    fileService.deleteFileById(challenge.getFileEntity().getId());
 
     return CtfChallengeAdminDto.toDto(challenge);
   }
