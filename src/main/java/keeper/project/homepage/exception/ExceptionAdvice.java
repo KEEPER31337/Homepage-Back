@@ -111,7 +111,7 @@ public class ExceptionAdvice {
   @ResponseStatus(HttpStatus.FORBIDDEN)
   public CommonResult accessDeniedException(HttpServletRequest request, AccessDeniedException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("accessDenied.code")),
-        getMessage("accessDenied.msg"));
+        e.getMessage() == null ? getMessage("accessDenied.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomSignUpFailedException.class)

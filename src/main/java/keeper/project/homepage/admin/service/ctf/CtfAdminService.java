@@ -201,4 +201,16 @@ public class CtfAdminService {
 
     return CtfChallengeAdminDto.toDto(challenge);
   }
+
+  public List<CtfChallengeAdminDto> getProblemList(Long ctfId) {
+    CtfContestEntity contest = ctfContestRepository.findById(ctfId)
+        .orElseThrow(CustomContestNotFoundException::new);
+    return challengeRepository.findAllByCtfContestEntity(contest).stream()
+        .map(CtfChallengeAdminDto::toDto)
+        .toList();
+  }
+
+  public List<CtfSubmitLogDto> getSubmitLogList(Pageable pageable) {
+    return ctfSubmitLogRepository.findAll(pageable).stream().map(CtfSubmitLogDto::toDto).toList();
+  }
 }

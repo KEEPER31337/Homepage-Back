@@ -32,7 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/v1/admin/ctf")
-@Secured("ROLE_회장")
+//@Secured("ROLE_회장")
 public class CtfAdminController {
 
   private final ResponseService responseService;
@@ -92,5 +92,18 @@ public class CtfAdminController {
   public SingleResult<CtfChallengeAdminDto> deleteProblem(@PathVariable("pid") Long problemId)
       throws AccessDeniedException {
     return responseService.getSuccessSingleResult(ctfAdminService.deleteProblem(problemId));
+  }
+
+  @Secured("ROLE_출제자")
+  @GetMapping("/prob")
+  public ListResult<CtfChallengeAdminDto> getProblemList(@RequestParam Long ctfId) {
+    return responseService.getSuccessListResult(ctfAdminService.getProblemList(ctfId));
+  }
+
+  @Secured("ROLE_출제자")
+  @GetMapping("/submit-log")
+  public ListResult<CtfSubmitLogDto> getSubmitLogList(
+      @PageableDefault(page = 0, size = 10) Pageable pageable) {
+    return responseService.getSuccessListResult(ctfAdminService.getSubmitLogList(pageable));
   }
 }
