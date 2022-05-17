@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -43,7 +44,7 @@ public class CtfChallengeEntity {
   @Column(nullable = false)
   LocalDateTime registerTime;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "creator", nullable = false)
   MemberEntity creator;
 
@@ -51,11 +52,11 @@ public class CtfChallengeEntity {
   @Setter
   Boolean isSolvable;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "type_id", nullable = false)
   CtfChallengeTypeEntity ctfChallengeTypeEntity;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "category_id", nullable = false)
   CtfChallengeCategoryEntity ctfChallengeCategoryEntity;
 
@@ -63,7 +64,7 @@ public class CtfChallengeEntity {
   @Setter
   Long score;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "contest_id", nullable = false)
   CtfContestEntity ctfContestEntity;
 
@@ -75,4 +76,10 @@ public class CtfChallengeEntity {
       mappedBy = "ctfChallengeEntity",
       cascade = CascadeType.REMOVE)
   List<CtfFlagEntity> ctfFlagEntity;
+
+  @OneToOne(
+      mappedBy = "ctfChallengeEntity",
+      cascade = CascadeType.REMOVE)
+  CtfDynamicChallengeInfoEntity dynamicChallengeInfoEntity;
+
 }

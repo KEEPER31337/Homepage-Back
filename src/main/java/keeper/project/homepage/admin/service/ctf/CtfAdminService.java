@@ -14,6 +14,7 @@ import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeTypeEntity;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
+import keeper.project.homepage.entity.ctf.CtfDynamicChallengeInfoEntity;
 import keeper.project.homepage.entity.ctf.CtfFlagEntity;
 import keeper.project.homepage.entity.ctf.CtfTeamEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -28,12 +29,14 @@ import keeper.project.homepage.repository.ctf.CtfChallengeCategoryRepository;
 import keeper.project.homepage.repository.ctf.CtfChallengeRepository;
 import keeper.project.homepage.repository.ctf.CtfChallengeTypeRepository;
 import keeper.project.homepage.repository.ctf.CtfContestRepository;
+import keeper.project.homepage.repository.ctf.CtfDynamicChallengeInfoRepository;
 import keeper.project.homepage.repository.ctf.CtfFlagRepository;
 import keeper.project.homepage.repository.ctf.CtfSubmitLogRepository;
 import keeper.project.homepage.repository.ctf.CtfTeamRepository;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
+import keeper.project.homepage.user.dto.ctf.CtfDynamicChallengeInfoDto;
 import keeper.project.homepage.util.service.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -58,6 +61,7 @@ public class CtfAdminService {
   private final CtfSubmitLogRepository ctfSubmitLogRepository;
   private final CtfChallengeTypeRepository ctfChallengeTypeRepository;
   private final CtfChallengeRepository challengeRepository;
+  private final CtfDynamicChallengeInfoRepository ctfDynamicChallengeInfoRepository;
   private final CtfFlagRepository ctfFlagRepository;
   private final MemberRepository memberRepository;
   private final MemberHasMemberJobRepository memberHasMemberJobRepository;
@@ -67,24 +71,24 @@ public class CtfAdminService {
   public CtfContestDto createContest(CtfContestDto contestDto) {
     contestDto.setJoinable(false);
     MemberEntity creator = authService.getMemberEntityWithJWT();
-    return ctfContestRepository.save(contestDto.toEntity(creator)).toDto();
+    return CtfContestDto.toDto(ctfContestRepository.save(contestDto.toEntity(creator)));
   }
 
   public CtfContestDto openContest(Long ctfId) {
     CtfContestEntity contestEntity = getCtfContestEntity(ctfId);
     contestEntity.setIsJoinable(true);
-    return contestEntity.toDto();
+    return CtfContestDto.toDto(contestEntity);
   }
 
   public CtfContestDto closeContest(Long ctfId) {
     CtfContestEntity contestEntity = getCtfContestEntity(ctfId);
     contestEntity.setIsJoinable(false);
-    return contestEntity.toDto();
+    return CtfContestDto.toDto(contestEntity);
   }
 
   public List<CtfContestDto> getContests() {
     List<CtfContestEntity> contestEntities = ctfContestRepository.findAll();
-    return contestEntities.stream().map(CtfContestEntity::toDto).collect(Collectors.toList());
+    return contestEntities.stream().map(CtfContestDto::toDto).collect(Collectors.toList());
   }
 
   @Transactional
@@ -109,8 +113,13 @@ public class CtfAdminService {
 
     CtfChallengeAdminDto returnDto = null;
     try {
-      CtfChallengeEntity challenge = getChallengeEntity(challengeAdminDto, saveFile);
+      CtfChallengeEntity challenge = createChallengeEntity(challengeAdminDto, saveFile);
       challengeRepository.save(challenge);
+      if (challengeAdminDto.getType().getId().equals(CtfChallengeTypeEntity.DYNAMIC.getId())) {
+        CtfDynamicChallengeInfoEntity dynamicInfoEntity = createDynamicInfoEntity(
+            challengeAdminDto.getDynamicInfo(), challenge);
+        ctfDynamicChallengeInfoRepository.save(dynamicInfoEntity);
+      }
 
       setFlagAllTeam(challengeAdminDto.getFlag(), challenge);
 
@@ -126,6 +135,11 @@ public class CtfAdminService {
     return returnDto;
   }
 
+  private CtfDynamicChallengeInfoEntity createDynamicInfoEntity(
+      CtfDynamicChallengeInfoDto dynamicInfo, CtfChallengeEntity challenge) {
+    return dynamicInfo.toEntity(challenge);
+  }
+
   private void setFlagAllTeam(String flag, CtfChallengeEntity challenge) {
     List<CtfTeamEntity> ctfTeamEntities = ctfTeamRepository.findAll();
     for (var ctfTeam : ctfTeamEntities) {
@@ -139,11 +153,12 @@ public class CtfAdminService {
     }
   }
 
-  private CtfChallengeEntity getChallengeEntity(
+  private CtfChallengeEntity createChallengeEntity(
       CtfChallengeAdminDto challengeAdminDto, FileEntity fileEntity) {
-    CtfContestEntity contest = getCtfContestEntity(challengeAdminDto.getContest().getCtfId());
+    CtfContestEntity contest = getCtfContestEntity(challengeAdminDto.getContestId());
     CtfChallengeCategoryEntity category = getCategoryEntity(challengeAdminDto);
     CtfChallengeTypeEntity type = getTypeEntity(challengeAdminDto);
+
     MemberEntity creator = authService.getMemberEntityWithJWT();
 
     CtfChallengeEntity challenge = challengeAdminDto

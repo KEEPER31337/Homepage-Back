@@ -33,7 +33,7 @@ public class CtfContestDto {
   private Boolean joinable;
 
   @JsonProperty(access = Access.READ_ONLY)
-  private CommonMemberDto creator;
+  private Long creatorId;
 
   public static CtfContestDto toDto(CtfContestEntity ctfContestEntity) {
     return CtfContestDto.builder()
@@ -41,7 +41,7 @@ public class CtfContestDto {
         .name(ctfContestEntity.getName())
         .description(ctfContestEntity.getDescription())
         .joinable(ctfContestEntity.getIsJoinable())
-        .creator(CommonMemberDto.toDto(ctfContestEntity.getCreator()))
+        .creatorId(ctfContestEntity.getCreator().getId())
         .build();
   }
 

@@ -10,36 +10,33 @@ import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeTypeEntity;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
+import keeper.project.homepage.entity.ctf.CtfDynamicChallengeInfoEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.user.dto.ctf.CtfChallengeCategoryDto;
+import keeper.project.homepage.user.dto.ctf.CtfChallengeDto;
 import keeper.project.homepage.user.dto.ctf.CtfChallengeTypeDto;
+import keeper.project.homepage.user.dto.ctf.CtfDynamicChallengeInfoDto;
 import keeper.project.homepage.util.dto.FileDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import org.springframework.lang.Nullable;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 @JsonInclude(Include.NON_NULL)
-public class CtfChallengeAdminDto {
+public class CtfChallengeAdminDto extends CtfChallengeDto {
 
-  @JsonProperty(access = Access.READ_ONLY)
-  private Long challengeId;
-
-  private String title;
-  private String content;
-  private CtfChallengeCategoryDto category;
-  private CtfChallengeTypeDto type;
-  private String flag;
-  private Long score;
-  private CtfContestDto contest;
-  @JsonProperty(access = Access.READ_ONLY)
-  private FileDto file;
+  private LocalDateTime registerTime;
+  private Boolean isSolvable;
+  @Nullable
+  private CtfDynamicChallengeInfoDto dynamicInfo;
 
   public CtfChallengeEntity toEntity(CtfContestEntity contest, CtfChallengeTypeEntity type,
       CtfChallengeCategoryEntity category, FileEntity fileEntity, MemberEntity creator) {
@@ -49,7 +46,7 @@ public class CtfChallengeAdminDto {
         .ctfContestEntity(contest)
         .ctfChallengeCategoryEntity(category)
         .ctfChallengeTypeEntity(type)
-        .isSolvable(false)
+        .isSolvable(isSolvable)
         .registerTime(LocalDateTime.now())
         .creator(creator)
         .score(score)
@@ -62,20 +59,24 @@ public class CtfChallengeAdminDto {
         challenge.getCtfChallengeCategoryEntity());
     CtfChallengeTypeDto type = CtfChallengeTypeDto.toDto(
         challenge.getCtfChallengeTypeEntity());
-    CtfContestDto contest = CtfContestDto.toDto(
-        challenge.getCtfContestEntity());
-    FileDto file = FileDto.toDto(challenge.getFileEntity());
+    FileDto file = FileDto.toDto(
+        challenge.getFileEntity());
+    CtfDynamicChallengeInfoDto dynamicInfo = CtfDynamicChallengeInfoDto.toDto(
+        challenge.getDynamicChallengeInfoEntity());
 
     return CtfChallengeAdminDto.builder()
         .challengeId(challenge.getId())
         .title(challenge.getName())
-        .content(challenge.getDescription())
+        .content(challenge.getName())
+        .contestId(challenge.getCtfContestEntity().getId())
         .category(category)
         .type(type)
-        .contest(contest)
+        .isSolvable(challenge.getIsSolvable())
+        .registerTime(LocalDateTime.now())
+        .creatorId(challenge.getCreator().getId())
         .score(challenge.getScore())
-        .flag(challenge.getCtfFlagEntity().get(0).getContent())
         .file(file)
+        .dynamicInfo(dynamicInfo)
         .build();
   }
 }

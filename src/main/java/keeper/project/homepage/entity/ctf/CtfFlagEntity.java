@@ -2,6 +2,7 @@ package keeper.project.homepage.entity.ctf;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,11 +32,11 @@ public class CtfFlagEntity {
   @Column(nullable = false, length = 200)
   String content;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "team_id")
   CtfTeamEntity ctfTeamEntity;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "challenge_id")
   CtfChallengeEntity ctfChallengeEntity;
 
