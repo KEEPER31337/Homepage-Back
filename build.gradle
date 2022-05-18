@@ -36,6 +36,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'commons-io:commons-io:2.11.0'
     implementation "org.mapstruct:mapstruct:1.4.2.Final"
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
     compileOnly 'org.projectlombok:lombok'
 
@@ -44,6 +45,7 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     runtimeOnly 'mysql:mysql-connector-java'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
 
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
