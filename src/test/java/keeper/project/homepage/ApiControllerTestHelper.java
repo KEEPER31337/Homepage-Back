@@ -115,7 +115,8 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
 
   public enum ResponseType {
     SINGLE("data"),
-    LIST("list[]");
+    LIST("list[]"),
+    PAGE("page.content[]");
 
     private final String reponseFieldPrefix;
 
