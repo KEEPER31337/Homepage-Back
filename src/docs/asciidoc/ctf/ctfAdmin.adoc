@@ -30,10 +30,6 @@ NOTE: 회장만 접근 가능합니다.
 
 include::{snippets}/create-contest/http-request.adoc[]
 
-==== Request Body
-
-include::{snippets}/create-contest/request-body.adoc[]
-
 ==== Request Fields
 
 include::{snippets}/create-contest/request-fields.adoc[]
@@ -59,9 +55,9 @@ NOTE: 회장만 접근 가능합니다.
 
 include::{snippets}/open-contest/http-request.adoc[]
 
-==== Request Param
+==== Request Path
 
-include::{snippets}/open-contest/request-parameters.adoc[]
+include::{snippets}/open-contest/path-parameters.adoc[]
 
 === 응답
 
@@ -84,19 +80,15 @@ NOTE: 회장만 접근 가능합니다.
 
 include::{snippets}/close-contest/http-request.adoc[]
 
-==== Request Param
+==== Request Path
 
-include::{snippets}/close-contest/request-parameters.adoc[]
+include::{snippets}/close-contest/path-parameters.adoc[]
 
 === 응답
 
 ==== Response
 
 include::{snippets}/close-contest/http-response.adoc[]
-
-==== Response Body
-
-include::{snippets}/close-contest/response-body.adoc[]
 
 ==== Response Fields
 
@@ -122,3 +114,200 @@ include::{snippets}/get-contests/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/get-contests/response-fields.adoc[]
+
+== *CTF 출제자 지정*
+
+NOTE: 회장만 접근 가능합니다.
+(출제자도 불가능)
+
+=== 요청
+
+==== Request
+
+include::{snippets}/designate-probMaker/http-request.adoc[]
+
+==== Request
+
+include::{snippets}/designate-probMaker/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/designate-probMaker/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/designate-probMaker/response-fields.adoc[]
+
+== *CTF 문제 생성*
+
+NOTE: 회장, 출제자만 접근 가능합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/create-problem/http-request.adoc[]
+
+==== Request Fields
+
+include::{snippets}/create-problem/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/create-problem/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/create-problem/response-fields.adoc[]
+
+== *CTF 문제에 파일 등록*
+
+NOTE: 회장, 출제자만 접근 가능합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/file-registration/http-request.adoc[]
+
+==== Request Params
+
+include::{snippets}/file-registration/request-parameters.adoc[]
+
+==== Request Parts
+
+include::{snippets}/file-registration/request-parts.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/file-registration/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/ctf-file-registration/response-fields.adoc[]
+
+== *CTF 문제 오픈*
+
+NOTE: 회장, 출제자만 접근 가능합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/open-problem/http-request.adoc[]
+
+==== Request Path
+
+include::{snippets}/open-problem/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/open-problem/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/open-problem/response-fields.adoc[]
+
+== *CTF 문제 닫기*
+
+NOTE: 회장, 출제자만 접근 가능합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/close-problem/http-request.adoc[]
+
+==== Request Path
+
+include::{snippets}/close-problem/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/close-problem/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/close-problem/response-fields.adoc[]
+
+== *CTF 문제 삭제*
+
+NOTE: 회장, 출제자만 접근 가능합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/delete-problem/http-request.adoc[]
+
+==== Request Path
+
+include::{snippets}/delete-problem/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/delete-problem/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/delete-problem/response-fields.adoc[]
+
+== *CTF ADMIN 문제 목록 불러오기*
+
+NOTE: 회장, 출제자만 접근 가능합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-problem-list/http-request.adoc[]
+
+==== Request Params
+
+include::{snippets}/get-problem-list/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-problem-list/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-problem-list/response-fields.adoc[]
+
+== *CTF flag 제출 로그 목록 불러오기*
+
+NOTE: 회장, 출제자만 접근 가능합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-submitLog-list/http-request.adoc[]
+
+==== Request Params
+
+include::{snippets}/get-submitLog-list/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-submitLog-list/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-submitLog-list/response-fields.adoc[]

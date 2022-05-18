@@ -182,6 +182,9 @@ class CtfAdminControllerTest extends CtfControllerTestHelper {
         .andExpect(jsonPath("$.code").value(0))
         .andExpect(jsonPath("$.data.memberId").value(probMaker.getId()))
         .andDo(document("designate-probMaker",
+            requestFields(
+                fieldWithPath("memberId").description("출제자로 지정할 member의 Id")
+            ),
             responseFields(
                 generateProbMakerDtoResponseFields(ResponseType.SINGLE,
                     "성공: true +\n실패: false", "성공 시 0을 반환", "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
