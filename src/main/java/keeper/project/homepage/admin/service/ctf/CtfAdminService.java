@@ -16,6 +16,7 @@ import keeper.project.homepage.entity.ctf.CtfChallengeTypeEntity;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
 import keeper.project.homepage.entity.ctf.CtfDynamicChallengeInfoEntity;
 import keeper.project.homepage.entity.ctf.CtfFlagEntity;
+import keeper.project.homepage.entity.ctf.CtfSubmitLogEntity;
 import keeper.project.homepage.entity.ctf.CtfTeamEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
@@ -37,9 +38,11 @@ import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.user.dto.ctf.CtfDynamicChallengeInfoDto;
+import keeper.project.homepage.util.dto.FileDto;
 import keeper.project.homepage.util.service.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
@@ -52,6 +55,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class CtfAdminService {
 
   private static final String PROBLEM_MAKER_JOB = "ROLE_출제자";
+  private static final Long VIRTUAL_SUBMIT_LOG_ID = 1L;
 
   private final AuthService authService;
   private final FileService fileService;
@@ -106,25 +110,39 @@ public class CtfAdminService {
   }
 
   @Transactional
-  public CtfChallengeAdminDto createProblem(HttpServletRequest request,
-      CtfChallengeAdminDto challengeAdminDto, @Nullable MultipartFile file) {
-    String ipAddress = request.getHeader("X-FORWARDED-FOR");
+  public CtfChallengeAdminDto createProblem(CtfChallengeAdminDto challengeAdminDto) {
+
+    CtfChallengeEntity challenge = createChallengeEntity(challengeAdminDto, null);
+    challenge = challengeRepository.save(challenge);
+    if (challengeAdminDto.getType().getId().equals(CtfChallengeTypeEntity.DYNAMIC.getId())) {
+      if (challengeAdminDto.getDynamicInfo() == null) {
+        // TODO: DynamicInfo Exception
+        throw new RuntimeException("");
+      }
+      CtfDynamicChallengeInfoEntity dynamicInfoEntity = createDynamicInfoEntity(
+          challengeAdminDto.getDynamicInfo(), challenge);
+//      ctfDynamicChallengeInfoRepository.save(dynamicInfoEntity);
+      challenge.setDynamicChallengeInfoEntity(dynamicInfoEntity);
+    }
+    challenge = challengeRepository.save(challenge);
+
+    setFlagAllTeam(challengeAdminDto.getFlag(), challenge);
+
+    return CtfChallengeAdminDto.toDto(challenge);
+
+  }
+
+  public FileDto fileRegistrationInProblem(Long challengeId,
+      HttpServletRequest request, MultipartFile file) {
+    String ipAddress = request.getHeader("X-FORWARDED-FOR") == null ?
+        request.getRemoteAddr() : request.getHeader("X-FORWARDED-FOR");
     FileEntity saveFile = fileService.saveFile(file, ipAddress);
 
-    CtfChallengeAdminDto returnDto = null;
     try {
-      CtfChallengeEntity challenge = createChallengeEntity(challengeAdminDto, saveFile);
+      CtfChallengeEntity challenge = challengeRepository.findById(challengeId)
+          .orElseThrow(CustomCtfChallengeNotFoundException::new);
+      challenge.setFileEntity(saveFile);
       challengeRepository.save(challenge);
-      if (challengeAdminDto.getType().getId().equals(CtfChallengeTypeEntity.DYNAMIC.getId())) {
-        CtfDynamicChallengeInfoEntity dynamicInfoEntity = createDynamicInfoEntity(
-            challengeAdminDto.getDynamicInfo(), challenge);
-        ctfDynamicChallengeInfoRepository.save(dynamicInfoEntity);
-      }
-
-      setFlagAllTeam(challengeAdminDto.getFlag(), challenge);
-
-      returnDto = CtfChallengeAdminDto.toDto(challenge);
-
     } catch (Exception e) {
       log.info(e.getMessage());
       if (saveFile != null) {
@@ -132,7 +150,8 @@ public class CtfAdminService {
       }
       throw new RuntimeException("문제 생성 실패!");
     }
-    return returnDto;
+
+    return FileDto.toDto(saveFile);
   }
 
   private CtfDynamicChallengeInfoEntity createDynamicInfoEntity(
@@ -143,13 +162,14 @@ public class CtfAdminService {
   private void setFlagAllTeam(String flag, CtfChallengeEntity challenge) {
     List<CtfTeamEntity> ctfTeamEntities = ctfTeamRepository.findAll();
     for (var ctfTeam : ctfTeamEntities) {
-      ctfFlagRepository.save(
-          CtfFlagEntity.builder()
-              .content(flag)
-              .ctfTeamEntity(ctfTeam)
-              .ctfChallengeEntity(challenge)
-              .isCorrect(false)
-              .build());
+      CtfFlagEntity flagEntity = CtfFlagEntity.builder()
+          .content(flag)
+          .ctfTeamEntity(ctfTeam)
+          .ctfChallengeEntity(challenge)
+          .isCorrect(false)
+          .build();
+      ctfFlagRepository.save(flagEntity);
+      challenge.getCtfFlagEntity().add(flagEntity);
     }
   }
 
@@ -204,15 +224,19 @@ public class CtfAdminService {
 
   @Transactional
   public CtfChallengeAdminDto deleteProblem(Long problemId) throws AccessDeniedException {
-    Long requestMemberId = authService.getMemberIdByJWT();
+    MemberEntity requestMember = authService.getMemberEntityWithJWT();
     CtfChallengeEntity challenge = challengeRepository.findById(problemId)
         .orElseThrow(CustomCtfChallengeNotFoundException::new);
-    if (!challenge.getCreator().getId().equals(requestMemberId)) {
-      throw new AccessDeniedException("문제 생성자나 회장만 삭제할 수 있습니다.");
+    if (!requestMember.getJobs().contains("ROLE_회장")) {
+      if (!challenge.getCreator().getId().equals(requestMember.getId())) {
+        throw new AccessDeniedException("문제 생성자나 회장만 삭제할 수 있습니다.");
+      }
+    }
+
+    if (challenge.getFileEntity() != null) {
+      fileService.deleteFile(challenge.getFileEntity());
     }
     challengeRepository.delete(challenge);
-
-    fileService.deleteFileById(challenge.getFileEntity().getId());
 
     return CtfChallengeAdminDto.toDto(challenge);
   }
@@ -225,7 +249,8 @@ public class CtfAdminService {
         .toList();
   }
 
-  public List<CtfSubmitLogDto> getSubmitLogList(Pageable pageable) {
-    return ctfSubmitLogRepository.findAll(pageable).stream().map(CtfSubmitLogDto::toDto).toList();
+  public Page<CtfSubmitLogDto> getSubmitLogList(Pageable pageable) {
+    return ctfSubmitLogRepository.findAllByIdIsNot(VIRTUAL_SUBMIT_LOG_ID, pageable)
+        .map(CtfSubmitLogDto::toDto);
   }
 }
