@@ -139,6 +139,17 @@ public class FileService {
     }
   }
 
+  @Transactional
+  public void deleteFile(FileEntity fileEntity) {
+    try {
+      if (new File(System.getProperty("user.dir") + fileEntity.getFilePath()).delete()) {
+        fileRepository.delete(fileEntity);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
   public void deleteFileEntityById(Long deleteId) {
     fileRepository.findById(deleteId).orElseThrow(CustomFileEntityNotFoundException::new);
     fileRepository.deleteById(deleteId);

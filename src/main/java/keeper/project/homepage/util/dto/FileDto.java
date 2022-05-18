@@ -36,7 +36,9 @@ public class FileDto {
   }
 
   public static FileDto toDto(FileEntity fileEntity) {
-
+    if (fileEntity == null) {
+      return null;
+    }
     return FileDto.builder()
         .id(fileEntity.getId())
         .fileName(fileEntity.getFileName())
