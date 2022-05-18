@@ -50,7 +50,6 @@ public class CtfTestHelper {
   @Autowired
   protected MemberRepository memberRepository;
 
-
   @RequiredArgsConstructor
   @Getter
   protected enum CtfChallengeCategory {
