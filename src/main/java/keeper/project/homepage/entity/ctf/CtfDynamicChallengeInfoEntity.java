@@ -2,14 +2,16 @@ package keeper.project.homepage.entity.ctf;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @Getter
@@ -20,13 +22,18 @@ import lombok.NoArgsConstructor;
 public class CtfDynamicChallengeInfoEntity {
 
   @Id
+  @Column(name = "challenge_id")
+  private Long challengeId;
+
   @OneToOne
-  @JoinColumn(name = "challenge_id")
-  CtfChallengeEntity ctfChallengeEntity;
+  @PrimaryKeyJoinColumn(name = "challenge_id", referencedColumnName = "id")
+  private CtfChallengeEntity ctfChallengeEntity;
 
   @Column
+  @Setter
   private Long maxScore;
 
   @Column
+  @Setter
   private Long minScore;
 }

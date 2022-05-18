@@ -26,7 +26,6 @@ public class CtfFlagEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(nullable = false)
   Long id;
 
   @Column(nullable = false, length = 200)

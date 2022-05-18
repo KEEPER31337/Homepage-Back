@@ -27,7 +27,6 @@ public class CtfTeamEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(nullable = false)
   Long id;
 
   @Column(nullable = false, length = 45)

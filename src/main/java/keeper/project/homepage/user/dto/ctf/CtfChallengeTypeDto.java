@@ -19,7 +19,6 @@ import lombok.Setter;
 @JsonInclude(Include.NON_NULL)
 public class CtfChallengeTypeDto {
 
-  @JsonProperty(access = Access.READ_ONLY)
   private Long id;
 
   @JsonProperty(access = Access.READ_ONLY)
