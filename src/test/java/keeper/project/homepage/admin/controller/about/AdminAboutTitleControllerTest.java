@@ -137,7 +137,7 @@ public class AdminAboutTitleControllerTest extends ApiControllerTestHelper {
         .andDo(print())
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.msg").value("보유한 권한으로 접근할수 없는 리소스 입니다"));
+        .andExpect(jsonPath("$.msg").value("접근이 거부되었습니다."));
   }
 
   @Test
@@ -155,7 +155,7 @@ public class AdminAboutTitleControllerTest extends ApiControllerTestHelper {
         .andDo(print())
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.msg").value("보유한 권한으로 접근할수 없는 리소스 입니다"));
+        .andExpect(jsonPath("$.msg").value("접근이 거부되었습니다."));
   }
 
   @Test
