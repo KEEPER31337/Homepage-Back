@@ -132,6 +132,7 @@ public class CtfAdminService {
           challengeAdminDto.getDynamicInfo(), challenge);
 //      ctfDynamicChallengeInfoRepository.save(dynamicInfoEntity);
       challenge.setDynamicChallengeInfoEntity(dynamicInfoEntity);
+      challenge.setScore(dynamicInfoEntity.getMaxScore());
     }
     challenge = challengeRepository.save(challenge);
 

@@ -242,7 +242,7 @@ class CtfAdminControllerTest extends CtfControllerTestHelper {
         .andExpect(jsonPath("$.data.type.id").value(type.getId()))
         .andExpect(jsonPath("$.data.isSolvable").value(isSolvable))
         .andExpect(jsonPath("$.data.creatorId").value(creator.getId()))
-        .andExpect(jsonPath("$.data.score").value(score))
+        .andExpect(jsonPath("$.data.score").value(dynamicInfo.getMaxScore()))
         .andExpect(jsonPath("$.data.dynamicInfo.maxScore").value(dynamicInfo.getMaxScore()))
         .andExpect(jsonPath("$.data.dynamicInfo.minScore").value(dynamicInfo.getMinScore()))
         .andExpect(jsonPath("$.data.flag").value(flag))
@@ -255,7 +255,8 @@ class CtfAdminControllerTest extends CtfControllerTestHelper {
                 fieldWithPath("type.id").description("문제 Type Id"),
                 fieldWithPath("isSolvable").description("현재 풀 수 있는 지 여부"),
                 fieldWithPath("creatorId").description("문제 생성자 Id"),
-                fieldWithPath("score").description("문제의 점수"),
+                fieldWithPath("score").description(
+                    "문제의 점수 (TYPE이 DYNAMIC일 경우 아무 값이나 보내주시면 됩니다. 초기 값은 maxScore로 저장됩니다.)"),
                 fieldWithPath("dynamicInfo.maxScore").description(
                         "TYPE이 DYNAMIC일 경우 maxScore")
                     .optional(),
