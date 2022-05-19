@@ -9,5 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface CtfChallengeRepository extends
     JpaRepository<CtfChallengeEntity, Long> {
 
-  List<CtfChallengeEntity> findAllByCtfContestEntity(CtfContestEntity ctfContestEntity);
+  List<CtfChallengeEntity> findAllByIdIsNotAndCtfContestEntity(Long id,
+      CtfContestEntity ctfContestEntity);
 }

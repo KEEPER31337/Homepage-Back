@@ -55,6 +55,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class CtfAdminService {
 
   private static final String PROBLEM_MAKER_JOB = "ROLE_출제자";
+  private static final Long VIRTUAL_CONTEST_ID = 1L;
+  private static final Long VIRTUAL_PROBLEM_ID = 1L;
   private static final Long VIRTUAL_SUBMIT_LOG_ID = 1L;
 
   private final AuthService authService;
@@ -79,19 +81,26 @@ public class CtfAdminService {
   }
 
   public CtfContestDto openContest(Long ctfId) {
+    if (ctfId.equals(VIRTUAL_CONTEST_ID)) {
+      throw new CustomContestNotFoundException();
+    }
     CtfContestEntity contestEntity = getCtfContestEntity(ctfId);
     contestEntity.setIsJoinable(true);
     return CtfContestDto.toDto(contestEntity);
   }
 
   public CtfContestDto closeContest(Long ctfId) {
+    if (ctfId.equals(VIRTUAL_CONTEST_ID)) {
+      throw new CustomContestNotFoundException();
+    }
     CtfContestEntity contestEntity = getCtfContestEntity(ctfId);
     contestEntity.setIsJoinable(false);
     return CtfContestDto.toDto(contestEntity);
   }
 
   public List<CtfContestDto> getContests() {
-    List<CtfContestEntity> contestEntities = ctfContestRepository.findAll();
+    List<CtfContestEntity> contestEntities = ctfContestRepository.findAllByIdIsNot(
+        VIRTUAL_CONTEST_ID);
     return contestEntities.stream().map(CtfContestDto::toDto).collect(Collectors.toList());
   }
 
@@ -205,6 +214,9 @@ public class CtfAdminService {
   }
 
   public CtfChallengeAdminDto openProblem(Long problemId) {
+    if (problemId.equals(VIRTUAL_PROBLEM_ID)) {
+      throw new CustomCtfChallengeNotFoundException();
+    }
     CtfChallengeEntity challenge = challengeRepository.findById(problemId)
         .orElseThrow(CustomCtfChallengeNotFoundException::new);
     challenge.setIsSolvable(true);
@@ -214,6 +226,9 @@ public class CtfAdminService {
   }
 
   public CtfChallengeAdminDto closeProblem(Long problemId) {
+    if (problemId.equals(VIRTUAL_PROBLEM_ID)) {
+      throw new CustomCtfChallengeNotFoundException();
+    }
     CtfChallengeEntity challenge = challengeRepository.findById(problemId)
         .orElseThrow(CustomCtfChallengeNotFoundException::new);
     challenge.setIsSolvable(false);
@@ -224,6 +239,10 @@ public class CtfAdminService {
 
   @Transactional
   public CtfChallengeAdminDto deleteProblem(Long problemId) throws AccessDeniedException {
+    if (problemId.equals(VIRTUAL_PROBLEM_ID)) {
+      throw new CustomCtfChallengeNotFoundException();
+    }
+
     MemberEntity requestMember = authService.getMemberEntityWithJWT();
     CtfChallengeEntity challenge = challengeRepository.findById(problemId)
         .orElseThrow(CustomCtfChallengeNotFoundException::new);
@@ -242,11 +261,13 @@ public class CtfAdminService {
   }
 
   public List<CtfChallengeAdminDto> getProblemList(Long ctfId) {
+    if (ctfId.equals(VIRTUAL_CONTEST_ID)) {
+      throw new CustomContestNotFoundException();
+    }
     CtfContestEntity contest = ctfContestRepository.findById(ctfId)
         .orElseThrow(CustomContestNotFoundException::new);
-    return challengeRepository.findAllByCtfContestEntity(contest).stream()
-        .map(CtfChallengeAdminDto::toDto)
-        .toList();
+    return challengeRepository.findAllByIdIsNotAndCtfContestEntity(VIRTUAL_PROBLEM_ID, contest)
+        .stream().map(CtfChallengeAdminDto::toDto).toList();
   }
 
   public Page<CtfSubmitLogDto> getSubmitLogList(Pageable pageable) {
