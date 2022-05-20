@@ -77,7 +77,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
         .andDo(print())
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.msg").value("보유한 권한으로 접근할수 없는 리소스 입니다"));
+        .andExpect(jsonPath("$.msg").value("접근이 거부되었습니다."));
   }
 
   @Test
@@ -105,7 +105,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
         .andDo(print())
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.msg").value("보유한 권한으로 접근할수 없는 리소스 입니다"));
+        .andExpect(jsonPath("$.msg").value("접근이 거부되었습니다."));
   }
 
   @Test
@@ -151,7 +151,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
             .header("Authorization", 1234))
         .andDo(print())
         .andExpect(status().is4xxClientError())
-        .andExpect(jsonPath("$.msg").value("보유한 권한으로 접근할수 없는 리소스 입니다"));
+        .andExpect(jsonPath("$.msg").value("접근이 거부되었습니다."));
   }
 
   @Test
@@ -168,7 +168,8 @@ public class MemberControllerTest extends ApiControllerTestHelper {
         .andExpect(status().isOk())
         .andDo(document("member-multi",
             requestParameters(
-                parameterWithName("ids").description("조회하고자 하는 멤버 ID 리스트 ex) /v1/members/multi?ids=1,2,3")
+                parameterWithName("ids").description(
+                    "조회하고자 하는 멤버 ID 리스트 ex) /v1/members/multi?ids=1,2,3")
             ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
@@ -182,7 +183,8 @@ public class MemberControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("list[].jobs").description(
                         "동아리 직책: null, ROLE_회장, ROLE_부회장, ROLE_대외부장, ROLE_학술부장, ROLE_전산관리자, ROLE_서기, ROLE_총무, ROLE_사서")
                     .optional(),
-                fieldWithPath("list[].type").description("회원 상태: null, 비회원, 정회원, 휴면회원, 졸업회원, 탈퇴").optional(),
+                fieldWithPath("list[].type").description("회원 상태: null, 비회원, 정회원, 휴면회원, 졸업회원, 탈퇴")
+                    .optional(),
                 fieldWithPath("list[].msg").description("멤버 조회 성공 여부 (실패 시 이유 반환)")
             )));
   }

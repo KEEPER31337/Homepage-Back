@@ -3,6 +3,10 @@ package keeper.project.homepage.exception;
 import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.exception.attendance.CustomAttendanceException;
 import keeper.project.homepage.exception.attendance.CustomGameIsOverException;
+import keeper.project.homepage.exception.ctf.CustomContestNotFoundException;
+import keeper.project.homepage.exception.ctf.CustomCtfCategoryNotFoundException;
+import keeper.project.homepage.exception.ctf.CustomCtfChallengeNotFoundException;
+import keeper.project.homepage.exception.ctf.CustomCtfTypeNotFoundException;
 import keeper.project.homepage.exception.file.CustomFileDeleteFailedException;
 import keeper.project.homepage.exception.file.CustomFileEntityNotFoundException;
 import keeper.project.homepage.exception.file.CustomFileNotFoundException;
@@ -107,7 +111,7 @@ public class ExceptionAdvice {
   @ResponseStatus(HttpStatus.FORBIDDEN)
   public CommonResult accessDeniedException(HttpServletRequest request, AccessDeniedException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("accessDenied.code")),
-        getMessage("accessDenied.msg"));
+        e.getMessage() == null ? getMessage("accessDenied.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomSignUpFailedException.class)
@@ -416,5 +420,37 @@ public class ExceptionAdvice {
       CustomPostingAccessDeniedException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("postingAccessDenied.code")),
         e.getMessage() == null ? getMessage("postingAccessDenied.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomContestNotFoundException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult contestNotFound(HttpServletRequest request,
+      CustomContestNotFoundException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("contestNotFound.code")),
+        e.getMessage() == null ? getMessage("contestNotFound.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomCtfCategoryNotFoundException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult ctfCategoryNotFound(HttpServletRequest request,
+      CustomCtfCategoryNotFoundException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("ctfCategoryNotFound.code")),
+        e.getMessage() == null ? getMessage("ctfCategoryNotFound.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomCtfTypeNotFoundException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult ctfTypeNotFound(HttpServletRequest request,
+      CustomCtfTypeNotFoundException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("ctfTypeNotFound.code")),
+        e.getMessage() == null ? getMessage("ctfTypeNotFound.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomCtfChallengeNotFoundException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult ctfChallengeNotFound(HttpServletRequest request,
+      CustomCtfChallengeNotFoundException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("ctfChallengeNotFound.code")),
+        e.getMessage() == null ? getMessage("ctfChallengeNotFound.msg") : e.getMessage());
   }
 }

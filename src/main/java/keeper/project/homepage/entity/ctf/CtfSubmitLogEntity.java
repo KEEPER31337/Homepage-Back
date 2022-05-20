@@ -3,6 +3,7 @@ package keeper.project.homepage.entity.ctf;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,7 +27,6 @@ public class CtfSubmitLogEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(nullable = false)
   Long id;
 
   @Column(nullable = false)
@@ -45,10 +45,8 @@ public class CtfSubmitLogEntity {
   CtfChallengeEntity ctfChallengeEntity;
 
   @Column(nullable = false)
-  @Setter
   String flagSubmitted;
 
   @Column(nullable = false)
-  @Setter
   Boolean isCorrect;
 }

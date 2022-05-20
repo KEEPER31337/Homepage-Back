@@ -73,6 +73,7 @@ public class MemberController {
     return responseService.getSuccessListResult(memberService.getMultiMembers(ids));
   }
 
+  @Secured("ROLE_회원")
   @GetMapping(value = "")
   public SingleResult<MemberDto> getMember() {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.

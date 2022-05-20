@@ -107,6 +107,17 @@ public class FileService {
   }
 
   @Transactional
+  public FileEntity saveFile(MultipartFile multipartFile, String ipAddress) {
+    if (multipartFile == null) {
+      return null;
+    }
+
+    File file = saveFileInServer(multipartFile, fileRelDirPath);
+    return saveFileEntity(file, fileRelDirPath, ipAddress, multipartFile.getOriginalFilename(),
+        null);
+  }
+
+  @Transactional
   public FileEntity findFileEntityById(Long id) {
     return fileRepository.findById(id).orElseThrow(CustomFileEntityNotFoundException::new);
   }
@@ -121,6 +132,17 @@ public class FileService {
     try {
       for (FileEntity fileEntity : fileEntities) {
         new File(System.getProperty("user.dir") + fileEntity.getFilePath()).delete();
+        fileRepository.delete(fileEntity);
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
+
+  @Transactional
+  public void deleteFile(FileEntity fileEntity) {
+    try {
+      if (new File(System.getProperty("user.dir") + fileEntity.getFilePath()).delete()) {
         fileRepository.delete(fileEntity);
       }
     } catch (Exception e) {

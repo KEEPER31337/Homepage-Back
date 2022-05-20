@@ -3,6 +3,7 @@ package keeper.project.homepage.repository.ctf;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeTypeEntity;
@@ -40,6 +41,7 @@ class CtfChallengeRepositoryTest extends CtfTestHelper {
         .ctfChallengeCategoryEntity(ctfChallengeCategoryEntity)
         .score(score)
         .ctfContestEntity(contest)
+        .ctfFlagEntity(new ArrayList<>())
         .build();
     ctfChallengeRepository.save(challenge);
     CtfChallengeEntity findChallenge = ctfChallengeRepository.getById(challenge.getId());

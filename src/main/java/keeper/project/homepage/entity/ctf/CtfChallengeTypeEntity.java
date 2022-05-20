@@ -19,6 +19,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "ctf_challenge_type")
 public class CtfChallengeTypeEntity {
+  public static final CtfChallengeTypeEntity STANDARD = new CtfChallengeTypeEntity(1L, "STANDARD");
+  public static final CtfChallengeTypeEntity DYNAMIC = new CtfChallengeTypeEntity(2L, "DYNAMIC");
 
   @Id
   @Column(nullable = false)
