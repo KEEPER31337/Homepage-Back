@@ -1,11 +1,10 @@
 package keeper.project.homepage.admin.controller.about;
 
-import keeper.project.homepage.admin.service.about.AdminAboutSubtitleService;
-import keeper.project.homepage.admin.dto.etc.StaticWriteSubtitleImageDto;
+import keeper.project.homepage.admin.service.about.AdminStaticWriteSubtitleImageService;
+import keeper.project.homepage.admin.dto.about.request.StaticWriteSubtitleImageDto;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.service.ResponseService;
-import keeper.project.homepage.admin.dto.etc.StaticWriteSubtitleImageResult;
-import keeper.project.homepage.util.service.ThumbnailService;
+import keeper.project.homepage.admin.dto.about.response.StaticWriteSubtitleImageResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
@@ -22,43 +21,43 @@ import org.springframework.web.multipart.MultipartFile;
 @Log4j2
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/v1/admin/about/sub-title")
-public class AdminAboutSubtitleController {
+@RequestMapping("/v1/admin/about/sub-titles")
+public class AdminStaticWriteSubtitleImageController {
 
-  private final AdminAboutSubtitleService adminAboutSubtitleService;
-  private final ThumbnailService thumbnailService;
+  private final AdminStaticWriteSubtitleImageService adminStaticWriteSubtitleImageService;
   private final ResponseService responseService;
 
   @Secured("ROLE_회장")
-  @PostMapping(value = "/create")
-  public SingleResult<StaticWriteSubtitleImageResult> createSubtitle(
+  @PostMapping(value = "/new")
+  public SingleResult<StaticWriteSubtitleImageResponseDto> createSubtitle(
       StaticWriteSubtitleImageDto staticWriteSubtitleImageDto,
       @RequestParam(value = "thumbnail", required = false) MultipartFile image,
       @RequestParam("ipAddress") String ipAddress
   ) {
 
     return responseService.getSuccessSingleResult(
-        adminAboutSubtitleService.createSubtitle(staticWriteSubtitleImageDto, image, ipAddress));
+        adminStaticWriteSubtitleImageService.createSubtitle(staticWriteSubtitleImageDto, image,
+            ipAddress));
   }
 
   @Secured("ROLE_회장")
-  @DeleteMapping(value = "/delete/{id}")
-  public SingleResult<StaticWriteSubtitleImageResult> deleteSubtitleById(
+  @DeleteMapping(value = "/{id}")
+  public SingleResult<StaticWriteSubtitleImageResponseDto> deleteSubtitleById(
       @PathVariable("id") Long id
 
   ) {
 
     return responseService.getSuccessSingleResult(
-        adminAboutSubtitleService.deleteSubtitleById(id)
+        adminStaticWriteSubtitleImageService.deleteSubtitleById(id)
     );
   }
 
   @Secured("ROLE_회장")
   @RequestMapping(
       method = {RequestMethod.PUT, RequestMethod.PATCH},
-      value = "/modify/{id}",
+      value = "/{id}",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-  public SingleResult<StaticWriteSubtitleImageResult> modifySubtitleById(
+  public SingleResult<StaticWriteSubtitleImageResponseDto> modifySubtitleById(
       @PathVariable("id") Long id,
       @RequestParam(value = "thumbnail", required = false) MultipartFile image,
       @RequestParam("ipAddress") String ipAddress,
@@ -66,7 +65,8 @@ public class AdminAboutSubtitleController {
   ) {
 
     return responseService.getSuccessSingleResult(
-        adminAboutSubtitleService.modifySubtitleById(staticWriteSubtitleImageDto, id, image,
+        adminStaticWriteSubtitleImageService.updateSubtitleById(staticWriteSubtitleImageDto, id,
+            image,
             ipAddress));
   }
 
