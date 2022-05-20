@@ -103,7 +103,9 @@ public class CtfChallengeService {
 
     ctfUtilService.checkVirtualProblem(probId);
 
+    Long solvedTeamCount = flagRepository.countByCtfChallengeEntityIdAndIsCorrect(probId, true);
+
     return CtfChallengeDto.toDto(challengeRepository.findById(probId)
-        .orElseThrow(CustomCtfChallengeNotFoundException::new));
+        .orElseThrow(CustomCtfChallengeNotFoundException::new), solvedTeamCount);
   }
 }

@@ -31,7 +31,6 @@ public class CtfCommonChallengeDto {
   protected Long challengeId;
   protected String title;
   protected Long score;
-  protected Long creatorId;
   protected CtfChallengeCategoryDto category;
   protected Long contestId;
 
@@ -44,7 +43,6 @@ public class CtfCommonChallengeDto {
         .title(challenge.getName())
         .contestId(challenge.getCtfContestEntity().getId())
         .category(category)
-        .creatorId(challenge.getCreator().getId())
         .score(challenge.getScore())
         .build();
   }

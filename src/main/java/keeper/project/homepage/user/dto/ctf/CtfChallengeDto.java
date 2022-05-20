@@ -25,12 +25,14 @@ import lombok.experimental.SuperBuilder;
 @JsonInclude(Include.NON_NULL)
 public class CtfChallengeDto extends CtfCommonChallengeDto {
 
+  protected String creatorName;
+  protected Long solvedTeamCount;
   protected String content;
   @JsonProperty(access = Access.READ_ONLY)
   @JsonInclude
   protected FileDto file;
 
-  public static CtfChallengeDto toDto(CtfChallengeEntity challenge) {
+  public static CtfChallengeDto toDto(CtfChallengeEntity challenge, Long solvedTeamCount) {
     CtfChallengeCategoryDto category = CtfChallengeCategoryDto.toDto(
         challenge.getCtfChallengeCategoryEntity());
     FileDto file = FileDto.toDto(challenge.getFileEntity());
@@ -41,8 +43,9 @@ public class CtfChallengeDto extends CtfCommonChallengeDto {
         .content(challenge.getDescription())
         .contestId(challenge.getCtfContestEntity().getId())
         .category(category)
-        .creatorId(challenge.getCreator().getId())
+        .creatorName(challenge.getCreator().getNickName())
         .score(challenge.getScore())
+        .solvedTeamCount(solvedTeamCount)
         .file(file)
         .build();
   }

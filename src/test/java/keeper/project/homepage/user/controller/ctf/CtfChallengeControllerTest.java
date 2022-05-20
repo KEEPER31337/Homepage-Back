@@ -61,8 +61,8 @@ class CtfChallengeControllerTest extends CtfControllerTestHelper {
 
     CtfTeamEntity team = generateCtfTeam(contest, userEntity, 0L);
 
-    generateCtfFlag(team, dynamicChallenge);
-    generateCtfFlag(team, standardChallenge);
+    generateCtfFlag(team, dynamicChallenge, false);
+    generateCtfFlag(team, standardChallenge, false);
 
     mockMvc.perform(get("/v1/ctf/prob")
             .header("Authorization", userToken)
@@ -80,7 +80,6 @@ class CtfChallengeControllerTest extends CtfControllerTestHelper {
             .value(dynamicChallenge.getCtfChallengeCategoryEntity().getId()))
         .andExpect(jsonPath("$.list[0].type.id").doesNotExist())
         .andExpect(jsonPath("$.list[0].isSolvable").doesNotExist())
-        .andExpect(jsonPath("$.list[0].creatorId").value(dynamicChallenge.getCreator().getId()))
         .andExpect(jsonPath("$.list[0].score").value(dynamicChallenge.getScore()))
         .andExpect(jsonPath("$.list[0].dynamicInfo").doesNotExist())
         .andExpect(jsonPath("$.list[0].flag").doesNotExist())
@@ -92,7 +91,6 @@ class CtfChallengeControllerTest extends CtfControllerTestHelper {
             .value(standardChallenge.getCtfChallengeCategoryEntity().getId()))
         .andExpect(jsonPath("$.list[1].type.id").doesNotExist())
         .andExpect(jsonPath("$.list[1].isSolvable").doesNotExist())
-        .andExpect(jsonPath("$.list[1].creatorId").value(standardChallenge.getCreator().getId()))
         .andExpect(jsonPath("$.list[1].score").value(standardChallenge.getScore()))
         .andExpect(jsonPath("$.list[1].dynamicInfo").doesNotExist())
         .andExpect(jsonPath("$.list[1].flag").doesNotExist())
@@ -131,7 +129,7 @@ class CtfChallengeControllerTest extends CtfControllerTestHelper {
 
     CtfTeamEntity team = generateCtfTeam(contest, userEntity, 0L);
 
-    CtfFlagEntity flag = generateCtfFlag(team, dynamicChallenge);
+    CtfFlagEntity flag = generateCtfFlag(team, dynamicChallenge, false);
 
     String content = "{\n"
         + "    \"content\": \"" + flag.getContent() + "\"\n"
@@ -175,7 +173,7 @@ class CtfChallengeControllerTest extends CtfControllerTestHelper {
 
     CtfTeamEntity team = generateCtfTeam(contest, userEntity, 0L);
 
-    generateCtfFlag(team, dynamicChallenge);
+    generateCtfFlag(team, dynamicChallenge, true);
 
     mockMvc.perform(get("/v1/ctf/prob/{pid}", String.valueOf(dynamicChallenge.getId()))
             .header("Authorization", userToken))
@@ -191,8 +189,10 @@ class CtfChallengeControllerTest extends CtfControllerTestHelper {
             .value(dynamicChallenge.getCtfChallengeCategoryEntity().getId()))
         .andExpect(jsonPath("$.data.type.id").doesNotExist())
         .andExpect(jsonPath("$.data.isSolvable").doesNotExist())
-        .andExpect(jsonPath("$.data.creatorId").value(dynamicChallenge.getCreator().getId()))
+        .andExpect(
+            jsonPath("$.data.creatorName").value(dynamicChallenge.getCreator().getNickName()))
         .andExpect(jsonPath("$.data.score").value(dynamicChallenge.getScore()))
+        .andExpect(jsonPath("$.data.solvedTeamCount").value(1L))
         .andExpect(jsonPath("$.data.dynamicInfo").doesNotExist())
         .andExpect(jsonPath("$.data.flag").doesNotExist())
         .andDo(document("get-problem-detail",

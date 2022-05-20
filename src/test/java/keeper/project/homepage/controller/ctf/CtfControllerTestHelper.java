@@ -111,13 +111,14 @@ public class CtfControllerTestHelper extends ApiControllerTestHelper {
 
   }
 
-  protected CtfFlagEntity generateCtfFlag(CtfTeamEntity ctfTeam, CtfChallengeEntity ctfChallenge) {
+  protected CtfFlagEntity generateCtfFlag(CtfTeamEntity ctfTeam, CtfChallengeEntity ctfChallenge,
+      Boolean isCorrect) {
     final long epochTime = System.nanoTime();
     CtfFlagEntity entity = CtfFlagEntity.builder()
         .content("flag_" + epochTime)
         .ctfTeamEntity(ctfTeam)
         .ctfChallengeEntity(ctfChallenge)
-        .isCorrect(false)
+        .isCorrect(isCorrect)
         .build();
     ctfFlagRepository.save(entity);
     ctfChallenge.getCtfFlagEntity().add(entity);
@@ -249,7 +250,6 @@ public class CtfControllerTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".category.id").description("문제가 속한 카테고리의 id"),
         fieldWithPath(prefix + ".category.name").description("문제가 속한 카테고리의 이름"),
         fieldWithPath(prefix + ".score").description("문제의 점수"),
-        fieldWithPath(prefix + ".creatorId").description("문제 생성자 Id"),
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id")
     ));
     if (addDescriptors.length > 0) {
@@ -273,7 +273,7 @@ public class CtfControllerTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".type.name").description("문제가 속한 타입의 이름"),
         fieldWithPath(prefix + ".flag").description("문제에 설정 된 flag (현재는 모든 팀이 동일한 flag를 가집니다."),
         fieldWithPath(prefix + ".score").description("문제의 점수"),
-        fieldWithPath(prefix + ".creatorId").description("문제 생성자 Id"),
+        fieldWithPath(prefix + ".creatorName").description("문제 생성자 이름"),
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id"),
         fieldWithPath(prefix + ".registerTime").description("문제의 등록 시간"),
         fieldWithPath(prefix + ".isSolvable").description("현재 풀 수 있는 지 여부"),
@@ -301,8 +301,9 @@ public class CtfControllerTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".category.id").description("문제가 속한 카테고리의 id"),
         fieldWithPath(prefix + ".category.name").description("문제가 속한 카테고리의 이름"),
         fieldWithPath(prefix + ".score").description("문제의 점수"),
-        fieldWithPath(prefix + ".creatorId").description("문제 생성자 Id"),
+        fieldWithPath(prefix + ".creatorName").description("문제 생성자 이름"),
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id"),
+        fieldWithPath(prefix + ".solvedTeamCount").description("푼 팀 수"),
         subsectionWithPath(prefix + ".file").description("문제에 해당하는 파일 정보").optional()
     ));
     if (addDescriptors.length > 0) {
