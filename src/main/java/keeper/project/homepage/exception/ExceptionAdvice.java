@@ -1,6 +1,7 @@
 package keeper.project.homepage.exception;
 
 import keeper.project.homepage.common.dto.result.CommonResult;
+import keeper.project.homepage.exception.about.CustomStaticWriteNotFoundException;
 import keeper.project.homepage.exception.attendance.CustomAttendanceException;
 import keeper.project.homepage.exception.attendance.CustomGameIsOverException;
 import keeper.project.homepage.exception.file.CustomFileDeleteFailedException;
@@ -116,14 +117,6 @@ public class ExceptionAdvice {
       CustomSignUpFailedException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("signUpFailed.code")),
         e.getMessage() == null ? getMessage("signUpFailed.msg") : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomAboutFailedException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  public CommonResult aboutFailedException(HttpServletRequest request,
-      CustomAboutFailedException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("aboutFailed.code")),
-        e.getMessage() == null ? getMessage("aboutFailed.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomFileNotFoundException.class)
@@ -416,5 +409,13 @@ public class ExceptionAdvice {
       CustomPostingAccessDeniedException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("postingAccessDenied.code")),
         e.getMessage() == null ? getMessage("postingAccessDenied.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomStaticWriteNotFoundException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult notFoundStaticWrite(HttpServletRequest request,
+      CustomStaticWriteNotFoundException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("staticWriteNotFound.code")),
+        e.getMessage() == null ? getMessage("staticWriteNotFound.msg") : e.getMessage());
   }
 }
