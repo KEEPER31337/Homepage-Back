@@ -17,7 +17,7 @@ endif::[]
 
 == API 목록
 
-link:../keeper.html[API 목록으로 돌아가기]
+link:../admin.html[API 목록으로 돌아가기]
 
 == *CTF 대회 생성*
 
