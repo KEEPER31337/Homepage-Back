@@ -22,7 +22,7 @@ import keeper.project.homepage.user.dto.member.MemberDto;
 import keeper.project.homepage.user.dto.study.StudyDto;
 import keeper.project.homepage.user.dto.study.StudyYearSeasonDto;
 import keeper.project.homepage.user.mapper.StudyMapper;
-import keeper.project.homepage.util.ImageCenterCrop;
+import keeper.project.homepage.util.ImageCenterCropping;
 import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.util.service.ThumbnailService;
 import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;
@@ -129,7 +129,7 @@ public class StudyService {
   }
 
   private ThumbnailEntity saveThumbnail(String ipAddress, MultipartFile thumbnail) {
-    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
+    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCropping(),
         thumbnail, ThumbnailSize.STUDY, ipAddress);
 
     if (thumbnailEntity == null) {

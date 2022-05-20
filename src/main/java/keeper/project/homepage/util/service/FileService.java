@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import keeper.project.homepage.util.ImageFormatChecking;
+import keeper.project.homepage.util.ImageProcessing;
 import keeper.project.homepage.util.dto.FileDto;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
@@ -39,6 +40,39 @@ public class FileService {
   private final FileRepository fileRepository;
   private final ImageFormatChecking imageFormatChecking;
 
+  public byte[] getByteArrayForImage(Long fileId, ImageProcessing imageProcessing,
+      Integer width, Integer height) throws IOException {
+    /**
+     * @return byte array for preprocessed image
+     */
+    File file = getImageFile(fileId);
+    imageProcessing.imageProcessing(file, width, height, "jpg");
+    InputStream in = new FileInputStream(file);
+    return IOUtils.toByteArray(in);
+  }
+
+  public byte[] getByteArrayForImage(Long fileId) throws IOException {
+    /**
+     * @return byte array for original image
+     */
+    File file = getImageFile(fileId);
+    InputStream in = new FileInputStream(file);
+    return IOUtils.toByteArray(in);
+  }
+
+  private File getImageFile(Long fileId) throws IOException {
+    FileEntity fileEntity = fileRepository.findById(fileId)
+        .orElseThrow(CustomFileEntityNotFoundException::new);
+    imageFormatChecking.checkImageFile(fileEntity.getFileName());
+    String filePath = System.getProperty("user.dir") + File.separator + fileEntity.getFilePath();
+    File imageFile = new File(filePath);
+    if (imageFile.exists() == false) {
+      throw new CustomFileNotFoundException();
+    }
+
+    return imageFile;
+  }
+
   private String encodeFileName(String fileName) {
     String[] fileFormatSplitArray = fileName.split("\\.");
     String fileFormat = fileFormatSplitArray[fileFormatSplitArray.length - 1];
@@ -46,17 +80,6 @@ public class FileService {
     fileName += timestamp.toString();
     fileName = encryptSHA256(fileName) + "." + fileFormat;
     return fileName;
-  }
-
-  public byte[] getImage(Long fileId) throws IOException {
-    FileEntity fileEntity = fileRepository.findById(fileId)
-        .orElseThrow(CustomFileEntityNotFoundException::new);
-    imageFormatChecking.checkImageFile(fileEntity.getFileName());
-    String filePath = System.getProperty("user.dir") + File.separator + fileEntity.getFilePath();
-    File file = new File(filePath);
-    InputStream in = new FileInputStream(file);
-
-    return IOUtils.toByteArray(in);
   }
 
   public File saveFileInServer(MultipartFile multipartFile, String relDirPath) {
