@@ -7,8 +7,8 @@ import java.util.Map;
 import keeper.project.homepage.exception.point.CustomPointLogRequestNullException;
 import keeper.project.homepage.user.dto.point.request.PointGiftLogRequestDto;
 import keeper.project.homepage.user.dto.point.request.PointLogRequestDto;
-import keeper.project.homepage.user.dto.point.result.PointGiftLogResultDto;
-import keeper.project.homepage.user.dto.point.result.PointLogResultDto;
+import keeper.project.homepage.user.dto.point.response.PointGiftLogResponseDto;
+import keeper.project.homepage.user.dto.point.response.PointLogResponseDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.point.PointLogEntity;
 import keeper.project.homepage.exception.point.CustomPointLackException;
@@ -53,7 +53,7 @@ public class PointLogService {
     }
   }
 
-  public PointLogResultDto createPointUseLog(MemberEntity member,
+  public PointLogResponseDto createPointUseLog(MemberEntity member,
       PointLogRequestDto pointLogRequestDto) {
     int previousPoint = member.getPoint();
 
@@ -65,10 +65,10 @@ public class PointLogService {
 
     PointLogEntity pointLogEntity = pointLogRepository.save(pointLogRequestDto.toEntity(member, 1));
 
-    return new PointLogResultDto(pointLogEntity, previousPoint, finalPoint);
+    return new PointLogResponseDto(pointLogEntity, previousPoint, finalPoint);
   }
 
-  public PointLogResultDto createPointSaveLog(MemberEntity member,
+  public PointLogResponseDto createPointSaveLog(MemberEntity member,
       PointLogRequestDto pointLogRequestDto) {
     checkPointLogRequest(pointLogRequestDto);
 
@@ -78,10 +78,10 @@ public class PointLogService {
 
     PointLogEntity pointLogEntity = pointLogRepository.save(pointLogRequestDto.toEntity(member, 0));
 
-    return new PointLogResultDto(pointLogEntity, previousPoint, finalPoint);
+    return new PointLogResponseDto(pointLogEntity, previousPoint, finalPoint);
   }
 
-  public PointGiftLogResultDto presentingPoint(PointGiftLogRequestDto pointGiftLogRequestDto) {
+  public PointGiftLogResponseDto presentingPoint(PointGiftLogRequestDto pointGiftLogRequestDto) {
     checkPointGiftLogRequest(pointGiftLogRequestDto);
     MemberEntity presentedMember = memberRepository.findById(
             pointGiftLogRequestDto.getPresentedId())
@@ -103,25 +103,25 @@ public class PointLogService {
         pointGiftLogRequestDto.toEntity(updateMember, updatePresented, 1));
     pointLogRepository.save(pointGiftLogRequestDto.toEntity(updatePresented, updateMember, 0));
 
-    return new PointGiftLogResultDto(pointLogEntity, prePointMember, prePointPresented,
+    return new PointGiftLogResponseDto(pointLogEntity, prePointMember, prePointPresented,
         updateMember.getPoint(), updatePresented.getPoint());
   }
 
   public Map<String, Object> getPointLogs(Pageable pageable) {
     MemberEntity memberEntity = authService.getMemberEntityWithJWT();
 
-    List<PointLogResultDto> pointLogResultDtoList = new ArrayList<>();
+    List<PointLogResponseDto> pointLogResponseDtoList = new ArrayList<>();
     Map<String, Object> result = new HashMap<>();
     Page<PointLogEntity> pointLogEntityPage = pointLogRepository.findAllByMember(
         memberEntity, pageable);
 
     for (PointLogEntity pointLogEntity : pointLogEntityPage.getContent()) {
-      PointLogResultDto pointLogResultDto = new PointLogResultDto(pointLogEntity);
-      pointLogResultDtoList.add(pointLogResultDto);
+      PointLogResponseDto pointLogResponseDto = new PointLogResponseDto(pointLogEntity);
+      pointLogResponseDtoList.add(pointLogResponseDto);
     }
 
     result.put("isLast", pointLogEntityPage.isLast());
-    result.put("content", pointLogResultDtoList);
+    result.put("content", pointLogResponseDtoList);
 
     return result;
   }
