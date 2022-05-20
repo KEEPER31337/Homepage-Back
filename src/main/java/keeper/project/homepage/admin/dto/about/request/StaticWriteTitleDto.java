@@ -1,6 +1,6 @@
-package keeper.project.homepage.admin.dto.etc;
+package keeper.project.homepage.admin.dto.about.request;
 
-import keeper.project.homepage.entity.etc.StaticWriteTitleEntity;
+import keeper.project.homepage.entity.about.StaticWriteTitleEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,12 +17,4 @@ public class StaticWriteTitleDto {
   private String title;
 
   private String type;
-
-  public StaticWriteTitleEntity toEntity() {
-
-    return StaticWriteTitleEntity.builder()
-        .title(title)
-        .type(type)
-        .build();
-  }
 }

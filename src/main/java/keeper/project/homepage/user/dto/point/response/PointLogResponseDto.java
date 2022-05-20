@@ -1,4 +1,4 @@
-package keeper.project.homepage.user.dto.point.result;
+package keeper.project.homepage.user.dto.point.response;
 
 import java.time.LocalDateTime;
 import keeper.project.homepage.entity.point.PointLogEntity;
@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class PointLogResultDto {
+public class PointLogResponseDto {
 
   private Long memberId;
   private LocalDateTime time;
@@ -19,7 +19,7 @@ public class PointLogResultDto {
   private Integer prePoint;
   private Integer finalPoint;
 
-  public PointLogResultDto(PointLogEntity pointLogEntity, int prePoint, int finalPoint) {
+  public PointLogResponseDto(PointLogEntity pointLogEntity, int prePoint, int finalPoint) {
     this.memberId = pointLogEntity.getMember().getId();
     this.time = pointLogEntity.getTime();
     this.point = pointLogEntity.getPoint();
@@ -29,7 +29,7 @@ public class PointLogResultDto {
     this.finalPoint = finalPoint;
   }
 
-  public PointLogResultDto(PointLogEntity pointLogEntity) {
+  public PointLogResponseDto(PointLogEntity pointLogEntity) {
     this.memberId = pointLogEntity.getMember().getId();
     this.time = pointLogEntity.getTime();
     this.point = pointLogEntity.getPoint();

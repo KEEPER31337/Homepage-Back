@@ -1,6 +1,6 @@
-package keeper.project.homepage.admin.dto.etc;
+package keeper.project.homepage.admin.dto.about.response;
 
-import keeper.project.homepage.entity.etc.StaticWriteContentEntity;
+import keeper.project.homepage.entity.about.StaticWriteContentEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class StaticWriteContentResult {
+public class StaticWriteContentResponseDto {
 
   private Long id;
 
@@ -18,7 +18,7 @@ public class StaticWriteContentResult {
 
   private Integer displayOrder;
 
-  public StaticWriteContentResult(StaticWriteContentEntity staticWriteContentEntity) {
+  public StaticWriteContentResponseDto(StaticWriteContentEntity staticWriteContentEntity) {
     this.id = staticWriteContentEntity.getId();
     this.content = staticWriteContentEntity.getContent();
     this.staticWriteSubtitleImageId = staticWriteContentEntity.getStaticWriteSubtitleImage().getId();

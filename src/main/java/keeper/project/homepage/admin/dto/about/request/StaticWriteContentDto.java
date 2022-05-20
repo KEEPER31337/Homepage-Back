@@ -1,8 +1,7 @@
-package keeper.project.homepage.admin.dto.etc;
+package keeper.project.homepage.admin.dto.about.request;
 
-import javax.persistence.Column;
-import keeper.project.homepage.entity.etc.StaticWriteContentEntity;
-import keeper.project.homepage.entity.etc.StaticWriteSubtitleImageEntity;
+import keeper.project.homepage.entity.about.StaticWriteContentEntity;
+import keeper.project.homepage.entity.about.StaticWriteSubtitleImageEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

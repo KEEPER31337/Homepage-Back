@@ -1,9 +1,8 @@
-package keeper.project.homepage.admin.dto.etc;
+package keeper.project.homepage.admin.dto.about.request;
 
 import keeper.project.homepage.entity.ThumbnailEntity;
-import keeper.project.homepage.entity.etc.StaticWriteSubtitleImageEntity;
-import keeper.project.homepage.entity.etc.StaticWriteTitleEntity;
-import keeper.project.homepage.repository.etc.StaticWriteTitleRepository;
+import keeper.project.homepage.entity.about.StaticWriteSubtitleImageEntity;
+import keeper.project.homepage.entity.about.StaticWriteTitleEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

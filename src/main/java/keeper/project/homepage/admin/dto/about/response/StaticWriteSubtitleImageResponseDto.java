@@ -1,12 +1,10 @@
-package keeper.project.homepage.admin.dto.etc;
+package keeper.project.homepage.admin.dto.about.response;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import keeper.project.homepage.admin.dto.etc.StaticWriteContentResult;
-import keeper.project.homepage.common.controller.util.ImageController;
-import keeper.project.homepage.entity.ThumbnailEntity;
-import keeper.project.homepage.entity.etc.StaticWriteSubtitleImageEntity;
+import keeper.project.homepage.admin.dto.about.response.StaticWriteContentResponseDto;
+import keeper.project.homepage.entity.about.StaticWriteSubtitleImageEntity;
 import keeper.project.homepage.util.EnvironmentProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,7 +13,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class StaticWriteSubtitleImageResult {
+public class StaticWriteSubtitleImageResponseDto {
 
   private Long id;
 
@@ -27,9 +25,9 @@ public class StaticWriteSubtitleImageResult {
 
   private Integer displayOrder;
 
-  private List<StaticWriteContentResult> staticWriteContentResults = new ArrayList<>();
+  private List<StaticWriteContentResponseDto> staticWriteContents = new ArrayList<>();
 
-  public StaticWriteSubtitleImageResult(
+  public StaticWriteSubtitleImageResponseDto(
       StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity) {
     this.id = staticWriteSubtitleImageEntity.getId();
     this.subtitle = staticWriteSubtitleImageEntity.getSubtitle();
@@ -41,9 +39,9 @@ public class StaticWriteSubtitleImageResult {
                 staticWriteSubtitleImageEntity.getThumbnail().getId());
     this.displayOrder = staticWriteSubtitleImageEntity.getDisplayOrder();
     if (staticWriteSubtitleImageEntity.getStaticWriteContents() != null) {
-      this.staticWriteContentResults = staticWriteSubtitleImageEntity.getStaticWriteContents()
+      this.staticWriteContents = staticWriteSubtitleImageEntity.getStaticWriteContents()
           .stream()
-          .map(StaticWriteContentResult::new).collect(
+          .map(StaticWriteContentResponseDto::new).collect(
               Collectors.toList());
     }
   }
