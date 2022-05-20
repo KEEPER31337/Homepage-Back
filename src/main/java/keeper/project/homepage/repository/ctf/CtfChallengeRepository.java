@@ -11,4 +11,7 @@ public interface CtfChallengeRepository extends
 
   List<CtfChallengeEntity> findAllByIdIsNotAndCtfContestEntity(Long id,
       CtfContestEntity ctfContestEntity);
+
+  List<CtfChallengeEntity> findAllByIdIsNotAndCtfContestEntityAndIsSolvable(Long id,
+      CtfContestEntity ctfContestEntity, Boolean isSolvable);
 }

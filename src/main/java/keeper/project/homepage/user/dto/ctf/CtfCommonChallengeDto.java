@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import keeper.project.homepage.entity.FileEntity;
+import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
+import keeper.project.homepage.entity.ctf.CtfChallengeTypeEntity;
+import keeper.project.homepage.entity.ctf.CtfContestEntity;
+import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.util.dto.FileDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,27 +25,27 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder
 @JsonInclude(Include.NON_NULL)
-public class CtfChallengeDto extends CtfCommonChallengeDto {
+public class CtfCommonChallengeDto {
 
-  protected String content;
   @JsonProperty(access = Access.READ_ONLY)
-  @JsonInclude
-  protected FileDto file;
+  protected Long challengeId;
+  protected String title;
+  protected Long score;
+  protected Long creatorId;
+  protected CtfChallengeCategoryDto category;
+  protected Long contestId;
 
-  public static CtfChallengeDto toDto(CtfChallengeEntity challenge) {
+  public static CtfCommonChallengeDto toDto(CtfChallengeEntity challenge) {
     CtfChallengeCategoryDto category = CtfChallengeCategoryDto.toDto(
         challenge.getCtfChallengeCategoryEntity());
-    FileDto file = FileDto.toDto(challenge.getFileEntity());
 
-    return CtfChallengeDto.builder()
+    return CtfCommonChallengeDto.builder()
         .challengeId(challenge.getId())
         .title(challenge.getName())
-        .content(challenge.getDescription())
         .contestId(challenge.getCtfContestEntity().getId())
         .category(category)
         .creatorId(challenge.getCreator().getId())
         .score(challenge.getScore())
-        .file(file)
         .build();
   }
 }

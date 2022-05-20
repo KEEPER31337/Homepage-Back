@@ -43,6 +43,8 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
 
   private String flag;
 
+  protected CtfChallengeTypeDto type;
+
   @Nullable
   private CtfDynamicChallengeInfoDto dynamicInfo;
 

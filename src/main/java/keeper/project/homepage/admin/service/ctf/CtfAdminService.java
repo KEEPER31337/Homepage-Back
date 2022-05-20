@@ -16,7 +16,6 @@ import keeper.project.homepage.entity.ctf.CtfChallengeTypeEntity;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
 import keeper.project.homepage.entity.ctf.CtfDynamicChallengeInfoEntity;
 import keeper.project.homepage.entity.ctf.CtfFlagEntity;
-import keeper.project.homepage.entity.ctf.CtfSubmitLogEntity;
 import keeper.project.homepage.entity.ctf.CtfTeamEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
@@ -39,12 +38,12 @@ import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.user.dto.ctf.CtfDynamicChallengeInfoDto;
 import keeper.project.homepage.util.dto.FileDto;
+import keeper.project.homepage.util.service.CtfUtilService;
 import keeper.project.homepage.util.service.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,11 +52,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 public class CtfAdminService {
-
-  private static final String PROBLEM_MAKER_JOB = "ROLE_출제자";
-  private static final Long VIRTUAL_CONTEST_ID = 1L;
-  private static final Long VIRTUAL_PROBLEM_ID = 1L;
-  private static final Long VIRTUAL_SUBMIT_LOG_ID = 1L;
 
   private final AuthService authService;
   private final FileService fileService;
@@ -81,7 +75,7 @@ public class CtfAdminService {
   }
 
   public CtfContestDto openContest(Long ctfId) {
-    if (ctfId.equals(VIRTUAL_CONTEST_ID)) {
+    if (ctfId.equals(CtfUtilService.VIRTUAL_CONTEST_ID)) {
       throw new CustomContestNotFoundException();
     }
     CtfContestEntity contestEntity = getCtfContestEntity(ctfId);
@@ -90,7 +84,7 @@ public class CtfAdminService {
   }
 
   public CtfContestDto closeContest(Long ctfId) {
-    if (ctfId.equals(VIRTUAL_CONTEST_ID)) {
+    if (ctfId.equals(CtfUtilService.VIRTUAL_CONTEST_ID)) {
       throw new CustomContestNotFoundException();
     }
     CtfContestEntity contestEntity = getCtfContestEntity(ctfId);
@@ -100,7 +94,7 @@ public class CtfAdminService {
 
   public List<CtfContestDto> getContests() {
     List<CtfContestEntity> contestEntities = ctfContestRepository.findAllByIdIsNot(
-        VIRTUAL_CONTEST_ID);
+        CtfUtilService.VIRTUAL_CONTEST_ID);
     return contestEntities.stream().map(CtfContestDto::toDto).collect(Collectors.toList());
   }
 
@@ -108,7 +102,7 @@ public class CtfAdminService {
   public CtfProbMakerDto designateProbMaker(CtfProbMakerDto probMakerDto) {
     MemberEntity probMaker = memberRepository.findById(probMakerDto.getMemberId())
         .orElseThrow(CustomMemberNotFoundException::new);
-    MemberJobEntity probMakerJob = memberJobRepository.findByName(PROBLEM_MAKER_JOB)
+    MemberJobEntity probMakerJob = memberJobRepository.findByName(CtfUtilService.PROBLEM_MAKER_JOB)
         .orElseThrow(() -> new RuntimeException("'ROLE_출제자'가 존재하지 않습니다. DB를 확인해주세요."));
     memberHasMemberJobRepository.save(MemberHasMemberJobEntity.builder()
         .memberEntity(probMaker)
@@ -126,7 +120,7 @@ public class CtfAdminService {
     if (challengeAdminDto.getType().getId().equals(CtfChallengeTypeEntity.DYNAMIC.getId())) {
       if (challengeAdminDto.getDynamicInfo() == null) {
         // TODO: DynamicInfo Exception
-        throw new RuntimeException("");
+        throw new RuntimeException("Dynamic 관련 필드가 존재하지 않습니다.");
       }
       CtfDynamicChallengeInfoEntity dynamicInfoEntity = createDynamicInfoEntity(
           challengeAdminDto.getDynamicInfo(), challenge);
@@ -215,7 +209,7 @@ public class CtfAdminService {
   }
 
   public CtfChallengeAdminDto openProblem(Long problemId) {
-    if (problemId.equals(VIRTUAL_PROBLEM_ID)) {
+    if (problemId.equals(CtfUtilService.VIRTUAL_PROBLEM_ID)) {
       throw new CustomCtfChallengeNotFoundException();
     }
     CtfChallengeEntity challenge = challengeRepository.findById(problemId)
@@ -227,7 +221,7 @@ public class CtfAdminService {
   }
 
   public CtfChallengeAdminDto closeProblem(Long problemId) {
-    if (problemId.equals(VIRTUAL_PROBLEM_ID)) {
+    if (problemId.equals(CtfUtilService.VIRTUAL_PROBLEM_ID)) {
       throw new CustomCtfChallengeNotFoundException();
     }
     CtfChallengeEntity challenge = challengeRepository.findById(problemId)
@@ -240,7 +234,7 @@ public class CtfAdminService {
 
   @Transactional
   public CtfChallengeAdminDto deleteProblem(Long problemId) throws AccessDeniedException {
-    if (problemId.equals(VIRTUAL_PROBLEM_ID)) {
+    if (problemId.equals(CtfUtilService.VIRTUAL_PROBLEM_ID)) {
       throw new CustomCtfChallengeNotFoundException();
     }
 
@@ -262,17 +256,18 @@ public class CtfAdminService {
   }
 
   public List<CtfChallengeAdminDto> getProblemList(Long ctfId) {
-    if (ctfId.equals(VIRTUAL_CONTEST_ID)) {
+    if (ctfId.equals(CtfUtilService.VIRTUAL_CONTEST_ID)) {
       throw new CustomContestNotFoundException();
     }
     CtfContestEntity contest = ctfContestRepository.findById(ctfId)
         .orElseThrow(CustomContestNotFoundException::new);
-    return challengeRepository.findAllByIdIsNotAndCtfContestEntity(VIRTUAL_PROBLEM_ID, contest)
+    return challengeRepository.findAllByIdIsNotAndCtfContestEntity(
+            CtfUtilService.VIRTUAL_PROBLEM_ID, contest)
         .stream().map(CtfChallengeAdminDto::toDto).toList();
   }
 
   public Page<CtfSubmitLogDto> getSubmitLogList(Pageable pageable) {
-    return ctfSubmitLogRepository.findAllByIdIsNot(VIRTUAL_SUBMIT_LOG_ID, pageable)
+    return ctfSubmitLogRepository.findAllByIdIsNot(CtfUtilService.VIRTUAL_SUBMIT_LOG_ID, pageable)
         .map(CtfSubmitLogDto::toDto);
   }
 }
