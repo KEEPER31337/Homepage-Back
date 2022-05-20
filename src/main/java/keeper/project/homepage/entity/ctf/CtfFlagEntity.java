@@ -2,10 +2,12 @@ package keeper.project.homepage.entity.ctf;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -24,17 +26,16 @@ public class CtfFlagEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  @Column(nullable = false)
   Long id;
 
   @Column(nullable = false, length = 200)
   String content;
 
-  @OneToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "team_id")
   CtfTeamEntity ctfTeamEntity;
 
-  @OneToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "challenge_id")
   CtfChallengeEntity ctfChallengeEntity;
 

@@ -50,7 +50,6 @@ public class CtfTestHelper {
   @Autowired
   protected MemberRepository memberRepository;
 
-
   @RequiredArgsConstructor
   @Getter
   protected enum CtfChallengeCategory {
@@ -101,7 +100,6 @@ public class CtfTestHelper {
 
   protected CtfSubmitLogEntity generateCtfSubmitLog(CtfTeamEntity ctfTeam, MemberEntity submitter,
       CtfChallengeEntity ctfChallengeEntity, String submitFlag) {
-    final long epochTime = System.nanoTime();
     CtfSubmitLogEntity entity = CtfSubmitLogEntity.builder()
         .submitTime(LocalDateTime.now())
         .ctfTeamEntity(ctfTeam)
