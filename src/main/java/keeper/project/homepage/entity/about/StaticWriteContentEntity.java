@@ -1,4 +1,4 @@
-package keeper.project.homepage.entity.etc;
+package keeper.project.homepage.entity.about;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.Column;
@@ -9,7 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import keeper.project.homepage.admin.dto.etc.StaticWriteContentDto;
+import keeper.project.homepage.admin.dto.about.request.StaticWriteContentDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,10 +27,10 @@ public class StaticWriteContentEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(columnDefinition = "TEXT")
+  @Column(name = "content", columnDefinition = "TEXT")
   private String content;
 
-  @Column(name = "display_order")
+  @Column(name = "display_order", nullable = false)
   private Integer displayOrder;
 
   @ManyToOne
@@ -38,7 +38,7 @@ public class StaticWriteContentEntity {
   @JsonBackReference
   private StaticWriteSubtitleImageEntity staticWriteSubtitleImage;
 
-  public void updateInfo(StaticWriteContentDto staticWriteContentDto,
+  public void update(StaticWriteContentDto staticWriteContentDto,
       StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity) {
     this.content = staticWriteContentDto.getContent();
     this.displayOrder = staticWriteContentDto.getDisplayOrder();

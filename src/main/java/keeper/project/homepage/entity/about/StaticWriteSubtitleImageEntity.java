@@ -1,4 +1,4 @@
-package keeper.project.homepage.entity.etc;
+package keeper.project.homepage.entity.about;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,9 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import keeper.project.homepage.admin.dto.etc.StaticWriteSubtitleImageDto;
+import keeper.project.homepage.admin.dto.about.request.StaticWriteSubtitleImageDto;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,11 +49,10 @@ public class StaticWriteSubtitleImageEntity {
   @Builder.Default
   private List<StaticWriteContentEntity> staticWriteContents = new ArrayList<>();
 
-  public void updateInfo(StaticWriteSubtitleImageDto staticWriteSubtitleImageDto,
-      StaticWriteTitleEntity staticWriteTitleEntity, ThumbnailEntity thumbnailEntity) {
+  public void update(StaticWriteSubtitleImageDto staticWriteSubtitleImageDto,
+      ThumbnailEntity thumbnailEntity) {
     this.subtitle = staticWriteSubtitleImageDto.getSubtitle();
     this.displayOrder = staticWriteSubtitleImageDto.getDisplayOrder();
-    this.staticWriteTitle = staticWriteTitleEntity;
     this.thumbnail = thumbnailEntity;
   }
 }

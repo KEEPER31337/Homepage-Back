@@ -1,8 +1,6 @@
-package keeper.project.homepage.repository.etc;
+package keeper.project.homepage.repository.about;
 
-import java.util.List;
-import java.util.Optional;
-import keeper.project.homepage.entity.etc.StaticWriteSubtitleImageEntity;
+import keeper.project.homepage.entity.about.StaticWriteSubtitleImageEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StaticWriteSubtitleImageRepository extends

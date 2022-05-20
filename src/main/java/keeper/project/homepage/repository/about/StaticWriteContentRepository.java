@@ -1,6 +1,6 @@
-package keeper.project.homepage.repository.etc;
+package keeper.project.homepage.repository.about;
 
-import keeper.project.homepage.entity.etc.StaticWriteContentEntity;
+import keeper.project.homepage.entity.about.StaticWriteContentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StaticWriteContentRepository extends
