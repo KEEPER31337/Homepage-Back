@@ -17,12 +17,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.Optional;
-import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.entity.ThumbnailEntity;
-import keeper.project.homepage.entity.etc.StaticWriteContentEntity;
-import keeper.project.homepage.entity.etc.StaticWriteSubtitleImageEntity;
-import keeper.project.homepage.entity.etc.StaticWriteTitleEntity;
+import keeper.project.homepage.entity.about.StaticWriteSubtitleImageEntity;
+import keeper.project.homepage.entity.about.StaticWriteTitleEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.AfterAll;
@@ -31,24 +27,22 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 @Transactional
 @Log4j2
-public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
+public class AdminStaticWriteSubtitleImageControllerTest extends AdminStaticWriteTestHelper {
 
   private MemberEntity generalMember;
   private String generalToken;
   private MemberEntity adminMember;
   private String adminToken;
 
-  private ThumbnailEntity thumbnailEntity;
-  private Optional<ThumbnailEntity> defaultThumbnailEntity;
   private StaticWriteTitleEntity staticWriteTitleEntity;
   private StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity, defaultStaticWirteSubtitleImageEntity;
-  private StaticWriteContentEntity staticWriteContentEntity;
 
   @BeforeEach
   public void setUp() throws Exception {
@@ -57,47 +51,14 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
     generalToken = generateJWTToken(generalMember.getLoginId(), memberPassword);
     adminToken = generateJWTToken(adminMember.getLoginId(), memberPassword);
 
-    thumbnailEntity = generateThumbnailEntity();
-    defaultThumbnailEntity = thumbnailRepository.findById(9L);
-
     staticWriteTitleEntity = generateTestTitle(1);
-    staticWriteSubtitleImageEntity = generateTestSubtitle(1, thumbnailEntity);
-    defaultStaticWirteSubtitleImageEntity = generateTestSubtitle(2, defaultThumbnailEntity.get());
-    staticWriteContentEntity = generateTestContent(1);
-
+    staticWriteSubtitleImageEntity = generateTestSubtitleImage(staticWriteTitleEntity, 1);
+    defaultStaticWirteSubtitleImageEntity = generateTestSubtitleImage(staticWriteTitleEntity, 2);
   }
 
   @AfterAll
   public static void clearFiles() {
     deleteTestFiles();
-  }
-
-  public StaticWriteTitleEntity generateTestTitle(Integer index) {
-    StaticWriteTitleEntity staticWriteTitleEntity = StaticWriteTitleEntity.builder()
-        .title("테스트 타이틀" + index)
-        .type("테스트 타입" + index)
-        .build();
-    return staticWriteTitleRepository.save(staticWriteTitleEntity);
-  }
-
-  public StaticWriteSubtitleImageEntity generateTestSubtitle(Integer index,
-      ThumbnailEntity thumbnail) {
-    StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity = StaticWriteSubtitleImageEntity.builder()
-        .subtitle("테스트 서브 타이틀" + index)
-        .displayOrder(index)
-        .staticWriteTitle(staticWriteTitleEntity)
-        .thumbnail(thumbnail)
-        .build();
-    return staticWriteSubtitleImageRepository.save(staticWriteSubtitleImageEntity);
-  }
-
-  public StaticWriteContentEntity generateTestContent(Integer index) {
-    StaticWriteContentEntity staticWriteContentEntity = StaticWriteContentEntity.builder()
-        .content("테스트 컨텐츠" + index)
-        .displayOrder(index)
-        .staticWriteSubtitleImage(staticWriteSubtitleImageEntity)
-        .build();
-    return staticWriteContentRepository.save(staticWriteContentEntity);
   }
 
   @Test
@@ -114,7 +75,7 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
     params.add("displayOrder", "1");
     params.add("ipAddress", "192.111.222");
 
-    mockMvc.perform(multipart("/v1/admin/about/sub-title/create")
+    mockMvc.perform(multipart("/v1/admin/about/sub-titles/new")
             .file(image)
             .params(params)
             .header("Authorization", adminToken)
@@ -149,7 +110,7 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
                 subsectionWithPath("data.thumbnailPath").description(
                     "생성에 성공한 페이지 블럭 서브 타이틀과 연결된 썸네일 이미지를 조회하는 api path"),
                 fieldWithPath("data.displayOrder").description("생성에 성공한 페이지 블럭 서브 타이틀이 보여지는 순서"),
-                subsectionWithPath("data.staticWriteContentResults[]").description(
+                subsectionWithPath("data.staticWriteContents[]").description(
                     "생성에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 컨텐츠 데이터 리스트")
             )));
   }
@@ -164,7 +125,7 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
     params.add("displayOrder", "1");
     params.add("ipAddress", "192.111.222");
 
-    mockMvc.perform(multipart("/v1/admin/about/sub-title/create")
+    mockMvc.perform(multipart("/v1/admin/about/sub-titles/new")
             .params(params)
             .header("Authorization", adminToken)
             .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -191,7 +152,7 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
     params.add("displayOrder", "1");
     params.add("ipAddress", "192.111.222");
 
-    mockMvc.perform(multipart("/v1/admin/about/sub-title/create")
+    mockMvc.perform(multipart("/v1/admin/about/sub-titles/new")
             .file(image)
             .params(params)
             .header("Authorization", generalToken)
@@ -219,7 +180,7 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
     params.add("displayOrder", "1");
     params.add("ipAddress", "192.111.222");
 
-    mockMvc.perform(multipart("/v1/admin/about/sub-title/create")
+    mockMvc.perform(multipart("/v1/admin/about/sub-titles/new")
             .file(image)
             .params(params)
             .header("Authorization", adminToken)
@@ -229,9 +190,9 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
               return request;
             }))
         .andDo(print())
-        .andExpect(status().is5xxServerError())
+        .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.msg").value("존재하지 않는 타이틀 ID 입니다."));
+        .andExpect(jsonPath("$.msg").value("존재하지 않는 타이틀입니다."));
   }
 
   @Test
@@ -249,7 +210,8 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
     params.add("ipAddress", "192.111.777");
 
     mockMvc.perform(
-            multipart("/v1/admin/about/sub-title/modify/{id}", staticWriteSubtitleImageEntity.getId())
+            RestDocumentationRequestBuilders.fileUpload("/v1/admin/about/sub-titles/{id}",
+                    staticWriteSubtitleImageEntity.getId())
                 .file(image)
                 .params(params)
                 .header("Authorization", adminToken)
@@ -261,7 +223,10 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
-        .andDo(document("aboutSubtitle-modify",
+        .andDo(document("aboutSubtitle-update",
+            pathParameters(
+                parameterWithName("id").description("삭제하고자 하는 페이지 블럭 서브 타이틀의 ID")
+            ),
             requestParameters(
                 parameterWithName("subtitle").description(
                     "수정하고자 하는 페이지 블럭 서브 타이틀의 부제목(변하지 않을 시 기존값)"),
@@ -286,7 +251,7 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
                 subsectionWithPath("data.thumbnailPath").description(
                     "수정에 성공한 페이지 블럭 서브 타이틀과 연결된 썸네일 이미지를 조회하는 api path"),
                 fieldWithPath("data.displayOrder").description("수정에 성공한 페이지 블럭 서브 타이틀이 보여지는 순서"),
-                subsectionWithPath("data.staticWriteContentResults[]").description(
+                subsectionWithPath("data.staticWriteContents[]").description(
                     "수정에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 컨텐츠 데이터 리스트")
             )));
   }
@@ -302,7 +267,7 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
     params.add("ipAddress", "192.111.777");
 
     mockMvc.perform(
-            multipart("/v1/admin/about/sub-title/modify/{id}", staticWriteSubtitleImageEntity.getId())
+            multipart("/v1/admin/about/sub-titles/{id}", staticWriteSubtitleImageEntity.getId())
                 .params(params)
                 .header("Authorization", adminToken)
                 .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -329,7 +294,7 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
     params.add("displayOrder", "7");
     params.add("ipAddress", "192.111.777");
 
-    mockMvc.perform(multipart("/v1/admin/about/sub-title/modify/{id}",
+    mockMvc.perform(multipart("/v1/admin/about/sub-titles/{id}",
             defaultStaticWirteSubtitleImageEntity.getId())
             .file(image)
             .params(params)
@@ -358,7 +323,7 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
     params.add("displayOrder", "7");
     params.add("ipAddress", "192.111.777");
 
-    mockMvc.perform(multipart("/v1/admin/about/sub-title/modify/{id}", 1234)
+    mockMvc.perform(multipart("/v1/admin/about/sub-titles/{id}", 1234)
             .file(image)
             .params(params)
             .header("Authorization", adminToken)
@@ -368,16 +333,16 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
               return request;
             }))
         .andDo(print())
-        .andExpect(status().is5xxServerError())
+        .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.msg").value("존재하지 않는 서브 타이틀 ID 입니다."));
+        .andExpect(jsonPath("$.msg").value("존재하지 않는 서브 타이틀입니다."));
   }
 
   @Test
   @DisplayName("페이지 블럭 서브 타이틀 삭제 - 성공")
   public void deleteSubTitleByIdSuccess() throws Exception {
     mockMvc.perform(
-            delete("/v1/admin/about/sub-title/delete/{id}", staticWriteSubtitleImageEntity.getId())
+            delete("/v1/admin/about/sub-titles/{id}", staticWriteSubtitleImageEntity.getId())
                 .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -397,7 +362,7 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
                 subsectionWithPath("data.thumbnailPath").description(
                     "삭제에 성공한 페이지 블럭 서브 타이틀과 연결된 썸네일 이미지를 조회하는 api path"),
                 fieldWithPath("data.displayOrder").description("삭제에 성공한 페이지 블럭 서브 타이틀이 보여지는 순서"),
-                subsectionWithPath("data.staticWriteContentResults[]").description(
+                subsectionWithPath("data.staticWriteContents[]").description(
                     "삭제에 성공한 페이지 블럭 서브 타이틀과 연결된 페이지 블럭 컨텐츠 데이터 리스트")
             )));
   }
@@ -406,7 +371,7 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
   @DisplayName("페이지 블럭 서브 타이틀 삭제 - 성공(디폴트 이미지로 지정된 경우)")
   public void deleteSubtitleByIdSuccess_DefaultThumbnail() throws Exception {
     mockMvc.perform(
-            delete("/v1/admin/about/sub-title/delete/{id}",
+            delete("/v1/admin/about/sub-titles/{id}",
                 defaultStaticWirteSubtitleImageEntity.getId())
                 .header("Authorization", adminToken))
         .andDo(print())
@@ -418,10 +383,10 @@ public class AdminAboutSubtitleControllerTest extends ApiControllerTestHelper {
   @DisplayName("페이지 블럭 서브 타이틀 삭제 - 실패(존재하지 않는 서브 타이틀 ID)")
   public void deleteSubTitleByIdFail_Id() throws Exception {
     mockMvc.perform(
-            delete("/v1/admin/about/sub-title/delete/{id}", 1234)
+            delete("/v1/admin/about/sub-titles/{id}", 1234)
                 .header("Authorization", adminToken))
         .andDo(print())
-        .andExpect(status().is5xxServerError())
+        .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false));
   }
 
