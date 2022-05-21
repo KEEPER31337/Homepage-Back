@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @AllArgsConstructor
@@ -25,6 +26,7 @@ public class CommentDto {
   private String content;
   private LocalDateTime registerTime;
   private LocalDateTime updateTime;
+  @Setter
   private String ipAddress;
   private Integer likeCount;
   private Integer dislikeCount;
