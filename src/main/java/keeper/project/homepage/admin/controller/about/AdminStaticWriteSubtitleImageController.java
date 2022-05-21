@@ -28,7 +28,7 @@ public class AdminStaticWriteSubtitleImageController {
   private final ResponseService responseService;
 
   @Secured("ROLE_회장")
-  @PostMapping(value = "/new")
+  @PostMapping(value = "", consumes = "multipart/form-data")
   public SingleResult<StaticWriteSubtitleImageResponseDto> createSubtitle(
       StaticWriteSubtitleImageDto staticWriteSubtitleImageDto,
       @RequestParam(value = "thumbnail", required = false) MultipartFile image,

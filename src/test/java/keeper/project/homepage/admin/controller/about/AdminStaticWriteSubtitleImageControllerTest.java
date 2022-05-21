@@ -75,7 +75,7 @@ public class AdminStaticWriteSubtitleImageControllerTest extends AdminStaticWrit
     params.add("displayOrder", "1");
     params.add("ipAddress", "192.111.222");
 
-    mockMvc.perform(multipart("/v1/admin/about/sub-titles/new")
+    mockMvc.perform(multipart("/v1/admin/about/sub-titles")
             .file(image)
             .params(params)
             .header("Authorization", adminToken)
@@ -125,7 +125,7 @@ public class AdminStaticWriteSubtitleImageControllerTest extends AdminStaticWrit
     params.add("displayOrder", "1");
     params.add("ipAddress", "192.111.222");
 
-    mockMvc.perform(multipart("/v1/admin/about/sub-titles/new")
+    mockMvc.perform(multipart("/v1/admin/about/sub-titles")
             .params(params)
             .header("Authorization", adminToken)
             .contentType(MediaType.MULTIPART_FORM_DATA)
@@ -152,7 +152,7 @@ public class AdminStaticWriteSubtitleImageControllerTest extends AdminStaticWrit
     params.add("displayOrder", "1");
     params.add("ipAddress", "192.111.222");
 
-    mockMvc.perform(multipart("/v1/admin/about/sub-titles/new")
+    mockMvc.perform(multipart("/v1/admin/about/sub-titles")
             .file(image)
             .params(params)
             .header("Authorization", generalToken)
@@ -180,7 +180,7 @@ public class AdminStaticWriteSubtitleImageControllerTest extends AdminStaticWrit
     params.add("displayOrder", "1");
     params.add("ipAddress", "192.111.222");
 
-    mockMvc.perform(multipart("/v1/admin/about/sub-titles/new")
+    mockMvc.perform(multipart("/v1/admin/about/sub-titles")
             .file(image)
             .params(params)
             .header("Authorization", adminToken)

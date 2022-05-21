@@ -26,7 +26,7 @@ public class AdminStaticWriteContentController {
   private final ResponseService responseService;
 
   @Secured("ROLE_회장")
-  @PostMapping(value = "/new")
+  @PostMapping(value = "")
   public SingleResult<StaticWriteContentResponseDto> createContent(
       @RequestBody StaticWriteContentDto staticWriteContentDto
   ) {

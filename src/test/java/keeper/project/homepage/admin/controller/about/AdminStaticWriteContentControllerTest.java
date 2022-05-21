@@ -65,7 +65,7 @@ public class AdminStaticWriteContentControllerTest extends AdminStaticWriteTestH
         + "    \"displayOrder\": \"" + 0 + "\"\n"
         + "}";
 
-    mockMvc.perform(post("/v1/admin/about/contents/new")
+    mockMvc.perform(post("/v1/admin/about/contents")
             .header("Authorization", adminToken)
             .content(content)
             .contentType(MediaType.APPLICATION_JSON))
@@ -98,7 +98,7 @@ public class AdminStaticWriteContentControllerTest extends AdminStaticWriteTestH
         + "    \"displayOrder\": \"" + 0 + "\"\n"
         + "}";
 
-    mockMvc.perform(post("/v1/admin/about/contents/new")
+    mockMvc.perform(post("/v1/admin/about/contents")
             .header("Authorization", adminToken)
             .content(content)
             .contentType(MediaType.APPLICATION_JSON))
