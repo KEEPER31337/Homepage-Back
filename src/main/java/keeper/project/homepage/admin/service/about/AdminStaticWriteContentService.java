@@ -18,20 +18,20 @@ public class AdminStaticWriteContentService {
   private final StaticWriteSubtitleImageRepository staticWriteSubtitleImageRepository;
   private final StaticWriteContentRepository staticWriteContentRepository;
 
-  private StaticWriteSubtitleImageEntity validateSubtitleId(Long id) {
+  private StaticWriteSubtitleImageEntity getSubtitleById(Long id) {
 
     return staticWriteSubtitleImageRepository.findById(id)
         .orElseThrow(CustomStaticWriteSubtitleImageNotFoundException::new);
   }
 
-  private StaticWriteContentEntity validateContentId(Long id) {
+  private StaticWriteContentEntity getContentById(Long id) {
 
     return staticWriteContentRepository.findById(id)
         .orElseThrow(CustomStaticWriteContentNotFoundException::new);
   }
 
   public StaticWriteContentResponseDto createContent(StaticWriteContentDto staticWriteContentDto) {
-    StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity = validateSubtitleId(
+    StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity = getSubtitleById(
         staticWriteContentDto.getStaticWriteSubtitleImageId());
 
     StaticWriteContentEntity savedStaticWriteContent = staticWriteContentRepository.save(
@@ -41,9 +41,9 @@ public class AdminStaticWriteContentService {
 
   public StaticWriteContentResponseDto modifyContentById(StaticWriteContentDto staticWriteContentDto,
       Long id) {
-    StaticWriteContentEntity staticWriteContentEntity = validateContentId(id);
+    StaticWriteContentEntity staticWriteContentEntity = getContentById(id);
 
-    StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity = validateSubtitleId(
+    StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity = getSubtitleById(
         staticWriteContentDto.getStaticWriteSubtitleImageId());
 
     staticWriteContentEntity.update(staticWriteContentDto, staticWriteSubtitleImageEntity);

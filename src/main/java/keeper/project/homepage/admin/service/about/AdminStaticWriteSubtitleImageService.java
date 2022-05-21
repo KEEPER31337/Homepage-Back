@@ -25,13 +25,13 @@ public class AdminStaticWriteSubtitleImageService {
   private final StaticWriteSubtitleImageRepository staticWriteSubtitleImageRepository;
   private final ThumbnailService thumbnailService;
 
-  private StaticWriteTitleEntity validateTitleId(Long id) {
+  private StaticWriteTitleEntity getTitleById(Long id) {
 
     return staticWriteTitleRepository.findById(id)
         .orElseThrow(CustomStaticWriteTitleNotFoundException::new);
   }
 
-  private StaticWriteSubtitleImageEntity validateSubTitleId(Long id) {
+  private StaticWriteSubtitleImageEntity getSubTitleById(Long id) {
 
     return staticWriteSubtitleImageRepository.findById(id)
         .orElseThrow(CustomStaticWriteSubtitleImageNotFoundException::new);
@@ -50,7 +50,7 @@ public class AdminStaticWriteSubtitleImageService {
       StaticWriteSubtitleImageDto staticWriteSubtitleImageDto, MultipartFile thumbnail,
       String ipAddress) {
 
-    StaticWriteTitleEntity staticWriteTitleEntity = validateTitleId(
+    StaticWriteTitleEntity staticWriteTitleEntity = getTitleById(
         staticWriteSubtitleImageDto.getStaticWriteTitleId());
 
     ThumbnailEntity thumbnailEntity = validateThumbnail(thumbnail, ipAddress);
@@ -65,9 +65,9 @@ public class AdminStaticWriteSubtitleImageService {
       StaticWriteSubtitleImageDto staticWriteSubtitleImageDto, Long id, MultipartFile thumbnail,
       String ipAddress) {
 
-    StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity = validateSubTitleId(id);
+    StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity = getSubTitleById(id);
 
-    StaticWriteTitleEntity staticWriteTitleEntity = validateTitleId(
+    StaticWriteTitleEntity staticWriteTitleEntity = getTitleById(
         staticWriteSubtitleImageDto.getStaticWriteTitleId());
 
     ThumbnailEntity prevThumbnail = staticWriteSubtitleImageEntity.getThumbnail();
@@ -89,7 +89,7 @@ public class AdminStaticWriteSubtitleImageService {
   }
 
   public StaticWriteSubtitleImageResponseDto deleteSubtitleById(Long id) {
-    StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity = validateSubTitleId(id);
+    StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity = getSubTitleById(id);
 
     thumbnailService.deleteById(staticWriteSubtitleImageEntity.getThumbnail().getId());
 
