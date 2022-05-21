@@ -6,7 +6,7 @@ import java.io.File;
 import javax.imageio.ImageIO;
 import keeper.project.homepage.exception.file.CustomImageIOException;
 
-public class ImageCenterCrop implements ImageProcessing {
+public class ImageCenterCropping implements ImageProcessing {
 
   public void imageProcessing(File imageFile, int width, int height, String fileFormat) {
     BufferedImage bo_image;

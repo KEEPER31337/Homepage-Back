@@ -83,12 +83,34 @@ public class ThumbnailService {
     }
   }
 
-  public byte[] getThumbnail(Long thumbnailId) throws IOException {
-    ThumbnailEntity thumbnail = findById(thumbnailId);
-    String thumbnailPath = System.getProperty("user.dir") + File.separator + thumbnail.getPath();
-    File file = new File(thumbnailPath);
+  public byte[] getByteArrayForThumbnailImage(Long thumbnailId, ImageProcessing imageProcessing,
+      Integer width, Integer height) throws IOException {
+    /**
+     * @return byte array for preprocessed thumbnail image
+     */
+    File file = getThumbnailFile(thumbnailId);
+    imageProcessing.imageProcessing(file, width, height, "jpg");
     InputStream in = new FileInputStream(file);
     return IOUtils.toByteArray(in);
+  }
+
+  public byte[] getByteArrayForThumbnailImage(Long thumbnailId) throws IOException {
+    /**
+     * @return byte array for original thumbnail image
+     */
+    File file = getThumbnailFile(thumbnailId);
+    InputStream in = new FileInputStream(file);
+    return IOUtils.toByteArray(in);
+  }
+
+  private File getThumbnailFile(Long thumbnailId) {
+    ThumbnailEntity thumbnail = findById(thumbnailId);
+    String thumbnailPath = System.getProperty("user.dir") + File.separator + thumbnail.getPath();
+    File imageFile = new File(thumbnailPath);
+    if (imageFile.exists() == false) {
+      throw new CustomFileNotFoundException();
+    }
+    return imageFile;
   }
 
   public ThumbnailEntity saveThumbnail(ImageProcessing imageProcessing, MultipartFile multipartFile,

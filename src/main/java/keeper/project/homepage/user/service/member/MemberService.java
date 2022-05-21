@@ -9,7 +9,7 @@ import keeper.project.homepage.exception.member.CustomAccessVirtualMemberExcepti
 import keeper.project.homepage.user.dto.member.MultiMemberResponseDto;
 import keeper.project.homepage.user.dto.posting.PostingResponseDto;
 import keeper.project.homepage.user.dto.member.MemberFollowDto;
-import keeper.project.homepage.util.ImageCenterCrop;
+import keeper.project.homepage.util.ImageCenterCropping;
 import keeper.project.homepage.common.dto.sign.EmailAuthDto;
 import keeper.project.homepage.user.dto.member.MemberDto;
 import keeper.project.homepage.user.dto.member.OtherMemberInfoResult;
@@ -276,7 +276,7 @@ public class MemberService {
 
     ThumbnailEntity prevThumbnail = memberEntity.getThumbnail();
 
-    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(), image,
+    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCropping(), image,
         ThumbnailSize.LARGE, ipAddress);
 
     memberEntity.changeThumbnail(thumbnailEntity);
