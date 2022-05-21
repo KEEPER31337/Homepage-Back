@@ -5,7 +5,8 @@ import keeper.project.homepage.admin.dto.about.response.StaticWriteSubtitleImage
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.about.StaticWriteSubtitleImageEntity;
 import keeper.project.homepage.entity.about.StaticWriteTitleEntity;
-import keeper.project.homepage.exception.about.CustomStaticWriteNotFoundException;
+import keeper.project.homepage.exception.about.CustomStaticWriteSubtitleImageNotFoundException;
+import keeper.project.homepage.exception.about.CustomStaticWriteTitleNotFoundException;
 import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
 import keeper.project.homepage.repository.about.StaticWriteSubtitleImageRepository;
 import keeper.project.homepage.repository.about.StaticWriteTitleRepository;
@@ -27,13 +28,13 @@ public class AdminStaticWriteSubtitleImageService {
   private StaticWriteTitleEntity validateTitleId(Long id) {
 
     return staticWriteTitleRepository.findById(id)
-        .orElseThrow(() -> new CustomStaticWriteNotFoundException("존재하지 않는 타이틀입니다."));
+        .orElseThrow(CustomStaticWriteTitleNotFoundException::new);
   }
 
   private StaticWriteSubtitleImageEntity validateSubTitleId(Long id) {
 
     return staticWriteSubtitleImageRepository.findById(id)
-        .orElseThrow(() -> new CustomStaticWriteNotFoundException("존재하지 않는 서브 타이틀입니다."));
+        .orElseThrow(CustomStaticWriteSubtitleImageNotFoundException::new);
   }
 
   private ThumbnailEntity validateThumbnail(MultipartFile thumbnail, String ipAddress) {

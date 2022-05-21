@@ -4,7 +4,8 @@ import keeper.project.homepage.admin.dto.about.request.StaticWriteContentDto;
 import keeper.project.homepage.admin.dto.about.response.StaticWriteContentResponseDto;
 import keeper.project.homepage.entity.about.StaticWriteContentEntity;
 import keeper.project.homepage.entity.about.StaticWriteSubtitleImageEntity;
-import keeper.project.homepage.exception.about.CustomStaticWriteNotFoundException;
+import keeper.project.homepage.exception.about.CustomStaticWriteContentNotFoundException;
+import keeper.project.homepage.exception.about.CustomStaticWriteSubtitleImageNotFoundException;
 import keeper.project.homepage.repository.about.StaticWriteContentRepository;
 import keeper.project.homepage.repository.about.StaticWriteSubtitleImageRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,13 +21,13 @@ public class AdminStaticWriteContentService {
   private StaticWriteSubtitleImageEntity validateSubtitleId(Long id) {
 
     return staticWriteSubtitleImageRepository.findById(id)
-        .orElseThrow(() -> new CustomStaticWriteNotFoundException("존재하지 않는 서브 타이틀입니다."));
+        .orElseThrow(CustomStaticWriteSubtitleImageNotFoundException::new);
   }
 
   private StaticWriteContentEntity validateContentId(Long id) {
 
     return staticWriteContentRepository.findById(id)
-        .orElseThrow(() -> new CustomStaticWriteNotFoundException("존재하지 않는 컨텐츠입니다."));
+        .orElseThrow(CustomStaticWriteContentNotFoundException::new);
   }
 
   public StaticWriteContentResponseDto createContent(StaticWriteContentDto staticWriteContentDto) {

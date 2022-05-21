@@ -122,7 +122,7 @@ public class StaticWriteTitleControllerTest extends ApiControllerTestHelper {
         .andDo(print())
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.msg").value("존재하지 않는 타입입니다."));
+        .andExpect(jsonPath("$.msg").value("존재하지 않는 타입에 접근하였습니다."));
   }
 
 }

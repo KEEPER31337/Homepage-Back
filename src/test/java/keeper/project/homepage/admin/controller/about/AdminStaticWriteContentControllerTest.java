@@ -105,7 +105,7 @@ public class AdminStaticWriteContentControllerTest extends AdminStaticWriteTestH
         .andDo(print())
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.msg").value("존재하지 않는 서브 타이틀입니다."));
+        .andExpect(jsonPath("$.msg").value("존재하지 않는 서브타이틀에 접근하였습니다."));
   }
 
   @Test
@@ -161,7 +161,7 @@ public class AdminStaticWriteContentControllerTest extends AdminStaticWriteTestH
         .andDo(print())
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.msg").value("존재하지 않는 서브 타이틀입니다."));
+        .andExpect(jsonPath("$.msg").value("존재하지 않는 서브타이틀에 접근하였습니다."));
   }
 
   @Test
@@ -181,7 +181,7 @@ public class AdminStaticWriteContentControllerTest extends AdminStaticWriteTestH
         .andDo(print())
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.msg").value("존재하지 않는 컨텐츠입니다."));
+        .andExpect(jsonPath("$.msg").value("존재하지 않는 컨텐츠에 접근하였습니다."));
   }
 
 }
