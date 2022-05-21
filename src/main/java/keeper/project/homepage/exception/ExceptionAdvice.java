@@ -7,6 +7,7 @@ import keeper.project.homepage.exception.ctf.CustomContestNotFoundException;
 import keeper.project.homepage.exception.ctf.CustomCtfCategoryNotFoundException;
 import keeper.project.homepage.exception.ctf.CustomCtfChallengeNotFoundException;
 import keeper.project.homepage.exception.ctf.CustomCtfTypeNotFoundException;
+import keeper.project.homepage.exception.file.CustomInvalidImageFileException;
 import keeper.project.homepage.exception.file.CustomFileDeleteFailedException;
 import keeper.project.homepage.exception.file.CustomFileEntityNotFoundException;
 import keeper.project.homepage.exception.file.CustomFileNotFoundException;
@@ -208,7 +209,7 @@ public class ExceptionAdvice {
   }
 
   @ExceptionHandler(CustomThumbnailEntityNotFoundException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult CustomThumbnailEntityNotFoundException(HttpServletRequest request,
       CustomThumbnailEntityNotFoundException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
@@ -233,6 +234,14 @@ public class ExceptionAdvice {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(Integer.parseInt(getMessage("imageIO.code")),
         getMessage("imageIO.msg"));
+  }
+
+  @ExceptionHandler(CustomInvalidImageFileException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public CommonResult invalidImageFileException(HttpServletRequest request,
+      CustomInvalidImageFileException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("invalidImageFile.code")),
+        e.getMessage() == null ? getMessage("invalidImageFile.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomMemberEmptyFieldException.class)
