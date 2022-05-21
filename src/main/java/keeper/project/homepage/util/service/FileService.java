@@ -178,14 +178,7 @@ public class FileService {
     fileRepository.deleteById(deleteId);
   }
 
-  public void deleteFileById(Long deleteId) {
-    // 기본 썸네일이면 삭제하지 않는다.
-    if (isDefaultFileId(deleteId)) {
-      throw new CustomFileDeleteFailedException("삭제할 수 없는 기본 이미지입니다.");
-    }
-
-    FileEntity deletedFileEntity = fileRepository.findById(deleteId)
-        .orElseThrow(CustomFileEntityNotFoundException::new);
+  public void deleteFileInServer(FileEntity deletedFileEntity) {
     File deleteFile = new File(
         System.getProperty("user.dir") + File.separator + deletedFileEntity.getFilePath());
     if (deleteFile.exists() == false) {
@@ -194,6 +187,17 @@ public class FileService {
     if (deleteFile.delete() == false) {
       throw new CustomFileDeleteFailedException();
     }
+  }
+
+  public void deleteFileById(Long deleteId) {
+    // 기본 썸네일이면 삭제하지 않는다.
+    if (isDefaultFileId(deleteId)) {
+      throw new CustomFileDeleteFailedException("삭제할 수 없는 기본 이미지입니다.");
+    }
+
+    FileEntity deletedFileEntity = fileRepository.findById(deleteId)
+        .orElseThrow(CustomFileEntityNotFoundException::new);
+    deleteFileInServer(deletedFileEntity);
     deleteFileEntityById(deleteId);
   }
 
@@ -237,6 +241,19 @@ public class FileService {
           "썸네일 원본 파일 삭제를 실패하였습니다." + " (file path : " + originalImageFile.getPath() + ")");
     }
     deleteFileEntityById(deleteId);
+  }
+
+  public FileEntity updateFileEntity(Long fileId, FileDto modifyContent) {
+    FileEntity prevEntity = findFileEntityById(fileId);
+    FileEntity aftEntity = FileEntity.builder().id(prevEntity.getId())
+        .fileName(modifyContent.getFileName())
+        .filePath(modifyContent.getFilePath())
+        .fileSize(modifyContent.getFileSize())
+        .uploadTime(modifyContent.getUploadTime())
+        .ipAddress(modifyContent.getIpAddress())
+        .postingId(prevEntity.getPostingId())
+        .build();
+    return fileRepository.save(aftEntity);
   }
 
   public String encryptSHA256(String str) {
