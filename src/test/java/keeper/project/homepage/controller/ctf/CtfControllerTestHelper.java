@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
+import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeTypeEntity;
@@ -17,6 +18,7 @@ import keeper.project.homepage.entity.ctf.CtfDynamicChallengeInfoEntity;
 import keeper.project.homepage.entity.ctf.CtfFlagEntity;
 import keeper.project.homepage.entity.ctf.CtfSubmitLogEntity;
 import keeper.project.homepage.entity.ctf.CtfTeamEntity;
+import keeper.project.homepage.entity.ctf.CtfTeamHasMemberEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.repository.ctf.CtfChallengeCategoryRepository;
 import keeper.project.homepage.repository.ctf.CtfChallengeRepository;
@@ -25,11 +27,13 @@ import keeper.project.homepage.repository.ctf.CtfContestRepository;
 import keeper.project.homepage.repository.ctf.CtfDynamicChallengeInfoRepository;
 import keeper.project.homepage.repository.ctf.CtfFlagRepository;
 import keeper.project.homepage.repository.ctf.CtfSubmitLogRepository;
+import keeper.project.homepage.repository.ctf.CtfTeamHasMemberRepository;
 import keeper.project.homepage.repository.ctf.CtfTeamRepository;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterAll;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.payload.FieldDescriptor;
 
 public class CtfControllerTestHelper extends ApiControllerTestHelper {
@@ -54,6 +58,9 @@ public class CtfControllerTestHelper extends ApiControllerTestHelper {
 
   @Autowired
   protected CtfTeamRepository ctfTeamRepository;
+
+  @Autowired
+  protected CtfTeamHasMemberRepository ctfTeamHasMemberRepository;
 
   @Autowired
   protected CtfDynamicChallengeInfoRepository ctfDynamicChallengeInfoRepository;
@@ -104,13 +111,14 @@ public class CtfControllerTestHelper extends ApiControllerTestHelper {
 
   }
 
-  protected CtfFlagEntity generateCtfFlag(CtfTeamEntity ctfTeam, CtfChallengeEntity ctfChallenge) {
+  protected CtfFlagEntity generateCtfFlag(CtfTeamEntity ctfTeam, CtfChallengeEntity ctfChallenge,
+      Boolean isCorrect) {
     final long epochTime = System.nanoTime();
     CtfFlagEntity entity = CtfFlagEntity.builder()
         .content("flag_" + epochTime)
         .ctfTeamEntity(ctfTeam)
         .ctfChallengeEntity(ctfChallenge)
-        .isCorrect(false)
+        .isCorrect(isCorrect)
         .build();
     ctfFlagRepository.save(entity);
     ctfChallenge.getCtfFlagEntity().add(entity);
@@ -144,6 +152,13 @@ public class CtfControllerTestHelper extends ApiControllerTestHelper {
         .ctfContestEntity(ctfContestEntity)
         .build();
     ctfTeamRepository.save(entity);
+
+    CtfTeamHasMemberEntity teamHasMemberEntity = CtfTeamHasMemberEntity.builder()
+        .team(entity)
+        .member(creator)
+        .build();
+    ctfTeamHasMemberRepository.save(teamHasMemberEntity);
+    entity.getCtfTeamHasMemberEntityList().add(teamHasMemberEntity);
     return entity;
   }
 
@@ -167,6 +182,13 @@ public class CtfControllerTestHelper extends ApiControllerTestHelper {
         .build();
     ctfChallengeRepository.save(entity);
     return entity;
+  }
+
+  protected FileEntity generateFileInChallenge(CtfChallengeEntity challenge) {
+    FileEntity file = generateFileEntity();
+    challenge.setFileEntity(file);
+    ctfChallengeRepository.save(challenge);
+    return file;
   }
 
   protected CtfDynamicChallengeInfoEntity generateDynamicChallengeInfo(
@@ -217,6 +239,25 @@ public class CtfControllerTestHelper extends ApiControllerTestHelper {
     return commonFields;
   }
 
+  protected List<FieldDescriptor> generateChallengeCommonDtoResponseFields(ResponseType type,
+      String success, String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(Arrays.asList(
+        fieldWithPath(prefix + ".challengeId").description("해당 문제의 Id"),
+        fieldWithPath(prefix + ".title").description("문제 제목"),
+        fieldWithPath(prefix + ".category.id").description("문제가 속한 카테고리의 id"),
+        fieldWithPath(prefix + ".category.name").description("문제가 속한 카테고리의 이름"),
+        fieldWithPath(prefix + ".score").description("문제의 점수"),
+        fieldWithPath(prefix + ".contestId").description("문제의 대회 Id")
+    ));
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
+    }
+    return commonFields;
+  }
+
   protected List<FieldDescriptor> generateChallengeAdminDtoResponseFields(ResponseType type,
       String success, String code, String msg, FieldDescriptor... addDescriptors) {
     String prefix = type.getReponseFieldPrefix();
@@ -232,7 +273,7 @@ public class CtfControllerTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".type.name").description("문제가 속한 타입의 이름"),
         fieldWithPath(prefix + ".flag").description("문제에 설정 된 flag (현재는 모든 팀이 동일한 flag를 가집니다."),
         fieldWithPath(prefix + ".score").description("문제의 점수"),
-        fieldWithPath(prefix + ".creatorId").description("문제 생성자 Id"),
+        fieldWithPath(prefix + ".creatorName").description("문제 생성자 이름"),
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id"),
         fieldWithPath(prefix + ".registerTime").description("문제의 등록 시간"),
         fieldWithPath(prefix + ".isSolvable").description("현재 풀 수 있는 지 여부"),
@@ -241,6 +282,44 @@ public class CtfControllerTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".dynamicInfo.minScore").description("TYPE이 DYNAMIC일 경우 minScore")
             .optional(),
         subsectionWithPath(prefix + ".file").description("문제에 해당하는 파일 정보").optional()
+    ));
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
+    }
+    return commonFields;
+  }
+
+  protected List<FieldDescriptor> generateChallengeDtoResponseFields(ResponseType type,
+      String success, String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(Arrays.asList(
+        fieldWithPath(prefix + ".challengeId").description("해당 문제의 Id"),
+        fieldWithPath(prefix + ".title").description("문제 제목"),
+        fieldWithPath(prefix + ".content").description("문제 설명"),
+        fieldWithPath(prefix + ".category.id").description("문제가 속한 카테고리의 id"),
+        fieldWithPath(prefix + ".category.name").description("문제가 속한 카테고리의 이름"),
+        fieldWithPath(prefix + ".score").description("문제의 점수"),
+        fieldWithPath(prefix + ".creatorName").description("문제 생성자 이름"),
+        fieldWithPath(prefix + ".contestId").description("문제의 대회 Id"),
+        fieldWithPath(prefix + ".solvedTeamCount").description("푼 팀 수"),
+        subsectionWithPath(prefix + ".file").description("문제에 해당하는 파일 정보").optional()
+    ));
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
+    }
+    return commonFields;
+  }
+
+  protected List<FieldDescriptor> generateFlagDtoResponseFields(ResponseType type,
+      String success, String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(Arrays.asList(
+        fieldWithPath(prefix + ".isCorrect").description("맞췄는지 여부"),
+        fieldWithPath(prefix + ".content").description("제출한 Flag")
     ));
     if (addDescriptors.length > 0) {
       commonFields.addAll(Arrays.asList(addDescriptors));

@@ -221,7 +221,7 @@ class CtfAdminControllerTest extends CtfControllerTestHelper {
         .category(category)
         .type(type)
         .isSolvable(isSolvable)
-        .creatorId(creator.getId())
+        .creatorName(creator.getNickName())
         .score(score)
         .dynamicInfo(dynamicInfo)
         .flag(flag)
@@ -241,7 +241,7 @@ class CtfAdminControllerTest extends CtfControllerTestHelper {
         .andExpect(jsonPath("$.data.category.id").value(category.getId()))
         .andExpect(jsonPath("$.data.type.id").value(type.getId()))
         .andExpect(jsonPath("$.data.isSolvable").value(isSolvable))
-        .andExpect(jsonPath("$.data.creatorId").value(creator.getId()))
+        .andExpect(jsonPath("$.data.creatorName").value(creator.getNickName()))
         .andExpect(jsonPath("$.data.score").value(dynamicInfo.getMaxScore()))
         .andExpect(jsonPath("$.data.dynamicInfo.maxScore").value(dynamicInfo.getMaxScore()))
         .andExpect(jsonPath("$.data.dynamicInfo.minScore").value(dynamicInfo.getMinScore()))
@@ -254,7 +254,7 @@ class CtfAdminControllerTest extends CtfControllerTestHelper {
                 fieldWithPath("category.id").description("문제 카테고리 Id"),
                 fieldWithPath("type.id").description("문제 Type Id"),
                 fieldWithPath("isSolvable").description("현재 풀 수 있는 지 여부"),
-                fieldWithPath("creatorId").description("문제 생성자 Id"),
+                fieldWithPath("creatorName").description("문제 생성자.getNickName()d"),
                 fieldWithPath("score").description(
                     "문제의 점수 (TYPE이 DYNAMIC일 경우 아무 값이나 보내주시면 됩니다. 초기 값은 maxScore로 저장됩니다.)"),
                 fieldWithPath("dynamicInfo.maxScore").description(
@@ -295,7 +295,7 @@ class CtfAdminControllerTest extends CtfControllerTestHelper {
         .category(category)
         .type(type)
         .isSolvable(isSolvable)
-        .creatorId(creator.getId())
+        .creatorName(creator.getNickName())
         .score(score)
         .flag(flag)
         .build();
@@ -314,7 +314,7 @@ class CtfAdminControllerTest extends CtfControllerTestHelper {
         .andExpect(jsonPath("$.data.category.id").value(category.getId()))
         .andExpect(jsonPath("$.data.type.id").value(type.getId()))
         .andExpect(jsonPath("$.data.isSolvable").value(isSolvable))
-        .andExpect(jsonPath("$.data.creatorId").value(adminEntity.getId()))
+        .andExpect(jsonPath("$.data.creatorName").value(adminEntity.getNickName()))
         .andExpect(jsonPath("$.data.score").value(score))
         .andExpect(jsonPath("$.data.flag").value(flag));
   }
@@ -364,7 +364,7 @@ class CtfAdminControllerTest extends CtfControllerTestHelper {
     CtfChallengeEntity challenge = generateCtfChallenge(contestEntity,
         CtfChallengeTypeEntity.STANDARD,
         CtfChallengeCategoryEntity.MISC, score);
-    generateCtfFlag(team, challenge);
+    generateCtfFlag(team, challenge, false);
 
     mockMvc.perform(patch("/v1/admin/ctf/prob/{pid}/open", challenge.getId())
             .header("Authorization", adminToken))
@@ -376,7 +376,7 @@ class CtfAdminControllerTest extends CtfControllerTestHelper {
         .andExpect(jsonPath("$.data.content").value(challenge.getDescription()))
         .andExpect(jsonPath("$.data.contestId").value(contestEntity.getId()))
         .andExpect(jsonPath("$.data.isSolvable").value(true))
-        .andExpect(jsonPath("$.data.creatorId").value(challenge.getCreator().getId()))
+        .andExpect(jsonPath("$.data.creatorName").value(challenge.getCreator().getNickName()))
         .andExpect(jsonPath("$.data.score").value(score))
         .andDo(document("open-problem",
             pathParameters(
@@ -400,7 +400,7 @@ class CtfAdminControllerTest extends CtfControllerTestHelper {
     CtfChallengeEntity challenge = generateCtfChallenge(contestEntity,
         CtfChallengeTypeEntity.STANDARD,
         CtfChallengeCategoryEntity.MISC, score);
-    generateCtfFlag(team, challenge);
+    generateCtfFlag(team, challenge, false);
 
     mockMvc.perform(patch("/v1/admin/ctf/prob/{pid}/close", challenge.getId())
             .header("Authorization", adminToken))
@@ -412,7 +412,7 @@ class CtfAdminControllerTest extends CtfControllerTestHelper {
         .andExpect(jsonPath("$.data.content").value(challenge.getDescription()))
         .andExpect(jsonPath("$.data.contestId").value(contestEntity.getId()))
         .andExpect(jsonPath("$.data.isSolvable").value(false))
-        .andExpect(jsonPath("$.data.creatorId").value(challenge.getCreator().getId()))
+        .andExpect(jsonPath("$.data.creatorName").value(challenge.getCreator().getNickName()))
         .andExpect(jsonPath("$.data.score").value(score))
         .andDo(document("close-problem",
             pathParameters(
@@ -436,7 +436,7 @@ class CtfAdminControllerTest extends CtfControllerTestHelper {
     CtfChallengeEntity challenge = generateCtfChallenge(contestEntity,
         CtfChallengeTypeEntity.STANDARD,
         CtfChallengeCategoryEntity.MISC, score);
-    generateCtfFlag(team, challenge);
+    generateCtfFlag(team, challenge, false);
 
     // when
     MockMultipartFile file = new MockMultipartFile("file", "image.png", "image/png",
@@ -458,7 +458,7 @@ class CtfAdminControllerTest extends CtfControllerTestHelper {
         .andExpect(jsonPath("$.data.content").value(challenge.getDescription()))
         .andExpect(jsonPath("$.data.contestId").value(contestEntity.getId()))
         .andExpect(jsonPath("$.data.isSolvable").value(challenge.getIsSolvable()))
-        .andExpect(jsonPath("$.data.creatorId").value(challenge.getCreator().getId()))
+        .andExpect(jsonPath("$.data.creatorName").value(challenge.getCreator().getNickName()))
         .andExpect(jsonPath("$.data.score").value(score))
         .andDo(document("delete-problem",
             pathParameters(
@@ -487,8 +487,8 @@ class CtfAdminControllerTest extends CtfControllerTestHelper {
         CtfChallengeTypeEntity.DYNAMIC,
         CtfChallengeCategoryEntity.FORENSIC, score);
     generateDynamicChallengeInfo(challenge2, 1000L, 100L);
-    generateCtfFlag(team, challenge2);
-    generateCtfFlag(team, challenge);
+    generateCtfFlag(team, challenge2, false);
+    generateCtfFlag(team, challenge, false);
 
     // when
     MockMultipartFile file = new MockMultipartFile("file", "image.png", "image/png",
@@ -534,8 +534,8 @@ class CtfAdminControllerTest extends CtfControllerTestHelper {
         CtfChallengeTypeEntity.DYNAMIC,
         CtfChallengeCategoryEntity.FORENSIC, score);
     generateDynamicChallengeInfo(challenge2, 1000L, 100L);
-    generateCtfFlag(team, challenge2);
-    generateCtfFlag(team, challenge);
+    generateCtfFlag(team, challenge2, false);
+    generateCtfFlag(team, challenge, false);
 
     generateCtfSubmitLog(team, creator, challenge, "이 바보야");
     generateCtfSubmitLog(team, adminEntity, challenge, "정현모 천재");
