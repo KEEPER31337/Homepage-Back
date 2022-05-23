@@ -13,8 +13,8 @@ import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.point.PointLogRepository;
 import keeper.project.homepage.user.dto.point.request.PointGiftLogRequestDto;
 import keeper.project.homepage.user.dto.point.request.PointLogRequestDto;
-import keeper.project.homepage.user.dto.point.result.PointGiftLogResultDto;
-import keeper.project.homepage.user.dto.point.result.PointLogResultDto;
+import keeper.project.homepage.user.dto.point.response.PointGiftLogResponseDto;
+import keeper.project.homepage.user.dto.point.response.PointLogResponseDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -95,12 +95,12 @@ public class PointLogServiceTest {
     // when
     when(memberRepository.save(any(MemberEntity.class))).thenReturn(memberEntity1);
     when(pointLogRepository.save(any(PointLogEntity.class))).thenReturn(pointLogEntity1);
-    PointLogResultDto pointLogResultDto = pointLogService.createPointUseLog(memberEntity1,
+    PointLogResponseDto pointLogResponseDto = pointLogService.createPointUseLog(memberEntity1,
         pointLogRequestDto);
 
     // then
-    assertThat(pointLogResultDto.getMemberId()).isEqualTo(memberEntity1.getId());
-    assertThat(pointLogResultDto.getFinalPoint()).isEqualTo(990);
+    assertThat(pointLogResponseDto.getMemberId()).isEqualTo(memberEntity1.getId());
+    assertThat(pointLogResponseDto.getFinalPoint()).isEqualTo(990);
   }
 
   @Test
@@ -113,12 +113,12 @@ public class PointLogServiceTest {
     // when
     when(memberRepository.save(any(MemberEntity.class))).thenReturn(memberEntity1);
     when(pointLogRepository.save(any(PointLogEntity.class))).thenReturn(pointLogEntity1);
-    PointLogResultDto pointLogResultDto = pointLogService.createPointSaveLog(memberEntity1,
+    PointLogResponseDto pointLogResponseDto = pointLogService.createPointSaveLog(memberEntity1,
         pointLogRequestDto);
 
     // then
-    assertThat(pointLogResultDto.getMemberId()).isEqualTo(memberEntity1.getId());
-    assertThat(pointLogResultDto.getFinalPoint()).isEqualTo(1010);
+    assertThat(pointLogResponseDto.getMemberId()).isEqualTo(memberEntity1.getId());
+    assertThat(pointLogResponseDto.getFinalPoint()).isEqualTo(1010);
   }
 
   @Test
@@ -134,17 +134,17 @@ public class PointLogServiceTest {
     when(memberRepository.findById(memberEntity2.getId())).thenReturn(Optional.of(memberEntity2));
     when(pointLogRepository.save(any(PointLogEntity.class))).thenReturn(pointLogEntity2);
     when(authService.getMemberEntityWithJWT()).thenReturn(memberEntity1);
-    PointGiftLogResultDto pointGiftLogResultDto = pointLogService.presentingPoint(
+    PointGiftLogResponseDto pointGiftLogResponseDto = pointLogService.presentingPoint(
         pointGiftLogRequestDto);
 
     // then
-    assertThat(pointGiftLogResultDto.getMemberId()).isEqualTo(memberEntity1.getId());
-    assertThat(pointGiftLogResultDto.getPresentedMemberId()).isEqualTo(
+    assertThat(pointGiftLogResponseDto.getMemberId()).isEqualTo(memberEntity1.getId());
+    assertThat(pointGiftLogResponseDto.getPresentedMemberId()).isEqualTo(
         memberEntity2.getId());
-    assertThat(pointGiftLogResultDto.getPrePointMember()).isEqualTo(1000);
-    assertThat(pointGiftLogResultDto.getFinalPointMember()).isEqualTo(990);
-    assertThat(pointGiftLogResultDto.getPrePointPresented()).isEqualTo(1000);
-    assertThat(pointGiftLogResultDto.getFinalPointPresented()).isEqualTo(1010);
+    assertThat(pointGiftLogResponseDto.getPrePointMember()).isEqualTo(1000);
+    assertThat(pointGiftLogResponseDto.getFinalPointMember()).isEqualTo(990);
+    assertThat(pointGiftLogResponseDto.getPrePointPresented()).isEqualTo(1000);
+    assertThat(pointGiftLogResponseDto.getFinalPointPresented()).isEqualTo(1010);
   }
 
 }

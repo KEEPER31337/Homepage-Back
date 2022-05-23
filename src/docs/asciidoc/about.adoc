@@ -19,54 +19,50 @@ endif::[]
 
 link:keeper.html[API 목록으로 돌아가기]
 
+== *페이지 블럭 타입 리스트 불러오기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/staticWriteTitle-types/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/staticWriteTitle-types/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/staticWriteTitle-types/response-body.adoc[]
+
+==== Response Fields
+
+include::{snippets}/staticWriteTitle-types/response-fields.adoc[]
+
 == *페이지 블럭 리스트 불러오기 (타입을 통해)*
 
 === 요청
 
 ==== Request
 
-include::{snippets}/aboutTitle-ByType-lists/http-request.adoc[]
+include::{snippets}/staticWriteTitle-byType/http-request.adoc[]
 
 ==== Path Parameters
 
-include::{snippets}/aboutTitle-ByType-lists/path-parameters.adoc[]
+include::{snippets}/staticWriteTitle-byType/path-parameters.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/aboutTitle-ByType-lists/http-response.adoc[]
+include::{snippets}/staticWriteTitle-byType/http-response.adoc[]
 
 ==== Response Body
 
-include::{snippets}/aboutTitle-ByType-lists/response-body.adoc[]
+include::{snippets}/staticWriteTitle-byType/response-body.adoc[]
 
 ==== Response Fields
 
-include::{snippets}/aboutTitle-ByType-lists/response-fields.adoc[]
-
-== *페이지 블럭 불러오기 (제목을 통해)*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/aboutTitle-ByTitle/http-request.adoc[]
-
-==== Path Parameters
-
-include::{snippets}/aboutTitle-ByTitle/path-parameters.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/aboutTitle-ByTitle/http-response.adoc[]
-
-==== Response Body
-
-include::{snippets}/aboutTitle-ByTitle/response-body.adoc[]
-
-==== Response Fields
-
-include::{snippets}/aboutTitle-ByTitle/response-fields.adoc[]
+include::{snippets}/staticWriteTitle-byType/response-fields.adoc[]

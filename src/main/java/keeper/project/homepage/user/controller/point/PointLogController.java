@@ -2,7 +2,7 @@ package keeper.project.homepage.user.controller.point;
 
 import java.util.Map;
 import keeper.project.homepage.user.dto.point.request.PointGiftLogRequestDto;
-import keeper.project.homepage.user.dto.point.result.PointGiftLogResultDto;
+import keeper.project.homepage.user.dto.point.response.PointGiftLogResponseDto;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.service.ResponseService;
 
@@ -39,7 +39,7 @@ public class PointLogController {
 
   @Secured("ROLE_회원")
   @PostMapping(value = "/present")
-  public SingleResult<PointGiftLogResultDto> presentingPoint(
+  public SingleResult<PointGiftLogResponseDto> presentingPoint(
       @RequestBody PointGiftLogRequestDto pointGiftLogRequestDto
   ) {
     return responseService.getSuccessSingleResult(

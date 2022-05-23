@@ -43,6 +43,7 @@ public class ThumbnailService {
     BadgeQuit(6L, 6L),
     BadgeSleep(7L, 7L),
     BadgeRegular(8L, 8L),
+    ThumbInfo(9L, 9L),
     ThumbBook(10L, 10L);
 
     private final Long thumbnailId;

@@ -7,9 +7,9 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 
 import keeper.project.homepage.config.security.JwtTokenProvider;
 import keeper.project.homepage.exception.ExceptionAdvice;
-import keeper.project.homepage.repository.etc.StaticWriteContentRepository;
-import keeper.project.homepage.repository.etc.StaticWriteSubtitleImageRepository;
-import keeper.project.homepage.repository.etc.StaticWriteTitleRepository;
+import keeper.project.homepage.repository.about.StaticWriteContentRepository;
+import keeper.project.homepage.repository.about.StaticWriteSubtitleImageRepository;
+import keeper.project.homepage.repository.about.StaticWriteTitleRepository;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.attendance.AttendanceRepository;
 import keeper.project.homepage.repository.library.BookDepartmentRepository;

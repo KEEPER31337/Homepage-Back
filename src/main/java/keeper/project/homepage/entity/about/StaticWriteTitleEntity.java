@@ -1,7 +1,8 @@
-package keeper.project.homepage.entity.posting;
+package keeper.project.homepage.entity.about;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -19,24 +20,25 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "category")
-public class CategoryEntity {
+@Table(name = "static_write_title")
+public class StaticWriteTitleEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "name", length = 250, nullable = false)
-  private String name;
+  @Column(length = 50)
+  private String title;
 
-  @Column(name = "parent_id")
-  private Long parentId;
+  @Column(length = 40)
+  private String type;
 
-  @Column(name = "href", length = 45)
-  private String href;
-
-  @OneToMany(mappedBy = "parentId")
+  @OneToMany(mappedBy = "staticWriteTitle", cascade = CascadeType.REMOVE)
   @Builder.Default
-  private List<CategoryEntity> children = new ArrayList<>();
+  private List<StaticWriteSubtitleImageEntity> staticWriteSubtitleImages = new ArrayList<>();
+
+  public void updateTitle(String title) {
+    this.title = title;
+  }
 
 }

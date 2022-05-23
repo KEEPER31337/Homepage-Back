@@ -1,6 +1,10 @@
 package keeper.project.homepage.exception;
 
 import keeper.project.homepage.common.dto.result.CommonResult;
+import keeper.project.homepage.exception.about.CustomStaticWriteContentNotFoundException;
+import keeper.project.homepage.exception.about.CustomStaticWriteSubtitleImageNotFoundException;
+import keeper.project.homepage.exception.about.CustomStaticWriteTitleNotFoundException;
+import keeper.project.homepage.exception.about.CustomStaticWriteTypeNotFoundException;
 import keeper.project.homepage.exception.attendance.CustomAttendanceException;
 import keeper.project.homepage.exception.attendance.CustomGameIsOverException;
 import keeper.project.homepage.exception.ctf.CustomContestNotFoundException;
@@ -120,14 +124,6 @@ public class ExceptionAdvice {
       CustomSignUpFailedException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("signUpFailed.code")),
         e.getMessage() == null ? getMessage("signUpFailed.msg") : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomAboutFailedException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  public CommonResult aboutFailedException(HttpServletRequest request,
-      CustomAboutFailedException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("aboutFailed.code")),
-        e.getMessage() == null ? getMessage("aboutFailed.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomFileNotFoundException.class)
@@ -420,6 +416,38 @@ public class ExceptionAdvice {
       CustomPostingAccessDeniedException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("postingAccessDenied.code")),
         e.getMessage() == null ? getMessage("postingAccessDenied.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomStaticWriteTypeNotFoundException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult staticWriteTitleNotFound(HttpServletRequest request,
+      CustomStaticWriteTypeNotFoundException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("staticWriteTypeNotFound.code")),
+        e.getMessage() == null ? getMessage("staticWriteTypeNotFound.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomStaticWriteTitleNotFoundException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult staticWriteTitleNotFound(HttpServletRequest request,
+      CustomStaticWriteTitleNotFoundException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("staticWriteTitleNotFound.code")),
+        e.getMessage() == null ? getMessage("staticWriteTitleNotFound.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomStaticWriteSubtitleImageNotFoundException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult staticWriteSubtitleImageNotFound(HttpServletRequest request,
+      CustomStaticWriteSubtitleImageNotFoundException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("staticWriteSubtitleImageNotFound.code")),
+        e.getMessage() == null ? getMessage("staticWriteSubtitleImageNotFound.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomStaticWriteContentNotFoundException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult staticWriteContentNotFound(HttpServletRequest request,
+      CustomStaticWriteContentNotFoundException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("staticWriteContentNotFound.code")),
+        e.getMessage() == null ? getMessage("staticWriteContentNotFound.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomContestNotFoundException.class)
