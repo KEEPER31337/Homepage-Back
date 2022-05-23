@@ -87,7 +87,7 @@ public class AdminStaticWriteSubtitleImageControllerTest extends AdminStaticWrit
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
-        .andDo(document("aboutSubtitle-create",
+        .andDo(document("adminStaticWriteSubtitleImage-create",
             requestParameters(
                 parameterWithName("subtitle").description("생성하고자 하는 페이지 블럭 서브 타이틀의 부제목"),
                 parameterWithName("staticWriteTitleId").description(
@@ -223,7 +223,7 @@ public class AdminStaticWriteSubtitleImageControllerTest extends AdminStaticWrit
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
-        .andDo(document("aboutSubtitle-update",
+        .andDo(document("adminStaticWriteSubtitleImage-update",
             pathParameters(
                 parameterWithName("id").description("삭제하고자 하는 페이지 블럭 서브 타이틀의 ID")
             ),
@@ -347,7 +347,7 @@ public class AdminStaticWriteSubtitleImageControllerTest extends AdminStaticWrit
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
-        .andDo(document("aboutSubtitle-delete",
+        .andDo(document("adminStaticWriteSubtitleImage-delete",
             pathParameters(
                 parameterWithName("id").description("삭제하고자 하는 페이지 블럭 서브 타이틀의 ID")
             ),

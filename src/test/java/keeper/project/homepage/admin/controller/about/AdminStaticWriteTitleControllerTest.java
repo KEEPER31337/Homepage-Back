@@ -6,6 +6,8 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
+import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,7 +63,10 @@ public class AdminStaticWriteTitleControllerTest extends AdminStaticWriteTestHel
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
-        .andDo(document("aboutTitle-modify",
+        .andDo(document("adminStaticWriteTitle-modify",
+            pathParameters(
+                parameterWithName("id").description("수정하고자 하는 페이지 블럭 타이틀의 ID")
+            ),
             requestFields(
                 fieldWithPath("title").description("수정하고자 하는 페이지 블럭 타이틀의 제목(변하지 않을 시 기존값)"),
                 fieldWithPath("type").description("수정하고자 하는 페이지 블럭 타이틀의 타입(변하지 않을 시 기존값)")

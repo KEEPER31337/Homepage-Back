@@ -72,7 +72,7 @@ public class AdminStaticWriteContentControllerTest extends AdminStaticWriteTestH
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
-        .andDo(document("aboutContent-create",
+        .andDo(document("adminStaticWriteContent-create",
             requestFields(
                 fieldWithPath("content").description("생성하고자 하는 페이지 블럭 컨텐츠의 내용"),
                 fieldWithPath("staticWriteSubtitleImageId").description("생성하고자 하는 페이지 블럭 컨텐츠의 연결된 페이지 블럭 서브 타이틀의 ID"),
@@ -125,7 +125,7 @@ public class AdminStaticWriteContentControllerTest extends AdminStaticWriteTestH
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
-        .andDo(document("aboutContent-update",
+        .andDo(document("adminStaticWriteContent-update",
             pathParameters(
               parameterWithName("id").description("수정하고자 하는 페이지 블럭 컨텐츠의 ID")
             ),
