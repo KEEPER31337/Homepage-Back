@@ -15,18 +15,28 @@ endif::[]
 :sectlinks:
 // section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
 
-== API 목록
+== CTF API 목록
 
-link:../keeper.html[API 목록으로 돌아가기]
+link:ctf.html[CTF API 목록으로 돌아가기]
 
-== *CTF 문제 API*
+== *팀 랭킹 보기*
 
-link:ctfChallenge.html[API 문서 보기]
+=== 요청
 
-//== *CTF 팀 API*
-//
-//link:signupAdmin.html[API 문서 보기]
+==== Request
 
-== *CTF 랭킹 API*
+include::{snippets}/get-ranking-list/http-request.adoc[]
 
-link:ctfRanking.html[API 문서 보기]
+==== Request Path
+
+include::{snippets}/get-ranking-list/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-ranking-list/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-ranking-list/response-fields.adoc[]
