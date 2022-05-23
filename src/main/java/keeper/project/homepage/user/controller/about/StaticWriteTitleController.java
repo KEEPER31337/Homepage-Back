@@ -20,11 +20,16 @@ public class StaticWriteTitleController {
   private final StaticWriteTitleService staticWriteTitleService;
   private final ResponseService responseService;
 
-  @GetMapping(value = "types/{type}")
+  @GetMapping(value = "/types/{type}")
   public ListResult<StaticWriteTitleResponseDto> findAllByType(
       @PathVariable("type") String type) {
 
     return responseService.getSuccessListResult(staticWriteTitleService.findAllByType(type));
+  }
+
+  @GetMapping(value = "/types")
+  public ListResult<String> getAllDistinctTypes() {
+    return responseService.getSuccessListResult(staticWriteTitleService.getAllDistinctTypes());
   }
 
 }

@@ -23,4 +23,8 @@ public class StaticWriteTitleService {
     return titleEntity.stream().map(StaticWriteTitleResponseDto::new).collect(Collectors.toList());
   }
 
+  public List<String> getAllDistinctTypes() {
+    return staticWriteTitleRepository.getAllDistinctTypes();
+  }
+
 }
