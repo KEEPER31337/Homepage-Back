@@ -2,6 +2,7 @@ package keeper.project.homepage.user.repostiory.about;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.Collections;
 import java.util.List;
 import javax.persistence.EntityManager;
 import keeper.project.homepage.entity.about.StaticWriteSubtitleImageEntity;
@@ -65,4 +66,29 @@ public class StaticWriteTitleRepositoryTest {
         "동아리?");
   }
 
+  @Test
+  @DisplayName("타입 종류 리스트 반환")
+  void getAllDistinctTypes() {
+    // given
+    staticWriteTitleRepository.save(StaticWriteTitleEntity.builder()
+        .title("테스트")
+        .type("test")
+        .build());
+    staticWriteTitleRepository.save(StaticWriteTitleEntity.builder()
+        .title("중복")
+        .type("intro")
+        .build());
+    String basicType1 = "intro";
+    String basicType2 = "activity";
+    String basicType3 = "excellence";
+    String basicType4 = "history";
+
+    // when
+    List<String> result = staticWriteTitleRepository.getAllDistinctTypes();
+
+    // then
+    assertThat(result).contains("test");
+    assertThat(result).contains(basicType1, basicType2, basicType3, basicType4);
+    assertThat(Collections.frequency(result, "intro")).isEqualTo(1);
+  }
 }

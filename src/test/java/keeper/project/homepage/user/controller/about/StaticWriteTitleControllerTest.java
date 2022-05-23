@@ -125,4 +125,20 @@ public class StaticWriteTitleControllerTest extends ApiControllerTestHelper {
         .andExpect(jsonPath("$.msg").value("존재하지 않는 타입에 접근하였습니다."));
   }
 
+  @Test
+  @DisplayName("페이지 블럭 조회를 위한 타입 리스트 조회 - 성공")
+  public void getAllDistinctTypes() throws Exception {
+    mockMvc.perform(get("/v1/about/titles/types"))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andDo(document("staticWriteTitle-types",
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("list[]").description("저장되어 있는 타이틀과 연결되어 있는 중복 제거된 타입 리스트")
+            )));
+  }
+
 }
