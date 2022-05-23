@@ -159,7 +159,7 @@ public class StudyService {
 
     checkStudyIsMine(myId, studyEntity);
 
-    modifyStudyMember(studyId, newMemberIdList, myId, studyEntity);
+    modifyStudyMembers(studyId, newMemberIdList, myId, studyEntity);
 
     Long prevStudyThumbnailId = null;
     if (studyEntity.getThumbnail() != null) {
@@ -185,16 +185,15 @@ public class StudyService {
     return studyMapper.toDto(studyEntity);
   }
 
-  private void modifyStudyMember(Long studyId, List<Long> newMemberIdList, Long headMemberId,
+  private void modifyStudyMembers(Long studyId, List<Long> newMemberIdList, Long headMemberId,
       StudyEntity studyEntity) {
     List<Long> originMemberIdList = getOriginMemberIdList(studyId);
-    addNewMember(newMemberIdList, headMemberId, studyEntity, originMemberIdList);
-    removeOriginMember(newMemberIdList, headMemberId, studyEntity, originMemberIdList);
+    addNewMembers(newMemberIdList, headMemberId, studyEntity, originMemberIdList);
+    removeOriginMembers(newMemberIdList, headMemberId, studyEntity, originMemberIdList);
   }
 
-  private void removeOriginMember(List<Long> newMemberIdList, Long headMemberId,
-      StudyEntity studyEntity,
-      List<Long> originMemberIdList) {
+  private void removeOriginMembers(List<Long> newMemberIdList, Long headMemberId,
+      StudyEntity studyEntity, List<Long> originMemberIdList) {
     for (Long originMemberId : originMemberIdList) {
       if (originMemberId.equals(headMemberId)) {
         continue;
@@ -206,8 +205,8 @@ public class StudyService {
     }
   }
 
-  private void addNewMember(List<Long> newMemberIdList, Long headMemberId, StudyEntity studyEntity,
-      List<Long> originMemberIdList) {
+  private void addNewMembers(List<Long> newMemberIdList, Long headMemberId,
+      StudyEntity studyEntity, List<Long> originMemberIdList) {
     for (Long newMemberId : newMemberIdList) {
       if (newMemberId.equals(headMemberId)) {
         continue;
