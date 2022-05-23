@@ -373,6 +373,52 @@ public class CtfControllerTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".uploadTime").description("파일 등록 시간"),
         fieldWithPath(prefix + ".ipAddress").description("파일 등록 IP")
     ));
+    if (type.equals(ResponseType.PAGE)) {
+      commonFields.addAll(Arrays.asList(
+          fieldWithPath("page.empty").description("페이지가 비었는 지 여부"),
+          fieldWithPath("page.first").description("첫 페이지 인지"),
+          fieldWithPath("page.last").description("마지막 페이지 인지"),
+          fieldWithPath("page.number").description("요소를 가져 온 페이지 번호 (0부터 시작)"),
+          fieldWithPath("page.numberOfElements").description("요소 개수"),
+          subsectionWithPath("page.pageable").description("해당 페이지에 대한 DB 정보"),
+          fieldWithPath("page.size").description("요청한 페이지 크기"),
+          subsectionWithPath("page.sort").description("정렬에 대한 정보"),
+          fieldWithPath("page.totalElements").description("총 요소 개수"),
+          fieldWithPath("page.totalPages").description("총 페이지")));
+    }
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
+    }
+    return commonFields;
+  }
+
+  protected List<FieldDescriptor> generateTeamDtoResponseFields(ResponseType type,
+      String success, String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(Arrays.asList(
+        fieldWithPath(prefix + ".id").description("team Id"),
+        fieldWithPath(prefix + ".name").description("team 이름"),
+        fieldWithPath(prefix + ".description").description("team 설명"),
+        fieldWithPath(prefix + ".registerTime").description("team 등록 시간"),
+        fieldWithPath(prefix + ".creatorId").description("team 생성자 Id"),
+        fieldWithPath(prefix + ".score").description("team score"),
+        fieldWithPath(prefix + ".contestId").description("team이 속한 contest Id")
+    ));
+    if (type.equals(ResponseType.PAGE)) {
+      commonFields.addAll(Arrays.asList(
+          fieldWithPath("page.empty").description("페이지가 비었는 지 여부"),
+          fieldWithPath("page.first").description("첫 페이지 인지"),
+          fieldWithPath("page.last").description("마지막 페이지 인지"),
+          fieldWithPath("page.number").description("요소를 가져 온 페이지 번호 (0부터 시작)"),
+          fieldWithPath("page.numberOfElements").description("요소 개수"),
+          subsectionWithPath("page.pageable").description("해당 페이지에 대한 DB 정보"),
+          fieldWithPath("page.size").description("요청한 페이지 크기"),
+          subsectionWithPath("page.sort").description("정렬에 대한 정보"),
+          fieldWithPath("page.totalElements").description("총 요소 개수"),
+          fieldWithPath("page.totalPages").description("총 페이지")));
+    }
     if (addDescriptors.length > 0) {
       commonFields.addAll(Arrays.asList(addDescriptors));
     }
