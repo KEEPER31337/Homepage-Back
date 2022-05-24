@@ -1,5 +1,7 @@
 package keeper.project.homepage.user.controller.posting;
 
+import static keeper.project.homepage.util.ClientUtil.getUserIP;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -7,6 +9,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
+import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.user.dto.posting.LikeAndDislikeDto;
 import keeper.project.homepage.user.dto.posting.PostingBestDto;
 import keeper.project.homepage.user.dto.posting.PostingDto;
@@ -106,8 +109,9 @@ public class PostingController {
   public CommonResult createPosting(
       @RequestParam(value = "file", required = false) List<MultipartFile> files,
       @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
-      PostingDto dto) {
+      PostingDto dto, HttpServletRequest httpServletRequest) {
 
+    dto.setIpAddress(getUserIP(httpServletRequest));
     ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCropping(),
         thumbnail, ThumbnailSize.LARGE, dto.getIpAddress());
     dto.setThumbnailId(thumbnailEntity.getId());
@@ -157,8 +161,9 @@ public class PostingController {
   public CommonResult modifyPosting(
       @RequestParam(value = "file", required = false) List<MultipartFile> files,
       @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
-      PostingDto dto, @PathVariable("pid") Long postingId) {
+      PostingDto dto, HttpServletRequest httpServletRequest, @PathVariable("pid") Long postingId) {
 
+    dto.setIpAddress(getUserIP(httpServletRequest));
     ThumbnailEntity newThumbnail = saveThumbnail(thumbnail, dto);
     PostingEntity postingEntity = postingService.updateById(dto, postingId, newThumbnail);
     fileService.saveFiles(files, dto.getIpAddress(), postingEntity);
@@ -181,8 +186,8 @@ public class PostingController {
   }
 
   private ThumbnailEntity saveThumbnail(MultipartFile thumbnail, PostingDto dto) {
-    ThumbnailEntity newThumbnail = thumbnailService.saveThumbnail(new ImageCenterCropping(), thumbnail,
-        ThumbnailSize.LARGE, dto.getIpAddress());
+    ThumbnailEntity newThumbnail = thumbnailService.saveThumbnail(new ImageCenterCropping(),
+        thumbnail, ThumbnailSize.LARGE, dto.getIpAddress());
     if (newThumbnail == null) {
       throw new CustomThumbnailEntityNotFoundException("썸네일 저장 중에 에러가 발생했습니다.");
     }
