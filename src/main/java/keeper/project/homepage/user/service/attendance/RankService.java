@@ -1,5 +1,6 @@
 package keeper.project.homepage.user.service.attendance;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import keeper.project.homepage.user.dto.attendance.RankDto;
@@ -16,17 +17,21 @@ import org.springframework.stereotype.Service;
 public class RankService {
 
   private final MemberRepository memberRepository;
-  private int rank = 1;
 
   public Page<RankDto> getRankings(Pageable pageable) {
+    int rank = 1;
+    List<RankDto> rankings = new ArrayList<>();
     List<MemberEntity> members = memberRepository.findAll(pageable).stream()
         .filter(member -> member.getId() != 1).collect(Collectors.toList());
 
-    List<RankDto> rankings = members.stream().map(member -> {
+    for (MemberEntity member : members) {
+      if (member.getId() == 1) {
+        continue;
+      }
       RankDto rankDto = RankDto.toDto(member);
       rankDto.setRank(rank++);
-      return rankDto;
-    }).toList();
+      rankings.add(rankDto);
+    }
 
     return new PageImpl<>(rankings);
   }
