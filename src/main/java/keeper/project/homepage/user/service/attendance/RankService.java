@@ -1,14 +1,14 @@
 package keeper.project.homepage.user.service.attendance;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import keeper.project.homepage.user.dto.attendance.RankDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -16,40 +16,18 @@ import org.springframework.stereotype.Service;
 public class RankService {
 
   private final MemberRepository memberRepository;
-  public static final int DEFAULT_SIZE = 2000; // MAXIMUM PAGE SIZE
+  private int rank = 1;
 
-  public List<RankDto> getRankList(Pageable pageable) {
+  public Page<RankDto> getRankings(Pageable pageable) {
+    List<MemberEntity> members = memberRepository.findAll(pageable).stream()
+        .filter(member -> member.getId() != 1).collect(Collectors.toList());
 
-    if (isGetAll(pageable)) {
-      pageable = Pageable.unpaged(); // 모든 정보 불러오기
-    }
-
-    return getRankResults(pageable);
-  }
-
-  private List<RankDto> getRankResults(Pageable pageable) {
-    List<RankDto> results = new ArrayList<>();
-    List<MemberEntity> members;
-    if (pageable == Pageable.unpaged()) {
-      members = memberRepository.findAll(Sort.by(Direction.DESC, "point"));
-    } else {
-      members = memberRepository.findAll(pageable).getContent();
-    }
-    int rank = 1;
-    for (MemberEntity member : members) {
-      if (member.getId() == 1) {
-        continue;
-      }
-      RankDto rankDto = new RankDto();
-      rankDto.initWithEntity(member);
+    List<RankDto> rankings = members.stream().map(member -> {
+      RankDto rankDto = RankDto.toDto(member);
       rankDto.setRank(rank++);
-      results.add(rankDto);
-    }
+      return rankDto;
+    }).toList();
 
-    return results;
-  }
-
-  private boolean isGetAll(Pageable pageable) {
-    return pageable.getPageSize() == DEFAULT_SIZE;
+    return new PageImpl<>(rankings);
   }
 }
