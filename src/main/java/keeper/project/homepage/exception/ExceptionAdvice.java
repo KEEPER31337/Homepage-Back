@@ -422,7 +422,8 @@ public class ExceptionAdvice {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult staticWriteTitleNotFound(HttpServletRequest request,
       CustomStaticWriteTypeNotFoundException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("staticWriteTypeNotFound.code")),
+    return responseService.getFailResult(
+        Integer.parseInt(getMessage("staticWriteTypeNotFound.code")),
         e.getMessage() == null ? getMessage("staticWriteTypeNotFound.msg") : e.getMessage());
   }
 
@@ -430,7 +431,8 @@ public class ExceptionAdvice {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult staticWriteTitleNotFound(HttpServletRequest request,
       CustomStaticWriteTitleNotFoundException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("staticWriteTitleNotFound.code")),
+    return responseService.getFailResult(
+        Integer.parseInt(getMessage("staticWriteTitleNotFound.code")),
         e.getMessage() == null ? getMessage("staticWriteTitleNotFound.msg") : e.getMessage());
   }
 
@@ -438,15 +440,18 @@ public class ExceptionAdvice {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult staticWriteSubtitleImageNotFound(HttpServletRequest request,
       CustomStaticWriteSubtitleImageNotFoundException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("staticWriteSubtitleImageNotFound.code")),
-        e.getMessage() == null ? getMessage("staticWriteSubtitleImageNotFound.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(getMessage("staticWriteSubtitleImageNotFound.code")),
+        e.getMessage() == null ? getMessage("staticWriteSubtitleImageNotFound.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomStaticWriteContentNotFoundException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult staticWriteContentNotFound(HttpServletRequest request,
       CustomStaticWriteContentNotFoundException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("staticWriteContentNotFound.code")),
+    return responseService.getFailResult(
+        Integer.parseInt(getMessage("staticWriteContentNotFound.code")),
         e.getMessage() == null ? getMessage("staticWriteContentNotFound.msg") : e.getMessage());
   }
 
@@ -480,5 +485,14 @@ public class ExceptionAdvice {
       CustomCtfChallengeNotFoundException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("ctfChallengeNotFound.code")),
         e.getMessage() == null ? getMessage("ctfChallengeNotFound.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomBookNotFoundException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult equipmentNotFoundException(HttpServletRequest request,
+      CustomBookNotFoundException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(Integer.parseInt(getMessage("equipmentNotFound.code")),
+        getMessage("equipmentNotFound.msg"));
   }
 }
