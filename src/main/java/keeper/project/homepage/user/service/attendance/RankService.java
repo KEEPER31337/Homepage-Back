@@ -25,9 +25,6 @@ public class RankService {
         .filter(member -> member.getId() != 1).collect(Collectors.toList());
 
     for (MemberEntity member : members) {
-      if (member.getId() == 1) {
-        continue;
-      }
       RankDto rankDto = RankDto.toDto(member);
       rankDto.setRank(rank++);
       rankings.add(rankDto);
