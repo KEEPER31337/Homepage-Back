@@ -1,6 +1,6 @@
 package keeper.project.homepage.entity.equipment;
 
-import java.time.LocalDate;
+import java.sql.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,49 +9,40 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import keeper.project.homepage.entity.ThumbnailEntity;
+import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "equipment")
-public class EquipmentEntity {
+@Table(name = "equipment_borrow_info")
+public class EquipmentBorrowEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.AUTO)
   Long Id;
 
-  @Column(length = 250, nullable = false)
-  String name;
+  @Column
+  Long quantity;
 
   @Column
-  String information;
+  Date borrowDate;
 
-  @Setter
-  @Column(nullable = false)
-  Long total;
+  @Column
+  Date expireDate;
 
-  @Setter
-  @Column(nullable = false)
-  Long borrow;
-
-  @Setter
-  @Column(nullable = false)
-  Long enable;
-
-  @Column(nullable = false)
-  LocalDate registerDate;
-
-  @JoinColumn(name = "thumbnail_id")
+  @JoinColumn(name = "member_id")
   @ManyToOne(fetch = FetchType.LAZY)
-  ThumbnailEntity thumbnailId;
+  MemberEntity memberId;
 
+  @JoinColumn(name = "equipment_id")
+  @OneToOne(fetch = FetchType.LAZY)
+  EquipmentEntity equipmentId;
 }

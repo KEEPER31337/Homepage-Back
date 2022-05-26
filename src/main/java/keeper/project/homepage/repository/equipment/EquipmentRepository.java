@@ -5,6 +5,6 @@ import keeper.project.homepage.entity.equipment.EquipmentEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EquipmentRepository extends JpaRepository<EquipmentEntity, Long> {
-  public List<EquipmentEntity> findByNameOrderByRegisterDate();
+  public List<EquipmentEntity> findByNameOrderByRegisterDate(String name);
 
 }

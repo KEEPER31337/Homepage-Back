@@ -7,6 +7,7 @@ import keeper.project.homepage.admin.dto.equipment.EquipmentDto;
 import keeper.project.homepage.admin.service.equipment.EquipmentService;
 import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.common.service.ResponseService;
+import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.util.ImageCenterCropping;
 import keeper.project.homepage.util.service.ThumbnailService;
@@ -33,6 +34,7 @@ public class EquipmentController {
   private final EquipmentService equipmentService;
   private final ResponseService responseService;
   private final ThumbnailService thumbnailService;
+  private final AuthService authService;
 
   @PostMapping(value = "/addition/equipment", consumes = "multipart/form-data", produces = {
       MediaType.APPLICATION_JSON_VALUE})
@@ -51,6 +53,14 @@ public class EquipmentController {
   @DeleteMapping(value = "/equipment")
   public CommonResult deleteEquipment(String name, Long quantity) throws Exception {
     equipmentService.deleteEquipment(name, quantity);
+    return responseService.getSuccessResult();
+  }
+
+  @PostMapping(value = "/addition/borrow_equipment")
+  public CommonResult borrowEquipment(String name, Long quantity) throws Exception{
+    Long borrowMemberId = authService.getMemberIdByJWT();
+
+    equipmentService.borrowEquipment(name, quantity, borrowMemberId);
     return responseService.getSuccessResult();
   }
 

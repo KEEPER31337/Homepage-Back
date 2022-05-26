@@ -1,14 +1,22 @@
 package keeper.project.homepage.admin.service.equipment;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import keeper.project.homepage.admin.dto.equipment.EquipmentDto;
-import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.entity.ThumbnailEntity;
+import keeper.project.homepage.entity.equipment.EquipmentBorrowEntity;
 import keeper.project.homepage.entity.equipment.EquipmentEntity;
+import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.exception.equipment.CustomEquipmentCanNotBorrowException;
 import keeper.project.homepage.exception.equipment.CustomEquipmentEntityNotFoundException;
 import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
+import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.ThumbnailRepository;
+import keeper.project.homepage.repository.equipment.EquipmentBorrowRepository;
 import keeper.project.homepage.repository.equipment.EquipmentRepository;
+import keeper.project.homepage.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +26,24 @@ public class EquipmentService {
 
   private final EquipmentRepository equipmentRepository;
   private final ThumbnailRepository thumbnailRepository;
+  private final MemberRepository memberRepository;
+  private final EquipmentBorrowRepository equipmentBorrowRepository;
+
+  public String transferFormat(Date date) {
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+
+    String transferDate = format.format(date);
+
+    return transferDate;
+  }
+
+  private String getExpireDate(int date) {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(new Date());
+    calendar.add(Calendar.DATE, date);
+
+    return transferFormat(calendar.getTime());
+  }
 
   public void addEquipment(EquipmentDto equipmentDto) {
     ThumbnailEntity thumbnailId = thumbnailRepository.findById(equipmentDto.getThumbnailId())
@@ -33,13 +59,59 @@ public class EquipmentService {
   }
 
   public void deleteEquipment(String name, Long quantity) throws Exception {
-    List<EquipmentEntity> equipmentEntities = equipmentRepository.findByNameOrderByRegisterDate();
+    List<EquipmentEntity> equipmentEntities = equipmentRepository.findByNameOrderByRegisterDate(
+        name);
     if (equipmentEntities.size() == 0) {
       throw new CustomEquipmentEntityNotFoundException();
     }
     for (int i = 0; i < quantity; i++) {
       equipmentRepository.delete(equipmentEntities.get(i));
     }
+  }
+
+  public void borrowEquipment(String name, Long quantity, Long borrowMemberId) throws Exception {
+    List<EquipmentEntity> equipmentEntities = equipmentRepository.findByNameOrderByRegisterDate(
+        name);
+    if (equipmentEntities.size() == 0) {
+      throw new CustomEquipmentEntityNotFoundException();
+    }
+    Long enableQuantity = 0L;
+    for (EquipmentEntity equipmentEntity : equipmentEntities) {
+      if (equipmentEntity.getEnable() == 1) {
+        enableQuantity++;
+      }
+    }
+
+    if (enableQuantity < quantity) {
+      throw new CustomEquipmentCanNotBorrowException();
+    }
+
+    MemberEntity memberEntity = memberRepository.findById(borrowMemberId)
+        .orElseThrow(() -> new CustomMemberNotFoundException());
+
+    int i = 0;
+    for (EquipmentEntity equipmentEntity : equipmentEntities) {
+      if (i >= quantity) {
+        break;
+      }
+      if (equipmentEntity.getEnable() != 1) {
+        equipmentEntity.setEnable(0L);
+        equipmentEntity.setBorrow(1L);
+        equipmentRepository.save(equipmentEntity);
+        saveBorrowRepository(memberEntity, equipmentEntity);
+      }
+      i++;
+    }
+
+  }
+
+  public void saveBorrowRepository(MemberEntity memberEntity, EquipmentEntity equipmentEntity) {
+    String borrowDate = getExpireDate(0);
+    String expireDate = getExpireDate(14);
+    equipmentBorrowRepository.save(
+        EquipmentBorrowEntity.builder().quantity(1L).borrowDate(java.sql.Date.valueOf(borrowDate))
+            .expireDate(java.sql.Date.valueOf(expireDate))
+            .memberId(memberEntity).equipmentId(equipmentEntity).build());
   }
 
 }
