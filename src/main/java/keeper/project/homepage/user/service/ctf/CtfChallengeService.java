@@ -58,8 +58,8 @@ public class CtfChallengeService {
     Long submitterId = authService.getMemberIdByJWT();
     CtfChallengeEntity submitChallenge = challengeRepository.findById(probId)
         .orElseThrow(CustomCtfChallengeNotFoundException::new);
-    CtfTeamEntity submitTeam = teamHasMemberRepository.findByMember_Id(submitterId)
-        .orElseThrow(CustomMemberNotFoundException::new).getTeam();
+    CtfTeamEntity submitTeam = ctfUtilService.getTeamHasMemberEntity(
+        submitChallenge.getCtfContestEntity().getId(), submitterId).getTeam();
     CtfFlagEntity flagEntity = flagRepository.findByCtfChallengeEntityIdAndCtfTeamEntityId(probId,
         submitTeam.getId()).orElseThrow(CustomCtfChallengeNotFoundException::new);
 

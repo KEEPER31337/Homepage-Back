@@ -1,6 +1,7 @@
 package keeper.project.homepage.repository.ctf;
 
 import java.util.Optional;
+import keeper.project.homepage.entity.ctf.CtfContestEntity;
 import keeper.project.homepage.entity.ctf.CtfTeamEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,5 +15,7 @@ public interface CtfTeamRepository extends
 
   Optional<CtfTeamEntity> findByCreatorId(Long creator_id);
 
-  Long countByIdIsNot(Long id);
+  Long countByIdIsNotAndCtfContestEntity(Long id, CtfContestEntity ctfContestEntity);
+
+  Optional<CtfTeamEntity> findByName(String name);
 }

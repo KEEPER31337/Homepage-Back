@@ -33,9 +33,11 @@ public class CtfTeamEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   Long id;
 
+  @Setter
   @Column(nullable = false, length = 45)
   String name;
 
+  @Setter
   @Column(length = 200)
   String description;
 
