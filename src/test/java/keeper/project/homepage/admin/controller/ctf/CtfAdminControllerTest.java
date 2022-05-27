@@ -22,7 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import keeper.project.homepage.admin.dto.ctf.CtfChallengeAdminDto;
 import keeper.project.homepage.admin.dto.ctf.CtfContestDto;
 import keeper.project.homepage.admin.dto.ctf.CtfProbMakerDto;
-import keeper.project.homepage.controller.ctf.CtfControllerTestHelper;
+import keeper.project.homepage.controller.ctf.CtfSpringTestHelper;
 import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeTypeEntity;
@@ -43,7 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Transactional
-class CtfAdminControllerTest extends CtfControllerTestHelper {
+class CtfAdminControllerTest extends CtfSpringTestHelper {
 
   private CtfContestEntity contestEntity;
 

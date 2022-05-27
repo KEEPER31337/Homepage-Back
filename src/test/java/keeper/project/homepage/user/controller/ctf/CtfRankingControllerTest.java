@@ -1,6 +1,5 @@
 package keeper.project.homepage.user.controller.ctf;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -10,16 +9,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import keeper.project.homepage.controller.ctf.CtfControllerTestHelper;
+import keeper.project.homepage.controller.ctf.CtfSpringTestHelper;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
-import keeper.project.homepage.entity.ctf.CtfTeamEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-class CtfRankingControllerTest extends CtfControllerTestHelper {
+class CtfRankingControllerTest extends CtfSpringTestHelper {
 
   @Test
   @DisplayName("스코어보드 랭킹 불러오기 - 성공")
@@ -65,7 +63,7 @@ class CtfRankingControllerTest extends CtfControllerTestHelper {
                     parameterWithName("ctfId").description("팀 목록을 볼 CTF id"))
             ),
             responseFields(
-                generateTeamDtoResponseFields(ResponseType.PAGE,
+                generateTeamDetailDtoResponseFields(ResponseType.PAGE,
                     "성공: true +\n실패: false", "성공 시 0을 반환",
                     "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
             )));
