@@ -23,9 +23,9 @@ link:../keeper.html[API 목록으로 돌아가기]
 
 link:ctfChallenge.html[API 문서 보기]
 
-//== *CTF 팀 API*
-//
-//link:signupAdmin.html[API 문서 보기]
+== *CTF 팀 API*
+
+link:ctfTeam.html[API 문서 보기]
 
 == *CTF 랭킹 API*
 
