@@ -9,7 +9,7 @@ import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.equipment.EquipmentBorrowEntity;
 import keeper.project.homepage.entity.equipment.EquipmentEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.exception.equipment.CustomEquipmentCanNotBorrowException;
+import keeper.project.homepage.exception.equipment.CustomEquipmentOverTheMaxException;
 import keeper.project.homepage.exception.equipment.CustomEquipmentEntityNotFoundException;
 import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
@@ -59,7 +59,7 @@ public class EquipmentService {
   }
 
   public void deleteEquipment(String name, Long quantity) throws Exception {
-    List<EquipmentEntity> equipmentEntities = equipmentRepository.findByNameOrderByRegisterDate(
+    List<EquipmentEntity> equipmentEntities = equipmentRepository.findByNameOrderByRegisterDateDesc(
         name);
     if (equipmentEntities.size() == 0) {
       throw new CustomEquipmentEntityNotFoundException();
@@ -70,7 +70,7 @@ public class EquipmentService {
   }
 
   public void borrowEquipment(String name, Long quantity, Long borrowMemberId) throws Exception {
-    List<EquipmentEntity> equipmentEntities = equipmentRepository.findByNameOrderByRegisterDate(
+    List<EquipmentEntity> equipmentEntities = equipmentRepository.findByNameOrderByRegisterDateDesc(
         name);
     if (equipmentEntities.size() == 0) {
       throw new CustomEquipmentEntityNotFoundException();
@@ -83,7 +83,7 @@ public class EquipmentService {
     }
 
     if (enableQuantity < quantity) {
-      throw new CustomEquipmentCanNotBorrowException();
+      throw new CustomEquipmentOverTheMaxException();
     }
 
     MemberEntity memberEntity = memberRepository.findById(borrowMemberId)
@@ -112,6 +112,42 @@ public class EquipmentService {
         EquipmentBorrowEntity.builder().quantity(1L).borrowDate(java.sql.Date.valueOf(borrowDate))
             .expireDate(java.sql.Date.valueOf(expireDate))
             .memberId(memberEntity).equipmentId(equipmentEntity).build());
+  }
+
+  public void returnEquipment(String name, Long quantity, Long borrowMemberId) throws Exception {
+    List<EquipmentBorrowEntity> equipmentBorrowEntities = equipmentBorrowRepository.findByNameOrOrderByBorrowDateDesc(
+        name);
+    List<EquipmentEntity> equipmentEntities = equipmentRepository.findByNameOrderByRegisterDateDesc(
+        name);
+
+    if (equipmentBorrowEntities.size() == 0) {
+      throw new CustomEquipmentEntityNotFoundException();
+    }
+    if (equipmentEntities.size() == 0) {
+      throw new CustomEquipmentEntityNotFoundException();
+    }
+
+    if (equipmentBorrowEntities.size() < quantity) {
+      throw new CustomEquipmentOverTheMaxException();
+    }
+
+    int i = 0;
+    for (EquipmentBorrowEntity equipmentBorrowEntity : equipmentBorrowEntities) {
+      if (i >= quantity) {
+        break;
+      }
+      
+      int j = 0;
+      for (EquipmentEntity equipmentEntity = equipmentEntities.get(j);
+          equipmentEntity.getBorrow() != 1; j++) {
+        equipmentEntity.setEnable(1L);
+        equipmentEntity.setBorrow(0L);
+        equipmentRepository.save(equipmentEntity);
+      }
+
+      equipmentBorrowRepository.delete(equipmentBorrowEntity);
+      i++;
+    }
   }
 
 }

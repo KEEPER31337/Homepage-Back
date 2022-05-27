@@ -11,7 +11,7 @@ import keeper.project.homepage.exception.ctf.CustomContestNotFoundException;
 import keeper.project.homepage.exception.ctf.CustomCtfCategoryNotFoundException;
 import keeper.project.homepage.exception.ctf.CustomCtfChallengeNotFoundException;
 import keeper.project.homepage.exception.ctf.CustomCtfTypeNotFoundException;
-import keeper.project.homepage.exception.equipment.CustomEquipmentCanNotBorrowException;
+import keeper.project.homepage.exception.equipment.CustomEquipmentOverTheMaxException;
 import keeper.project.homepage.exception.equipment.CustomEquipmentEntityNotFoundException;
 import keeper.project.homepage.exception.file.CustomFileDeleteFailedException;
 import keeper.project.homepage.exception.file.CustomFileEntityNotFoundException;
@@ -501,9 +501,9 @@ public class ExceptionAdvice {
   @ExceptionHandler(CustomBookNotFoundException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult equipmentCanNotBorrowException(HttpServletRequest request,
-      CustomEquipmentCanNotBorrowException e) {
+      CustomEquipmentOverTheMaxException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(Integer.parseInt(getMessage("equipmentCanNotBorrow.code")),
-        getMessage("equipmentNotBorrow.msg"));
+        getMessage("equipmentCanNotBorrow.msg"));
   }
 }

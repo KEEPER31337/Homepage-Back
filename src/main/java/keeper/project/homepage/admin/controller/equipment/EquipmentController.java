@@ -18,7 +18,9 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,7 +40,9 @@ public class EquipmentController {
 
   @PostMapping(value = "/addition/equipment", consumes = "multipart/form-data", produces = {
       MediaType.APPLICATION_JSON_VALUE})
-  public CommonResult addEquipment(@RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail, EquipmentDto equipmentDto, HttpServletRequest httpServletRequest){
+  public CommonResult addEquipment(
+      @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
+      EquipmentDto equipmentDto, HttpServletRequest httpServletRequest) {
 
     equipmentDto.setIpAddress(getUserIP(httpServletRequest));
     ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCropping(),
@@ -57,11 +61,18 @@ public class EquipmentController {
   }
 
   @PostMapping(value = "/addition/borrow_equipment")
-  public CommonResult borrowEquipment(String name, Long quantity) throws Exception{
+  public CommonResult borrowEquipment(String name, Long quantity) throws Exception {
     Long borrowMemberId = authService.getMemberIdByJWT();
 
     equipmentService.borrowEquipment(name, quantity, borrowMemberId);
     return responseService.getSuccessResult();
   }
 
+  @PatchMapping(value = "/information/borrow_equipment")
+  public CommonResult returnEquipment(String name, Long quantity) throws Exception {
+    Long borrowMemberId = authService.getMemberIdByJWT();
+
+    equipmentService.returnEquipment(name, quantity, borrowMemberId);
+    return responseService.getSuccessResult();
+  }
 }
