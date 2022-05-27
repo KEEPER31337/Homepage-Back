@@ -6,14 +6,20 @@ import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.admin.dto.equipment.EquipmentDto;
 import keeper.project.homepage.admin.service.equipment.EquipmentService;
 import keeper.project.homepage.common.dto.result.CommonResult;
+import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.entity.ThumbnailEntity;
+import keeper.project.homepage.entity.equipment.EquipmentBorrowEntity;
+import keeper.project.homepage.entity.equipment.EquipmentEntity;
 import keeper.project.homepage.util.ImageCenterCropping;
 import keeper.project.homepage.util.service.ThumbnailService;
 import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,6 +43,13 @@ public class EquipmentController {
   private final ResponseService responseService;
   private final ThumbnailService thumbnailService;
   private final AuthService authService;
+
+  @GetMapping
+  public ListResult<EquipmentBorrowEntity> sendOverdueEquipments(
+      @PageableDefault(size = 10, sort = "expireDate", direction = Direction.ASC)
+      Pageable pageable) {
+    return responseService.getSuccessListResult(equipmentService.getOverdueEquipments(pageable));
+  }
 
   @PostMapping(value = "/addition/equipment", consumes = "multipart/form-data", produces = {
       MediaType.APPLICATION_JSON_VALUE})
@@ -68,7 +81,7 @@ public class EquipmentController {
     return responseService.getSuccessResult();
   }
 
-  @PatchMapping(value = "/information/borrow_equipment")
+  @DeleteMapping(value = "/borrow_equipment")
   public CommonResult returnEquipment(String name, Long quantity) throws Exception {
     Long borrowMemberId = authService.getMemberIdByJWT();
 

@@ -18,6 +18,7 @@ import keeper.project.homepage.repository.equipment.EquipmentBorrowRepository;
 import keeper.project.homepage.repository.equipment.EquipmentRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -136,7 +137,7 @@ public class EquipmentService {
       if (i >= quantity) {
         break;
       }
-      
+
       int j = 0;
       for (EquipmentEntity equipmentEntity = equipmentEntities.get(j);
           equipmentEntity.getBorrow() != 1; j++) {
@@ -150,4 +151,11 @@ public class EquipmentService {
     }
   }
 
+  public List<EquipmentBorrowEntity> getOverdueEquipments(Pageable pageable) {
+    String nowDate = getExpireDate(0);
+
+    return equipmentBorrowRepository.findByExpireDateAfter(pageable,
+        java.sql.Date.valueOf(nowDate));
+    ;
+  }
 }
