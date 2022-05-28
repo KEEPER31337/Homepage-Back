@@ -10,7 +10,7 @@ import keeper.project.homepage.exception.about.CustomStaticWriteTitleNotFoundExc
 import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
 import keeper.project.homepage.repository.about.StaticWriteSubtitleImageRepository;
 import keeper.project.homepage.repository.about.StaticWriteTitleRepository;
-import keeper.project.homepage.util.ImageCenterCropping;
+import keeper.project.homepage.util.image.preprocessing.ImageCenterCropping;
 import keeper.project.homepage.util.service.ThumbnailService;
 import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;
 import lombok.RequiredArgsConstructor;

@@ -9,7 +9,7 @@ import keeper.project.homepage.exception.member.CustomAccessVirtualMemberExcepti
 import keeper.project.homepage.user.dto.member.MultiMemberResponseDto;
 import keeper.project.homepage.user.dto.posting.PostingResponseDto;
 import keeper.project.homepage.user.dto.member.MemberFollowDto;
-import keeper.project.homepage.util.ImageCenterCropping;
+import keeper.project.homepage.util.image.preprocessing.ImageCenterCropping;
 import keeper.project.homepage.common.dto.sign.EmailAuthDto;
 import keeper.project.homepage.user.dto.member.MemberDto;
 import keeper.project.homepage.user.dto.member.OtherMemberInfoResult;

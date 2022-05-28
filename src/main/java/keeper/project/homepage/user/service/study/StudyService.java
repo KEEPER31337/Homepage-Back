@@ -22,7 +22,7 @@ import keeper.project.homepage.user.dto.member.MemberDto;
 import keeper.project.homepage.user.dto.study.StudyDto;
 import keeper.project.homepage.user.dto.study.StudyYearSeasonDto;
 import keeper.project.homepage.user.mapper.StudyMapper;
-import keeper.project.homepage.util.ImageCenterCropping;
+import keeper.project.homepage.util.image.preprocessing.ImageCenterCropping;
 import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.util.service.ThumbnailService;
 import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;

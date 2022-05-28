@@ -6,7 +6,7 @@ import java.io.IOException;
 import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
-import keeper.project.homepage.util.ImageCenterCropping;
+import keeper.project.homepage.util.image.preprocessing.ImageCenterCropping;
 import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
 import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;
 import lombok.extern.log4j.Log4j2;

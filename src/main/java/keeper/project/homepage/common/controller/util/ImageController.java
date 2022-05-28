@@ -2,8 +2,8 @@ package keeper.project.homepage.common.controller.util;
 
 
 import java.io.IOException;
-import keeper.project.homepage.util.ImageResizing;
-import keeper.project.homepage.util.ImageResizing.RESIZE_OPTION;
+import keeper.project.homepage.util.image.preprocessing.ImageResizing;
+import keeper.project.homepage.util.image.preprocessing.ImageResizing.RESIZE_OPTION;
 import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.util.service.ThumbnailService;
 import lombok.RequiredArgsConstructor;

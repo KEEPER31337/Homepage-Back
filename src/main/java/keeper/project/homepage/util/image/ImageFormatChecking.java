@@ -1,4 +1,4 @@
-package keeper.project.homepage.util;
+package keeper.project.homepage.util.image;
 
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;

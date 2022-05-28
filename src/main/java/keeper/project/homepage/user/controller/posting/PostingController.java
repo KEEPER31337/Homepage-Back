@@ -24,7 +24,7 @@ import keeper.project.homepage.user.dto.posting.PostingResponseDto;
 import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.util.service.ThumbnailService;
-import keeper.project.homepage.util.ImageCenterCropping;
+import keeper.project.homepage.util.image.preprocessing.ImageCenterCropping;
 import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;
 import keeper.project.homepage.user.service.posting.CommentService;
 import keeper.project.homepage.user.service.posting.PostingService;
