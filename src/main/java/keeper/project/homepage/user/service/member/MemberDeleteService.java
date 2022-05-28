@@ -145,7 +145,6 @@ public class MemberDeleteService {
     if (member.getThumbnail() != null) {
       ThumbnailEntity deleteThumbnail = thumbnailService.find(member.getThumbnail().getId());
       thumbnailService.delete(deleteThumbnail.getId());
-      fileService.deleteOriginalThumbnail(deleteThumbnail);
     }
   }
 

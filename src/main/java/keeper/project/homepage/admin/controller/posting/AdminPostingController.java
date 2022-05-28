@@ -47,7 +47,6 @@ public class AdminPostingController {
 
     if (postingEntity.getThumbnail() != null) {
       thumbnailService.delete(deleteThumbnail.getId());
-      fileService.deleteOriginalThumbnail(deleteThumbnail);
     }
 
     return responseService.getSuccessResult();

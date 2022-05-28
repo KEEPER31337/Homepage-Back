@@ -286,7 +286,6 @@ public class MemberService {
 
     if (prevThumbnail != null) {
       thumbnailService.delete(prevThumbnail.getId());
-      fileService.deleteOriginalThumbnail(prevThumbnail);
     }
     return result;
   }

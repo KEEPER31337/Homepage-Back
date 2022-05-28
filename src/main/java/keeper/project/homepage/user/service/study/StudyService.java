@@ -143,7 +143,6 @@ public class StudyService {
     if (studyThumbnailId != null) {
       ThumbnailEntity prevThumbnail = thumbnailService.find(studyThumbnailId);
       thumbnailService.delete(prevThumbnail.getId());
-      fileService.deleteOriginalThumbnail(prevThumbnail);
     }
   }
 

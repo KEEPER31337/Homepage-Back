@@ -15,6 +15,7 @@ import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.util.image.preprocessing.ImagePreprocessing;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -50,15 +51,21 @@ public class ThumbnailService {
       return saveDirPath;
     }
 
-    public DefaultThumbnailInfo getDefaultImage() {
+    public DefaultThumbnailInfo getDefault() {
       return defaultImage;
     }
 
     public Long getDefaultThumbnailId() {
+      if (defaultImage == null) {
+        return null;
+      }
       return defaultImage.getThumbnailId();
     }
 
     public Long getDefaultFileId() {
+      if (defaultImage == null) {
+        return null;
+      }
       return defaultImage.getFileId();
     }
   }
@@ -129,12 +136,13 @@ public class ThumbnailService {
   }
 
   private ThumbnailEntity getDefaultThumbnailEntity(ThumbType type) {
-    if (type.getDefaultImage().getThumbnailId() == null) {
+    if (type.getDefaultThumbnailId() == null) {
       throw new CustomInvalidImageFileException();
     }
-    return find(type.getDefaultImage().getThumbnailId());
+    return find(type.getDefaultThumbnailId());
   }
 
+  @Transactional
   public ThumbnailEntity save(ThumbType type, ImagePreprocessing imagePreprocessing,
       MultipartFile multipartFile, String ipAddress) {
 
@@ -194,7 +202,9 @@ public class ThumbnailService {
     return defaultIdList.contains(deleteId);
   }
 
+  @Transactional
   public void delete(Long deleteId) {
+    // 기본 썸네일이면 삭제하지 않는다.
     if (isDefaultThumbnail(deleteId)) {
       return;
     }
@@ -202,11 +212,12 @@ public class ThumbnailService {
     ThumbnailEntity thumbnailEntity = find(deleteId);
     FileEntity fileEntity = thumbnailEntity.getFile();
     String thumbnailPath = thumbnailEntity.getPath();
-    fileService.deleteFile(fileEntity);
     fileService.deleteFileInServer(thumbnailPath);
     thumbnailRepository.deleteById(deleteId);
+    fileService.deleteFile(fileEntity);
   }
 
+  @Transactional
   public ThumbnailEntity update(Long thumbnailId, ThumbType type,
       ImagePreprocessing imagePreprocessing,
       MultipartFile multipartFile, String ipAddress) {

@@ -200,7 +200,6 @@ public class PostingController {
     if (dto.getThumbnailId() != null) {
       ThumbnailEntity prevThumbnail = thumbnailService.find(dto.getThumbnailId());
       thumbnailService.delete(prevThumbnail.getId());
-      fileService.deleteOriginalThumbnail(prevThumbnail);
     }
   }
 
@@ -221,7 +220,6 @@ public class PostingController {
 
     if (deleteThumbnail != null) {
       thumbnailService.delete(deleteThumbnail.getId());
-      fileService.deleteOriginalThumbnail(deleteThumbnail);
     }
 
     return responseService.getSuccessResult();

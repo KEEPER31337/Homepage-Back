@@ -101,7 +101,6 @@ public class ThumbnailServiceTest extends ApiControllerTestHelper {
 
     // test
     thumbnailService.delete(thumbnailEntity.getId());
-    fileService.deleteOriginalThumbnail(thumbnailEntity);
 
     Assertions.assertTrue(thumbnailRepository.findById(thumbnailEntity.getId()).isEmpty());
     Assertions.assertTrue(fileRepository.findById(thumbnailEntity.getFile().getId()).isEmpty());
@@ -125,7 +124,6 @@ public class ThumbnailServiceTest extends ApiControllerTestHelper {
 
     // test
     thumbnailService.delete(defaultThumbnailId);
-    fileService.deleteOriginalThumbnail(defaultThumbnailEntity);
 
     Assertions.assertTrue(thumbnailRepository.findById(defaultThumbnailEntity.getId()).isPresent());
     Assertions.assertTrue(
