@@ -37,7 +37,7 @@ public class AdminBadgeController {
   private final ThumbnailService thumbnailService;
 
   @PostMapping(
-      value = "/",
+      value = "",
       consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public CommonResult saveBadge(@RequestParam("badge") MultipartFile badge,
       HttpServletRequest httpServletRequest) {
