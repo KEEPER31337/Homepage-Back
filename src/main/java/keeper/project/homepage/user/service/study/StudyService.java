@@ -23,9 +23,10 @@ import keeper.project.homepage.user.dto.study.StudyDto;
 import keeper.project.homepage.user.dto.study.StudyYearSeasonDto;
 import keeper.project.homepage.user.mapper.StudyMapper;
 import keeper.project.homepage.util.image.preprocessing.ImageCenterCropping;
+import keeper.project.homepage.util.image.preprocessing.ImageSize;
 import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.util.service.ThumbnailService;
-import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;
+import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;
@@ -129,8 +130,8 @@ public class StudyService {
   }
 
   private ThumbnailEntity saveThumbnail(String ipAddress, MultipartFile thumbnail) {
-    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCropping(),
-        thumbnail, ThumbnailSize.STUDY, ipAddress);
+    ThumbnailEntity thumbnailEntity = thumbnailService.save(ThumbType.StudyThumbnail,
+        new ImageCenterCropping(ImageSize.STUDY), thumbnail, ipAddress);
 
     if (thumbnailEntity == null) {
       throw new CustomThumbnailEntityNotFoundException();
@@ -140,8 +141,8 @@ public class StudyService {
 
   private void deletePrevThumbnail(Long studyThumbnailId) {
     if (studyThumbnailId != null) {
-      ThumbnailEntity prevThumbnail = thumbnailService.findById(studyThumbnailId);
-      thumbnailService.deleteById(prevThumbnail.getId());
+      ThumbnailEntity prevThumbnail = thumbnailService.find(studyThumbnailId);
+      thumbnailService.delete(prevThumbnail.getId());
       fileService.deleteOriginalThumbnail(prevThumbnail);
     }
   }

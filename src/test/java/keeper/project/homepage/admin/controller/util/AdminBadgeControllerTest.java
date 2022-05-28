@@ -18,6 +18,7 @@ import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
+import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -219,7 +220,7 @@ public class AdminBadgeControllerTest extends ApiControllerTestHelper {
   @Test
   @DisplayName("뱃지 조회 - 성공 [input: 기존 id]")
   public void getBadgeSuccess() throws Exception {
-    Long badgeId = DefaultThumbnailInfo.ThumbPosting.getThumbnailId();
+    Long badgeId = ThumbType.PostThumbnail.getDefaultThumbnailId();
 
     ResultActions resultActions = mockMvc.perform(get("/v1/admin/badge/{badgeId}", badgeId)
         .header("Authorization", adminToken));

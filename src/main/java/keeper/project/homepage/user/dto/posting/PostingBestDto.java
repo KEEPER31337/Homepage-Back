@@ -5,6 +5,7 @@ import keeper.project.homepage.common.controller.util.ImageController;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.util.EnvironmentProperty;
 import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
+import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,7 +43,7 @@ public class PostingBestDto {
 
     //썸네일 경로 처리
     this.thumbnailPath = postingEntity.getThumbnail() == null ?
-        EnvironmentProperty.getThumbnailPath(DefaultThumbnailInfo.ThumbPosting.getThumbnailId())
+        EnvironmentProperty.getThumbnailPath(ThumbType.PostThumbnail.getDefaultThumbnailId())
         : EnvironmentProperty.getThumbnailPath(postingEntity.getThumbnail().getId());
     this.userThumbnailPath = postingEntity.getMemberId().getThumbnailPath();
 

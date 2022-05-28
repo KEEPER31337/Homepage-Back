@@ -9,10 +9,11 @@ import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.entity.library.BookBorrowEntity;
+import keeper.project.homepage.util.image.preprocessing.ImageSize;
 import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.util.service.ThumbnailService;
 import keeper.project.homepage.common.service.ResponseService;
-import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;
+import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import keeper.project.homepage.common.service.util.AuthService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -64,8 +65,8 @@ public class BookManageController {
       ip = httpServletRequest.getRemoteAddr();
     }
 
-    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCropping(),
-        thumbnail, ThumbnailSize.LARGE, ip);
+    ThumbnailEntity thumbnailEntity = thumbnailService.save(ThumbType.BookThumbnail,
+        new ImageCenterCropping(ImageSize.LARGE), thumbnail, ip);
 
     if (thumbnailEntity == null) {
       throw new CustomThumbnailEntityNotFoundException();

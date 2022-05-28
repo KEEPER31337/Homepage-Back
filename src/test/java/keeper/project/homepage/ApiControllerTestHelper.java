@@ -149,10 +149,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
   }
 
   public void deleteTestFile(FileEntity fileEntity) {
-    List<Long> defaultFileIds = Stream.of(ThumbnailService.DefaultThumbnailInfo.values())
-        .map(m -> m.getFileId())
-        .collect(toList());
-    if (defaultFileIds.contains(fileEntity.getId())) {
+    if (fileService.isDefaultFileId(fileEntity.getId())) {
       return;
     }
 
@@ -166,10 +163,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
   }
 
   public void deleteTestThumbnailFile(ThumbnailEntity thumbnailEntity) {
-    List<Long> defaultThumbnailIds = Stream.of(ThumbnailService.DefaultThumbnailInfo.values())
-        .map(m -> m.getThumbnailId())
-        .collect(toList());
-    if (defaultThumbnailIds.contains(thumbnailEntity.getId())) {
+    if (thumbnailService.isDefaultThumbnail(thumbnailEntity.getId())) {
       return;
     }
 

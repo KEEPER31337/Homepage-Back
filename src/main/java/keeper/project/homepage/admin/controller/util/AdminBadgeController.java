@@ -5,11 +5,12 @@ import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.util.ClientUtil;
+import keeper.project.homepage.util.image.preprocessing.ImageNoChange;
 import keeper.project.homepage.util.image.preprocessing.ImageResizing;
 import keeper.project.homepage.util.image.preprocessing.ImageResizing.RESIZE_OPTION;
+import keeper.project.homepage.util.image.preprocessing.ImageSize;
 import keeper.project.homepage.util.service.ThumbnailService;
-import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;
-import keeper.project.homepage.util.service.ThumbnailService.Type;
+import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
@@ -42,9 +43,8 @@ public class AdminBadgeController {
       HttpServletRequest httpServletRequest) {
 
     String ip = ClientUtil.getUserIP(httpServletRequest);
-    thumbnailService.save(Type.Badge,
-        new ImageResizing(RESIZE_OPTION.KEEP_RATIO_IN_OUTER_BOUNDARY),
-        badge, ThumbnailSize.SMALL, ip);
+    thumbnailService.save(ThumbType.Badge,
+        new ImageResizing(RESIZE_OPTION.KEEP_RATIO_IN_OUTER_BOUNDARY, ImageSize.SMALL), badge, ip);
 
     return responseService.getSuccessResult();
   }
@@ -56,9 +56,8 @@ public class AdminBadgeController {
       HttpServletRequest httpServletRequest) {
 
     String ip = ClientUtil.getUserIP(httpServletRequest);
-    thumbnailService.updateById(badgeId, Type.Badge,
-        new ImageResizing(RESIZE_OPTION.KEEP_RATIO_IN_OUTER_BOUNDARY),
-        badge, ThumbnailSize.SMALL, ip);
+    thumbnailService.update(badgeId, ThumbType.Badge,
+        new ImageResizing(RESIZE_OPTION.KEEP_RATIO_IN_OUTER_BOUNDARY, ImageSize.SMALL), badge, ip);
 
     return responseService.getSuccessResult();
   }
@@ -68,12 +67,12 @@ public class AdminBadgeController {
       produces = MediaType.MULTIPART_FORM_DATA_VALUE)
   public @ResponseBody
   byte[] getBadge(@PathVariable("badgeId") Long badgeId) throws IOException {
-    return thumbnailService.getByteArrayFromImage(badgeId);
+    return thumbnailService.getByteArrayFromImage(badgeId, new ImageNoChange());
   }
 
   @DeleteMapping(value = "/{badgeId}")
   public CommonResult deleteBadge(@PathVariable("badgeId") Long badgeId) {
-    thumbnailService.deleteById(badgeId);
+    thumbnailService.delete(badgeId);
     return responseService.getSuccessResult();
   }
 }

@@ -21,11 +21,12 @@ import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
 import keeper.project.homepage.user.dto.posting.PostingResponseDto;
+import keeper.project.homepage.util.image.preprocessing.ImageSize;
 import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.util.service.ThumbnailService;
 import keeper.project.homepage.util.image.preprocessing.ImageCenterCropping;
-import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;
+import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import keeper.project.homepage.user.service.posting.CommentService;
 import keeper.project.homepage.user.service.posting.PostingService;
 import keeper.project.homepage.common.service.util.AuthService;
@@ -112,8 +113,9 @@ public class PostingController {
       PostingDto dto, HttpServletRequest httpServletRequest) {
 
     dto.setIpAddress(getUserIP(httpServletRequest));
-    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCropping(),
-        thumbnail, ThumbnailSize.LARGE, dto.getIpAddress());
+    ThumbnailEntity thumbnailEntity = thumbnailService.save(ThumbType.PostThumbnail,
+        new ImageCenterCropping(
+            ImageSize.LARGE), thumbnail, dto.getIpAddress());
     dto.setThumbnailId(thumbnailEntity.getId());
     PostingEntity postingEntity = postingService.save(dto);
     fileService.saveFiles(files, dto.getIpAddress(), postingEntity);
@@ -186,8 +188,8 @@ public class PostingController {
   }
 
   private ThumbnailEntity saveThumbnail(MultipartFile thumbnail, PostingDto dto) {
-    ThumbnailEntity newThumbnail = thumbnailService.saveThumbnail(new ImageCenterCropping(),
-        thumbnail, ThumbnailSize.LARGE, dto.getIpAddress());
+    ThumbnailEntity newThumbnail = thumbnailService.save(ThumbType.PostThumbnail,
+        new ImageCenterCropping(ImageSize.LARGE), thumbnail, dto.getIpAddress());
     if (newThumbnail == null) {
       throw new CustomThumbnailEntityNotFoundException("썸네일 저장 중에 에러가 발생했습니다.");
     }
@@ -196,8 +198,8 @@ public class PostingController {
 
   private void deletePrevThumbnail(PostingDto dto) {
     if (dto.getThumbnailId() != null) {
-      ThumbnailEntity prevThumbnail = thumbnailService.findById(dto.getThumbnailId());
-      thumbnailService.deleteById(prevThumbnail.getId());
+      ThumbnailEntity prevThumbnail = thumbnailService.find(dto.getThumbnailId());
+      thumbnailService.delete(prevThumbnail.getId());
       fileService.deleteOriginalThumbnail(prevThumbnail);
     }
   }
@@ -211,14 +213,14 @@ public class PostingController {
 
     ThumbnailEntity deleteThumbnail = null;
     if (postingEntity.getThumbnail() != null) {
-      deleteThumbnail = thumbnailService.findById(
+      deleteThumbnail = thumbnailService.find(
           postingEntity.getThumbnail().getId());
     }
     deletePrevFiles(postingEntity);
     postingService.delete(postingEntity);
 
     if (deleteThumbnail != null) {
-      thumbnailService.deleteById(deleteThumbnail.getId());
+      thumbnailService.delete(deleteThumbnail.getId());
       fileService.deleteOriginalThumbnail(deleteThumbnail);
     }
 

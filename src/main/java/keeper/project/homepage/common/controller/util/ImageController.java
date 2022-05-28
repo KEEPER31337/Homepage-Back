@@ -31,7 +31,7 @@ public class ImageController {
   byte[] getImage(@PathVariable("fileId") Long fileId) throws IOException {
 
     return fileService.getByteArrayFromImage(fileId,
-        new ImageResizing(RESIZE_OPTION.KEEP_RATIO_IN_OUTER_BOUNDARY), 800, 800);
+        new ImageResizing(RESIZE_OPTION.KEEP_RATIO_IN_OUTER_BOUNDARY, 800, 800));
   }
 
   @GetMapping(
@@ -41,6 +41,6 @@ public class ImageController {
   byte[] getThumbnail(@PathVariable("thumbnailId") Long thumbnailId) throws IOException {
 
     return thumbnailService.getByteArrayFromImage(thumbnailId,
-        new ImageResizing(RESIZE_OPTION.KEEP_RATIO_IN_OUTER_BOUNDARY), 800, 800);
+        new ImageResizing(RESIZE_OPTION.KEEP_RATIO_IN_OUTER_BOUNDARY, 800, 800));
   }
 }

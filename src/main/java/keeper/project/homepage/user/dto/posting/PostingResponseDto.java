@@ -9,6 +9,7 @@ import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.util.EnvironmentProperty;
 import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
+import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -74,7 +75,7 @@ public class PostingResponseDto {
     // 썸네일 경로 처리
     this.writerThumbnailPath = postingEntity.getMemberId().getThumbnailPath();
     this.thumbnailPath = postingThumbnail == null ?
-        EnvironmentProperty.getThumbnailPath(DefaultThumbnailInfo.ThumbPosting.getThumbnailId())
+        EnvironmentProperty.getThumbnailPath(ThumbType.PostThumbnail.getDefaultThumbnailId())
         : EnvironmentProperty.getThumbnailPath(postingThumbnail.getId());
 
     // 익명게시판 처리

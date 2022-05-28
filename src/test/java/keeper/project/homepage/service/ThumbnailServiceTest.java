@@ -7,8 +7,9 @@ import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.util.image.preprocessing.ImageCenterCropping;
+import keeper.project.homepage.util.image.preprocessing.ImageSize;
 import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
-import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;
+import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -43,13 +44,13 @@ public class ThumbnailServiceTest extends ApiControllerTestHelper {
 
     //test
     Assertions.assertTrue(new File(imageFilePath).exists(), "test할 이미지 파일이 없습니다.");
-    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCropping(),
-        originalImage, ThumbnailSize.LARGE, ipAddress);
+    ThumbnailEntity thumbnailEntity = thumbnailService.save(ThumbType.PostThumbnail,
+        new ImageCenterCropping(ImageSize.LARGE), originalImage, ipAddress);
     Assertions.assertTrue(
         new File(
             System.getProperty("user.dir") + File.separator + thumbnailEntity.getPath()).exists(),
         "thumbnail file이 저장되지 않았습니다.");
-    Assertions.assertNotNull(thumbnailService.findById(thumbnailEntity.getId()),
+    Assertions.assertNotNull(thumbnailService.find(thumbnailEntity.getId()),
         "thumbnail Entity가 저장되지 않았습니다.");
 
     // clear
@@ -60,7 +61,7 @@ public class ThumbnailServiceTest extends ApiControllerTestHelper {
   public void createDefaultTest() {
     //given
     String ipAddress = "127.0.0.1";
-    Long defaultFileId = DefaultThumbnailInfo.ThumbPosting.getFileId();
+    Long defaultFileId = ThumbType.PostThumbnail.getDefaultFileId();
     FileEntity defaultFileEntity = fileService.find(defaultFileId);
     String defaultFilePath = usrDir + defaultFileEntity.getFilePath();
     Boolean isFileCreated = false;
@@ -71,15 +72,15 @@ public class ThumbnailServiceTest extends ApiControllerTestHelper {
 
     //test
     Assertions.assertTrue(new File(defaultFilePath).exists(), "test할 이미지 파일이 없습니다.");
-    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCropping(),
-        null, ThumbnailSize.LARGE, ipAddress);
+    ThumbnailEntity thumbnailEntity = thumbnailService.save(ThumbType.PostThumbnail,
+        new ImageCenterCropping(ImageSize.LARGE), null, ipAddress);
 
     log.info(System.getProperty("user.dir") + File.separator + thumbnailEntity.getPath());
     Assertions.assertTrue(
         new File(
             System.getProperty("user.dir") + File.separator + thumbnailEntity.getPath()).exists(),
         "thumbnail file이 저장되지 않았습니다.");
-    Assertions.assertNotNull(thumbnailService.findById(thumbnailEntity.getId()),
+    Assertions.assertNotNull(thumbnailService.find(thumbnailEntity.getId()),
         "thumbnail Entity가 저장되지 않았습니다.");
 
     // clear
@@ -99,7 +100,7 @@ public class ThumbnailServiceTest extends ApiControllerTestHelper {
         System.getProperty("user.dir") + File.separator + thumbnailEntity.getFile().getFilePath();
 
     // test
-    thumbnailService.deleteById(thumbnailEntity.getId());
+    thumbnailService.delete(thumbnailEntity.getId());
     fileService.deleteOriginalThumbnail(thumbnailEntity);
 
     Assertions.assertTrue(thumbnailRepository.findById(thumbnailEntity.getId()).isEmpty());
@@ -113,8 +114,8 @@ public class ThumbnailServiceTest extends ApiControllerTestHelper {
   @DisplayName("기본 이미지로 생성한 썸네일 삭제")
   public void deleteDefaultTest() {
     //given
-    Long defaultThumbnailId = DefaultThumbnailInfo.ThumbPosting.getThumbnailId();
-    ThumbnailEntity defaultThumbnailEntity = thumbnailService.findById(defaultThumbnailId);
+    Long defaultThumbnailId = ThumbType.PostThumbnail.getDefaultThumbnailId();
+    ThumbnailEntity defaultThumbnailEntity = thumbnailService.find(defaultThumbnailId);
     String defaultThumbnailPath = usrDir + defaultThumbnailEntity.getPath();
     Boolean isFileCreated = false;
     if (!(new File(defaultThumbnailPath).exists())) {
@@ -123,7 +124,7 @@ public class ThumbnailServiceTest extends ApiControllerTestHelper {
     }
 
     // test
-    thumbnailService.deleteById(defaultThumbnailId);
+    thumbnailService.delete(defaultThumbnailId);
     fileService.deleteOriginalThumbnail(defaultThumbnailEntity);
 
     Assertions.assertTrue(thumbnailRepository.findById(defaultThumbnailEntity.getId()).isPresent());

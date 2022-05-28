@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import keeper.project.homepage.util.image.ImageFormatChecking;
-import keeper.project.homepage.util.image.preprocessing.ImageProcessing;
+import keeper.project.homepage.util.image.preprocessing.ImagePreprocessing;
 import keeper.project.homepage.util.dto.FileDto;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
@@ -39,26 +39,19 @@ public class FileService {
   private final FileRepository fileRepository;
   private final ImageFormatChecking imageFormatChecking;
 
-  public byte[] getByteArrayFromImage(Long fileId, ImageProcessing imageProcessing,
-      Integer width, Integer height) throws IOException {
+  public byte[] getByteArrayFromImage(Long fileId, ImagePreprocessing imagePreprocessing)
+      throws IOException {
     File file = getFileInServer(fileId);
-    return getByteArrayFromImage(file, imageProcessing, width, height);
+    return getByteArrayFromImage(file, imagePreprocessing);
   }
 
-  public byte[] getByteArrayFromImage(Long fileId) throws IOException {
-    File file = getFileInServer(fileId);
-    return getByteArrayFromImage(file);
-  }
-
-  // FIXME: width, height  없애기
-  //  imageProcessing이 있는 함수로 하나로 합치기
-  public byte[] getByteArrayFromImage(File file, ImageProcessing imageProcessing,
-      Integer width, Integer height) throws IOException {
+  public byte[] getByteArrayFromImage(File file, ImagePreprocessing imagePreprocessing)
+      throws IOException {
     /**
      * @return byte array for preprocessed image
      */
     imageFormatChecking.checkImageFile(file.getName());
-    imageProcessing.imageProcessing(file, width, height, "jpg");
+    imagePreprocessing.imageProcessing(file, "jpg");
     InputStream in = new FileInputStream(file);
     return IOUtils.toByteArray(in);
   }
@@ -73,6 +66,7 @@ public class FileService {
   }
 
   public File getFileInServer(String filePath) {
+    filePath = System.getProperty("user.dir") + File.separator + filePath;
     File file = new File(filePath);
     if (file.exists() == false) {
       throw new CustomFileNotFoundException();
@@ -81,8 +75,7 @@ public class FileService {
   }
 
   private File getFileInServer(FileEntity fileEntity) {
-    String filePath = System.getProperty("user.dir") + File.separator + fileEntity.getFilePath();
-    return getFileInServer(filePath);
+    return getFileInServer(fileEntity.getFilePath());
   }
 
   private File getFileInServer(Long fileId) {
@@ -216,11 +209,7 @@ public class FileService {
   public boolean isDefaultFileId(Long fileId) {
     List<Long> defaultIdList = Stream.of(DefaultThumbnailInfo.values()).map(t -> t.getFileId())
         .collect(Collectors.toList());
-    if (defaultIdList.contains(fileId)) {
-      return true;
-    } else {
-      return false;
-    }
+    return defaultIdList.contains(fileId);
   }
 
   // TODO : thumbnail delete와 합치기

@@ -8,7 +8,7 @@ import keeper.project.homepage.exception.file.CustomImageIOException;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public class ImageResizing implements ImageProcessing {
+public class ImageResizing implements ImagePreprocessing {
 
   public enum RESIZE_OPTION {
     DEFAULT,
@@ -18,7 +18,10 @@ public class ImageResizing implements ImageProcessing {
 
   private RESIZE_OPTION resize_option;
 
-  public ImageResizing(RESIZE_OPTION resize_option) {
+  private Integer width;
+  private Integer height;
+
+  public ImageResizing(RESIZE_OPTION resize_option, Integer width, Integer height) {
     /**
      * @param resize_option imageProcessing(.., dest_width, dest_height, ..)의 resize option
      *                      DEFAULT : dest_width X dest_height 로 크기 변경
@@ -26,6 +29,14 @@ public class ImageResizing implements ImageProcessing {
      *                      KEEP_RATIO_IN_OUTER_BOUNDARY : KEEP_RATIO 에서 원본 이미지의 너비와 높이가 dest_width, dest_height 보다 작다면 이미지 처리하지 않음
      */
     this.resize_option = resize_option;
+    this.width = width;
+    this.height = height;
+  }
+
+  public ImageResizing(RESIZE_OPTION resize_option, ImageSize size) {
+    this.resize_option = resize_option;
+    this.width = size.getWidth();
+    this.height = size.getHeight();
   }
 
   private class Size {
@@ -58,7 +69,9 @@ public class ImageResizing implements ImageProcessing {
         (int) (image_size.getHeight() * ratio));
   }
 
-  public void imageProcessing(File image, int dest_width, int dest_height, String fileFormat) {
+  public void imageProcessing(File image, String fileFormat) {
+    Integer dest_width = this.width;
+    Integer dest_height = this.height;
     BufferedImage bo_image;
     try {
       bo_image = ImageIO.read(image);

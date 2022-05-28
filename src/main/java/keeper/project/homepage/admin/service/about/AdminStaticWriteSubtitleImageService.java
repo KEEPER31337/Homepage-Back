@@ -11,8 +11,9 @@ import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundExcep
 import keeper.project.homepage.repository.about.StaticWriteSubtitleImageRepository;
 import keeper.project.homepage.repository.about.StaticWriteTitleRepository;
 import keeper.project.homepage.util.image.preprocessing.ImageCenterCropping;
+import keeper.project.homepage.util.image.preprocessing.ImageSize;
 import keeper.project.homepage.util.service.ThumbnailService;
-import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;
+import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,12 +39,8 @@ public class AdminStaticWriteSubtitleImageService {
   }
 
   private ThumbnailEntity validateThumbnail(MultipartFile thumbnail, String ipAddress) {
-    if (thumbnail == null) {
-      return thumbnailService.findById(9L);
-    } else {
-      return thumbnailService.saveThumbnail(new ImageCenterCropping(), thumbnail, ThumbnailSize.LARGE,
-          ipAddress);
-    }
+    return thumbnailService.save(ThumbType.InfoThumbnail, new ImageCenterCropping(ImageSize.LARGE),
+        thumbnail, ipAddress);
   }
 
   public StaticWriteSubtitleImageResponseDto createSubtitle(
@@ -80,7 +77,7 @@ public class AdminStaticWriteSubtitleImageService {
     staticWriteSubtitleImageEntity.update(staticWriteSubtitleImageDto, newThumbnail);
 
     if (prevThumbnail != null) {
-      thumbnailService.deleteById(prevThumbnail.getId());
+      thumbnailService.delete(prevThumbnail.getId());
     }
 
     StaticWriteSubtitleImageEntity result = staticWriteSubtitleImageRepository.save(
@@ -91,7 +88,7 @@ public class AdminStaticWriteSubtitleImageService {
   public StaticWriteSubtitleImageResponseDto deleteSubtitleById(Long id) {
     StaticWriteSubtitleImageEntity staticWriteSubtitleImageEntity = getSubTitleById(id);
 
-    thumbnailService.deleteById(staticWriteSubtitleImageEntity.getThumbnail().getId());
+    thumbnailService.delete(staticWriteSubtitleImageEntity.getThumbnail().getId());
 
     staticWriteSubtitleImageRepository.delete(staticWriteSubtitleImageEntity);
     return new StaticWriteSubtitleImageResponseDto(staticWriteSubtitleImageEntity);
