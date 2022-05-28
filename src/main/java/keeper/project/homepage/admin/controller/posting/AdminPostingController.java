@@ -55,7 +55,7 @@ public class AdminPostingController {
 
 
   private void deletePrevFiles(PostingEntity postingEntity) {
-    List<FileEntity> fileEntities = fileService.findFileEntitiesByPostingId(
+    List<FileEntity> fileEntities = fileService.findAllByPostingId(
         postingEntity);
     fileService.deleteFiles(fileEntities);
   }

@@ -4,10 +4,12 @@ import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.common.service.ResponseService;
+import keeper.project.homepage.util.ClientUtil;
 import keeper.project.homepage.util.ImageResizing;
 import keeper.project.homepage.util.ImageResizing.RESIZE_OPTION;
 import keeper.project.homepage.util.service.ThumbnailService;
 import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;
+import keeper.project.homepage.util.service.ThumbnailService.Type;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
@@ -17,7 +19,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -40,9 +41,10 @@ public class AdminBadgeController {
   public CommonResult saveBadge(@RequestParam("badge") MultipartFile badge,
       HttpServletRequest httpServletRequest) {
 
-    String ipAddress = httpServletRequest.getHeader("X-FORWARDED-FOR");
-    thumbnailService.saveBadge(new ImageResizing(RESIZE_OPTION.KEEP_RATIO_IN_OUTER_BOUNDARY),
-        badge, ThumbnailSize.SMALL, ipAddress);
+    String ip = ClientUtil.getUserIP(httpServletRequest);
+    thumbnailService.save(Type.Badge,
+        new ImageResizing(RESIZE_OPTION.KEEP_RATIO_IN_OUTER_BOUNDARY),
+        badge, ThumbnailSize.SMALL, ip);
 
     return responseService.getSuccessResult();
   }
@@ -53,10 +55,10 @@ public class AdminBadgeController {
       @RequestParam("badge") MultipartFile badge,
       HttpServletRequest httpServletRequest) {
 
-    String ipAddress = httpServletRequest.getHeader("X-FORWARDED-FOR");
-    thumbnailService.updateBadge(badgeId,
+    String ip = ClientUtil.getUserIP(httpServletRequest);
+    thumbnailService.updateById(badgeId, Type.Badge,
         new ImageResizing(RESIZE_OPTION.KEEP_RATIO_IN_OUTER_BOUNDARY),
-        badge, ThumbnailSize.SMALL, ipAddress);
+        badge, ThumbnailSize.SMALL, ip);
 
     return responseService.getSuccessResult();
   }
@@ -66,12 +68,12 @@ public class AdminBadgeController {
       produces = MediaType.MULTIPART_FORM_DATA_VALUE)
   public @ResponseBody
   byte[] getBadge(@PathVariable("badgeId") Long badgeId) throws IOException {
-    return thumbnailService.getByteArrayForThumbnailImage(badgeId);
+    return thumbnailService.getByteArrayFromImage(badgeId);
   }
 
   @DeleteMapping(value = "/{badgeId}")
   public CommonResult deleteBadge(@PathVariable("badgeId") Long badgeId) {
-    thumbnailService.deleteBadge(badgeId);
+    thumbnailService.deleteById(badgeId);
     return responseService.getSuccessResult();
   }
 }

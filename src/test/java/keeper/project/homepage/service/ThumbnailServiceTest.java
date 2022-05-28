@@ -61,7 +61,7 @@ public class ThumbnailServiceTest extends ApiControllerTestHelper {
     //given
     String ipAddress = "127.0.0.1";
     Long defaultFileId = DefaultThumbnailInfo.ThumbPosting.getFileId();
-    FileEntity defaultFileEntity = fileService.findFileEntityById(defaultFileId);
+    FileEntity defaultFileEntity = fileService.find(defaultFileId);
     String defaultFilePath = usrDir + defaultFileEntity.getFilePath();
     Boolean isFileCreated = false;
     if (!(new File(defaultFilePath).exists())) {

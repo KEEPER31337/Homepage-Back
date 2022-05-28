@@ -136,14 +136,14 @@ public class PostingController {
   public ListResult<FileEntity> getAttachList(@PathVariable("pid") Long postingId) {
 
     return responseService.getSuccessListResult(
-        fileService.findFileEntitiesByPostingId(postingService.getPostingById(postingId)));
+        fileService.findAllByPostingId(postingService.getPostingById(postingId)));
   }
 
   // 다운로드는 ResponseEntity를 사용하는것이 더 용이하여 그대로 두었습니다.
   @GetMapping(value = "/download/{fileId}")
   public ResponseEntity<Resource> downloadFile(@PathVariable("fileId") Long fileId)
       throws IOException {
-    FileEntity fileEntity = fileService.findFileEntityById(fileId);
+    FileEntity fileEntity = fileService.find(fileId);
     Path path = Paths.get(fileEntity.getFilePath());
     Resource resource = new InputStreamResource(Files.newInputStream(path));
     String encodedFileName = UriUtils.encode(fileEntity.getFileName(), StandardCharsets.UTF_8);
@@ -174,7 +174,7 @@ public class PostingController {
 
   @GetMapping(value = "/delete/{fileId}")
   public CommonResult deleteFile(@PathVariable("fileId") Long fileId) {
-    fileService.deleteFileById(fileId);
+    fileService.deleteFile(fileId);
 
     return responseService.getSuccessResult();
   }
@@ -226,7 +226,7 @@ public class PostingController {
   }
 
   private void deletePrevFiles(PostingEntity postingEntity) {
-    List<FileEntity> fileEntities = fileService.findFileEntitiesByPostingId(
+    List<FileEntity> fileEntities = fileService.findAllByPostingId(
         postingEntity);
     fileService.deleteFiles(fileEntities);
   }
