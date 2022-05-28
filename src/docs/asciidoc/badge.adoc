@@ -23,6 +23,10 @@ link:keeper.html[API 목록으로 돌아가기]
 
 === 요청
 
+==== Request
+
+include::{snippets}/badge-post/http-request.adoc[]
+
 ==== Request Parts
 
 include::{snippets}/badge-post/request-parts.adoc[]
@@ -36,6 +40,10 @@ include::{snippets}/badge-post/response-fields.adoc[]
 == *뱃지 이미지 수정*
 
 === 요청
+
+==== Request
+
+include::{snippets}/badge-update/http-request.adoc[]
 
 ==== Path Parameters
 
@@ -53,6 +61,10 @@ include::{snippets}/badge-update/response-fields.adoc[]
 
 == *뱃지 이미지 조회*
 
+==== Request
+
+include::{snippets}/badge-get/http-request.adoc[]
+
 === 요청
 
 ==== Path Parameters
@@ -68,6 +80,10 @@ include::{snippets}/badge-get/path-parameters.adoc[]
 == *뱃지 이미지 삭제*
 
 === 요청
+
+==== Request
+
+include::{snippets}/badge-delete/http-request.adoc[]
 
 ==== Path Parameters
 
