@@ -147,7 +147,8 @@ public class StudyService {
   }
 
   @Transactional
-  public StudyDto modifyStudy(Long studyId, StudyDto studyDto, MultipartFile thumbnail) {
+  public StudyDto modifyStudy(Long studyId, StudyDto studyDto, MultipartFile thumbnail,
+      List<Long> newMemberIdList) {
 
     checkSeasonValidate(studyDto.getSeason());
     checkIpAddressExist(studyDto.getIpAddress());
@@ -157,6 +158,8 @@ public class StudyService {
         .orElseThrow(CustomStudyNotFoundException::new);
 
     checkStudyIsMine(myId, studyEntity);
+
+    modifyStudyMembers(studyId, newMemberIdList, myId, studyEntity);
 
     Long prevStudyThumbnailId = null;
     if (studyEntity.getThumbnail() != null) {
@@ -180,6 +183,47 @@ public class StudyService {
     }
 
     return studyMapper.toDto(studyEntity);
+  }
+
+  private void modifyStudyMembers(Long studyId, List<Long> newMemberIdList, Long headMemberId,
+      StudyEntity studyEntity) {
+    List<Long> originMemberIdList = getOriginMemberIdList(studyId);
+    addNewMembers(newMemberIdList, headMemberId, studyEntity, originMemberIdList);
+    removeOriginMembers(newMemberIdList, headMemberId, studyEntity, originMemberIdList);
+  }
+
+  private void removeOriginMembers(List<Long> newMemberIdList, Long headMemberId,
+      StudyEntity studyEntity, List<Long> originMemberIdList) {
+    for (Long originMemberId : originMemberIdList) {
+      if (originMemberId.equals(headMemberId)) {
+        continue;
+      }
+
+      if (!newMemberIdList.contains(originMemberId)) {
+        removeStudyMember(originMemberId, studyEntity);
+      }
+    }
+  }
+
+  private void addNewMembers(List<Long> newMemberIdList, Long headMemberId,
+      StudyEntity studyEntity, List<Long> originMemberIdList) {
+    for (Long newMemberId : newMemberIdList) {
+      if (newMemberId.equals(headMemberId)) {
+        continue;
+      }
+
+      if (!originMemberIdList.contains(newMemberId)) {
+        addStudyMember(newMemberId, studyEntity);
+      }
+    }
+  }
+
+  private List<Long> getOriginMemberIdList(Long studyId) {
+    List<StudyHasMemberEntity> studyHasMemberEntities = studyHasMemberRepository
+        .findAllByStudyId(studyId);
+    return studyHasMemberEntities.stream()
+        .map(StudyHasMemberEntity::getMember)
+        .map(MemberEntity::getId).toList();
   }
 
   private void checkStudyIsMine(Long myId, StudyEntity studyEntity) {

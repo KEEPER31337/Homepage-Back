@@ -67,7 +67,8 @@ public class StudyController {
         studyService.modifyStudy(
             modifyStudyRequest.getStudyId(),
             modifyStudyRequest.getStudyDto(),
-            modifyStudyRequest.getThumbnail()));
+            modifyStudyRequest.getThumbnail(),
+            modifyStudyRequest.getMemberIdList()));
   }
 
   @PatchMapping(value = "/member/add")
