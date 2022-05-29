@@ -56,6 +56,7 @@ public class CtfChallengeController {
       @PathVariable("pid") Long probId,
       @RequestBody CtfFlagDto submitFlag
   ) {
+    ctfChallengeService.setLog(probId, submitFlag);
     return responseService.getSuccessSingleResult(
         ctfChallengeService.checkFlag(probId, submitFlag));
   }

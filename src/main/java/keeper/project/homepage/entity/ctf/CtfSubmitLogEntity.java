@@ -32,21 +32,24 @@ public class CtfSubmitLogEntity {
   @Column(nullable = false)
   LocalDateTime submitTime;
 
-  @OneToOne
-  @JoinColumn(name = "team_id")
-  CtfTeamEntity ctfTeamEntity;
-
-  @OneToOne
-  @JoinColumn(name = "submitter")
-  MemberEntity submitter;
-
-  @OneToOne
-  @JoinColumn(name = "challenge_id")
-  CtfChallengeEntity ctfChallengeEntity;
-
-  @Column(nullable = false)
+  @Column(nullable = false, length = 200)
   String flagSubmitted;
 
   @Column(nullable = false)
   Boolean isCorrect;
+
+  @Column(nullable = false, length = 45)
+  String teamName;
+
+  @Column(nullable = false, length = 80)
+  String submitterLoginId;
+
+  @Column(nullable = false, length = 45)
+  String submitterRealname;
+
+  @Column(nullable = false, length = 200)
+  String challengeName;
+
+  @Column(nullable = false, length = 45)
+  String contestName;
 }

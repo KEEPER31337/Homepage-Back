@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.time.LocalDateTime;
+import javax.persistence.Column;
 import keeper.project.homepage.common.dto.member.CommonMemberDto;
 import keeper.project.homepage.entity.ctf.CtfSubmitLogEntity;
 import keeper.project.homepage.user.dto.ctf.CtfTeamDto;
@@ -29,33 +30,38 @@ public class CtfSubmitLogDto {
   LocalDateTime submitTime;
 
   @JsonProperty(access = Access.READ_ONLY)
-  CtfTeamDto team;
-
-  @JsonProperty(access = Access.READ_ONLY)
-  CommonMemberDto submitter;
-
-  @JsonProperty(access = Access.READ_ONLY)
-  CtfChallengeAdminDto challenge;
-
-  @JsonProperty(access = Access.READ_ONLY)
   String flagSubmitted;
 
   @JsonProperty(access = Access.READ_ONLY)
   Boolean isCorrect;
 
+  @JsonProperty(access = Access.READ_ONLY)
+  String teamName;
+
+  @JsonProperty(access = Access.READ_ONLY)
+  String submitterLoginId;
+
+  @JsonProperty(access = Access.READ_ONLY)
+  String submitterRealname;
+
+  @JsonProperty(access = Access.READ_ONLY)
+  String challengeName;
+
+  @JsonProperty(access = Access.READ_ONLY)
+  String contestName;
+
   public static CtfSubmitLogDto toDto(CtfSubmitLogEntity submitLog) {
-    CtfTeamDto team = CtfTeamDto.toDto(submitLog.getCtfTeamEntity());
-    CommonMemberDto submitter = CommonMemberDto.toDto(submitLog.getSubmitter());
-    CtfChallengeAdminDto challenge = CtfChallengeAdminDto.toDto(submitLog.getCtfChallengeEntity());
 
     return CtfSubmitLogDto.builder()
         .id(submitLog.getId())
         .submitTime(submitLog.getSubmitTime())
-        .team(team)
-        .submitter(submitter)
-        .challenge(challenge)
         .flagSubmitted(submitLog.getFlagSubmitted())
         .isCorrect(submitLog.getIsCorrect())
+        .teamName(submitLog.getTeamName())
+        .submitterLoginId(submitLog.getSubmitterLoginId())
+        .submitterRealname(submitLog.getSubmitterRealname())
+        .challengeName(submitLog.getChallengeName())
+        .contestName(submitLog.getContestName())
         .build();
   }
 }

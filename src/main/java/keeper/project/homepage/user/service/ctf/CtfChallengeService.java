@@ -2,18 +2,22 @@ package keeper.project.homepage.user.service.ctf;
 
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_PROBLEM_ID;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
 import keeper.project.homepage.entity.ctf.CtfFlagEntity;
+import keeper.project.homepage.entity.ctf.CtfSubmitLogEntity;
 import keeper.project.homepage.entity.ctf.CtfTeamEntity;
+import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.ctf.CustomContestNotFoundException;
 import keeper.project.homepage.exception.ctf.CustomCtfChallengeNotFoundException;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.ctf.CtfChallengeRepository;
 import keeper.project.homepage.repository.ctf.CtfContestRepository;
 import keeper.project.homepage.repository.ctf.CtfFlagRepository;
+import keeper.project.homepage.repository.ctf.CtfSubmitLogRepository;
 import keeper.project.homepage.repository.ctf.CtfTeamHasMemberRepository;
 import keeper.project.homepage.repository.ctf.CtfTeamRepository;
 import keeper.project.homepage.user.dto.ctf.CtfChallengeDto;
@@ -36,6 +40,7 @@ public class CtfChallengeService {
   private final CtfTeamRepository teamRepository;
   private final CtfFlagRepository flagRepository;
   private final CtfContestRepository contestRepository;
+  private final CtfSubmitLogRepository submitLogRepository;
   private final CtfUtilService ctfUtilService;
   private final AuthService authService;
 
@@ -58,8 +63,8 @@ public class CtfChallengeService {
     Long submitterId = authService.getMemberIdByJWT();
     CtfChallengeEntity submitChallenge = challengeRepository.findById(probId)
         .orElseThrow(CustomCtfChallengeNotFoundException::new);
-    CtfTeamEntity submitTeam = teamHasMemberRepository.findByMember_Id(submitterId)
-        .orElseThrow(CustomMemberNotFoundException::new).getTeam();
+    CtfTeamEntity submitTeam = ctfUtilService.getTeamHasMemberEntity(
+        submitChallenge.getCtfContestEntity().getId(), submitterId).getTeam();
     CtfFlagEntity flagEntity = flagRepository.findByCtfChallengeEntityIdAndCtfTeamEntityId(probId,
         submitTeam.getId()).orElseThrow(CustomCtfChallengeNotFoundException::new);
 
@@ -107,5 +112,26 @@ public class CtfChallengeService {
 
     return CtfChallengeDto.toDto(challengeRepository.findById(probId)
         .orElseThrow(CustomCtfChallengeNotFoundException::new), solvedTeamCount);
+  }
+
+  public CtfSubmitLogEntity setLog(Long probId, CtfFlagDto submitFlag) {
+    MemberEntity submitter = authService.getMemberEntityWithJWT();
+    CtfChallengeEntity submitChallenge = challengeRepository.findById(probId)
+        .orElseThrow(CustomCtfChallengeNotFoundException::new);
+    CtfTeamEntity submitTeam = ctfUtilService.getTeamHasMemberEntity(
+        submitChallenge.getCtfContestEntity().getId(), submitter.getId()).getTeam();
+    CtfFlagEntity flagEntity = flagRepository.findByCtfChallengeEntityIdAndCtfTeamEntityId(probId,
+        submitTeam.getId()).orElseThrow(CustomCtfChallengeNotFoundException::new);
+
+    return submitLogRepository.save(CtfSubmitLogEntity.builder()
+        .submitTime(LocalDateTime.now())
+        .flagSubmitted(submitFlag.getContent())
+        .isCorrect(isFlagCorrect(submitFlag, flagEntity))
+        .teamName(submitTeam.getName())
+        .submitterLoginId(submitter.getLoginId())
+        .submitterRealname(submitter.getRealName())
+        .challengeName(submitChallenge.getName())
+        .contestName(submitChallenge.getCtfContestEntity().getName())
+        .build());
   }
 }

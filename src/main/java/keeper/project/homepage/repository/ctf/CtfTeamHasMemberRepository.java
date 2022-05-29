@@ -1,5 +1,6 @@
 package keeper.project.homepage.repository.ctf;
 
+import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.entity.ctf.CtfTeamHasMemberEntity;
 import keeper.project.homepage.entity.ctf.CtfTeamHasMemberEntityPK;
@@ -9,5 +10,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface CtfTeamHasMemberRepository extends
     JpaRepository<CtfTeamHasMemberEntity, CtfTeamHasMemberEntityPK> {
 
-  Optional<CtfTeamHasMemberEntity> findByMember_Id(Long member_id);
+  List<CtfTeamHasMemberEntity> findAllByMember(MemberEntity memberEntity);
+
+  List<CtfTeamHasMemberEntity> findAllByMemberId(Long memberId);
+
+  void deleteAllByTeamId(Long teamId);
 }

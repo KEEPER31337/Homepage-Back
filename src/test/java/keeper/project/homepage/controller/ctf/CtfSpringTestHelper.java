@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.persistence.Column;
 import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
@@ -29,14 +30,14 @@ import keeper.project.homepage.repository.ctf.CtfFlagRepository;
 import keeper.project.homepage.repository.ctf.CtfSubmitLogRepository;
 import keeper.project.homepage.repository.ctf.CtfTeamHasMemberRepository;
 import keeper.project.homepage.repository.ctf.CtfTeamRepository;
+import keeper.project.homepage.util.service.CtfUtilService;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterAll;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.payload.FieldDescriptor;
 
-public class CtfControllerTestHelper extends ApiControllerTestHelper {
+public class CtfSpringTestHelper extends ApiControllerTestHelper {
 
   @Autowired
   protected CtfChallengeCategoryRepository ctfChallengeCategoryRepository;
@@ -65,6 +66,9 @@ public class CtfControllerTestHelper extends ApiControllerTestHelper {
   @Autowired
   protected CtfDynamicChallengeInfoRepository ctfDynamicChallengeInfoRepository;
 
+  @Autowired
+  protected CtfUtilService ctfUtilService;
+
   protected String asJsonString(final Object obj) {
     try {
       final ObjectMapper mapper = new ObjectMapper();
@@ -90,11 +94,24 @@ public class CtfControllerTestHelper extends ApiControllerTestHelper {
 
   @RequiredArgsConstructor
   @Getter
-  protected enum CtfChallengeType {
+  public enum CtfChallengeType {
     STANDARD(1L),
     DYNAMIC(2L);
 
     private final Long id;
+  }
+
+  protected CtfContestEntity generateCtfContest(MemberEntity creator, boolean isJoinable) {
+    final long epochTime = System.nanoTime();
+    CtfContestEntity entity = CtfContestEntity.builder()
+        .name("name_" + epochTime)
+        .description("desc_" + epochTime)
+        .registerTime(LocalDateTime.now())
+        .creator(creator)
+        .isJoinable(isJoinable)
+        .build();
+    ctfContestRepository.save(entity);
+    return entity;
   }
 
   protected CtfContestEntity generateCtfContest(MemberEntity creator) {
@@ -108,7 +125,6 @@ public class CtfControllerTestHelper extends ApiControllerTestHelper {
         .build();
     ctfContestRepository.save(entity);
     return entity;
-
   }
 
   protected CtfFlagEntity generateCtfFlag(CtfTeamEntity ctfTeam, CtfChallengeEntity ctfChallenge,
@@ -130,9 +146,11 @@ public class CtfControllerTestHelper extends ApiControllerTestHelper {
     final long epochTime = System.nanoTime();
     CtfSubmitLogEntity entity = CtfSubmitLogEntity.builder()
         .submitTime(LocalDateTime.now())
-        .ctfTeamEntity(ctfTeam)
-        .submitter(submitter)
-        .ctfChallengeEntity(ctfChallengeEntity)
+        .teamName(ctfTeam.getName())
+        .submitterLoginId(submitter.getLoginId())
+        .submitterRealname(submitter.getRealName())
+        .challengeName(ctfChallengeEntity.getName())
+        .contestName(ctfTeam.getCtfContestEntity().getName())
         .flagSubmitted(submitFlag)
         .isCorrect(false)
         .build();
@@ -335,11 +353,13 @@ public class CtfControllerTestHelper extends ApiControllerTestHelper {
     commonFields.addAll(Arrays.asList(
         fieldWithPath(prefix + ".id").description("해당 로그의 Id"),
         fieldWithPath(prefix + ".submitTime").description("flag 제출 시간"),
-        subsectionWithPath(prefix + ".team").description("flag 제출자의 팀"),
-        subsectionWithPath(prefix + ".submitter").description("flag 제출자"),
-        subsectionWithPath(prefix + ".challenge").description("제출 문제"),
         fieldWithPath(prefix + ".flagSubmitted").description("제출한 flag"),
-        fieldWithPath(prefix + ".isCorrect").description("제출 후 맞췄는 지 여부")
+        fieldWithPath(prefix + ".isCorrect").description("제출 후 맞췄는 지 여부"),
+        fieldWithPath(prefix + ".teamName").description(""),
+        fieldWithPath(prefix + ".submitterLoginId").description(""),
+        fieldWithPath(prefix + ".submitterRealname").description(""),
+        fieldWithPath(prefix + ".challengeName").description(""),
+        fieldWithPath(prefix + ".contestName").description("")
     ));
     if (type.equals(ResponseType.PAGE)) {
       commonFields.addAll(Arrays.asList(
@@ -401,10 +421,7 @@ public class CtfControllerTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".id").description("team Id"),
         fieldWithPath(prefix + ".name").description("team 이름"),
         fieldWithPath(prefix + ".description").description("team 설명"),
-        fieldWithPath(prefix + ".registerTime").description("team 등록 시간"),
-        fieldWithPath(prefix + ".creatorId").description("team 생성자 Id"),
-        fieldWithPath(prefix + ".score").description("team score"),
-        fieldWithPath(prefix + ".contestId").description("team이 속한 contest Id")
+        fieldWithPath(prefix + ".score").description("team score")
     ));
     if (type.equals(ResponseType.PAGE)) {
       commonFields.addAll(Arrays.asList(
@@ -424,6 +441,53 @@ public class CtfControllerTestHelper extends ApiControllerTestHelper {
     }
     return commonFields;
   }
+
+  protected List<FieldDescriptor> generateTeamDetailDtoResponseFields(ResponseType type,
+      String success, String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(Arrays.asList(
+        fieldWithPath(prefix + ".registerTime").description("team 등록 시간"),
+        fieldWithPath(prefix + ".creatorId").description("team 생성자 Id"),
+        fieldWithPath(prefix + ".contestId").description("team이 속한 contest Id")
+    ));
+    commonFields.addAll(generateTeamDtoResponseFields(type, success, code, msg));
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
+    }
+    return commonFields;
+  }
+
+  protected List<FieldDescriptor> generateTeamHasMemberDtoResponseFields(ResponseType type,
+      String success, String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(Arrays.asList(
+        fieldWithPath(prefix + ".teamName").description("team 이름"),
+        fieldWithPath(prefix + ".memberNickname").description("member 닉네임")
+    ));
+
+    if (type.equals(ResponseType.PAGE)) {
+      commonFields.addAll(Arrays.asList(
+          fieldWithPath("page.empty").description("페이지가 비었는 지 여부"),
+          fieldWithPath("page.first").description("첫 페이지 인지"),
+          fieldWithPath("page.last").description("마지막 페이지 인지"),
+          fieldWithPath("page.number").description("요소를 가져 온 페이지 번호 (0부터 시작)"),
+          fieldWithPath("page.numberOfElements").description("요소 개수"),
+          subsectionWithPath("page.pageable").description("해당 페이지에 대한 DB 정보"),
+          fieldWithPath("page.size").description("요청한 페이지 크기"),
+          subsectionWithPath("page.sort").description("정렬에 대한 정보"),
+          fieldWithPath("page.totalElements").description("총 요소 개수"),
+          fieldWithPath("page.totalPages").description("총 페이지")));
+    }
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
+    }
+    return commonFields;
+  }
+
 
   @AfterAll
   public static void clearFiles() {
