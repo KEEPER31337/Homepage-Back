@@ -1,5 +1,6 @@
 package keeper.project.homepage.repository.ctf;
 
+import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
 import keeper.project.homepage.entity.ctf.CtfTeamEntity;
@@ -12,6 +13,8 @@ public interface CtfTeamRepository extends
 
   Page<CtfTeamEntity> findAllByIdIsNotAndCtfContestEntity_Id(Long id, Long ctfContestEntity_id,
       Pageable pageable);
+
+  List<CtfTeamEntity> findAllByIdOrCtfContestEntityId(Long id, Long ctfContestEntity_id);
 
   Optional<CtfTeamEntity> findByCreatorId(Long creator_id);
 

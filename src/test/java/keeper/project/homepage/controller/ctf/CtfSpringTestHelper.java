@@ -94,7 +94,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
 
   @RequiredArgsConstructor
   @Getter
-  protected enum CtfChallengeType {
+  public enum CtfChallengeType {
     STANDARD(1L),
     DYNAMIC(2L);
 

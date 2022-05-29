@@ -5,6 +5,7 @@ import java.util.Optional;
 import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
 import keeper.project.homepage.entity.ctf.CtfFlagEntity;
+import keeper.project.homepage.entity.ctf.CtfTeamEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CtfFlagRepository extends
@@ -16,5 +17,9 @@ public interface CtfFlagRepository extends
   List<CtfFlagEntity> findAllByCtfChallengeEntityIdAndIsCorrect(Long ctfChallengeEntity_id,
       Boolean isCorrect);
 
+  List<CtfFlagEntity> findAllByCtfTeamEntityId(Long ctfTeamEntity_id);
+
   Long countByCtfChallengeEntityIdAndIsCorrect(Long ctfChallengeEntity_id, Boolean isCorrect);
+
+  List<CtfFlagEntity> findAllByCtfChallengeEntityId(Long id);
 }
