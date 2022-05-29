@@ -1,7 +1,10 @@
 package keeper.project.homepage.user.controller.attendance;
 
+import static keeper.project.homepage.util.ClientUtil.getUserIP;
+
 import java.time.LocalDate;
 import java.util.HashMap;
+import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.user.dto.attendance.AttendanceDto;
 import keeper.project.homepage.user.dto.attendance.AttendanceResultDto;
 import keeper.project.homepage.common.dto.result.CommonResult;
@@ -33,16 +36,20 @@ public class AttendanceController {
   private final ResponseService responseService;
 
   @PostMapping(value = "")
-  public CommonResult createAttend(@RequestBody AttendanceDto attendanceDto) {
+  public CommonResult createAttend(@RequestBody AttendanceDto attendanceDto,
+      HttpServletRequest httpServletRequest) {
 
+    attendanceDto.setIpAddress(getUserIP(httpServletRequest));
     attendanceService.save(attendanceDto);
     return responseService.getSuccessResult();
   }
 
   @Secured("ROLE_회원")
   @PatchMapping(value = "")
-  public CommonResult updateMessage(@RequestBody AttendanceDto attendanceDto) {
+  public CommonResult updateMessage(@RequestBody AttendanceDto attendanceDto,
+      HttpServletRequest httpServletRequest) {
 
+    attendanceDto.setIpAddress(getUserIP(httpServletRequest));
     attendanceService.updateGreeting(attendanceDto);
     return responseService.getSuccessResult();
   }

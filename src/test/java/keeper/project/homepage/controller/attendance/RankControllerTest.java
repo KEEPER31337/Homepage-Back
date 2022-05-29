@@ -4,15 +4,15 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.ApiControllerTestSetUp;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
@@ -21,9 +21,6 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -57,50 +54,45 @@ public class RankControllerTest extends ApiControllerTestHelper {
   }
 
   @Test
-  @DisplayName("페이징 랭킹 출력")
-  public void showRanking() throws Exception {
-    ResultActions result = mockMvc.perform(
-        MockMvcRequestBuilders.get("/v1/rank")
+  @DisplayName("포인트 순으로 랭킹 불러오기")
+  public void getRankings() throws Exception {
+    String prefix = ResponseType.PAGE.getReponseFieldPrefix();
+    mockMvc.perform(get("/v1/rank")
             .header("Authorization", userToken)
             .param("page", "0")
-            .param("size", "3")
-    );
-
-    result.andExpect(MockMvcResultMatchers.status().isOk())
+            .param("size", "10"))
         .andDo(print())
-        .andDo(document("rank-list",
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.page.content.size()").value(3))
+        .andExpect(jsonPath("$.page.content[0].rank").value(1))
+        .andExpect(jsonPath("$.page.content[1].rank").value(2))
+        .andExpect(jsonPath("$.page.content[2].rank").value(3))
+        .andDo(document("get-point-rankings",
             requestParameters(
-                parameterWithName("page").optional().description("페이지 번호(default = 0)"),
-                parameterWithName("size").optional().description("한 페이지당 출력 수")
+                generateCommonPagingParameters("한 페이지당 출력 수(default = 10")
             ),
-            responseFields(
-                fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
+            responseFields(fieldWithPath("success").description("에러 발생이 아니면 항상 true"),
                 fieldWithPath("code").description("에러 발생이 아니면 항상 0"),
                 fieldWithPath("msg").description("에러 발생이 아니면 항상 성공하였습니다"),
-                fieldWithPath("list[].id").description("멤버 ID"),
-                fieldWithPath("list[].nickName").description("닉네임"),
-                fieldWithPath("list[].thumbnailPath").description("멤버 썸네일 이미지 조회 api path")
+                fieldWithPath(prefix + ".id").description("멤버 ID"),
+                fieldWithPath(prefix + ".nickName").description("닉네임"),
+                fieldWithPath(prefix + ".thumbnailPath").description("멤버 썸네일 이미지 조회 api path")
                     .optional(),
-                fieldWithPath("list[].jobs[]").description("멤버 직책"),
-                fieldWithPath("list[].point").description("포인트"),
-                fieldWithPath("list[].rank").description("포인트 등수")
+                fieldWithPath(prefix + ".jobs[]").description("멤버 직책"),
+                fieldWithPath(prefix + ".point").description("포인트"),
+                fieldWithPath(prefix + ".rank").description("포인트 등수"),
+                fieldWithPath("page.empty").description("페이지가 비었는 지 여부"),
+                fieldWithPath("page.first").description("첫 페이지 인지"),
+                fieldWithPath("page.last").description("마지막 페이지 인지"),
+                fieldWithPath("page.number").description("요소를 가져 온 페이지 번호 (0부터 시작)"),
+                fieldWithPath("page.numberOfElements").description("요소 개수"),
+                subsectionWithPath("page.pageable").description("해당 페이지에 대한 DB 정보"),
+                fieldWithPath("page.size").description("요청한 페이지 크기"),
+                subsectionWithPath("page.sort").description("정렬에 대한 정보"),
+                fieldWithPath("page.totalElements").description("총 요소 개수"),
+                fieldWithPath("page.totalPages").description("총 페이지")
             )));
-  }
-
-  @Test
-  @DisplayName("전체 랭킹 출력")
-  public void showRankingAll() throws Exception {
-    int memberCount = memberRepository.findAll().size();
-
-    ResultActions result = mockMvc.perform(
-        MockMvcRequestBuilders.get("/v1/rank")
-            .header("Authorization", userToken)
-//            .param("page", "0")
-//            .param("size", "2")
-    );
-
-    result.andExpect(MockMvcResultMatchers.status().isOk())
-        .andExpect(jsonPath("$.list.length()").value(memberCount - 1)); // virtual member제거
   }
 
   private MemberEntity generateTestMember(int point) throws Exception {

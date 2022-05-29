@@ -90,7 +90,6 @@ public class AttendanceControllerTest extends ApiControllerTestHelper {
   public void createAttendSuccess() throws Exception {
     AttendanceDto attendanceDto = AttendanceDto.builder()
         .greetings("hi")
-        .ipAddress(ipAddress1)
         .build();
     String content = objectMapper.writeValueAsString(attendanceDto);
 
@@ -103,7 +102,6 @@ public class AttendanceControllerTest extends ApiControllerTestHelper {
         .andDo(print())
         .andDo(document("attend-create",
             requestFields(
-                fieldWithPath("ipAddress").description("IP 주소"),
                 fieldWithPath("greetings").description("인삿말 (null일 경우 \"자동출석입니다\")")
                     .type(JsonFieldType.STRING).optional()
             ),
@@ -121,7 +119,6 @@ public class AttendanceControllerTest extends ApiControllerTestHelper {
 
     AttendanceDto attendanceDto = AttendanceDto.builder()
         .greetings("hi")
-        .ipAddress(ipAddress1)
         .build();
     String content = objectMapper.writeValueAsString(attendanceDto);
 
