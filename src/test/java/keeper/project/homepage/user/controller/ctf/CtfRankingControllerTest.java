@@ -63,7 +63,7 @@ class CtfRankingControllerTest extends CtfSpringTestHelper {
                     parameterWithName("ctfId").description("팀 목록을 볼 CTF id"))
             ),
             responseFields(
-                generateTeamDetailDtoResponseFields(ResponseType.PAGE,
+                generateTeamDtoResponseFields(ResponseType.PAGE,
                     "성공: true +\n실패: false", "성공 시 0을 반환",
                     "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
             )));

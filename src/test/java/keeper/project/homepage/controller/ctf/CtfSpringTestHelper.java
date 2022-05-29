@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import javax.persistence.Column;
 import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
@@ -145,9 +146,11 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
     final long epochTime = System.nanoTime();
     CtfSubmitLogEntity entity = CtfSubmitLogEntity.builder()
         .submitTime(LocalDateTime.now())
-        .ctfTeamEntity(ctfTeam)
-        .submitter(submitter)
-        .ctfChallengeEntity(ctfChallengeEntity)
+        .teamName(ctfTeam.getName())
+        .submitterLoginId(submitter.getLoginId())
+        .submitterRealname(submitter.getRealName())
+        .challengeName(ctfChallengeEntity.getName())
+        .contestName(ctfTeam.getCtfContestEntity().getName())
         .flagSubmitted(submitFlag)
         .isCorrect(false)
         .build();
@@ -350,11 +353,13 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
     commonFields.addAll(Arrays.asList(
         fieldWithPath(prefix + ".id").description("해당 로그의 Id"),
         fieldWithPath(prefix + ".submitTime").description("flag 제출 시간"),
-        subsectionWithPath(prefix + ".team").description("flag 제출자의 팀"),
-        subsectionWithPath(prefix + ".submitter").description("flag 제출자"),
-        subsectionWithPath(prefix + ".challenge").description("제출 문제"),
         fieldWithPath(prefix + ".flagSubmitted").description("제출한 flag"),
-        fieldWithPath(prefix + ".isCorrect").description("제출 후 맞췄는 지 여부")
+        fieldWithPath(prefix + ".isCorrect").description("제출 후 맞췄는 지 여부"),
+        fieldWithPath(prefix + ".teamName").description(""),
+        fieldWithPath(prefix + ".submitterLoginId").description(""),
+        fieldWithPath(prefix + ".submitterRealname").description(""),
+        fieldWithPath(prefix + ".challengeName").description(""),
+        fieldWithPath(prefix + ".contestName").description("")
     ));
     if (type.equals(ResponseType.PAGE)) {
       commonFields.addAll(Arrays.asList(

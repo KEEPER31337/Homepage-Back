@@ -29,19 +29,24 @@ class CtfSubmitLogRepositoryTest extends CtfTestHelper {
     // when
     CtfSubmitLogEntity submitLog = CtfSubmitLogEntity.builder()
         .submitTime(LocalDateTime.now())
-        .ctfTeamEntity(ctfTeam)
-        .submitter(member)
-        .ctfChallengeEntity(ctfChallenge)
         .flagSubmitted(submitFlag)
         .isCorrect(isCorrect)
+        .teamName(ctfTeam.getName())
+        .submitterLoginId(member.getLoginId())
+        .submitterRealname(member.getRealName())
+        .challengeName(ctfChallenge.getName())
+        .contestName(contest.getName())
         .build();
     ctfSubmitLogRepository.save(submitLog);
     CtfSubmitLogEntity findSubmitLog = ctfSubmitLogRepository.getById(submitLog.getId());
 
     // then
-    assertThat(findSubmitLog.getCtfTeamEntity().getId()).isEqualTo(ctfTeam.getId());
-    assertThat(findSubmitLog.getSubmitter().getId()).isEqualTo(member.getId());
-    assertThat(findSubmitLog.getCtfChallengeEntity().getId()).isEqualTo(ctfChallenge.getId());
+
+    assertThat(findSubmitLog.getTeamName()).isEqualTo(ctfTeam.getName());
+    assertThat(findSubmitLog.getSubmitterLoginId()).isEqualTo(member.getLoginId());
+    assertThat(findSubmitLog.getSubmitterRealname()).isEqualTo(member.getRealName());
+    assertThat(findSubmitLog.getChallengeName()).isEqualTo(ctfChallenge.getName());
+    assertThat(findSubmitLog.getContestName()).isEqualTo(contest.getName());
     assertThat(findSubmitLog.getFlagSubmitted()).isEqualTo(submitFlag);
     assertThat(findSubmitLog.getIsCorrect()).isEqualTo(isCorrect);
   }

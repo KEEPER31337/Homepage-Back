@@ -12,6 +12,4 @@ public interface CtfSubmitLogRepository extends
     JpaRepository<CtfSubmitLogEntity, Long> {
 
   Page<CtfSubmitLogEntity> findAllByIdIsNot(Long id, Pageable pageable);
-
-  List<CtfSubmitLogEntity> findAllByCtfTeamEntity(CtfTeamEntity ctfTeamEntity);
 }

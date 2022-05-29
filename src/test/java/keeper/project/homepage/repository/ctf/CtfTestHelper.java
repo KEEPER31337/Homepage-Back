@@ -102,9 +102,11 @@ public class CtfTestHelper {
       CtfChallengeEntity ctfChallengeEntity, String submitFlag) {
     CtfSubmitLogEntity entity = CtfSubmitLogEntity.builder()
         .submitTime(LocalDateTime.now())
-        .ctfTeamEntity(ctfTeam)
-        .submitter(submitter)
-        .ctfChallengeEntity(ctfChallengeEntity)
+        .teamName(ctfTeam.getName())
+        .submitterLoginId(submitter.getLoginId())
+        .submitterRealname(submitter.getRealName())
+        .challengeName(ctfChallengeEntity.getName())
+        .contestName(ctfTeam.getCtfContestEntity().getName())
         .flagSubmitted(submitFlag)
         .isCorrect(false)
         .build();
