@@ -88,7 +88,7 @@ class CtfUtilServiceTest extends CtfSpringTestHelper {
 
   @Test
   void setAllDynamicScore() {
-    // 0 ~ 5번째 팀이 0번째 문제를 맞췄을 때
+    // 0 ~ 4번째 팀이 0번째 문제를 맞췄을 때
     int correctTeam = 0;
     int correctChallenge = 0;
     for (; correctTeam < 5; correctTeam++) {
@@ -126,7 +126,7 @@ class CtfUtilServiceTest extends CtfSpringTestHelper {
   @Test
   @DisplayName("Dynamic 문제 Score 재정산 테스트")
   void setDynamicScore() {
-    // 0 ~ 5번째 팀이 0번째 문제를 맞췄을 때
+    // 0 ~ 4번째 팀이 0번째 문제를 맞췄을 때
     int prevCorrectTeam = 4;
     int correctTeam = 0;
     int correctChallenge = 0;
