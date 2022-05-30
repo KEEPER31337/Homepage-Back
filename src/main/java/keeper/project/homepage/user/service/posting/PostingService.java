@@ -206,7 +206,8 @@ public class PostingService {
         .orElseThrow(CustomCategoryNotFoundException::new);
     ThumbnailEntity thumbnailEntity = thumbnailRepository.findById(dto.getThumbnailId())
         .orElseThrow(CustomThumbnailEntityNotFoundException::new);
-    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_대외부장").get();
+    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_대외부장")
+        .orElse(memberJobRepository.findByName("ROLE_회장").get());
     MemberHasMemberJobEntity memberHasMemberJobEntity = memberHasMemberJobRepository.findFirstByMemberJobEntityOrderByIdDesc(
         memberJobEntity);
     MemberEntity memberEntity = memberHasMemberJobEntity.getMemberEntity();
