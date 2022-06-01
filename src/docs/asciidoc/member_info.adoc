@@ -189,10 +189,6 @@ include::{snippets}/common-members/response-fields.adoc[]
 
 include::{snippets}/member-otherInfo-lists/http-request.adoc[]
 
-==== Request Parameters
-
-include::{snippets}/member-otherInfo-lists/request-parameters.adoc[]
-
 ==== Response
 
 include::{snippets}/member-otherInfo-lists/http-response.adoc[]
