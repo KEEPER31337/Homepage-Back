@@ -19,6 +19,7 @@ import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.user.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.user.service.member.MemberHasCommentLikeService;
 import keeper.project.homepage.user.service.member.MemberService;
+import keeper.project.homepage.user.service.member.MemberUtilService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -35,7 +36,7 @@ public class CommentService {
   private final CommentRepository commentRepository;
   private final PostingRepository postingRepository;
   private final PostingService postingService;
-  private final MemberService memberService;
+  private final MemberUtilService memberUtilService;
   private final MemberHasCommentLikeService memberHasCommentLikeService;
   private final MemberHasCommentDislikeService memberHasCommentDislikeService;
   private final MemberHasCommentLikeRepository memberHasCommentLikeRepository;
@@ -72,7 +73,7 @@ public class CommentService {
     checkNotEmptyContent(commentDto);
 
     PostingEntity postingEntity = postingService.getPostingById(postId);
-    MemberEntity memberEntity = memberService.findById(memberId);
+    MemberEntity memberEntity = memberUtilService.getById(memberId);
     CommentEntity commentEntity = commentRepository.save(CommentEntity.builder()
         .content(commentDto.getContent())
         .registerTime(LocalDateTime.now())
@@ -95,11 +96,11 @@ public class CommentService {
   // FIXME : service에서 jwt확인하면 service test가 모두 먹통이 됨
 //  private MemberEntity getMemberByJWT() {
 //    Long memberId = authService.getMemberIdByJWT();
-//    return memberService.findById(memberId);
+//    return memberUtilService.getById(memberId);
 //  }
 
   public List<CommentDto> findAllByPost(Long memberId, Long postId, Pageable pageable) {
-    MemberEntity member = memberService.findById(memberId);
+    MemberEntity member = memberUtilService.getById(memberId);
     PostingEntity postingEntity = postingService.getPostingById(postId);
 
     // 조회 검색 조건
@@ -169,7 +170,7 @@ public class CommentService {
         .orElseThrow(CustomCommentNotFoundException::new);
 
     deleteCommentFK(comment);
-    MemberEntity virtual = memberService.findById(1L);
+    MemberEntity virtual = memberUtilService.getById(1L);
     comment.overwriteInfo(virtual, DELETED_COMMENT_CONTENT);
     commentRepository.save(comment);
   }
@@ -198,7 +199,7 @@ public class CommentService {
 
   @Transactional
   public void updateLikeCount(Long memberId, Long commentId) {
-    MemberEntity memberEntity = memberService.findById(memberId);
+    MemberEntity memberEntity = memberUtilService.getById(memberId);
     CommentEntity commentEntity = getComment(commentId);
     if (memberHasCommentLikeService.findById(memberEntity, commentEntity) == null) {
       memberHasCommentLikeService.saveWithMemberAndCommentEntity(memberEntity, commentEntity);
@@ -211,7 +212,7 @@ public class CommentService {
 
   @Transactional
   public void updateDislikeCount(Long memberId, Long commentId) {
-    MemberEntity memberEntity = memberService.findById(memberId);
+    MemberEntity memberEntity = memberUtilService.getById(memberId);
     CommentEntity commentEntity = getComment(commentId);
     if (memberHasCommentDislikeService.findById(memberEntity, commentEntity) == null) {
       memberHasCommentDislikeService.saveWithMemberAndCommentEntity(memberEntity, commentEntity);

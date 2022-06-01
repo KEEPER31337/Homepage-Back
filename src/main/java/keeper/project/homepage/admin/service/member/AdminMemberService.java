@@ -15,26 +15,38 @@ import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.member.MemberRankEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
 import keeper.project.homepage.exception.member.CustomMemberEmptyFieldException;
-import keeper.project.homepage.exception.member.CustomMemberInfoNotFoundException;
-import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
-import keeper.project.homepage.repository.member.MemberJobRepository;
-import keeper.project.homepage.repository.member.MemberRankRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
-import keeper.project.homepage.repository.member.MemberTypeRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class AdminMemberService {
 
+  private final AdminMemberUtilService adminMemberUtilService;
   private final MemberRepository memberRepository;
-  private final MemberRankRepository memberRankRepository;
-  private final MemberTypeRepository memberTypeRepository;
   private final MemberHasMemberJobRepository memberHasMemberJobRepository;
-  private final MemberJobRepository memberJobRepository;
+
+  private MemberEntity deleteMemberJob(MemberHasMemberJobEntity mj, MemberEntity member) {
+    memberHasMemberJobRepository.delete(mj);
+    mj.getMemberJobEntity().getMembers().remove(mj);
+    member.getMemberJobs().remove(mj);
+    return member;
+  }
+
+  private MemberEntity addMemberJob(String jobName, MemberEntity member) {
+    MemberJobEntity newJob = adminMemberUtilService.getByJobName(jobName);
+
+    MemberHasMemberJobEntity newMJ = memberHasMemberJobRepository.save(
+        MemberHasMemberJobEntity.builder()
+            .memberEntity(member)
+            .memberJobEntity(newJob)
+            .build());
+    newJob.getMembers().add(newMJ);
+    member.getMemberJobs().add(newMJ);
+    return member;
+  }
 
   public List<MemberDto> getMembers() {
     List<MemberDto> memberDtoList = new ArrayList<>();
@@ -49,58 +61,19 @@ public class AdminMemberService {
     return memberDtoList;
   }
 
-  public MemberEntity findByLoginId(String loginId) {
-    return memberRepository.findByLoginId(loginId).orElseThrow(CustomMemberNotFoundException::new);
-  }
-
-  private MemberRankEntity findRankByRankName(String name) {
-    return memberRankRepository.findByName(name).orElseThrow(
-        () -> new CustomMemberInfoNotFoundException(name + "인 MemberRankEntity가 존재하지 않습니다."));
-  }
-
-  private MemberTypeEntity findTypeByTypeName(String name) {
-    return memberTypeRepository.findByName(name).orElseThrow(
-        () -> new CustomMemberInfoNotFoundException(name + "인 MemberTypeEntity가 존재하지 않습니다."));
-  }
-
-  private MemberJobEntity findJobByJobName(String name) {
-    return memberJobRepository.findByName(name).orElseThrow(
-        () -> new CustomMemberInfoNotFoundException(name + "인 MemberJobEntity가 존재하지 않습니다."));
-  }
-
-  private MemberEntity deleteMemberJob(MemberHasMemberJobEntity mj, MemberEntity member) {
-    memberHasMemberJobRepository.delete(mj);
-    mj.getMemberJobEntity().getMembers().remove(mj);
-    member.getMemberJobs().remove(mj);
-    return member;
-  }
-
-  private MemberEntity addMemberJob(String jobName, MemberEntity member) {
-    MemberJobEntity newJob = findJobByJobName(jobName);
-
-    MemberHasMemberJobEntity newMJ = memberHasMemberJobRepository.save(
-        MemberHasMemberJobEntity.builder()
-            .memberEntity(member)
-            .memberJobEntity(newJob)
-            .build());
-    newJob.getMembers().add(newMJ);
-    member.getMemberJobs().add(newMJ);
-    return member;
-  }
-
   public MemberDto updateMemberRank(MemberRankDto rankDto) {
     if (rankDto.getName().isBlank()) {
       throw new CustomMemberEmptyFieldException("변경할 등급의 이름이 비어있습니다.");
     }
 
     String loginId = rankDto.getMemberLoginId();
-    MemberEntity updateEntity = findByLoginId(loginId);
+    MemberEntity updateEntity = adminMemberUtilService.getByLoginId(loginId);
     MemberRankEntity prevRank = updateEntity.getMemberRank();
     if (prevRank != null) {
       prevRank.getMembers().remove(updateEntity);
     }
 
-    MemberRankEntity updateRank = findRankByRankName(rankDto.getName());
+    MemberRankEntity updateRank = adminMemberUtilService.getByRankName(rankDto.getName());
     updateRank.getMembers().add(updateEntity);
     updateEntity.changeMemberRank(updateRank);
     MemberDto result = new MemberDto();
@@ -114,13 +87,13 @@ public class AdminMemberService {
     }
 
     String loginId = typeDto.getMemberLoginId();
-    MemberEntity updateEntity = findByLoginId(loginId);
+    MemberEntity updateEntity = adminMemberUtilService.getByLoginId(loginId);
     MemberTypeEntity prevType = updateEntity.getMemberType();
     if (prevType != null) {
       prevType.getMembers().remove(updateEntity);
     }
 
-    MemberTypeEntity updateType = findTypeByTypeName(typeDto.getName());
+    MemberTypeEntity updateType = adminMemberUtilService.getByTypeName(typeDto.getName());
     updateType.getMembers().add(updateEntity);
     updateEntity.changeMemberType(updateType);
     MemberDto result = new MemberDto();
@@ -134,7 +107,7 @@ public class AdminMemberService {
     }
 
     String loginId = jobDto.getMemberLoginId();
-    MemberEntity updateMember = findByLoginId(loginId);
+    MemberEntity updateMember = adminMemberUtilService.getByLoginId(loginId);
     List<MemberHasMemberJobEntity> prevMJList = memberHasMemberJobRepository.findAllByMemberEntity_Id(
         updateMember.getId());
     if (!prevMJList.isEmpty()) {
@@ -159,7 +132,7 @@ public class AdminMemberService {
     String loginId = dto.getMemberLoginId();
     Float generation = dto.getGeneration();
 
-    MemberEntity member = findByLoginId(loginId);
+    MemberEntity member = adminMemberUtilService.getByLoginId(loginId);
     member.changeGeneration(generation);
     memberRepository.save(member);
 
@@ -176,7 +149,7 @@ public class AdminMemberService {
     String loginId = dto.getMemberLoginId();
     Integer merit = dto.getMerit();
 
-    MemberEntity member = findByLoginId(loginId);
+    MemberEntity member = adminMemberUtilService.getByLoginId(loginId);
     member.changeMerit(merit);
     memberRepository.save(member);
 
@@ -192,7 +165,7 @@ public class AdminMemberService {
     String loginId = dto.getMemberLoginId();
     Integer demerit = dto.getDemerit();
 
-    MemberEntity member = findByLoginId(loginId);
+    MemberEntity member = adminMemberUtilService.getByLoginId(loginId);
     member.changeDemerit(demerit);
     memberRepository.save(member);
 

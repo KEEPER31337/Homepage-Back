@@ -35,6 +35,7 @@ import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.user.dto.posting.PostingResponseDto;
 import keeper.project.homepage.user.service.member.MemberService;
+import keeper.project.homepage.user.service.member.MemberUtilService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -54,6 +55,7 @@ public class PostingService {
   private final MemberHasPostingLikeRepository memberHasPostingLikeRepository;
   private final MemberHasPostingDislikeRepository memberHasPostingDislikeRepository;
   private final AttendanceRepository attendanceRepository;
+  private final MemberUtilService memberUtilService;
   private final AuthService authService;
   private final MemberService memberService;
 
@@ -158,7 +160,7 @@ public class PostingService {
   }
 
   public Map<String, Object> findAllByMemberId(Long otherMemberId, Pageable pageable) {
-    MemberEntity other = memberService.findById(otherMemberId);
+    MemberEntity other = memberUtilService.getById(otherMemberId);
 
     Page<PostingEntity> postingPage = postingRepository.findAllByMemberIdAndIsTempAndIsSecret(
         other, isNotTempPosting, isNotSecretPosting, pageable);
