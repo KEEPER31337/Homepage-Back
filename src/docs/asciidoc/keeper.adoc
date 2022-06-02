@@ -74,3 +74,7 @@ link:game.html[API 문서 보기]
 == *스터디*
 
 link:study/study.html[API 문서 보기]
+
+== *CTF*
+
+link:ctf/ctf.html[API 문서 보기]

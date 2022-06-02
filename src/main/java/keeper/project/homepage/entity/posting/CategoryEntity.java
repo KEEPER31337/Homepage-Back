@@ -36,6 +36,7 @@ public class CategoryEntity {
   private String href;
 
   @OneToMany(mappedBy = "parentId")
+  @Builder.Default
   private List<CategoryEntity> children = new ArrayList<>();
 
 }

@@ -1,7 +1,7 @@
 package keeper.project.homepage.user.controller.attendance;
 
+import keeper.project.homepage.common.dto.result.PageResult;
 import keeper.project.homepage.user.dto.attendance.RankDto;
-import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.user.service.attendance.RankService;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +25,8 @@ public class RankController {
 
   @Secured("ROLE_회원")
   @GetMapping(value = "")
-  public ListResult<RankDto> showRanking(
-      @PageableDefault(page = 0, size = RankService.DEFAULT_SIZE, sort = "point", direction = Direction.DESC)
-          Pageable pageable) {
-
-    return responseService.getSuccessListResult(rankService.getRankList(pageable));
+  public PageResult<RankDto> getRankings(
+      @PageableDefault(sort = "point", direction = Direction.DESC) Pageable pageable) {
+    return responseService.getSuccessPageResult(rankService.getRankings(pageable));
   }
 }

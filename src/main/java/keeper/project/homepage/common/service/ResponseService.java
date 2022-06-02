@@ -2,8 +2,10 @@ package keeper.project.homepage.common.service;
 
 import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.common.dto.result.ListResult;
+import keeper.project.homepage.common.dto.result.PageResult;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import java.util.List;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 @Service // 해당 Class가 Service임을 명시합니다.
@@ -59,6 +61,22 @@ public class ResponseService {
   public <T> ListResult<T> getFailListResult(List<T> list, int code, String msg) {
     ListResult<T> result = new ListResult<>();
     result.setList(list);
+    setFailResult(result, code, msg);
+    return result;
+  }
+
+  // 다중건 결과를 처리하는 메소드
+  public <T> PageResult<T> getSuccessPageResult(Page<T> page) {
+    PageResult<T> result = new PageResult<>();
+    result.setPage(page);
+    setSuccessResult(result);
+    return result;
+  }
+
+  // 다중건 결과를 처리하는 메소드
+  public <T> PageResult<T> getFailPageResult(Page<T> page, int code, String msg) {
+    PageResult<T> result = new PageResult<>();
+    result.setPage(page);
     setFailResult(result, code, msg);
     return result;
   }

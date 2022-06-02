@@ -379,7 +379,6 @@ public class PostingControllerTest extends ApiControllerTestHelper {
     params.add("title", "mvc제목");
     params.add("content", "mvc내용");
     params.add("categoryId", categoryEntity.getId().toString());
-    params.add("ipAddress", "192.111.222");
     params.add("allowComment", "0");
     params.add("isNotice", "0");
     params.add("isSecret", "1");
@@ -397,7 +396,6 @@ public class PostingControllerTest extends ApiControllerTestHelper {
         parameterWithName("title").description("제목"),
         parameterWithName("content").description("내용"),
         parameterWithName("categoryId").description("게시판 종류 ID"),
-        parameterWithName("ipAddress").description("IP 주소"),
         parameterWithName("allowComment").description("댓글 허용?"),
         parameterWithName("isNotice").description("공지글?"),
         parameterWithName("isSecret").description("비밀글?"),

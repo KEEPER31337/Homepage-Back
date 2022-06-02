@@ -80,3 +80,7 @@ docker/ESSENTIAL
 docker/ESSENTIAL.zip
 
 src/main/generated
+
+application
+dependencies
+spring-boot-loader
