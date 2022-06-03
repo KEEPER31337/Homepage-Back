@@ -19,7 +19,7 @@ public class RankService {
   private final MemberRepository memberRepository;
 
   public Page<RankDto> getRankings(Pageable pageable) {
-    int rank = 1;
+    int rank = pageable.getPageNumber() * pageable.getPageSize() + 1;
     List<RankDto> rankings = new ArrayList<>();
     List<MemberEntity> members = memberRepository.findAll(pageable).stream()
         .filter(member -> member.getId() != 1).collect(Collectors.toList());

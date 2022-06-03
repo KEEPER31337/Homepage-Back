@@ -1,5 +1,8 @@
 package keeper.project.homepage.admin.service.ctf;
 
+import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_CONTEST_ID;
+import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_TEAM_ID;
+
 import java.nio.file.AccessDeniedException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -75,7 +78,7 @@ public class CtfAdminService {
   }
 
   public CtfContestDto openContest(Long ctfId) {
-    if (ctfId.equals(CtfUtilService.VIRTUAL_CONTEST_ID)) {
+    if (ctfId.equals(VIRTUAL_CONTEST_ID)) {
       throw new CustomContestNotFoundException();
     }
     CtfContestEntity contestEntity = getCtfContestEntity(ctfId);
@@ -84,7 +87,7 @@ public class CtfAdminService {
   }
 
   public CtfContestDto closeContest(Long ctfId) {
-    if (ctfId.equals(CtfUtilService.VIRTUAL_CONTEST_ID)) {
+    if (ctfId.equals(VIRTUAL_CONTEST_ID)) {
       throw new CustomContestNotFoundException();
     }
     CtfContestEntity contestEntity = getCtfContestEntity(ctfId);
@@ -94,7 +97,7 @@ public class CtfAdminService {
 
   public List<CtfContestDto> getContests() {
     List<CtfContestEntity> contestEntities = ctfContestRepository.findAllByIdIsNot(
-        CtfUtilService.VIRTUAL_CONTEST_ID);
+        VIRTUAL_CONTEST_ID);
     return contestEntities.stream().map(CtfContestDto::toDto).collect(Collectors.toList());
   }
 
@@ -164,7 +167,9 @@ public class CtfAdminService {
   }
 
   private void setFlagAllTeam(String flag, CtfChallengeEntity challenge) {
-    List<CtfTeamEntity> ctfTeamEntities = ctfTeamRepository.findAll();
+    // team이 하나도 없을 때 flag가 유실되는 것을 방지하기 위해 VIRTUAL TEAM을 이용해 flag를 저장합니다.
+    List<CtfTeamEntity> ctfTeamEntities = ctfTeamRepository.findAllByIdOrCtfContestEntityId(
+        VIRTUAL_TEAM_ID, challenge.getCtfContestEntity().getId());
     for (var ctfTeam : ctfTeamEntities) {
       CtfFlagEntity flagEntity = CtfFlagEntity.builder()
           .content(flag)
@@ -256,7 +261,7 @@ public class CtfAdminService {
   }
 
   public List<CtfChallengeAdminDto> getProblemList(Long ctfId) {
-    if (ctfId.equals(CtfUtilService.VIRTUAL_CONTEST_ID)) {
+    if (ctfId.equals(VIRTUAL_CONTEST_ID)) {
       throw new CustomContestNotFoundException();
     }
     CtfContestEntity contest = ctfContestRepository.findById(ctfId)

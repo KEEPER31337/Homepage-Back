@@ -12,6 +12,7 @@ import keeper.project.homepage.exception.ctf.CustomCtfCategoryNotFoundException;
 import keeper.project.homepage.exception.ctf.CustomCtfChallengeNotFoundException;
 import keeper.project.homepage.exception.ctf.CustomCtfTypeNotFoundException;
 import keeper.project.homepage.exception.file.CustomInvalidImageFileException;
+import keeper.project.homepage.exception.ctf.CustomCtfTeamNotFoundException;
 import keeper.project.homepage.exception.file.CustomFileDeleteFailedException;
 import keeper.project.homepage.exception.file.CustomFileEntityNotFoundException;
 import keeper.project.homepage.exception.file.CustomFileNotFoundException;
@@ -52,6 +53,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
@@ -431,7 +433,8 @@ public class ExceptionAdvice {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult staticWriteTitleNotFound(HttpServletRequest request,
       CustomStaticWriteTypeNotFoundException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("staticWriteTypeNotFound.code")),
+    return responseService.getFailResult(
+        Integer.parseInt(getMessage("staticWriteTypeNotFound.code")),
         e.getMessage() == null ? getMessage("staticWriteTypeNotFound.msg") : e.getMessage());
   }
 
@@ -439,7 +442,8 @@ public class ExceptionAdvice {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult staticWriteTitleNotFound(HttpServletRequest request,
       CustomStaticWriteTitleNotFoundException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("staticWriteTitleNotFound.code")),
+    return responseService.getFailResult(
+        Integer.parseInt(getMessage("staticWriteTitleNotFound.code")),
         e.getMessage() == null ? getMessage("staticWriteTitleNotFound.msg") : e.getMessage());
   }
 
@@ -447,15 +451,18 @@ public class ExceptionAdvice {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult staticWriteSubtitleImageNotFound(HttpServletRequest request,
       CustomStaticWriteSubtitleImageNotFoundException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("staticWriteSubtitleImageNotFound.code")),
-        e.getMessage() == null ? getMessage("staticWriteSubtitleImageNotFound.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(getMessage("staticWriteSubtitleImageNotFound.code")),
+        e.getMessage() == null ? getMessage("staticWriteSubtitleImageNotFound.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomStaticWriteContentNotFoundException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult staticWriteContentNotFound(HttpServletRequest request,
       CustomStaticWriteContentNotFoundException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("staticWriteContentNotFound.code")),
+    return responseService.getFailResult(
+        Integer.parseInt(getMessage("staticWriteContentNotFound.code")),
         e.getMessage() == null ? getMessage("staticWriteContentNotFound.msg") : e.getMessage());
   }
 
@@ -489,5 +496,21 @@ public class ExceptionAdvice {
       CustomCtfChallengeNotFoundException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("ctfChallengeNotFound.code")),
         e.getMessage() == null ? getMessage("ctfChallengeNotFound.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomCtfTeamNotFoundException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult teamNotFound(HttpServletRequest request,
+      CustomCtfTeamNotFoundException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("ctfTeamNotFound.code")),
+        e.getMessage() == null ? getMessage("ctfTeamNotFound.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  @ResponseStatus(HttpStatus.CONFLICT)
+  protected CommonResult dataDuplicate(HttpServletRequest request,
+      DataIntegrityViolationException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("dataDuplicate.code")),
+        e.getMessage() == null ? getMessage("dataDuplicate.msg") : e.getMessage());
   }
 }
