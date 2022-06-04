@@ -25,9 +25,12 @@ import lombok.experimental.SuperBuilder;
 @JsonInclude(Include.NON_NULL)
 public class CtfChallengeDto extends CtfCommonChallengeDto {
 
-  protected String creatorName;
-  protected Long solvedTeamCount;
   protected String content;
+
+  @JsonProperty(access = Access.READ_ONLY)
+  protected String creatorName;
+  @JsonProperty(access = Access.READ_ONLY)
+  protected Long solvedTeamCount;
   @JsonProperty(access = Access.READ_ONLY)
   @JsonInclude
   protected FileDto file;
