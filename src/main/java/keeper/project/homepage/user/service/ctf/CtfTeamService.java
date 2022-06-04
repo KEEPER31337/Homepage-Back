@@ -163,4 +163,11 @@ public class CtfTeamService {
 
     return teamList.map(CtfTeamDto::toDto);
   }
+
+  public CtfTeamDetailDto getMyTeam(Long ctfId) {
+    CtfTeamEntity myTeam = ctfUtilService.getTeamHasMemberEntity(ctfId,
+        authService.getMemberIdByJWT()).getTeam();
+
+    return CtfTeamDetailDto.toDto(myTeam);
+  }
 }

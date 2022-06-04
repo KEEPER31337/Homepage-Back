@@ -144,3 +144,26 @@ include::{snippets}/get-team-list/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/get-team-list/response-fields.adoc[]
+
+== *내가 속한 팀 세부 정보 열람*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-my-team-detail/http-request.adoc[]
+
+==== Request Path
+
+include::{snippets}/get-my-team-detail/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-my-team-detail/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-my-team-detail/response-fields.adoc[]
+

@@ -75,4 +75,10 @@ public class CtfTeamController {
   ) {
     return responseService.getSuccessPageResult(ctfTeamService.getTeamList(pageable, ctfId));
   }
+
+  @GetMapping(value = "/{ctfId}/my-team")
+  public SingleResult<CtfTeamDetailDto> getMyTeam(
+      @PathVariable("ctfId") Long ctfId) {
+    return responseService.getSuccessSingleResult(ctfTeamService.getMyTeam(ctfId));
+  }
 }
