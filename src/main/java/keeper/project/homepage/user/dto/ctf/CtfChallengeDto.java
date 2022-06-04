@@ -35,7 +35,8 @@ public class CtfChallengeDto extends CtfCommonChallengeDto {
   @JsonInclude
   protected FileDto file;
 
-  public static CtfChallengeDto toDto(CtfChallengeEntity challenge, Long solvedTeamCount) {
+  public static CtfChallengeDto toDto(CtfChallengeEntity challenge, Long solvedTeamCount,
+      Boolean isSolved) {
     CtfChallengeCategoryDto category = CtfChallengeCategoryDto.toDto(
         challenge.getCtfChallengeCategoryEntity());
     FileDto file = FileDto.toDto(challenge.getFileEntity());
@@ -49,6 +50,7 @@ public class CtfChallengeDto extends CtfCommonChallengeDto {
         .creatorName(challenge.getCreator().getNickName())
         .score(challenge.getScore())
         .solvedTeamCount(solvedTeamCount)
+        .isSolved(isSolved)
         .file(file)
         .build();
   }

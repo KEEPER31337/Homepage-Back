@@ -1,6 +1,7 @@
 package keeper.project.homepage.repository.ctf;
 
 import java.util.List;
+import java.util.Optional;
 import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
@@ -8,6 +9,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CtfChallengeRepository extends
     JpaRepository<CtfChallengeEntity, Long> {
+
+  Optional<CtfChallengeEntity> findByIdAndIsSolvableTrue(Long id);
 
   List<CtfChallengeEntity> findAllByIdIsNotAndCtfContestEntity(Long id,
       CtfContestEntity ctfContestEntity);

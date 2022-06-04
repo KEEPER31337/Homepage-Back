@@ -62,7 +62,7 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
     CtfTeamEntity team = generateCtfTeam(contest, userEntity, 0L);
 
     generateCtfFlag(team, dynamicChallenge, false);
-    generateCtfFlag(team, standardChallenge, false);
+    generateCtfFlag(team, standardChallenge, true);
 
     mockMvc.perform(get("/v1/ctf/prob")
             .header("Authorization", userToken)
@@ -81,6 +81,7 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
         .andExpect(jsonPath("$.list[0].type.id").doesNotExist())
         .andExpect(jsonPath("$.list[0].isSolvable").doesNotExist())
         .andExpect(jsonPath("$.list[0].score").value(dynamicChallenge.getScore()))
+        .andExpect(jsonPath("$.list[0].isSolved").value(false))
         .andExpect(jsonPath("$.list[0].dynamicInfo").doesNotExist())
         .andExpect(jsonPath("$.list[0].flag").doesNotExist())
         .andExpect(jsonPath("$.list[1].title").value(standardChallenge.getName()))
@@ -92,6 +93,7 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
         .andExpect(jsonPath("$.list[1].type.id").doesNotExist())
         .andExpect(jsonPath("$.list[1].isSolvable").doesNotExist())
         .andExpect(jsonPath("$.list[1].score").value(standardChallenge.getScore()))
+        .andExpect(jsonPath("$.list[1].isSolved").value(true))
         .andExpect(jsonPath("$.list[1].dynamicInfo").doesNotExist())
         .andExpect(jsonPath("$.list[1].flag").doesNotExist())
         .andDo(document("get-common-problem-list",
@@ -193,6 +195,7 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
             jsonPath("$.data.creatorName").value(dynamicChallenge.getCreator().getNickName()))
         .andExpect(jsonPath("$.data.score").value(dynamicChallenge.getScore()))
         .andExpect(jsonPath("$.data.solvedTeamCount").value(1L))
+        .andExpect(jsonPath("$.data.isSolved").value(true))
         .andExpect(jsonPath("$.data.dynamicInfo").doesNotExist())
         .andExpect(jsonPath("$.data.flag").doesNotExist())
         .andDo(document("get-problem-detail",

@@ -223,4 +223,42 @@ class CtfTeamControllerTest extends CtfSpringTestHelper {
                     "성공: true +\n실패: false", "성공 시 0을 반환", "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
             )));
   }
+
+  @Test
+  @DisplayName("내가 속한 팀 세부 정보 열람")
+  void getMyTeamDetail() throws Exception {
+    CtfTeamEntity team = generateCtfTeam(contestEntity, userEntity, 0L);
+
+    mockMvc.perform(get("/v1/ctf/team/{ctfId}/my-team", contestEntity.getId())
+            .header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.data.name").value(team.getName()))
+        .andExpect(jsonPath("$.data.description").value(team.getDescription()))
+        .andDo(document("get-my-team-detail",
+            pathParameters(
+                parameterWithName("ctfId").description("ctf id")
+            ),
+            responseFields(
+                generateTeamDetailDtoResponseFields(ResponseType.SINGLE,
+                    "성공: true +\n실패: false", "성공 시 0을 반환, 가입한 팀이 없어 실패 시 -13004",
+                    "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
+            )));
+
+  }
+
+  @Test
+  @DisplayName("내가 속한 팀 세부 정보 열람 - 실패 (속한 팀 없음)")
+  void getMyTeamDetailFailed() throws Exception {
+//    CtfTeamEntity team = generateCtfTeam(contestEntity, userEntity, 0L);
+
+    mockMvc.perform(get("/v1/ctf/team/{ctfId}/my-team", contestEntity.getId())
+            .header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().is4xxClientError())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(-13004));
+  }
 }

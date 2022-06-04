@@ -2,6 +2,7 @@ package keeper.project.homepage.user.controller.ctf;
 
 import keeper.project.homepage.common.dto.result.PageResult;
 import keeper.project.homepage.common.service.ResponseService;
+import keeper.project.homepage.user.dto.ctf.CtfRankingDto;
 import keeper.project.homepage.user.dto.ctf.CtfTeamDto;
 import keeper.project.homepage.user.service.ctf.CtfRankingService;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class CtfRankingController {
   private final CtfRankingService ctfRankingService;
 
   @GetMapping("")
-  public PageResult<CtfTeamDto> getRankingList(
+  public PageResult<CtfRankingDto> getRankingList(
       @RequestParam Long ctfId,
       @PageableDefault(sort = "score", direction = Direction.DESC) Pageable pageable) {
     return responseService.getSuccessPageResult(ctfRankingService.getRankingList(ctfId, pageable));
