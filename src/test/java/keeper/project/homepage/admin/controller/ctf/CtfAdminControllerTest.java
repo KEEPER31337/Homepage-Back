@@ -221,7 +221,6 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
         .category(category)
         .type(type)
         .isSolvable(isSolvable)
-        .creatorName(creator.getNickName())
         .score(score)
         .dynamicInfo(dynamicInfo)
         .flag(flag)
@@ -254,7 +253,6 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
                 fieldWithPath("category.id").description("문제 카테고리 Id"),
                 fieldWithPath("type.id").description("문제 Type Id"),
                 fieldWithPath("isSolvable").description("현재 풀 수 있는 지 여부"),
-                fieldWithPath("creatorName").description("문제 생성자.getNickName()d"),
                 fieldWithPath("score").description(
                     "문제의 점수 (TYPE이 DYNAMIC일 경우 아무 값이나 보내주시면 됩니다. 초기 값은 maxScore로 저장됩니다.)"),
                 fieldWithPath("dynamicInfo.maxScore").description(

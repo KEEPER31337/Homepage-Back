@@ -35,15 +35,13 @@ import org.springframework.lang.Nullable;
 @JsonInclude(Include.NON_NULL)
 public class CtfChallengeAdminDto extends CtfChallengeDto {
 
+  private Boolean isSolvable;
+  private String flag;
+  protected CtfChallengeTypeDto type;
+
   @JsonProperty(access = Access.READ_ONLY)
   @JsonSerialize(using = LocalDateTimeSerializer.class)
   private LocalDateTime registerTime;
-
-  private Boolean isSolvable;
-
-  private String flag;
-
-  protected CtfChallengeTypeDto type;
 
   @Nullable
   private CtfDynamicChallengeInfoDto dynamicInfo;
