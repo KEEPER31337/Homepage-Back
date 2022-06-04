@@ -6,12 +6,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
+import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
 import keeper.project.homepage.exception.posting.CustomPostingAccessDeniedException;
 import keeper.project.homepage.exception.posting.CustomPostingIncorrectException;
 import keeper.project.homepage.exception.posting.CustomPostingNotFoundException;
 import keeper.project.homepage.exception.posting.CustomPostingTempException;
 import keeper.project.homepage.repository.attendance.AttendanceRepository;
+import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
+import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.user.dto.posting.LikeAndDislikeDto;
 import keeper.project.homepage.user.dto.posting.PostingBestDto;
@@ -49,6 +53,8 @@ public class PostingService {
   private final PostingRepository postingRepository;
   private final CategoryRepository categoryRepository;
   private final MemberRepository memberRepository;
+  private final MemberJobRepository memberJobRepository;
+  private final MemberHasMemberJobRepository memberHasMemberJobRepository;
   private final CommentRepository commentRepository;
   private final FileRepository fileRepository;
   private final ThumbnailRepository thumbnailRepository;
@@ -70,6 +76,7 @@ public class PostingService {
   public static final Integer EXAM_BOARD_ACCESS_COMMENT_COUNT = 5;
   public static final Integer EXAM_BOARD_ACCESS_ATTEND_COUNT = 10;
   public static final Long EXAM_CATEGORY_ID = 1377L;
+  public static final Long INFO_CATEGORY_ID = 5125L;
   public static final String EXAM_ACCESS_DENIED_TITLE = "접근할 수 없습니다.";
   public static final String EXAM_ACCESS_DENIED_CONTENT = "공지사항을 확인해 주세요.";
 
@@ -177,6 +184,7 @@ public class PostingService {
     return result;
   }
 
+  @Transactional
   public PostingEntity save(PostingDto dto) {
 
     CategoryEntity categoryEntity = categoryRepository.findById(dto.getCategoryId())
@@ -184,6 +192,27 @@ public class PostingService {
     ThumbnailEntity thumbnailEntity = thumbnailRepository.findById(dto.getThumbnailId())
         .orElseThrow(CustomThumbnailEntityNotFoundException::new);
     MemberEntity memberEntity = authService.getMemberEntityWithJWT();
+    dto.setRegisterTime(LocalDateTime.now());
+    dto.setUpdateTime(LocalDateTime.now());
+    PostingEntity postingEntity = dto.toEntity(categoryEntity, memberEntity,
+        thumbnailEntity);
+
+    memberEntity.getPosting().add(postingEntity);
+    return postingRepository.save(postingEntity);
+  }
+
+  @Transactional
+  public PostingEntity autoSave(PostingDto dto) {
+
+    CategoryEntity categoryEntity = categoryRepository.findById(dto.getCategoryId())
+        .orElseThrow(CustomCategoryNotFoundException::new);
+    ThumbnailEntity thumbnailEntity = thumbnailRepository.findById(dto.getThumbnailId())
+        .orElseThrow(CustomThumbnailEntityNotFoundException::new);
+    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_대외부장")
+        .orElse(memberJobRepository.findByName("ROLE_회장").get());
+    MemberHasMemberJobEntity memberHasMemberJobEntity = memberHasMemberJobRepository.findFirstByMemberJobEntityOrderByIdDesc(
+        memberJobEntity);
+    MemberEntity memberEntity = memberHasMemberJobEntity.getMemberEntity();
     dto.setRegisterTime(LocalDateTime.now());
     dto.setUpdateTime(LocalDateTime.now());
     PostingEntity postingEntity = dto.toEntity(categoryEntity, memberEntity,

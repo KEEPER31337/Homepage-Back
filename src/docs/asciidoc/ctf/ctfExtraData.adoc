@@ -1,0 +1,74 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+// 자동으로 생성된 snippet 설정하는 부분
+
+= KEEPER API 문서
+:icons: font
+// NOTE, TIP, WARNING, CAUTION, IMPORTANT 같은 경고구들 아이콘화 해줌
+:source-highlighter: highlight.js
+// source code 블럭에서 사용되는 highlighter 설정, 4개 정도 있던데 차이를 아직 잘 모르겠음.
+:toc: left
+// table of contents(toc) 왼쪽정렬하여 생성
+:toclevels: 1
+// default : 2 (==,  ===) 까지 toc에 보여줌.
+:sectlinks:
+// section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
+
+== CTF API 목록
+
+link:ctf.html[CTF API 목록으로 돌아가기]
+
+== *CTF 문제 출제자 리스트 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-challenge-maker-list/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-challenge-maker-list/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-challenge-maker-list/response-fields.adoc[]
+
+== *CTF 문제 카테고리 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-challenge-category-list/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-challenge-category-list/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-challenge-category-list/response-fields.adoc[]
+
+== *CTF 문제 타입 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-challenge-type-list/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-challenge-type-list/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-challenge-type-list/response-fields.adoc[]
