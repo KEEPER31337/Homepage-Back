@@ -15,5 +15,7 @@ public interface MemberHasMemberJobRepository extends
   List<MemberHasMemberJobEntity> findAllByMemberEntity_IdAndAndMemberJobEntity_Id(Long memberId,
       Long jobId);
 
+  List<MemberHasMemberJobEntity> findAllByMemberJobEntity(MemberJobEntity memberJobEntity);
+
   MemberHasMemberJobEntity findFirstByMemberJobEntityOrderByIdDesc(MemberJobEntity memberJobEntity);
 }
