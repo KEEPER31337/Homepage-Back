@@ -115,7 +115,7 @@ public class CtfChallengeService {
     ctfUtilService.checkVirtualProblem(probId);
 
     Long solvedTeamCount = flagRepository.countByCtfChallengeEntityIdAndIsCorrect(probId, true);
-    CtfChallengeEntity challengeEntity = challengeRepository.findById(probId)
+    CtfChallengeEntity challengeEntity = challengeRepository.findByIdAndIsSolvableTrue(probId)
         .orElseThrow(CustomCtfChallengeNotFoundException::new);
     CtfTeamEntity myTeam = ctfUtilService.getTeamHasMemberEntity(
         challengeEntity.getCtfContestEntity().getId(),
