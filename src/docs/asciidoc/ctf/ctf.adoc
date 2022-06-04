@@ -30,3 +30,7 @@ link:ctfTeam.html[API 문서 보기]
 == *CTF 랭킹 API*
 
 link:ctfRanking.html[API 문서 보기]
+
+== *CTF 부가 정보 API*
+
+link:ctfExtraData.html[API 문서 보기]
