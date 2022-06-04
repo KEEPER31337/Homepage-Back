@@ -444,6 +444,21 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
     return commonFields;
   }
 
+  protected List<FieldDescriptor> generateRankingDtoResponseFields(ResponseType type,
+      String success, String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(List.of(
+        fieldWithPath(prefix + ".rank").description("team 랭킹")
+    ));
+    commonFields.addAll(generateTeamDtoResponseFields(type, success, code, msg));
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
+    }
+    return commonFields;
+  }
+
   protected List<FieldDescriptor> generateTeamDetailDtoResponseFields(ResponseType type,
       String success, String code, String msg, FieldDescriptor... addDescriptors) {
     String prefix = type.getReponseFieldPrefix();

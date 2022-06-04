@@ -2,8 +2,9 @@ package keeper.project.homepage.user.service.ctf;
 
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_TEAM_ID;
 
+import keeper.project.homepage.entity.ctf.CtfTeamEntity;
 import keeper.project.homepage.repository.ctf.CtfTeamRepository;
-import keeper.project.homepage.user.dto.ctf.CtfTeamDto;
+import keeper.project.homepage.user.dto.ctf.CtfRankingDto;
 import keeper.project.homepage.util.service.CtfUtilService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -19,11 +20,22 @@ public class CtfRankingService {
   private final CtfTeamRepository teamRepository;
   private final CtfUtilService ctfUtilService;
 
-  public Page<CtfTeamDto> getRankingList(Long ctfId, Pageable pageable) {
+  public Page<CtfRankingDto> getRankingList(Long ctfId, Pageable pageable) {
 
     ctfUtilService.checkVirtualContest(ctfId);
+    Page<CtfTeamEntity> teamEntityPage = teamRepository.findAllByIdIsNotAndCtfContestEntity_Id(
+        VIRTUAL_TEAM_ID, ctfId, pageable);
 
-    return teamRepository.findAllByIdIsNotAndCtfContestEntity_Id(VIRTUAL_TEAM_ID, ctfId, pageable)
-        .map(CtfTeamDto::toDto);
+    Long rank = (long) teamEntityPage.getNumber() * teamEntityPage.getSize() + 1;
+    Page<CtfRankingDto> result = getCtfRankingDtoPage(teamEntityPage, rank);
+    return result;
+  }
+
+  private Page<CtfRankingDto> getCtfRankingDtoPage(Page<CtfTeamEntity> teamEntityPage, Long rank) {
+    Page<CtfRankingDto> result = teamEntityPage.map(team -> CtfRankingDto.toDto(team, null));
+    for (var ctfRankingDto : result) {
+      ctfRankingDto.setRank(rank++);
+    }
+    return result;
   }
 }
