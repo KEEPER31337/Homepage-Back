@@ -2,6 +2,7 @@ package keeper.project.homepage.admin.service.member;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import keeper.project.homepage.admin.dto.member.MemberDemeritDto;
 import keeper.project.homepage.admin.dto.member.MemberDto;
 import keeper.project.homepage.admin.dto.member.MemberGenerationDto;
@@ -49,16 +50,12 @@ public class AdminMemberService {
   }
 
   public List<MemberDto> getMembers() {
-    List<MemberDto> memberDtoList = new ArrayList<>();
     List<MemberEntity> memberEntityList = memberRepository.findAll();
 
-    for(MemberEntity memberEntity : memberEntityList) {
-      if(memberEntity.getId().equals(1L)) continue;
-      MemberDto memberDto = new MemberDto(memberEntity);
-      memberDtoList.add(memberDto);
-    }
-
-    return memberDtoList;
+    return memberEntityList.stream()
+        .filter(memberEntity -> !(memberEntity.getId().equals(1L)))
+        .map(MemberDto::new)
+        .collect(Collectors.toList());
   }
 
   public MemberDto updateMemberRank(MemberRankDto rankDto) {
