@@ -80,14 +80,14 @@ public class CtfUtilService {
     challengeEntityList.forEach(this::setDynamicScore);
   }
 
-  public CtfTeamHasMemberEntity getTeamHasMemberEntity(Long ctfId, Long leaveMemberId) {
+  public CtfTeamHasMemberEntity getTeamHasMemberEntity(Long ctfId, Long memberId) {
     List<CtfTeamHasMemberEntity> teamHasMemberEntityList = teamHasMemberRepository
-        .findAllByMemberId(leaveMemberId);
-    CtfTeamHasMemberEntity leaveTeamHasMemberEntity = teamHasMemberEntityList.stream()
-        .filter(teamHasMemberEntity -> ctfId.equals(
-            teamHasMemberEntity.getTeam().getCtfContestEntity().getId()))
+        .findAllByMemberId(memberId);
+    CtfTeamHasMemberEntity teamHasMemberEntity = teamHasMemberEntityList.stream()
+        .filter(teamHasMember -> ctfId.equals(
+            teamHasMember.getTeam().getCtfContestEntity().getId()))
         .findFirst().orElseThrow(() -> new CustomCtfTeamNotFoundException("가입한 팀을 찾을 수 없습니다."));
-    return leaveTeamHasMemberEntity;
+    return teamHasMemberEntity;
   }
 
   public void setDynamicScore(CtfChallengeEntity challenge) {

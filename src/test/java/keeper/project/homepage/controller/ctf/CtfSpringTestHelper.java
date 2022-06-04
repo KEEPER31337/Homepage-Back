@@ -268,6 +268,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".category.id").description("문제가 속한 카테고리의 id"),
         fieldWithPath(prefix + ".category.name").description("문제가 속한 카테고리의 이름"),
         fieldWithPath(prefix + ".score").description("문제의 점수"),
+        fieldWithPath(prefix + ".isSolved").description("내가 풀었는 지"),
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id")
     ));
     if (addDescriptors.length > 0) {
@@ -322,6 +323,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".creatorName").description("문제 생성자 이름"),
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id"),
         fieldWithPath(prefix + ".solvedTeamCount").description("푼 팀 수"),
+        fieldWithPath(prefix + ".isSolved").description("내가 풀었는 지"),
         subsectionWithPath(prefix + ".file").description("문제에 해당하는 파일 정보").optional()
     ));
     if (addDescriptors.length > 0) {

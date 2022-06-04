@@ -27,14 +27,17 @@ import lombok.experimental.SuperBuilder;
 @JsonInclude(Include.NON_NULL)
 public class CtfCommonChallengeDto {
 
-  @JsonProperty(access = Access.READ_ONLY)
-  protected Long challengeId;
   protected String title;
   protected Long score;
   protected CtfChallengeCategoryDto category;
   protected Long contestId;
 
-  public static CtfCommonChallengeDto toDto(CtfChallengeEntity challenge) {
+  @JsonProperty(access = Access.READ_ONLY)
+  protected Long challengeId;
+  @JsonProperty(access = Access.READ_ONLY)
+  protected Boolean isSolved;
+
+  public static CtfCommonChallengeDto toDto(CtfChallengeEntity challenge, Boolean isSolved) {
     CtfChallengeCategoryDto category = CtfChallengeCategoryDto.toDto(
         challenge.getCtfChallengeCategoryEntity());
 
@@ -44,6 +47,7 @@ public class CtfCommonChallengeDto {
         .contestId(challenge.getCtfContestEntity().getId())
         .category(category)
         .score(challenge.getScore())
+        .isSolved(isSolved)
         .build();
   }
 }
