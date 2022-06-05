@@ -20,5 +20,6 @@ public interface CtfTeamRepository extends
 
   Long countByIdIsNotAndCtfContestEntity(Long id, CtfContestEntity ctfContestEntity);
 
-  Optional<CtfTeamEntity> findByName(String name);
+  Optional<CtfTeamEntity> findByNameAndCtfContestEntity(String name,
+      CtfContestEntity ctfContestEntity);
 }

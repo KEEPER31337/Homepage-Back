@@ -16,9 +16,9 @@ import keeper.project.homepage.exception.ctf.CustomCtfTeamNotFoundException;
 import keeper.project.homepage.repository.ctf.CtfChallengeRepository;
 import keeper.project.homepage.repository.ctf.CtfContestRepository;
 import keeper.project.homepage.repository.ctf.CtfFlagRepository;
-import keeper.project.homepage.repository.ctf.CtfSubmitLogRepository;
 import keeper.project.homepage.repository.ctf.CtfTeamHasMemberRepository;
 import keeper.project.homepage.repository.ctf.CtfTeamRepository;
+import keeper.project.homepage.user.dto.ctf.CtfJoinTeamRequestDto;
 import keeper.project.homepage.user.dto.ctf.CtfTeamDetailDto;
 import keeper.project.homepage.user.dto.ctf.CtfTeamDto;
 import keeper.project.homepage.user.dto.ctf.CtfTeamHasMemberDto;
@@ -101,11 +101,16 @@ public class CtfTeamService {
     return CtfTeamDetailDto.toDto(teamRepository.save(teamEntity));
   }
 
-  public CtfTeamHasMemberDto joinTeam(String teamName) {
+  public CtfTeamHasMemberDto joinTeam(CtfJoinTeamRequestDto joinTeamRequestDto) {
+
+    String teamName = joinTeamRequestDto.getTeamName();
+    CtfContestEntity joinTeamContest = contestRepository.findById(joinTeamRequestDto.getContestId())
+        .orElseThrow(CustomContestNotFoundException::new);
 
     ctfUtilService.checkVirtualTeamByName(teamName);
+    ctfUtilService.checkVirtualContest(joinTeamRequestDto.getContestId());
 
-    CtfTeamEntity joinTeam = teamRepository.findByName(teamName)
+    CtfTeamEntity joinTeam = teamRepository.findByNameAndCtfContestEntity(teamName, joinTeamContest)
         .orElseThrow(CustomCtfTeamNotFoundException::new);
     MemberEntity joinMember = authService.getMemberEntityWithJWT();
 
