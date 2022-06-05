@@ -73,8 +73,8 @@ class CtfExtraDataControllerTest extends CtfSpringTestHelper {
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("list[].id").description("문제가 속한 타입의 id"),
-                fieldWithPath("list[].name").description("문제가 속한 타입의 이름")
+                fieldWithPath("list[].id").description("타입의 id"),
+                fieldWithPath("list[].name").description("타입의 이름")
             )));
   }
 
@@ -92,8 +92,8 @@ class CtfExtraDataControllerTest extends CtfSpringTestHelper {
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("list[].id").description("문제가 속한 카테고리의 id"),
-                fieldWithPath("list[].name").description("문제가 속한 카테고리의 이름")
+                fieldWithPath("list[].id").description("카테고리의 id"),
+                fieldWithPath("list[].name").description("카테고리의 이름")
             )));
   }
 
