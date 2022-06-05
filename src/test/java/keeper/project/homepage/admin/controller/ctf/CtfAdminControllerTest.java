@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import keeper.project.homepage.admin.dto.ctf.CtfChallengeAdminDto;
-import keeper.project.homepage.admin.dto.ctf.CtfContestDto;
+import keeper.project.homepage.admin.dto.ctf.CtfContestAdminDto;
 import keeper.project.homepage.admin.dto.ctf.CtfProbMakerDto;
 import keeper.project.homepage.controller.ctf.CtfSpringTestHelper;
 import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
@@ -72,7 +72,7 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
   public void createCtfContestSuccess() throws Exception {
     String CTF_NAME = "test_name";
     String CTF_DESC = "test_desc";
-    CtfContestDto contestDto = CtfContestDto.builder()
+    CtfContestAdminDto contestDto = CtfContestAdminDto.builder()
         .name(CTF_NAME)
         .description(CTF_DESC)
         .build();

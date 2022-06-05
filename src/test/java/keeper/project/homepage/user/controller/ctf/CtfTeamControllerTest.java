@@ -122,7 +122,8 @@ class CtfTeamControllerTest extends CtfSpringTestHelper {
   @DisplayName("팀 가입")
   void joinTeam() throws Exception {
     CtfTeamEntity team = generateCtfTeam(contestEntity, adminEntity, 0L);
-    CtfJoinTeamRequestDto content = new CtfJoinTeamRequestDto(team.getName());
+    CtfJoinTeamRequestDto content = new CtfJoinTeamRequestDto(team.getName(),
+        contestEntity.getId());
 
     mockMvc.perform(post("/v1/ctf/team/member")
             .header("Authorization", userToken)
@@ -136,6 +137,7 @@ class CtfTeamControllerTest extends CtfSpringTestHelper {
         .andExpect(jsonPath("$.data.memberNickname").value(userEntity.getNickName()))
         .andDo(document("join-team",
             requestFields(
+                fieldWithPath("contestId").description("Contest ID"),
                 fieldWithPath("teamName").description("TEAM 이름")
             ),
             responseFields(

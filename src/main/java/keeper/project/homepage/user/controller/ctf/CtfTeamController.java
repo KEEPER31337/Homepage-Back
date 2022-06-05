@@ -51,8 +51,7 @@ public class CtfTeamController {
   public SingleResult<CtfTeamHasMemberDto> joinTeam(
       @RequestBody CtfJoinTeamRequestDto requestDto
   ) {
-    return responseService.getSuccessSingleResult(
-        ctfTeamService.joinTeam(requestDto.getTeamName()));
+    return responseService.getSuccessSingleResult(ctfTeamService.joinTeam(requestDto));
   }
 
   @DeleteMapping(value = "/member")

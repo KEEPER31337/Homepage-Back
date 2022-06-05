@@ -4,7 +4,7 @@ import java.nio.file.AccessDeniedException;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.admin.dto.ctf.CtfChallengeAdminDto;
-import keeper.project.homepage.admin.dto.ctf.CtfContestDto;
+import keeper.project.homepage.admin.dto.ctf.CtfContestAdminDto;
 import keeper.project.homepage.admin.dto.ctf.CtfProbMakerDto;
 import keeper.project.homepage.admin.dto.ctf.CtfSubmitLogDto;
 import keeper.project.homepage.admin.service.ctf.CtfAdminService;
@@ -40,26 +40,26 @@ public class CtfAdminController {
 
   @Secured("ROLE_회장")
   @PostMapping("/contest")
-  public SingleResult<CtfContestDto> createContest(@RequestBody CtfContestDto contestDto) {
+  public SingleResult<CtfContestAdminDto> createContest(@RequestBody CtfContestAdminDto contestDto) {
     return responseService.getSuccessSingleResult(ctfAdminService.createContest(contestDto));
   }
 
   @Secured("ROLE_회장")
   @GetMapping("/contests")
-  public ListResult<CtfContestDto> getContests() {
-    List<CtfContestDto> contestList = ctfAdminService.getContests();
+  public ListResult<CtfContestAdminDto> getContests() {
+    List<CtfContestAdminDto> contestList = ctfAdminService.getContests();
     return responseService.getSuccessListResult(contestList);
   }
 
   @Secured("ROLE_회장")
   @PatchMapping("/contest/{cid}/open")
-  public SingleResult<CtfContestDto> openContest(@PathVariable("cid") Long challengeId) {
+  public SingleResult<CtfContestAdminDto> openContest(@PathVariable("cid") Long challengeId) {
     return responseService.getSuccessSingleResult(ctfAdminService.openContest(challengeId));
   }
 
   @Secured("ROLE_회장")
   @PatchMapping("/contest/{cid}/close")
-  public SingleResult<CtfContestDto> closeContest(@PathVariable("cid") Long challengeId) {
+  public SingleResult<CtfContestAdminDto> closeContest(@PathVariable("cid") Long challengeId) {
     return responseService.getSuccessSingleResult(ctfAdminService.closeContest(challengeId));
   }
 
