@@ -9,4 +9,6 @@ public interface CtfContestRepository extends
     JpaRepository<CtfContestEntity, Long> {
 
   List<CtfContestEntity> findAllByIdIsNot(Long id);
+
+  List<CtfContestEntity> findAllByIsJoinableTrue();
 }

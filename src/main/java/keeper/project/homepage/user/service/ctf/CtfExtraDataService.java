@@ -4,10 +4,12 @@ import java.util.List;
 import keeper.project.homepage.common.dto.member.CommonMemberDto;
 import keeper.project.homepage.repository.ctf.CtfChallengeCategoryRepository;
 import keeper.project.homepage.repository.ctf.CtfChallengeTypeRepository;
+import keeper.project.homepage.repository.ctf.CtfContestRepository;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.user.dto.ctf.CtfChallengeCategoryDto;
 import keeper.project.homepage.user.dto.ctf.CtfChallengeTypeDto;
+import keeper.project.homepage.user.dto.ctf.CtfContestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ public class CtfExtraDataService {
   private final MemberJobRepository memberJobRepository;
   private final CtfChallengeTypeRepository challengeTypeRepository;
   private final CtfChallengeCategoryRepository challengeCategoryRepository;
+  private final CtfContestRepository contestRepository;
 
   public List<CommonMemberDto> getChallengeMakerList() {
     return memberHasMemberJobRepository.findAllByMemberJobEntity(
@@ -39,5 +42,9 @@ public class CtfExtraDataService {
   public List<CtfChallengeCategoryDto> getChallengeCategoryList() {
     return challengeCategoryRepository.findAll().stream().map(CtfChallengeCategoryDto::toDto)
         .toList();
+  }
+
+  public List<CtfContestDto> getContestList() {
+    return contestRepository.findAllByIsJoinableTrue().stream().map(CtfContestDto::toDto).toList();
   }
 }
