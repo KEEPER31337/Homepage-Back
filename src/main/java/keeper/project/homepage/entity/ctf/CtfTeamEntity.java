@@ -3,6 +3,7 @@ package keeper.project.homepage.entity.ctf;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -59,6 +60,6 @@ public class CtfTeamEntity {
   CtfContestEntity ctfContestEntity;
 
   @Builder.Default
-  @OneToMany(mappedBy = "team")
+  @OneToMany(mappedBy = "team", cascade = CascadeType.REMOVE)
   List<CtfTeamHasMemberEntity> ctfTeamHasMemberEntityList = new ArrayList<>();
 }
