@@ -232,7 +232,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".name").description("CTF명"),
         fieldWithPath(prefix + ".description").description("CTF 부가 설명"),
         fieldWithPath(prefix + ".joinable").description("CTF에 현재 참석 가능 한지 아닌지"),
-        subsectionWithPath(prefix + ".creatorId").description("생성자의 id가 담겨 나갑니다.")
+        subsectionWithPath(prefix + ".creator").description("생성자의 정보가 담겨 나갑니다.")
     ));
     if (addDescriptors.length > 0) {
       commonFields.addAll(Arrays.asList(addDescriptors));

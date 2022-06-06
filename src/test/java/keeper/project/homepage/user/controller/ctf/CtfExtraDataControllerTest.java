@@ -9,6 +9,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -119,7 +120,7 @@ class CtfExtraDataControllerTest extends CtfSpringTestHelper {
                 fieldWithPath("list[].ctfId").description("해당 CTF의 ID"),
                 fieldWithPath("list[].name").description("해당 CTF의 이름"),
                 fieldWithPath("list[].description").description("해당 CTF의 상세정보"),
-                fieldWithPath("list[].creatorId").description("해당 CTF 생성자의 ID")
+                subsectionWithPath("list[].creator").description("해당 CTF 생성자의 정보")
             )));
   }
 }
