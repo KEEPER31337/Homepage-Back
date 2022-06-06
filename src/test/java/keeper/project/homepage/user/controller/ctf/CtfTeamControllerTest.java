@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import keeper.project.homepage.controller.ctf.CtfSpringTestHelper;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
 import keeper.project.homepage.entity.ctf.CtfTeamEntity;
+import keeper.project.homepage.entity.ctf.CtfTeamHasMemberEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.user.dto.ctf.CtfJoinTeamRequestDto;
 import keeper.project.homepage.user.dto.ctf.CtfLeaveTeamRequestDto;
@@ -176,6 +177,12 @@ class CtfTeamControllerTest extends CtfSpringTestHelper {
   @DisplayName("팀 세부 정보 열람")
   void getTeamDetail() throws Exception {
     CtfTeamEntity team = generateCtfTeam(contestEntity, userEntity, 0L);
+    CtfTeamHasMemberEntity teamHasMemberEntity = CtfTeamHasMemberEntity.builder()
+        .team(team)
+        .member(adminEntity)
+        .build();
+    ctfTeamHasMemberRepository.save(teamHasMemberEntity);
+    team.getCtfTeamHasMemberEntityList().add(teamHasMemberEntity);
 
     mockMvc.perform(get("/v1/ctf/team/{teamId}", team.getId())
             .header("Authorization", userToken))
