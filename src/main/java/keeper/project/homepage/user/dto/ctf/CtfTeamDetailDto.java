@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.time.LocalDateTime;
 import java.util.List;
 import keeper.project.homepage.common.dto.member.CommonMemberDto;
+import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
 import keeper.project.homepage.entity.ctf.CtfTeamEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -30,8 +31,10 @@ public class CtfTeamDetailDto extends CtfTeamDto {
   Long creatorId;
   Long contestId;
   List<CommonMemberDto> teamMembers;
+  List<CtfCommonChallengeDto> solvedChallengeList;
 
-  public static CtfTeamDetailDto toDto(CtfTeamEntity team) {
+  public static CtfTeamDetailDto toDto(CtfTeamEntity team,
+      List<CtfChallengeEntity> solvedChallengeList) {
     return CtfTeamDetailDto.builder()
         .id(team.getId())
         .name(team.getName())
@@ -44,6 +47,9 @@ public class CtfTeamDetailDto extends CtfTeamDto {
             team.getCtfTeamHasMemberEntityList().stream()
                 .map(ctfTeamHasMember -> CommonMemberDto.toDto(ctfTeamHasMember.getMember()))
                 .toList())
+        .solvedChallengeList(
+            solvedChallengeList.stream()
+                .map(challenge -> CtfCommonChallengeDto.toDto(challenge, true)).toList())
         .build();
   }
 
