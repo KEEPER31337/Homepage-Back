@@ -45,6 +45,10 @@ include::{snippets}/modify-team/http-request.adoc[]
 
 ==== Request Path
 
+include::{snippets}/modify-team/path-parameters.adoc[]
+
+=== Request Fields
+
 include::{snippets}/modify-team/request-fields.adoc[]
 
 === 응답

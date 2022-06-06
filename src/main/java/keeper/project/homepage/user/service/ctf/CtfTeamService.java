@@ -147,6 +147,7 @@ public class CtfTeamService {
 
   private void removeTeam(CtfTeamEntity leftTeam) {
     teamHasMemberRepository.deleteAllByTeamId(leftTeam.getId());
+    flagRepository.deleteAllByCtfTeamEntityId(leftTeam.getId());
     teamRepository.delete(leftTeam);
   }
 
