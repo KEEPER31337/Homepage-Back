@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.time.LocalDateTime;
+import keeper.project.homepage.common.dto.member.CommonMemberDto;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.user.dto.ctf.CtfContestDto;
@@ -32,7 +33,7 @@ public class CtfContestAdminDto extends CtfContestDto {
         .name(ctfContestEntity.getName())
         .description(ctfContestEntity.getDescription())
         .joinable(ctfContestEntity.getIsJoinable())
-        .creatorId(ctfContestEntity.getCreator().getId())
+        .creator(CommonMemberDto.toDto(ctfContestEntity.getCreator()))
         .build();
   }
 

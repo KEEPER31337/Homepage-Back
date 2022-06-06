@@ -232,7 +232,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".name").description("CTF명"),
         fieldWithPath(prefix + ".description").description("CTF 부가 설명"),
         fieldWithPath(prefix + ".joinable").description("CTF에 현재 참석 가능 한지 아닌지"),
-        subsectionWithPath(prefix + ".creatorId").description("생성자의 id가 담겨 나갑니다.")
+        subsectionWithPath(prefix + ".creator").description("생성자의 정보가 담겨 나갑니다.")
     ));
     if (addDescriptors.length > 0) {
       commonFields.addAll(Arrays.asList(addDescriptors));
@@ -467,7 +467,8 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
     commonFields.addAll(Arrays.asList(
         fieldWithPath(prefix + ".registerTime").description("team 등록 시간"),
         fieldWithPath(prefix + ".creatorId").description("team 생성자 Id"),
-        fieldWithPath(prefix + ".contestId").description("team이 속한 contest Id")
+        fieldWithPath(prefix + ".contestId").description("team이 속한 contest Id"),
+        subsectionWithPath(prefix + ".teamMembers").description("team에 속한 팀원 정보")
     ));
     commonFields.addAll(generateTeamDtoResponseFields(type, success, code, msg));
     if (addDescriptors.length > 0) {

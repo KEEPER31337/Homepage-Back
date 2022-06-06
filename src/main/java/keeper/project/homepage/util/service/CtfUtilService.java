@@ -19,6 +19,7 @@ import keeper.project.homepage.repository.ctf.CtfTeamHasMemberRepository;
 import keeper.project.homepage.repository.ctf.CtfTeamRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 @Log4j2
@@ -65,6 +66,12 @@ public class CtfUtilService {
 
   public boolean isTypeDynamic(CtfChallengeEntity challenge) {
     return DYNAMIC.getId().equals(challenge.getCtfChallengeTypeEntity().getId());
+  }
+
+  public void checkJoinable(Long ctfId) {
+    if (!isJoinable(ctfId)) {
+      throw new AccessDeniedException("해당 CTF는 종료되었거나 현재 접근이 불가합니다.");
+    }
   }
 
   public boolean isJoinable(Long ctfId) {

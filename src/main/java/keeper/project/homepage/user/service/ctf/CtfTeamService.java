@@ -48,10 +48,7 @@ public class CtfTeamService {
   public CtfTeamDetailDto createTeam(CtfTeamDetailDto ctfTeamDetailDto) {
 
     ctfUtilService.checkVirtualContest(ctfTeamDetailDto.getContestId());
-
-    if (!ctfUtilService.isJoinable(ctfTeamDetailDto.getContestId())) {
-      throw new AccessDeniedException("해당 CTF는 종료되었거나 현재 접근이 불가합니다.");
-    }
+    ctfUtilService.checkJoinable(ctfTeamDetailDto.getContestId());
 
     ctfTeamDetailDto.setRegisterTime(LocalDateTime.now());
     MemberEntity creator = authService.getMemberEntityWithJWT();
@@ -95,6 +92,9 @@ public class CtfTeamService {
 
     CtfTeamEntity teamEntity = teamRepository.findById(teamId)
         .orElseThrow(CustomContestNotFoundException::new);
+
+    ctfUtilService.checkJoinable(teamEntity.getCtfContestEntity().getId());
+
     teamEntity.setName(ctfTeamDto.getName());
     teamEntity.setDescription(ctfTeamDto.getDescription());
 
@@ -109,6 +109,7 @@ public class CtfTeamService {
 
     ctfUtilService.checkVirtualTeamByName(teamName);
     ctfUtilService.checkVirtualContest(joinTeamRequestDto.getContestId());
+    ctfUtilService.checkJoinable(joinTeamRequestDto.getContestId());
 
     CtfTeamEntity joinTeam = teamRepository.findByNameAndCtfContestEntity(teamName, joinTeamContest)
         .orElseThrow(CustomCtfTeamNotFoundException::new);
@@ -132,6 +133,8 @@ public class CtfTeamService {
     CtfTeamHasMemberEntity leaveTeamHasMemberEntity = ctfUtilService
         .getTeamHasMemberEntity(ctfId, leaveMember.getId());
     CtfTeamEntity leftTeam = leaveTeamHasMemberEntity.getTeam();
+
+    ctfUtilService.checkJoinable(leftTeam.getCtfContestEntity().getId());
 
     teamHasMemberRepository.delete(leaveTeamHasMemberEntity);
     if (isTeamCreator(leaveMember, leftTeam)) {

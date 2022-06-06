@@ -47,6 +47,7 @@ public class CtfChallengeService {
   public List<CtfCommonChallengeDto> getProblemList(Long ctfId) {
 
     ctfUtilService.checkVirtualContest(ctfId);
+    ctfUtilService.checkJoinable(ctfId);
 
     CtfTeamEntity myTeam = ctfUtilService.getTeamHasMemberEntity(ctfId,
         authService.getMemberIdByJWT()).getTeam();
@@ -73,6 +74,9 @@ public class CtfChallengeService {
         submitChallenge.getCtfContestEntity().getId(), submitterId).getTeam();
     CtfFlagEntity flagEntity = flagRepository.findByCtfChallengeEntityIdAndCtfTeamEntityId(probId,
         submitTeam.getId()).orElseThrow(CustomCtfChallengeNotFoundException::new);
+
+    // 참가 불가능 CTF면 Flag check 안함.
+    ctfUtilService.checkJoinable(submitChallenge.getCtfContestEntity().getId());
 
     // 풀 수 없는 문제면 조치 안함.
     if (!submitChallenge.getIsSolvable()) {
@@ -117,6 +121,9 @@ public class CtfChallengeService {
     Long solvedTeamCount = flagRepository.countByCtfChallengeEntityIdAndIsCorrect(probId, true);
     CtfChallengeEntity challengeEntity = challengeRepository.findByIdAndIsSolvableTrue(probId)
         .orElseThrow(CustomCtfChallengeNotFoundException::new);
+
+    ctfUtilService.checkJoinable(challengeEntity.getCtfContestEntity().getId());
+
     CtfTeamEntity myTeam = ctfUtilService.getTeamHasMemberEntity(
         challengeEntity.getCtfContestEntity().getId(),
         authService.getMemberIdByJWT()).getTeam();

@@ -48,7 +48,7 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
   @Test
   @DisplayName("문제 목록 보기 - 성공")
   public void getProblemListSuccess() throws Exception {
-    CtfContestEntity contest = generateCtfContest(adminEntity);
+    CtfContestEntity contest = generateCtfContest(adminEntity, true);
 
     Long score = 1000L;
 
@@ -119,7 +119,7 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
   @Test
   @DisplayName("플래그 체크 - 성공")
   public void checkFlagSuccess() throws Exception {
-    CtfContestEntity contest = generateCtfContest(adminEntity);
+    CtfContestEntity contest = generateCtfContest(adminEntity, true);
 
     Long score = 1000L;
     Long maxScore = 1234L;
@@ -165,7 +165,7 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
   @Test
   @DisplayName("문제 세부 정보 보기 - 성공")
   public void getProblemDetailSuccess() throws Exception {
-    CtfContestEntity contest = generateCtfContest(adminEntity);
+    CtfContestEntity contest = generateCtfContest(adminEntity, true);
 
     Long score = 1000L;
 

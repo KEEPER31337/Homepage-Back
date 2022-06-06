@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import keeper.project.homepage.admin.dto.ctf.CtfContestAdminDto;
+import keeper.project.homepage.common.dto.member.CommonMemberDto;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,14 +27,14 @@ public class CtfContestDto {
   @JsonProperty(access = Access.READ_ONLY)
   protected Long ctfId;
   @JsonProperty(access = Access.READ_ONLY)
-  protected Long creatorId;
+  protected CommonMemberDto creator;
 
   public static CtfContestDto toDto(CtfContestEntity ctfContestEntity) {
     return CtfContestDto.builder()
         .ctfId(ctfContestEntity.getId())
         .name(ctfContestEntity.getName())
         .description(ctfContestEntity.getDescription())
-        .creatorId(ctfContestEntity.getCreator().getId())
+        .creator(CommonMemberDto.toDto(ctfContestEntity.getCreator()))
         .build();
   }
 }
