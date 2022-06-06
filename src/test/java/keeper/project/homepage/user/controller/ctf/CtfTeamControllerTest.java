@@ -108,6 +108,9 @@ class CtfTeamControllerTest extends CtfSpringTestHelper {
         .andExpect(jsonPath("$.data.description").value(MODIFIED_TEAM_DESC))
         .andExpect(jsonPath("$.data.score").value(0L))
         .andDo(document("modify-team",
+            pathParameters(
+                parameterWithName("teamId").description("수정할 TEAM의 Id")
+            ),
             requestFields(
                 fieldWithPath("name").description("TEAM 이름"),
                 fieldWithPath("description").description("TEAM 설명"),
