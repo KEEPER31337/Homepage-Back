@@ -96,7 +96,7 @@ public class CtfTeamService {
     ctfUtilService.checkJoinable(teamEntity.getCtfContestEntity().getId());
 
     Long modifyMemberId = authService.getMemberIdByJWT();
-    if (modifyMemberId.equals(teamEntity.getCreator().getId())) {
+    if (!modifyMemberId.equals(teamEntity.getCreator().getId())) {
       throw new RuntimeException("본인이 생성한 팀이 아니면 수정할 수 없습니다.");
     }
 
