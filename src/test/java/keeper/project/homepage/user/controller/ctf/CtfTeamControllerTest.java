@@ -1,5 +1,7 @@
 package keeper.project.homepage.user.controller.ctf;
 
+import static keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity.MISC;
+import static keeper.project.homepage.entity.ctf.CtfChallengeTypeEntity.STANDARD;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -15,11 +17,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import keeper.project.homepage.admin.dto.ctf.CtfChallengeAdminDto;
 import keeper.project.homepage.controller.ctf.CtfSpringTestHelper;
+import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
+import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
+import keeper.project.homepage.entity.ctf.CtfChallengeTypeEntity;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
 import keeper.project.homepage.entity.ctf.CtfTeamEntity;
 import keeper.project.homepage.entity.ctf.CtfTeamHasMemberEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.user.dto.ctf.CtfChallengeCategoryDto;
+import keeper.project.homepage.user.dto.ctf.CtfChallengeTypeDto;
 import keeper.project.homepage.user.dto.ctf.CtfJoinTeamRequestDto;
 import keeper.project.homepage.user.dto.ctf.CtfLeaveTeamRequestDto;
 import keeper.project.homepage.user.dto.ctf.CtfTeamDetailDto;
@@ -187,6 +195,9 @@ class CtfTeamControllerTest extends CtfSpringTestHelper {
     ctfTeamHasMemberRepository.save(teamHasMemberEntity);
     team.getCtfTeamHasMemberEntityList().add(teamHasMemberEntity);
 
+    CtfChallengeEntity challenge = generateCtfChallenge(contestEntity, STANDARD, MISC, 1234L);
+    generateCtfFlag(team, challenge, true);
+
     mockMvc.perform(get("/v1/ctf/team/{teamId}", team.getId())
             .header("Authorization", userToken))
         .andDo(print())
@@ -203,7 +214,6 @@ class CtfTeamControllerTest extends CtfSpringTestHelper {
                 generateTeamDetailDtoResponseFields(ResponseType.SINGLE,
                     "성공: true +\n실패: false", "성공 시 0을 반환", "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
             )));
-
   }
 
   @Test

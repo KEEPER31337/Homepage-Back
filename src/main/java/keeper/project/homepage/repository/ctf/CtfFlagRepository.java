@@ -19,6 +19,8 @@ public interface CtfFlagRepository extends
 
   List<CtfFlagEntity> findAllByCtfTeamEntityId(Long ctfTeamEntity_id);
 
+  List<CtfFlagEntity> findAllByCtfTeamEntityIdAndIsCorrectTrue(Long ctfTeamEntity_id);
+
   Long countByCtfChallengeEntityIdAndIsCorrect(Long ctfChallengeEntity_id, Boolean isCorrect);
 
   List<CtfFlagEntity> findAllByCtfChallengeEntityId(Long id);

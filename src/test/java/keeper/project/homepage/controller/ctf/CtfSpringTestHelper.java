@@ -468,7 +468,8 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".registerTime").description("team 등록 시간"),
         fieldWithPath(prefix + ".creatorId").description("team 생성자 Id"),
         fieldWithPath(prefix + ".contestId").description("team이 속한 contest Id"),
-        subsectionWithPath(prefix + ".teamMembers").description("team에 속한 팀원 정보")
+        subsectionWithPath(prefix + ".teamMembers").description("team에 속한 팀원 정보"),
+        subsectionWithPath(prefix + ".solvedChallengeList").description("team이 푼 문제들 정보")
     ));
     commonFields.addAll(generateTeamDtoResponseFields(type, success, code, msg));
     if (addDescriptors.length > 0) {
