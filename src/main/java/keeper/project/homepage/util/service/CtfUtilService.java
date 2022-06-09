@@ -19,6 +19,7 @@ import keeper.project.homepage.repository.ctf.CtfTeamHasMemberRepository;
 import keeper.project.homepage.repository.ctf.CtfTeamRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 @Log4j2
@@ -67,6 +68,12 @@ public class CtfUtilService {
     return DYNAMIC.getId().equals(challenge.getCtfChallengeTypeEntity().getId());
   }
 
+  public void checkJoinable(Long ctfId) {
+    if (!isJoinable(ctfId)) {
+      throw new AccessDeniedException("해당 CTF는 종료되었거나 현재 접근이 불가합니다.");
+    }
+  }
+
   public boolean isJoinable(Long ctfId) {
     return contestRepository.findById(ctfId)
         .orElseThrow(CustomContestNotFoundException::new)
@@ -80,14 +87,14 @@ public class CtfUtilService {
     challengeEntityList.forEach(this::setDynamicScore);
   }
 
-  public CtfTeamHasMemberEntity getTeamHasMemberEntity(Long ctfId, Long leaveMemberId) {
+  public CtfTeamHasMemberEntity getTeamHasMemberEntity(Long ctfId, Long memberId) {
     List<CtfTeamHasMemberEntity> teamHasMemberEntityList = teamHasMemberRepository
-        .findAllByMemberId(leaveMemberId);
-    CtfTeamHasMemberEntity leaveTeamHasMemberEntity = teamHasMemberEntityList.stream()
-        .filter(teamHasMemberEntity -> ctfId.equals(
-            teamHasMemberEntity.getTeam().getCtfContestEntity().getId()))
+        .findAllByMemberId(memberId);
+    CtfTeamHasMemberEntity teamHasMemberEntity = teamHasMemberEntityList.stream()
+        .filter(teamHasMember -> ctfId.equals(
+            teamHasMember.getTeam().getCtfContestEntity().getId()))
         .findFirst().orElseThrow(() -> new CustomCtfTeamNotFoundException("가입한 팀을 찾을 수 없습니다."));
-    return leaveTeamHasMemberEntity;
+    return teamHasMemberEntity;
   }
 
   public void setDynamicScore(CtfChallengeEntity challenge) {

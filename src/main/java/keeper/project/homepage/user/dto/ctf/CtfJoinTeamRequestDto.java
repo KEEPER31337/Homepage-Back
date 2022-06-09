@@ -15,4 +15,5 @@ import lombok.Setter;
 public class CtfJoinTeamRequestDto {
 
   String teamName;
+  Long contestId;
 }

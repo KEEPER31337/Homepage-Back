@@ -3,6 +3,7 @@ package keeper.project.homepage.user.service.ctf;
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_CONTEST_ID;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
@@ -16,9 +17,9 @@ import keeper.project.homepage.exception.ctf.CustomCtfTeamNotFoundException;
 import keeper.project.homepage.repository.ctf.CtfChallengeRepository;
 import keeper.project.homepage.repository.ctf.CtfContestRepository;
 import keeper.project.homepage.repository.ctf.CtfFlagRepository;
-import keeper.project.homepage.repository.ctf.CtfSubmitLogRepository;
 import keeper.project.homepage.repository.ctf.CtfTeamHasMemberRepository;
 import keeper.project.homepage.repository.ctf.CtfTeamRepository;
+import keeper.project.homepage.user.dto.ctf.CtfJoinTeamRequestDto;
 import keeper.project.homepage.user.dto.ctf.CtfTeamDetailDto;
 import keeper.project.homepage.user.dto.ctf.CtfTeamDto;
 import keeper.project.homepage.user.dto.ctf.CtfTeamHasMemberDto;
@@ -27,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,10 +48,7 @@ public class CtfTeamService {
   public CtfTeamDetailDto createTeam(CtfTeamDetailDto ctfTeamDetailDto) {
 
     ctfUtilService.checkVirtualContest(ctfTeamDetailDto.getContestId());
-
-    if (!ctfUtilService.isJoinable(ctfTeamDetailDto.getContestId())) {
-      throw new AccessDeniedException("해당 CTF는 종료되었거나 현재 접근이 불가합니다.");
-    }
+    ctfUtilService.checkJoinable(ctfTeamDetailDto.getContestId());
 
     ctfTeamDetailDto.setRegisterTime(LocalDateTime.now());
     MemberEntity creator = authService.getMemberEntityWithJWT();
@@ -80,7 +77,7 @@ public class CtfTeamService {
           .build();
       flagRepository.save(flagEntity);
     });
-    return CtfTeamDetailDto.toDto(newTeamEntity);
+    return CtfTeamDetailDto.toDto(newTeamEntity, new ArrayList<>());
   }
 
   private boolean isAlreadyHasTeam(Long ctfId, MemberEntity creator) {
@@ -95,17 +92,38 @@ public class CtfTeamService {
 
     CtfTeamEntity teamEntity = teamRepository.findById(teamId)
         .orElseThrow(CustomContestNotFoundException::new);
+
+    ctfUtilService.checkJoinable(teamEntity.getCtfContestEntity().getId());
+
+    Long modifyMemberId = authService.getMemberIdByJWT();
+    if (!modifyMemberId.equals(teamEntity.getCreator().getId())) {
+      throw new RuntimeException("본인이 생성한 팀이 아니면 수정할 수 없습니다.");
+    }
+
     teamEntity.setName(ctfTeamDto.getName());
     teamEntity.setDescription(ctfTeamDto.getDescription());
 
-    return CtfTeamDetailDto.toDto(teamRepository.save(teamEntity));
+    List<CtfChallengeEntity> solvedChallengeList = getSolvedChallengeListByTeamId(teamId);
+
+    return CtfTeamDetailDto.toDto(teamRepository.save(teamEntity), solvedChallengeList);
   }
 
-  public CtfTeamHasMemberDto joinTeam(String teamName) {
+  private List<CtfChallengeEntity> getSolvedChallengeListByTeamId(Long teamId) {
+    return flagRepository.findAllByCtfTeamEntityIdAndIsCorrectTrue(
+        teamId).stream().map(CtfFlagEntity::getCtfChallengeEntity).toList();
+  }
+
+  public CtfTeamHasMemberDto joinTeam(CtfJoinTeamRequestDto joinTeamRequestDto) {
+
+    String teamName = joinTeamRequestDto.getTeamName();
+    CtfContestEntity joinTeamContest = contestRepository.findById(joinTeamRequestDto.getContestId())
+        .orElseThrow(CustomContestNotFoundException::new);
 
     ctfUtilService.checkVirtualTeamByName(teamName);
+    ctfUtilService.checkVirtualContest(joinTeamRequestDto.getContestId());
+    ctfUtilService.checkJoinable(joinTeamRequestDto.getContestId());
 
-    CtfTeamEntity joinTeam = teamRepository.findByName(teamName)
+    CtfTeamEntity joinTeam = teamRepository.findByNameAndCtfContestEntity(teamName, joinTeamContest)
         .orElseThrow(CustomCtfTeamNotFoundException::new);
     MemberEntity joinMember = authService.getMemberEntityWithJWT();
 
@@ -128,17 +146,20 @@ public class CtfTeamService {
         .getTeamHasMemberEntity(ctfId, leaveMember.getId());
     CtfTeamEntity leftTeam = leaveTeamHasMemberEntity.getTeam();
 
+    ctfUtilService.checkJoinable(leftTeam.getCtfContestEntity().getId());
+
     teamHasMemberRepository.delete(leaveTeamHasMemberEntity);
     if (isTeamCreator(leaveMember, leftTeam)) {
       removeTeam(leftTeam);
       ctfUtilService.setAllDynamicScore();
     }
 
-    return CtfTeamDetailDto.toDto(leftTeam);
+    return CtfTeamDetailDto.toDto(leftTeam, new ArrayList<>());
   }
 
   private void removeTeam(CtfTeamEntity leftTeam) {
     teamHasMemberRepository.deleteAllByTeamId(leftTeam.getId());
+    flagRepository.deleteAllByCtfTeamEntityId(leftTeam.getId());
     teamRepository.delete(leftTeam);
   }
 
@@ -152,7 +173,9 @@ public class CtfTeamService {
     CtfTeamEntity teamEntity = teamRepository.findById(teamId)
         .orElseThrow(CustomCtfTeamNotFoundException::new);
 
-    return CtfTeamDetailDto.toDto(teamEntity);
+    List<CtfChallengeEntity> solvedChallengeList = getSolvedChallengeListByTeamId(teamId);
+
+    return CtfTeamDetailDto.toDto(teamEntity, solvedChallengeList);
   }
 
   public Page<CtfTeamDto> getTeamList(Pageable pageable, Long ctfId) {
@@ -162,5 +185,14 @@ public class CtfTeamService {
         VIRTUAL_CONTEST_ID, ctfId, pageable);
 
     return teamList.map(CtfTeamDto::toDto);
+  }
+
+  public CtfTeamDetailDto getMyTeam(Long ctfId) {
+    CtfTeamEntity myTeam = ctfUtilService.getTeamHasMemberEntity(ctfId,
+        authService.getMemberIdByJWT()).getTeam();
+
+    List<CtfChallengeEntity> solvedChallengeList = getSolvedChallengeListByTeamId(myTeam.getId());
+
+    return CtfTeamDetailDto.toDto(myTeam, solvedChallengeList);
   }
 }

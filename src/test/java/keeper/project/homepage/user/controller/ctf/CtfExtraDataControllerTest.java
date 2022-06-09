@@ -9,6 +9,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -73,8 +74,8 @@ class CtfExtraDataControllerTest extends CtfSpringTestHelper {
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("list[].id").description("문제가 속한 타입의 id"),
-                fieldWithPath("list[].name").description("문제가 속한 타입의 이름")
+                fieldWithPath("list[].id").description("타입의 id"),
+                fieldWithPath("list[].name").description("타입의 이름")
             )));
   }
 
@@ -92,8 +93,34 @@ class CtfExtraDataControllerTest extends CtfSpringTestHelper {
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("list[].id").description("문제가 속한 카테고리의 id"),
-                fieldWithPath("list[].name").description("문제가 속한 카테고리의 이름")
+                fieldWithPath("list[].id").description("카테고리의 id"),
+                fieldWithPath("list[].name").description("카테고리의 이름")
+            )));
+  }
+
+  @Test
+  @DisplayName("참가 가능한 CTF 목록 불러오기")
+  void getContestListSuccess() throws Exception {
+    generateCtfContest(userEntity, false);
+    generateCtfContest(userEntity, false);
+    generateCtfContest(userEntity, true);
+    generateCtfContest(userEntity, true);
+    mockMvc.perform(get("/v1/ctf/extra/data/contests")
+            .header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.list.size()").value(2))
+        .andDo(document("get-contest-list",
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("list[].ctfId").description("해당 CTF의 ID"),
+                fieldWithPath("list[].name").description("해당 CTF의 이름"),
+                fieldWithPath("list[].description").description("해당 CTF의 상세정보"),
+                subsectionWithPath("list[].creator").description("해당 CTF 생성자의 정보")
             )));
   }
 }

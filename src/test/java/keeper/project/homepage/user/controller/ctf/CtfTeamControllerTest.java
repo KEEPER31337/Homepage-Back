@@ -1,5 +1,7 @@
 package keeper.project.homepage.user.controller.ctf;
 
+import static keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity.MISC;
+import static keeper.project.homepage.entity.ctf.CtfChallengeTypeEntity.STANDARD;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -15,10 +17,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import keeper.project.homepage.admin.dto.ctf.CtfChallengeAdminDto;
 import keeper.project.homepage.controller.ctf.CtfSpringTestHelper;
+import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
+import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
+import keeper.project.homepage.entity.ctf.CtfChallengeTypeEntity;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
 import keeper.project.homepage.entity.ctf.CtfTeamEntity;
+import keeper.project.homepage.entity.ctf.CtfTeamHasMemberEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.user.dto.ctf.CtfChallengeCategoryDto;
+import keeper.project.homepage.user.dto.ctf.CtfChallengeTypeDto;
 import keeper.project.homepage.user.dto.ctf.CtfJoinTeamRequestDto;
 import keeper.project.homepage.user.dto.ctf.CtfLeaveTeamRequestDto;
 import keeper.project.homepage.user.dto.ctf.CtfTeamDetailDto;
@@ -107,6 +116,9 @@ class CtfTeamControllerTest extends CtfSpringTestHelper {
         .andExpect(jsonPath("$.data.description").value(MODIFIED_TEAM_DESC))
         .andExpect(jsonPath("$.data.score").value(0L))
         .andDo(document("modify-team",
+            pathParameters(
+                parameterWithName("teamId").description("수정할 TEAM의 Id")
+            ),
             requestFields(
                 fieldWithPath("name").description("TEAM 이름"),
                 fieldWithPath("description").description("TEAM 설명"),
@@ -122,7 +134,8 @@ class CtfTeamControllerTest extends CtfSpringTestHelper {
   @DisplayName("팀 가입")
   void joinTeam() throws Exception {
     CtfTeamEntity team = generateCtfTeam(contestEntity, adminEntity, 0L);
-    CtfJoinTeamRequestDto content = new CtfJoinTeamRequestDto(team.getName());
+    CtfJoinTeamRequestDto content = new CtfJoinTeamRequestDto(team.getName(),
+        contestEntity.getId());
 
     mockMvc.perform(post("/v1/ctf/team/member")
             .header("Authorization", userToken)
@@ -136,6 +149,7 @@ class CtfTeamControllerTest extends CtfSpringTestHelper {
         .andExpect(jsonPath("$.data.memberNickname").value(userEntity.getNickName()))
         .andDo(document("join-team",
             requestFields(
+                fieldWithPath("contestId").description("Contest ID"),
                 fieldWithPath("teamName").description("TEAM 이름")
             ),
             responseFields(
@@ -174,6 +188,15 @@ class CtfTeamControllerTest extends CtfSpringTestHelper {
   @DisplayName("팀 세부 정보 열람")
   void getTeamDetail() throws Exception {
     CtfTeamEntity team = generateCtfTeam(contestEntity, userEntity, 0L);
+    CtfTeamHasMemberEntity teamHasMemberEntity = CtfTeamHasMemberEntity.builder()
+        .team(team)
+        .member(adminEntity)
+        .build();
+    ctfTeamHasMemberRepository.save(teamHasMemberEntity);
+    team.getCtfTeamHasMemberEntityList().add(teamHasMemberEntity);
+
+    CtfChallengeEntity challenge = generateCtfChallenge(contestEntity, STANDARD, MISC, 1234L);
+    generateCtfFlag(team, challenge, true);
 
     mockMvc.perform(get("/v1/ctf/team/{teamId}", team.getId())
             .header("Authorization", userToken))
@@ -191,7 +214,6 @@ class CtfTeamControllerTest extends CtfSpringTestHelper {
                 generateTeamDetailDtoResponseFields(ResponseType.SINGLE,
                     "성공: true +\n실패: false", "성공 시 0을 반환", "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
             )));
-
   }
 
   @Test
@@ -222,5 +244,43 @@ class CtfTeamControllerTest extends CtfSpringTestHelper {
                 generateTeamDtoResponseFields(ResponseType.PAGE,
                     "성공: true +\n실패: false", "성공 시 0을 반환", "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
             )));
+  }
+
+  @Test
+  @DisplayName("내가 속한 팀 세부 정보 열람")
+  void getMyTeamDetail() throws Exception {
+    CtfTeamEntity team = generateCtfTeam(contestEntity, userEntity, 0L);
+
+    mockMvc.perform(get("/v1/ctf/team/{ctfId}/my-team", contestEntity.getId())
+            .header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.data.name").value(team.getName()))
+        .andExpect(jsonPath("$.data.description").value(team.getDescription()))
+        .andDo(document("get-my-team-detail",
+            pathParameters(
+                parameterWithName("ctfId").description("ctf id")
+            ),
+            responseFields(
+                generateTeamDetailDtoResponseFields(ResponseType.SINGLE,
+                    "성공: true +\n실패: false", "성공 시 0을 반환, 가입한 팀이 없어 실패 시 -13004",
+                    "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
+            )));
+
+  }
+
+  @Test
+  @DisplayName("내가 속한 팀 세부 정보 열람 - 실패 (속한 팀 없음)")
+  void getMyTeamDetailFailed() throws Exception {
+//    CtfTeamEntity team = generateCtfTeam(contestEntity, userEntity, 0L);
+
+    mockMvc.perform(get("/v1/ctf/team/{ctfId}/my-team", contestEntity.getId())
+            .header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().is4xxClientError())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(-13004));
   }
 }

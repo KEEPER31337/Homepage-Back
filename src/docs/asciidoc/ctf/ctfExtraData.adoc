@@ -72,3 +72,21 @@ include::{snippets}/get-challenge-type-list/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/get-challenge-type-list/response-fields.adoc[]
+
+== *참가 가능한 CTF Contest 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-contest-list/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-contest-list/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-contest-list/response-fields.adoc[]

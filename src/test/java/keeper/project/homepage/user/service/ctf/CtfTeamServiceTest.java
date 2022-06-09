@@ -2,9 +2,15 @@ package keeper.project.homepage.user.service.ctf;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import keeper.project.homepage.admin.dto.ctf.CtfChallengeAdminDto;
+import keeper.project.homepage.admin.service.ctf.CtfAdminService;
 import keeper.project.homepage.controller.ctf.CtfSpringTestHelper;
+import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
+import keeper.project.homepage.entity.ctf.CtfChallengeTypeEntity;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.user.dto.ctf.CtfChallengeCategoryDto;
+import keeper.project.homepage.user.dto.ctf.CtfChallengeTypeDto;
 import keeper.project.homepage.user.dto.ctf.CtfTeamDetailDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -89,6 +95,9 @@ class CtfTeamServiceTest extends CtfSpringTestHelper {
   @Autowired
   private CtfTeamService ctfTeamService;
 
+  @Autowired
+  private CtfAdminService ctfAdminService;
+
   @Test
   @DisplayName("팀 생성 - 성공")
   void createTeam() {
@@ -135,7 +144,60 @@ class CtfTeamServiceTest extends CtfSpringTestHelper {
   }
 
   @Test
+  @DisplayName("팀 탈퇴 성공")
   void leaveTeam() {
+
+    MemberEntity creator = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원,
+        MemberRankName.일반회원);
+    SecurityContext context = SecurityContextHolder.getContext();
+    context.setAuthentication(
+        new UsernamePasswordAuthenticationToken(creator.getId(), creator.getPassword(),
+            List.of(new SimpleGrantedAuthority("ROLE_회원"))));
+    String ctfName = "testCtfName";
+    String ctfDesc = "testCtfDesc";
+    CtfContestEntity contest = ctfContestRepository.save(CtfContestEntity.builder()
+        .name(ctfName)
+        .description(ctfDesc)
+        .registerTime(LocalDateTime.now())
+        .creator(creator)
+        .isJoinable(true)
+        .build());
+    String teamName = "testTeamName";
+    String teamDesc = "testTeamDesc";
+    CtfTeamDetailDto createTeamInfo = CtfTeamDetailDto.builder()
+        .name(teamName)
+        .description(teamDesc)
+        .contestId(contest.getId())
+        .build();
+    ctfTeamService.createTeam(createTeamInfo);
+
+    String testTitle = "testTitle";
+    String testContent = "testContent";
+    String testFlag = "testFlag";
+    Long testScore = 1234L;
+
+    CtfChallengeAdminDto createChallengeInfo = CtfChallengeAdminDto.builder()
+        .content(testContent)
+        .contestId(contest.getId())
+        .flag(testFlag)
+        .isSolvable(true)
+        .type(CtfChallengeTypeDto.builder().id(CtfChallengeTypeEntity.STANDARD.getId()).build())
+        .category(
+            CtfChallengeCategoryDto.builder().id(CtfChallengeCategoryEntity.SYSTEM.getId()).build())
+        .title(testTitle)
+        .score(testScore)
+        .build();
+    ctfAdminService.createProblem(createChallengeInfo);
+
+    // when
+    CtfTeamDetailDto result = ctfTeamService.leaveTeam(contest.getId());
+
+    // then
+    Assertions.assertThat(result.getContestId()).isEqualTo(contest.getId());
+    Assertions.assertThat(result.getCreatorId()).isEqualTo(creator.getId());
+    Assertions.assertThat(result.getDescription()).isEqualTo(createTeamInfo.getDescription());
+    Assertions.assertThat(result.getName()).isEqualTo(createTeamInfo.getName());
+    Assertions.assertThat(result.getScore()).isEqualTo(0L);
   }
 
   @Test

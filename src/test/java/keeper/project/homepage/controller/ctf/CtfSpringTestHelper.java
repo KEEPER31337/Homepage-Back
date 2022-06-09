@@ -232,7 +232,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".name").description("CTF명"),
         fieldWithPath(prefix + ".description").description("CTF 부가 설명"),
         fieldWithPath(prefix + ".joinable").description("CTF에 현재 참석 가능 한지 아닌지"),
-        subsectionWithPath(prefix + ".creatorId").description("생성자의 id가 담겨 나갑니다.")
+        subsectionWithPath(prefix + ".creator").description("생성자의 정보가 담겨 나갑니다.")
     ));
     if (addDescriptors.length > 0) {
       commonFields.addAll(Arrays.asList(addDescriptors));
@@ -268,6 +268,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".category.id").description("문제가 속한 카테고리의 id"),
         fieldWithPath(prefix + ".category.name").description("문제가 속한 카테고리의 이름"),
         fieldWithPath(prefix + ".score").description("문제의 점수"),
+        fieldWithPath(prefix + ".isSolved").description("내가 풀었는 지"),
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id")
     ));
     if (addDescriptors.length > 0) {
@@ -322,6 +323,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".creatorName").description("문제 생성자 이름"),
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id"),
         fieldWithPath(prefix + ".solvedTeamCount").description("푼 팀 수"),
+        fieldWithPath(prefix + ".isSolved").description("내가 풀었는 지"),
         subsectionWithPath(prefix + ".file").description("문제에 해당하는 파일 정보").optional()
     ));
     if (addDescriptors.length > 0) {
@@ -442,6 +444,21 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
     return commonFields;
   }
 
+  protected List<FieldDescriptor> generateRankingDtoResponseFields(ResponseType type,
+      String success, String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(List.of(
+        fieldWithPath(prefix + ".rank").description("team 랭킹")
+    ));
+    commonFields.addAll(generateTeamDtoResponseFields(type, success, code, msg));
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
+    }
+    return commonFields;
+  }
+
   protected List<FieldDescriptor> generateTeamDetailDtoResponseFields(ResponseType type,
       String success, String code, String msg, FieldDescriptor... addDescriptors) {
     String prefix = type.getReponseFieldPrefix();
@@ -450,7 +467,9 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
     commonFields.addAll(Arrays.asList(
         fieldWithPath(prefix + ".registerTime").description("team 등록 시간"),
         fieldWithPath(prefix + ".creatorId").description("team 생성자 Id"),
-        fieldWithPath(prefix + ".contestId").description("team이 속한 contest Id")
+        fieldWithPath(prefix + ".contestId").description("team이 속한 contest Id"),
+        subsectionWithPath(prefix + ".teamMembers").description("team에 속한 팀원 정보"),
+        subsectionWithPath(prefix + ".solvedChallengeList").description("team이 푼 문제들 정보")
     ));
     commonFields.addAll(generateTeamDtoResponseFields(type, success, code, msg));
     if (addDescriptors.length > 0) {

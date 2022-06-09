@@ -1,57 +1,40 @@
-package keeper.project.homepage.admin.dto.ctf;
+package keeper.project.homepage.user.dto.ctf;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
-import java.time.LocalDateTime;
+import keeper.project.homepage.admin.dto.ctf.CtfContestAdminDto;
 import keeper.project.homepage.common.dto.member.CommonMemberDto;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@SuperBuilder
 @JsonInclude(Include.NON_NULL)
 public class CtfContestDto {
 
-  @JsonProperty(access = Access.READ_ONLY)
-  private Long ctfId;
-
-  private String name;
-
-  private String description;
+  protected String name;
+  protected String description;
 
   @JsonProperty(access = Access.READ_ONLY)
-  private Boolean joinable;
-
+  protected Long ctfId;
   @JsonProperty(access = Access.READ_ONLY)
-  private Long creatorId;
+  protected CommonMemberDto creator;
 
   public static CtfContestDto toDto(CtfContestEntity ctfContestEntity) {
     return CtfContestDto.builder()
         .ctfId(ctfContestEntity.getId())
         .name(ctfContestEntity.getName())
         .description(ctfContestEntity.getDescription())
-        .joinable(ctfContestEntity.getIsJoinable())
-        .creatorId(ctfContestEntity.getCreator().getId())
-        .build();
-  }
-
-  public CtfContestEntity toEntity(MemberEntity creator) {
-    return CtfContestEntity.builder()
-        .name(name)
-        .description(description)
-        .registerTime(LocalDateTime.now())
-        .isJoinable(joinable)
-        .creator(creator)
+        .creator(CommonMemberDto.toDto(ctfContestEntity.getCreator()))
         .build();
   }
 }

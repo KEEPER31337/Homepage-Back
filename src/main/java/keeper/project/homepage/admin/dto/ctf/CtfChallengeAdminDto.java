@@ -82,7 +82,7 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
         .type(type)
         .flag(challenge.getCtfFlagEntity().get(0).getContent())
         .isSolvable(challenge.getIsSolvable())
-        .registerTime(LocalDateTime.now())
+        .registerTime(challenge.getRegisterTime())
         .creatorName(challenge.getCreator().getNickName())
         .score(challenge.getScore())
         .file(file)

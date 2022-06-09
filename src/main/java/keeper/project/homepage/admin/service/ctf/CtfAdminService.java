@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.admin.dto.ctf.CtfChallengeAdminDto;
-import keeper.project.homepage.admin.dto.ctf.CtfContestDto;
+import keeper.project.homepage.admin.dto.ctf.CtfContestAdminDto;
 import keeper.project.homepage.admin.dto.ctf.CtfProbMakerDto;
 import keeper.project.homepage.admin.dto.ctf.CtfSubmitLogDto;
 import keeper.project.homepage.common.service.util.AuthService;
@@ -71,34 +71,34 @@ public class CtfAdminService {
   private final MemberJobRepository memberJobRepository;
 
   @Transactional
-  public CtfContestDto createContest(CtfContestDto contestDto) {
+  public CtfContestAdminDto createContest(CtfContestAdminDto contestDto) {
     contestDto.setJoinable(false);
     MemberEntity creator = authService.getMemberEntityWithJWT();
-    return CtfContestDto.toDto(ctfContestRepository.save(contestDto.toEntity(creator)));
+    return CtfContestAdminDto.toDto(ctfContestRepository.save(contestDto.toEntity(creator)));
   }
 
-  public CtfContestDto openContest(Long ctfId) {
+  public CtfContestAdminDto openContest(Long ctfId) {
     if (ctfId.equals(VIRTUAL_CONTEST_ID)) {
       throw new CustomContestNotFoundException();
     }
     CtfContestEntity contestEntity = getCtfContestEntity(ctfId);
     contestEntity.setIsJoinable(true);
-    return CtfContestDto.toDto(contestEntity);
+    return CtfContestAdminDto.toDto(contestEntity);
   }
 
-  public CtfContestDto closeContest(Long ctfId) {
+  public CtfContestAdminDto closeContest(Long ctfId) {
     if (ctfId.equals(VIRTUAL_CONTEST_ID)) {
       throw new CustomContestNotFoundException();
     }
     CtfContestEntity contestEntity = getCtfContestEntity(ctfId);
     contestEntity.setIsJoinable(false);
-    return CtfContestDto.toDto(contestEntity);
+    return CtfContestAdminDto.toDto(contestEntity);
   }
 
-  public List<CtfContestDto> getContests() {
+  public List<CtfContestAdminDto> getContests() {
     List<CtfContestEntity> contestEntities = ctfContestRepository.findAllByIdIsNot(
         VIRTUAL_CONTEST_ID);
-    return contestEntities.stream().map(CtfContestDto::toDto).collect(Collectors.toList());
+    return contestEntities.stream().map(CtfContestAdminDto::toDto).collect(Collectors.toList());
   }
 
   @Transactional
@@ -143,7 +143,7 @@ public class CtfAdminService {
       HttpServletRequest request, MultipartFile file) {
     String ipAddress = request.getHeader("X-FORWARDED-FOR") == null ?
         request.getRemoteAddr() : request.getHeader("X-FORWARDED-FOR");
-    FileEntity saveFile = fileService.saveFile(file, ipAddress);
+    FileEntity saveFile = fileService.saveFile(file, ipAddress, null);
 
     try {
       CtfChallengeEntity challenge = challengeRepository.findById(challengeId)
@@ -153,7 +153,7 @@ public class CtfAdminService {
     } catch (Exception e) {
       log.info(e.getMessage());
       if (saveFile != null) {
-        fileService.deleteFileById(saveFile.getId());
+        fileService.deleteFile(saveFile.getId());
       }
       throw new RuntimeException("문제 생성 실패!");
     }

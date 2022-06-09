@@ -5,6 +5,7 @@ import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.user.dto.ctf.CtfChallengeCategoryDto;
 import keeper.project.homepage.user.dto.ctf.CtfChallengeTypeDto;
+import keeper.project.homepage.user.dto.ctf.CtfContestDto;
 import keeper.project.homepage.user.service.ctf.CtfExtraDataService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -36,5 +37,10 @@ public class CtfExtraDataController {
   @GetMapping("/challenge-category")
   public ListResult<CtfChallengeCategoryDto> getChallengeCategoryList() {
     return responseService.getSuccessListResult(ctfExtraDataService.getChallengeCategoryList());
+  }
+
+  @GetMapping("/contests")
+  public ListResult<CtfContestDto> getContestList() {
+    return responseService.getSuccessListResult(ctfExtraDataService.getContestList());
   }
 }

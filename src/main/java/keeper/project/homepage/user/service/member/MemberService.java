@@ -8,7 +8,7 @@ import java.util.Random;
 import keeper.project.homepage.user.dto.member.MultiMemberResponseDto;
 import keeper.project.homepage.user.dto.posting.PostingResponseDto;
 import keeper.project.homepage.user.dto.member.MemberFollowDto;
-import keeper.project.homepage.util.ImageCenterCropping;
+import keeper.project.homepage.util.image.preprocessing.ImageCenterCropping;
 import keeper.project.homepage.common.dto.sign.EmailAuthDto;
 import keeper.project.homepage.user.dto.member.MemberDto;
 import keeper.project.homepage.user.dto.member.OtherMemberInfoResult;
@@ -23,9 +23,10 @@ import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.member.EmailAuthRedisRepository;
 import keeper.project.homepage.repository.member.FriendRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
+import keeper.project.homepage.util.image.preprocessing.ImageSize;
 import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.util.service.ThumbnailService;
-import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;
+import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import keeper.project.homepage.common.service.mail.MailService;
 import keeper.project.homepage.common.service.sign.DuplicateCheckService;
 import lombok.RequiredArgsConstructor;
@@ -214,6 +215,40 @@ public class MemberService {
     updateEntity.changeEmailAddress(memberDto.getEmailAddress());
     memberDto.initWithEntity(memberRepository.save(updateEntity));
     return memberDto;
+  }
+
+  public MemberDto updateThumbnails(Long memberId, MultipartFile image, String ipAddress) {
+    MemberEntity memberEntity = memberRepository.findById(memberId)
+        .orElseThrow(CustomMemberNotFoundException::new);
+
+    ThumbnailEntity prevThumbnail = memberEntity.getThumbnail();
+
+    ThumbnailEntity thumbnailEntity = thumbnailService.save(ThumbType.MemberThumbnail,
+        new ImageCenterCropping(ImageSize.LARGE), image, ipAddress);
+
+    memberEntity.changeThumbnail(thumbnailEntity);
+    MemberDto result = new MemberDto();
+    result.initWithEntity(memberRepository.save(memberEntity));
+
+    if (prevThumbnail != null) {
+      thumbnailService.delete(prevThumbnail.getId());
+    }
+    return result;
+  }
+
+  //TODO
+  // Signup service와 중복되는 메소드, 리팩토링 필요
+  private String generateRandomAuthCode(int targetStringLength) {
+    int leftLimit = 48; // numeral '0'
+    int rightLimit = 122; // letter 'z'
+    Random random = new Random();
+
+    return random.ints(leftLimit, rightLimit + 1)
+        .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
+        .limit(targetStringLength)
+        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
+        .toString();
+    // 출처: https://www.baeldung.com/java-random-string
   }
 
   public Page<PostingResponseDto> findAllPostingByIsTemp(Long id, Pageable pageable,

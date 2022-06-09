@@ -2,8 +2,8 @@ package keeper.project.homepage.common.controller.util;
 
 
 import java.io.IOException;
-import keeper.project.homepage.util.ImageResizing;
-import keeper.project.homepage.util.ImageResizing.RESIZE_OPTION;
+import keeper.project.homepage.util.image.preprocessing.ImageResizing;
+import keeper.project.homepage.util.image.preprocessing.ImageResizing.RESIZE_OPTION;
 import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.util.service.ThumbnailService;
 import lombok.RequiredArgsConstructor;
@@ -30,8 +30,8 @@ public class ImageController {
   public @ResponseBody
   byte[] getImage(@PathVariable("fileId") Long fileId) throws IOException {
 
-    return fileService.getByteArrayForImage(fileId,
-        new ImageResizing(RESIZE_OPTION.KEEP_RATIO_IN_OUTER_BOUNDARY), 800, 800);
+    return fileService.getByteArrayFromImage(fileId,
+        new ImageResizing(RESIZE_OPTION.KEEP_RATIO_IN_OUTER_BOUNDARY, 800, 800));
   }
 
   @GetMapping(
@@ -40,7 +40,7 @@ public class ImageController {
   public @ResponseBody
   byte[] getThumbnail(@PathVariable("thumbnailId") Long thumbnailId) throws IOException {
 
-    return thumbnailService.getByteArrayForThumbnailImage(thumbnailId,
-        new ImageResizing(RESIZE_OPTION.KEEP_RATIO_IN_OUTER_BOUNDARY), 800, 800);
+    return thumbnailService.getByteArrayFromImage(thumbnailId,
+        new ImageResizing(RESIZE_OPTION.KEEP_RATIO_IN_OUTER_BOUNDARY, 800, 800));
   }
 }

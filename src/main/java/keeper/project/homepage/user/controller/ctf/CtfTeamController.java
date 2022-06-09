@@ -51,8 +51,7 @@ public class CtfTeamController {
   public SingleResult<CtfTeamHasMemberDto> joinTeam(
       @RequestBody CtfJoinTeamRequestDto requestDto
   ) {
-    return responseService.getSuccessSingleResult(
-        ctfTeamService.joinTeam(requestDto.getTeamName()));
+    return responseService.getSuccessSingleResult(ctfTeamService.joinTeam(requestDto));
   }
 
   @DeleteMapping(value = "/member")
@@ -74,5 +73,11 @@ public class CtfTeamController {
       @RequestParam Long ctfId
   ) {
     return responseService.getSuccessPageResult(ctfTeamService.getTeamList(pageable, ctfId));
+  }
+
+  @GetMapping(value = "/{ctfId}/my-team")
+  public SingleResult<CtfTeamDetailDto> getMyTeam(
+      @PathVariable("ctfId") Long ctfId) {
+    return responseService.getSuccessSingleResult(ctfTeamService.getMyTeam(ctfId));
   }
 }

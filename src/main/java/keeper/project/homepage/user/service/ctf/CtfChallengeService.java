@@ -47,12 +47,19 @@ public class CtfChallengeService {
   public List<CtfCommonChallengeDto> getProblemList(Long ctfId) {
 
     ctfUtilService.checkVirtualContest(ctfId);
+    ctfUtilService.checkJoinable(ctfId);
 
+    CtfTeamEntity myTeam = ctfUtilService.getTeamHasMemberEntity(ctfId,
+        authService.getMemberIdByJWT()).getTeam();
     CtfContestEntity contestEntity = contestRepository.findById(ctfId)
         .orElseThrow(CustomContestNotFoundException::new);
     List<CtfChallengeEntity> challengeEntities = challengeRepository.findAllByIdIsNotAndCtfContestEntityAndIsSolvable(
         VIRTUAL_PROBLEM_ID, contestEntity, true);
-    return challengeEntities.stream().map(CtfCommonChallengeDto::toDto).toList();
+    return challengeEntities.stream().map(challenge -> {
+      Boolean isSolved = flagRepository.findByCtfChallengeEntityIdAndCtfTeamEntityId(
+          challenge.getId(), myTeam.getId()).get().getIsCorrect();
+      return CtfCommonChallengeDto.toDto(challenge, isSolved);
+    }).toList();
   }
 
   @Transactional
@@ -67,6 +74,9 @@ public class CtfChallengeService {
         submitChallenge.getCtfContestEntity().getId(), submitterId).getTeam();
     CtfFlagEntity flagEntity = flagRepository.findByCtfChallengeEntityIdAndCtfTeamEntityId(probId,
         submitTeam.getId()).orElseThrow(CustomCtfChallengeNotFoundException::new);
+
+    // 참가 불가능 CTF면 Flag check 안함.
+    ctfUtilService.checkJoinable(submitChallenge.getCtfContestEntity().getId());
 
     // 풀 수 없는 문제면 조치 안함.
     if (!submitChallenge.getIsSolvable()) {
@@ -109,9 +119,18 @@ public class CtfChallengeService {
     ctfUtilService.checkVirtualProblem(probId);
 
     Long solvedTeamCount = flagRepository.countByCtfChallengeEntityIdAndIsCorrect(probId, true);
+    CtfChallengeEntity challengeEntity = challengeRepository.findByIdAndIsSolvableTrue(probId)
+        .orElseThrow(CustomCtfChallengeNotFoundException::new);
 
-    return CtfChallengeDto.toDto(challengeRepository.findById(probId)
-        .orElseThrow(CustomCtfChallengeNotFoundException::new), solvedTeamCount);
+    ctfUtilService.checkJoinable(challengeEntity.getCtfContestEntity().getId());
+
+    CtfTeamEntity myTeam = ctfUtilService.getTeamHasMemberEntity(
+        challengeEntity.getCtfContestEntity().getId(),
+        authService.getMemberIdByJWT()).getTeam();
+    Boolean isSolved = flagRepository.findByCtfChallengeEntityIdAndCtfTeamEntityId(
+        challengeEntity.getId(), myTeam.getId()).get().getIsCorrect();
+
+    return CtfChallengeDto.toDto(challengeEntity, solvedTeamCount, isSolved);
   }
 
   public CtfSubmitLogEntity setLog(Long probId, CtfFlagDto submitFlag) {
