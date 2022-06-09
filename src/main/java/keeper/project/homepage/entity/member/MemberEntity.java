@@ -26,6 +26,7 @@ import keeper.project.homepage.entity.study.StudyHasMemberEntity;
 import keeper.project.homepage.user.dto.member.MultiMemberResponseDto;
 import keeper.project.homepage.util.EnvironmentProperty;
 import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
+import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -190,7 +191,7 @@ public class MemberEntity implements Serializable {
 
   public String getThumbnailPath() {
     return getThumbnail() == null ?
-        EnvironmentProperty.getThumbnailPath(DefaultThumbnailInfo.ThumbMember.getThumbnailId())
+        EnvironmentProperty.getThumbnailPath(ThumbType.MemberThumbnail.getDefaultThumbnailId())
         : EnvironmentProperty.getThumbnailPath(getThumbnail().getId());
   }
 

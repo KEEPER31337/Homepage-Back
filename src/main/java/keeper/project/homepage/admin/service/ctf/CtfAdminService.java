@@ -143,7 +143,7 @@ public class CtfAdminService {
       HttpServletRequest request, MultipartFile file) {
     String ipAddress = request.getHeader("X-FORWARDED-FOR") == null ?
         request.getRemoteAddr() : request.getHeader("X-FORWARDED-FOR");
-    FileEntity saveFile = fileService.saveFile(file, ipAddress);
+    FileEntity saveFile = fileService.saveFile(file, ipAddress, null);
 
     try {
       CtfChallengeEntity challenge = challengeRepository.findById(challengeId)
@@ -153,7 +153,7 @@ public class CtfAdminService {
     } catch (Exception e) {
       log.info(e.getMessage());
       if (saveFile != null) {
-        fileService.deleteFileById(saveFile.getId());
+        fileService.deleteFile(saveFile.getId());
       }
       throw new RuntimeException("문제 생성 실패!");
     }

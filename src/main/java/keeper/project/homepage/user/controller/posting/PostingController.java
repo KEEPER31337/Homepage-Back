@@ -21,11 +21,12 @@ import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
 import keeper.project.homepage.user.dto.posting.PostingResponseDto;
+import keeper.project.homepage.util.image.preprocessing.ImageSize;
 import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.util.service.ThumbnailService;
-import keeper.project.homepage.util.ImageCenterCropping;
-import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;
+import keeper.project.homepage.util.image.preprocessing.ImageCenterCropping;
+import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import keeper.project.homepage.user.service.posting.CommentService;
 import keeper.project.homepage.user.service.posting.PostingService;
 import keeper.project.homepage.common.service.util.AuthService;
@@ -112,8 +113,9 @@ public class PostingController {
       PostingDto dto, HttpServletRequest httpServletRequest) {
 
     dto.setIpAddress(getUserIP(httpServletRequest));
-    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCropping(),
-        thumbnail, ThumbnailSize.LARGE, dto.getIpAddress());
+    ThumbnailEntity thumbnailEntity = thumbnailService.save(ThumbType.PostThumbnail,
+        new ImageCenterCropping(
+            ImageSize.LARGE), thumbnail, dto.getIpAddress());
     dto.setThumbnailId(thumbnailEntity.getId());
     PostingEntity postingEntity = postingService.save(dto);
     fileService.saveFiles(files, dto.getIpAddress(), postingEntity);
@@ -136,14 +138,14 @@ public class PostingController {
   public ListResult<FileEntity> getAttachList(@PathVariable("pid") Long postingId) {
 
     return responseService.getSuccessListResult(
-        fileService.findFileEntitiesByPostingId(postingService.getPostingById(postingId)));
+        fileService.findAllByPostingId(postingService.getPostingById(postingId)));
   }
 
   // 다운로드는 ResponseEntity를 사용하는것이 더 용이하여 그대로 두었습니다.
   @GetMapping(value = "/download/{fileId}")
   public ResponseEntity<Resource> downloadFile(@PathVariable("fileId") Long fileId)
       throws IOException {
-    FileEntity fileEntity = fileService.findFileEntityById(fileId);
+    FileEntity fileEntity = fileService.find(fileId);
     Path path = Paths.get(fileEntity.getFilePath());
     Resource resource = new InputStreamResource(Files.newInputStream(path));
     String encodedFileName = UriUtils.encode(fileEntity.getFileName(), StandardCharsets.UTF_8);
@@ -174,7 +176,7 @@ public class PostingController {
 
   @GetMapping(value = "/delete/{fileId}")
   public CommonResult deleteFile(@PathVariable("fileId") Long fileId) {
-    fileService.deleteFileById(fileId);
+    fileService.deleteFile(fileId);
 
     return responseService.getSuccessResult();
   }
@@ -186,8 +188,8 @@ public class PostingController {
   }
 
   private ThumbnailEntity saveThumbnail(MultipartFile thumbnail, PostingDto dto) {
-    ThumbnailEntity newThumbnail = thumbnailService.saveThumbnail(new ImageCenterCropping(),
-        thumbnail, ThumbnailSize.LARGE, dto.getIpAddress());
+    ThumbnailEntity newThumbnail = thumbnailService.save(ThumbType.PostThumbnail,
+        new ImageCenterCropping(ImageSize.LARGE), thumbnail, dto.getIpAddress());
     if (newThumbnail == null) {
       throw new CustomThumbnailEntityNotFoundException("썸네일 저장 중에 에러가 발생했습니다.");
     }
@@ -196,9 +198,8 @@ public class PostingController {
 
   private void deletePrevThumbnail(PostingDto dto) {
     if (dto.getThumbnailId() != null) {
-      ThumbnailEntity prevThumbnail = thumbnailService.findById(dto.getThumbnailId());
-      thumbnailService.deleteById(prevThumbnail.getId());
-      fileService.deleteOriginalThumbnail(prevThumbnail);
+      ThumbnailEntity prevThumbnail = thumbnailService.find(dto.getThumbnailId());
+      thumbnailService.delete(prevThumbnail.getId());
     }
   }
 
@@ -211,22 +212,21 @@ public class PostingController {
 
     ThumbnailEntity deleteThumbnail = null;
     if (postingEntity.getThumbnail() != null) {
-      deleteThumbnail = thumbnailService.findById(
+      deleteThumbnail = thumbnailService.find(
           postingEntity.getThumbnail().getId());
     }
     deletePrevFiles(postingEntity);
     postingService.delete(postingEntity);
 
     if (deleteThumbnail != null) {
-      thumbnailService.deleteById(deleteThumbnail.getId());
-      fileService.deleteOriginalThumbnail(deleteThumbnail);
+      thumbnailService.delete(deleteThumbnail.getId());
     }
 
     return responseService.getSuccessResult();
   }
 
   private void deletePrevFiles(PostingEntity postingEntity) {
-    List<FileEntity> fileEntities = fileService.findFileEntitiesByPostingId(
+    List<FileEntity> fileEntities = fileService.findAllByPostingId(
         postingEntity);
     fileService.deleteFiles(fileEntities);
   }

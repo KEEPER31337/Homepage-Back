@@ -1,4 +1,4 @@
-package keeper.project.homepage.util;
+package keeper.project.homepage.util.image.preprocessing;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -6,9 +6,22 @@ import java.io.File;
 import javax.imageio.ImageIO;
 import keeper.project.homepage.exception.file.CustomImageIOException;
 
-public class ImageCenterCropping implements ImageProcessing {
+public class ImageCenterCropping implements ImagePreprocessing {
 
-  public void imageProcessing(File imageFile, int width, int height, String fileFormat) {
+  private Integer width;
+  private Integer height;
+
+  public ImageCenterCropping(Integer width, Integer height) {
+    this.width = width;
+    this.height = height;
+  }
+
+  public ImageCenterCropping(ImageSize size) {
+    this.width = size.getWidth();
+    this.height = size.getHeight();
+  }
+
+  public void imageProcessing(File imageFile, String fileFormat) {
     BufferedImage bo_image;
     try {
       bo_image = ImageIO.read(imageFile);

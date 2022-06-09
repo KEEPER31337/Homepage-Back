@@ -9,7 +9,7 @@ import keeper.project.homepage.exception.member.CustomAccessVirtualMemberExcepti
 import keeper.project.homepage.user.dto.member.MultiMemberResponseDto;
 import keeper.project.homepage.user.dto.posting.PostingResponseDto;
 import keeper.project.homepage.user.dto.member.MemberFollowDto;
-import keeper.project.homepage.util.ImageCenterCropping;
+import keeper.project.homepage.util.image.preprocessing.ImageCenterCropping;
 import keeper.project.homepage.common.dto.sign.EmailAuthDto;
 import keeper.project.homepage.user.dto.member.MemberDto;
 import keeper.project.homepage.user.dto.member.OtherMemberInfoResult;
@@ -24,9 +24,10 @@ import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.member.EmailAuthRedisRepository;
 import keeper.project.homepage.repository.member.FriendRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
+import keeper.project.homepage.util.image.preprocessing.ImageSize;
 import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.util.service.ThumbnailService;
-import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;
+import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import keeper.project.homepage.common.service.mail.MailService;
 import keeper.project.homepage.common.service.sign.DuplicateCheckService;
 import keeper.project.homepage.common.service.util.AuthService;
@@ -276,16 +277,15 @@ public class MemberService {
 
     ThumbnailEntity prevThumbnail = memberEntity.getThumbnail();
 
-    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCropping(), image,
-        ThumbnailSize.LARGE, ipAddress);
+    ThumbnailEntity thumbnailEntity = thumbnailService.save(ThumbType.MemberThumbnail,
+        new ImageCenterCropping(ImageSize.LARGE), image, ipAddress);
 
     memberEntity.changeThumbnail(thumbnailEntity);
     MemberDto result = new MemberDto();
     result.initWithEntity(memberRepository.save(memberEntity));
 
     if (prevThumbnail != null) {
-      thumbnailService.deleteById(prevThumbnail.getId());
-      fileService.deleteOriginalThumbnail(prevThumbnail);
+      thumbnailService.delete(prevThumbnail.getId());
     }
     return result;
   }

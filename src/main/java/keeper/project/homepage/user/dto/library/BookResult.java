@@ -6,6 +6,7 @@ import keeper.project.homepage.common.controller.util.ImageController;
 import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.util.EnvironmentProperty;
 import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
+import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,10 +43,8 @@ public class BookResult {
     this.borrow = bookEntity.getBorrow();
     this.enable = bookEntity.getEnable();
     this.registerDate = bookEntity.getRegisterDate();
-    // TODO : book default image가 없어서 임시로 posting default image를 넣었음.
-    //   나중에 default image가 생기면 -> DefaultThumbnailInfo.ThumbBook의 id를 수정할 것.
     this.thumbnailPath = bookEntity.getThumbnailId() == null ?
-        EnvironmentProperty.getThumbnailPath(DefaultThumbnailInfo.ThumbBook.getThumbnailId())
+        EnvironmentProperty.getThumbnailPath(ThumbType.BookThumbnail.getDefaultThumbnailId())
         : EnvironmentProperty.getThumbnailPath(bookEntity.getThumbnailId().getId());
 
   }
