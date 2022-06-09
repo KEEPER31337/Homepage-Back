@@ -50,21 +50,6 @@ public class MemberService {
   private final MailService mailService;
   private final DuplicateCheckService duplicateCheckService;
 
-  //TODO
-  // Signup service와 중복되는 메소드, 리팩토링 필요
-  private String generateRandomAuthCode(int targetStringLength) {
-    int leftLimit = 48; // numeral '0'
-    int rightLimit = 122; // letter 'z'
-    Random random = new Random();
-
-    return random.ints(leftLimit, rightLimit + 1)
-        .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
-        .limit(targetStringLength)
-        .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-        .toString();
-    // 출처: https://www.baeldung.com/java-random-string
-  }
-
   private Integer getFolloweeNumber(MemberEntity member) {
     return member.getFollowee().size();
   }
@@ -150,26 +135,6 @@ public class MemberService {
     updateEntity.changeStudentId(memberDto.getStudentId());
     memberDto.initWithEntity(memberRepository.save(updateEntity));
     return memberDto;
-  }
-
-  public MemberDto updateThumbnails(Long memberId, MultipartFile image, String ipAddress) {
-    MemberEntity memberEntity = memberRepository.findById(memberId)
-        .orElseThrow(CustomMemberNotFoundException::new);
-
-    ThumbnailEntity prevThumbnail = memberEntity.getThumbnail();
-
-    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCropping(), image,
-        ThumbnailSize.LARGE, ipAddress);
-
-    memberEntity.changeThumbnail(thumbnailEntity);
-    MemberDto result = new MemberDto();
-    result.initWithEntity(memberRepository.save(memberEntity));
-
-    if (prevThumbnail != null) {
-      thumbnailService.deleteById(prevThumbnail.getId());
-      fileService.deleteOriginalThumbnail(prevThumbnail);
-    }
-    return result;
   }
 
   //TODO
