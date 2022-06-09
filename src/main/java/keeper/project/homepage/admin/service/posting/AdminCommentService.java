@@ -8,7 +8,7 @@ import keeper.project.homepage.repository.member.MemberHasCommentDislikeReposito
 import keeper.project.homepage.repository.member.MemberHasCommentLikeRepository;
 import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.repository.posting.PostingRepository;
-import keeper.project.homepage.user.service.member.MemberService;
+import keeper.project.homepage.user.service.member.MemberUtilService;
 import keeper.project.homepage.user.service.posting.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,10 +20,10 @@ public class AdminCommentService {
 
   public static final String DELETED_COMMENT_CONTENT_BY_ADMIN = CommentService.DELETED_COMMENT_CONTENT;
 
+  private final MemberUtilService memberUtilService;
   private final MemberHasCommentDislikeRepository memberHasCommentDislikeRepository;
   private final MemberHasCommentLikeRepository memberHasCommentLikeRepository;
   private final CommentRepository commentRepository;
-  private final MemberService memberService;
   private final PostingRepository postingRepository;
 
   private void deleteCommentLike(CommentEntity comment) {
@@ -45,7 +45,7 @@ public class AdminCommentService {
         .orElseThrow(CustomCommentNotFoundException::new);
 
     deleteCommentFK(comment);
-    MemberEntity virtual = memberService.findById(1L);
+    MemberEntity virtual = memberUtilService.getById(1L);
     comment.overwriteInfo(virtual, DELETED_COMMENT_CONTENT_BY_ADMIN);
     commentRepository.save(comment);
 

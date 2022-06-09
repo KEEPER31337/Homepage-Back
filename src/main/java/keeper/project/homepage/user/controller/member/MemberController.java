@@ -74,7 +74,7 @@ public class MemberController {
   }
 
   @Secured("ROLE_회원")
-  @GetMapping(value = "")
+  @GetMapping(value = "/profile")
   public SingleResult<MemberDto> getMember() {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
     Long id = authService.getMemberIdByJWT();

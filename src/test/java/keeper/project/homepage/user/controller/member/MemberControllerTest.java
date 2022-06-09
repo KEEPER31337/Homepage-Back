@@ -133,7 +133,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
   @Test
   @DisplayName("내 정보 조회하기 - 성공")
   public void getMemberSuccess() throws Exception {
-    mockMvc.perform(get("/v1/members")
+    mockMvc.perform(get("/v1/members/profile")
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -147,7 +147,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
   @Test
   @DisplayName("내 정보 조회하기 - 실패(권한 에러)")
   public void getMemberFailByAuth() throws Exception {
-    mockMvc.perform(get("/v1/members")
+    mockMvc.perform(get("/v1/members/profile")
             .header("Authorization", 1234))
         .andDo(print())
         .andExpect(status().is4xxClientError())

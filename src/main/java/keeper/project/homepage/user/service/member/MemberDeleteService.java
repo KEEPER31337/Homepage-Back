@@ -55,9 +55,9 @@ public class MemberDeleteService {
   private final PasswordEncoder passwordEncoder;
   private final CustomPasswordService customPasswordService;
 
+  private final MemberUtilService memberUtilService;
   private final ThumbnailService thumbnailService;
   private final FileService fileService;
-  private final MemberService memberService;
 
   public void deleteMember(MemberEntity member) {
     memberRepository.delete(member);
@@ -189,7 +189,7 @@ public class MemberDeleteService {
 
   @Transactional
   public void deleteAccount(Long memberId, String password) {
-    MemberEntity deleted = memberService.findById(memberId);
+    MemberEntity deleted = memberUtilService.getById(memberId);
     // 동아리 물품, 책 미납한 기록 있으면 불가능
     checkRemainBorrowInfo(deleted);
 
@@ -207,7 +207,7 @@ public class MemberDeleteService {
     deleteMemberType(deleted);
     deleteMemberJob(deleted);
 
-    MemberEntity virtualMember = memberService.findById(MemberService.VIRTUAL_MEMBER_ID);
+    MemberEntity virtualMember = memberUtilService.getById(MemberUtilService.VIRTUAL_MEMBER_ID);
     commentChangeToVirtualMember(virtualMember, deleted);
     postingChangeToVirtualMember(virtualMember, deleted);
 
