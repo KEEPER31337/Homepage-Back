@@ -124,7 +124,14 @@ public class CtfAdminService {
     if (challengeAdminDto.getType().getId().equals(CtfChallengeTypeEntity.DYNAMIC.getId())) {
       if (challengeAdminDto.getDynamicInfo() == null) {
         // TODO: DynamicInfo Exception
-        throw new RuntimeException("Dynamic 관련 필드가 존재하지 않습니다.");
+        throw new CustomCtfChallengeNotFoundException("Dynamic 관련 필드가 존재하지 않습니다.");
+      }
+
+      if (challengeAdminDto.getDynamicInfo().getMaxScore() < challengeAdminDto.getDynamicInfo()
+          .getMinScore()) {
+        // TODO: DynamicInfo Exception
+        throw new CustomCtfChallengeNotFoundException(
+            "DYNAMIC 문제는 max score보다 min score가 더 클 수 없습니다.");
       }
       CtfDynamicChallengeInfoEntity dynamicInfoEntity = createDynamicInfoEntity(
           challengeAdminDto.getDynamicInfo(), challenge);
