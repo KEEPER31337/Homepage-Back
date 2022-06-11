@@ -27,6 +27,7 @@ import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeTypeEntity;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
+import keeper.project.homepage.entity.ctf.CtfSubmitLogEntity;
 import keeper.project.homepage.entity.ctf.CtfTeamEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.user.dto.ctf.CtfChallengeCategoryDto;
@@ -150,12 +151,19 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
   @Test
   @DisplayName("회장 권한으로 CTF 목록 조회 - 성공")
   public void getCtfContestsSuccess() throws Exception {
+    CtfContestEntity contest1 = generateCtfContest(userEntity);
+    CtfContestEntity contest2 = generateCtfContest(userEntity, false);
+    CtfContestEntity contest3 = generateCtfContest(userEntity, false);
+
     mockMvc.perform(get("/v1/admin/ctf/contests")
             .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.list[0].ctfId").value(contest3.getId()))
+        .andExpect(jsonPath("$.list[1].ctfId").value(contest2.getId()))
+        .andExpect(jsonPath("$.list[2].ctfId").value(contest1.getId()))
         .andDo(document("get-contests",
             responseFields(
                 generateContestDtoResponseFields(ResponseType.LIST,
@@ -535,13 +543,13 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
     generateCtfFlag(team, challenge2, false);
     generateCtfFlag(team, challenge, false);
 
-    generateCtfSubmitLog(team, creator, challenge, "이 바보야");
-    generateCtfSubmitLog(team, adminEntity, challenge, "정현모 천재");
-    generateCtfSubmitLog(team, creator, challenge2, "KEEPER 최고");
-    generateCtfSubmitLog(team, adminEntity, challenge2, "너만 힘들어?");
+    CtfSubmitLogEntity log1 = generateCtfSubmitLog(team, creator, challenge, "이 바보야");
+    CtfSubmitLogEntity log2 = generateCtfSubmitLog(team, adminEntity, challenge, "정현모 천재");
+    CtfSubmitLogEntity log3 = generateCtfSubmitLog(team, creator, challenge2, "KEEPER 최고");
+    CtfSubmitLogEntity log4 = generateCtfSubmitLog(team, adminEntity, challenge2, "너만 힘들어?");
 
     // then
-    mockMvc.perform(get("/v1/admin/ctf/submit-log")
+    mockMvc.perform(get("/v1/admin/ctf/submit-log/{cid}", contestEntity.getId())
             .header("Authorization", probMakerToken)
             .param("page", "0")
             .param("size", "10"))
@@ -549,7 +557,14 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.page.content[0].id").value(log4.getId()))
+        .andExpect(jsonPath("$.page.content[1].id").value(log3.getId()))
+        .andExpect(jsonPath("$.page.content[2].id").value(log2.getId()))
+        .andExpect(jsonPath("$.page.content[3].id").value(log1.getId()))
         .andDo(document("get-submitLog-list",
+            pathParameters(
+                parameterWithName("cid").description("contest Id")
+            ),
             requestParameters(
                 generateCommonPagingParameters("한 페이지당 출력 수(default = 10)")
             ),

@@ -58,6 +58,7 @@ public class CtfAdminService {
 
   private final AuthService authService;
   private final FileService fileService;
+  private final CtfUtilService ctfUtilService;
   private final CtfContestRepository ctfContestRepository;
   private final CtfTeamRepository ctfTeamRepository;
   private final CtfChallengeCategoryRepository ctfChallengeCategoryRepository;
@@ -83,7 +84,7 @@ public class CtfAdminService {
     }
     CtfContestEntity contestEntity = getCtfContestEntity(ctfId);
     contestEntity.setIsJoinable(true);
-    return CtfContestAdminDto.toDto(contestEntity);
+    return CtfContestAdminDto.toDto(ctfContestRepository.save(contestEntity));
   }
 
   public CtfContestAdminDto closeContest(Long ctfId) {
@@ -92,11 +93,11 @@ public class CtfAdminService {
     }
     CtfContestEntity contestEntity = getCtfContestEntity(ctfId);
     contestEntity.setIsJoinable(false);
-    return CtfContestAdminDto.toDto(contestEntity);
+    return CtfContestAdminDto.toDto(ctfContestRepository.save(contestEntity));
   }
 
   public List<CtfContestAdminDto> getContests() {
-    List<CtfContestEntity> contestEntities = ctfContestRepository.findAllByIdIsNot(
+    List<CtfContestEntity> contestEntities = ctfContestRepository.findAllByIdIsNotOrderByIdDesc(
         VIRTUAL_CONTEST_ID);
     return contestEntities.stream().map(CtfContestAdminDto::toDto).collect(Collectors.toList());
   }
@@ -123,7 +124,14 @@ public class CtfAdminService {
     if (challengeAdminDto.getType().getId().equals(CtfChallengeTypeEntity.DYNAMIC.getId())) {
       if (challengeAdminDto.getDynamicInfo() == null) {
         // TODO: DynamicInfo Exception
-        throw new RuntimeException("Dynamic 관련 필드가 존재하지 않습니다.");
+        throw new CustomCtfChallengeNotFoundException("Dynamic 관련 필드가 존재하지 않습니다.");
+      }
+
+      if (challengeAdminDto.getDynamicInfo().getMaxScore() < challengeAdminDto.getDynamicInfo()
+          .getMinScore()) {
+        // TODO: DynamicInfo Exception
+        throw new CustomCtfChallengeNotFoundException(
+            "DYNAMIC 문제는 max score보다 min score가 더 클 수 없습니다.");
       }
       CtfDynamicChallengeInfoEntity dynamicInfoEntity = createDynamicInfoEntity(
           challengeAdminDto.getDynamicInfo(), challenge);
@@ -271,8 +279,9 @@ public class CtfAdminService {
         .stream().map(CtfChallengeAdminDto::toDto).toList();
   }
 
-  public Page<CtfSubmitLogDto> getSubmitLogList(Pageable pageable) {
-    return ctfSubmitLogRepository.findAllByIdIsNot(CtfUtilService.VIRTUAL_SUBMIT_LOG_ID, pageable)
-        .map(CtfSubmitLogDto::toDto);
+  public Page<CtfSubmitLogDto> getSubmitLogList(Pageable pageable, Long ctfId) {
+    ctfUtilService.checkVirtualContest(ctfId);
+    return ctfSubmitLogRepository.findAllByIdIsNotAndContestId(CtfUtilService.VIRTUAL_SUBMIT_LOG_ID,
+        pageable, ctfId).map(CtfSubmitLogDto::toDto);
   }
 }

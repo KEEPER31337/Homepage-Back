@@ -36,6 +36,7 @@ class CtfSubmitLogRepositoryTest extends CtfTestHelper {
         .submitterRealname(member.getRealName())
         .challengeName(ctfChallenge.getName())
         .contestName(contest.getName())
+        .contest(contest)
         .build();
     ctfSubmitLogRepository.save(submitLog);
     CtfSubmitLogEntity findSubmitLog = ctfSubmitLogRepository.getById(submitLog.getId());

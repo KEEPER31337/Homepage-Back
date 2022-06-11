@@ -6,7 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 import keeper.project.homepage.common.dto.member.CommonMemberDto;
+import keeper.project.homepage.entity.ctf.CtfContestEntity;
 import keeper.project.homepage.entity.ctf.CtfSubmitLogEntity;
 import keeper.project.homepage.user.dto.ctf.CtfTeamDto;
 import lombok.AllArgsConstructor;
@@ -50,6 +53,9 @@ public class CtfSubmitLogDto {
   @JsonProperty(access = Access.READ_ONLY)
   String contestName;
 
+  @JsonProperty(access = Access.READ_ONLY)
+  Long contestId;
+
   public static CtfSubmitLogDto toDto(CtfSubmitLogEntity submitLog) {
 
     return CtfSubmitLogDto.builder()
@@ -62,6 +68,7 @@ public class CtfSubmitLogDto {
         .submitterRealname(submitLog.getSubmitterRealname())
         .challengeName(submitLog.getChallengeName())
         .contestName(submitLog.getContestName())
+        .contestId(submitLog.getContest().getId())
         .build();
   }
 }

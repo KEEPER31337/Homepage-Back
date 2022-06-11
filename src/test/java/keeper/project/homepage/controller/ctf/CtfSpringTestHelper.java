@@ -153,6 +153,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         .contestName(ctfTeam.getCtfContestEntity().getName())
         .flagSubmitted(submitFlag)
         .isCorrect(false)
+        .contest(ctfChallengeEntity.getCtfContestEntity())
         .build();
     ctfSubmitLogRepository.save(entity);
     return entity;
@@ -357,11 +358,12 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".submitTime").description("flag 제출 시간"),
         fieldWithPath(prefix + ".flagSubmitted").description("제출한 flag"),
         fieldWithPath(prefix + ".isCorrect").description("제출 후 맞췄는 지 여부"),
-        fieldWithPath(prefix + ".teamName").description(""),
-        fieldWithPath(prefix + ".submitterLoginId").description(""),
-        fieldWithPath(prefix + ".submitterRealname").description(""),
-        fieldWithPath(prefix + ".challengeName").description(""),
-        fieldWithPath(prefix + ".contestName").description("")
+        fieldWithPath(prefix + ".teamName").description("제출 팀 이름"),
+        fieldWithPath(prefix + ".submitterLoginId").description("제출자의 login Id"),
+        fieldWithPath(prefix + ".submitterRealname").description("제출자의 실제 이름"),
+        fieldWithPath(prefix + ".challengeName").description("해당 문제의 이름"),
+        fieldWithPath(prefix + ".contestName").description("해당 contest의 이름"),
+        fieldWithPath(prefix + ".contestId").description("해당 contest의 Id")
     ));
     if (type.equals(ResponseType.PAGE)) {
       commonFields.addAll(Arrays.asList(
