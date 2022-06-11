@@ -16,6 +16,8 @@ import keeper.project.homepage.util.dto.FileDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -40,7 +42,8 @@ public class CtfAdminController {
 
   @Secured("ROLE_회장")
   @PostMapping("/contest")
-  public SingleResult<CtfContestAdminDto> createContest(@RequestBody CtfContestAdminDto contestDto) {
+  public SingleResult<CtfContestAdminDto> createContest(
+      @RequestBody CtfContestAdminDto contestDto) {
     return responseService.getSuccessSingleResult(ctfAdminService.createContest(contestDto));
   }
 
@@ -115,7 +118,7 @@ public class CtfAdminController {
   @Secured({"ROLE_회장", "ROLE_출제자"})
   @GetMapping("/submit-log")
   public PageResult<CtfSubmitLogDto> getSubmitLogList(
-      @PageableDefault(page = 0, size = 10) Pageable pageable) {
+      @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
     return responseService.getSuccessPageResult(ctfAdminService.getSubmitLogList(pageable));
   }
 }
