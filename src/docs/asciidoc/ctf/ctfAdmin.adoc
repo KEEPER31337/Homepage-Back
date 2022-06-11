@@ -298,6 +298,10 @@ NOTE: 회장, 출제자만 접근 가능합니다.
 
 include::{snippets}/get-submitLog-list/http-request.adoc[]
 
+==== Request Path
+
+include::{snippets}/get-submitLog-list/path-parameters.adoc[]
+
 ==== Request Params
 
 include::{snippets}/get-submitLog-list/request-parameters.adoc[]

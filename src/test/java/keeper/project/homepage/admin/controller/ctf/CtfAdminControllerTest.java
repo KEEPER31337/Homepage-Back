@@ -542,7 +542,7 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
     CtfSubmitLogEntity log4 = generateCtfSubmitLog(team, adminEntity, challenge2, "너만 힘들어?");
 
     // then
-    mockMvc.perform(get("/v1/admin/ctf/submit-log")
+    mockMvc.perform(get("/v1/admin/ctf/submit-log/{cid}", contestEntity.getId())
             .header("Authorization", probMakerToken)
             .param("page", "0")
             .param("size", "10"))
@@ -555,6 +555,9 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
         .andExpect(jsonPath("$.page.content[2].id").value(log2.getId()))
         .andExpect(jsonPath("$.page.content[3].id").value(log1.getId()))
         .andDo(document("get-submitLog-list",
+            pathParameters(
+                parameterWithName("cid").description("contest Id")
+            ),
             requestParameters(
                 generateCommonPagingParameters("한 페이지당 출력 수(default = 10)")
             ),

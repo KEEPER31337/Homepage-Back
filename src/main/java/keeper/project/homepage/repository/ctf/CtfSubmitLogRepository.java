@@ -11,5 +11,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface CtfSubmitLogRepository extends
     JpaRepository<CtfSubmitLogEntity, Long> {
 
-  Page<CtfSubmitLogEntity> findAllByIdIsNot(Long id, Pageable pageable);
+  Page<CtfSubmitLogEntity> findAllByIdIsNotAndContestId(Long id, Pageable pageable, Long contestId);
 }

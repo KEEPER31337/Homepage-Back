@@ -116,9 +116,11 @@ public class CtfAdminController {
   }
 
   @Secured({"ROLE_회장", "ROLE_출제자"})
-  @GetMapping("/submit-log")
+  @GetMapping("/submit-log/{cid}")
   public PageResult<CtfSubmitLogDto> getSubmitLogList(
-      @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-    return responseService.getSuccessPageResult(ctfAdminService.getSubmitLogList(pageable));
+      @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+      @PathVariable("cid") Long contestId) {
+    return responseService.getSuccessPageResult(
+        ctfAdminService.getSubmitLogList(pageable, contestId));
   }
 }

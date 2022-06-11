@@ -58,6 +58,7 @@ public class CtfAdminService {
 
   private final AuthService authService;
   private final FileService fileService;
+  private final CtfUtilService ctfUtilService;
   private final CtfContestRepository ctfContestRepository;
   private final CtfTeamRepository ctfTeamRepository;
   private final CtfChallengeCategoryRepository ctfChallengeCategoryRepository;
@@ -271,8 +272,9 @@ public class CtfAdminService {
         .stream().map(CtfChallengeAdminDto::toDto).toList();
   }
 
-  public Page<CtfSubmitLogDto> getSubmitLogList(Pageable pageable) {
-    return ctfSubmitLogRepository.findAllByIdIsNot(CtfUtilService.VIRTUAL_SUBMIT_LOG_ID, pageable)
-        .map(CtfSubmitLogDto::toDto);
+  public Page<CtfSubmitLogDto> getSubmitLogList(Pageable pageable, Long ctfId) {
+    ctfUtilService.checkVirtualContest(ctfId);
+    return ctfSubmitLogRepository.findAllByIdIsNotAndContestId(CtfUtilService.VIRTUAL_SUBMIT_LOG_ID,
+        pageable, ctfId).map(CtfSubmitLogDto::toDto);
   }
 }
