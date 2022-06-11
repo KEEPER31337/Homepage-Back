@@ -151,6 +151,7 @@ public class CtfChallengeService {
         .submitterRealname(submitter.getRealName())
         .challengeName(submitChallenge.getName())
         .contestName(submitChallenge.getCtfContestEntity().getName())
+        .contest(submitChallenge.getCtfContestEntity())
         .build());
   }
 }

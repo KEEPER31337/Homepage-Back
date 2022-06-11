@@ -52,4 +52,8 @@ public class CtfSubmitLogEntity {
 
   @Column(nullable = false, length = 45)
   String contestName;
+
+  @OneToOne
+  @JoinColumn(name = "ctf_contest_id")
+  CtfContestEntity contest;
 }
