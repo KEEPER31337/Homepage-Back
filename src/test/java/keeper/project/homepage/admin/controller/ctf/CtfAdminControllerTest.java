@@ -151,12 +151,19 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
   @Test
   @DisplayName("회장 권한으로 CTF 목록 조회 - 성공")
   public void getCtfContestsSuccess() throws Exception {
+    CtfContestEntity contest1 = generateCtfContest(userEntity);
+    CtfContestEntity contest2 = generateCtfContest(userEntity, false);
+    CtfContestEntity contest3 = generateCtfContest(userEntity, false);
+
     mockMvc.perform(get("/v1/admin/ctf/contests")
             .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.list[0].ctfId").value(contest3.getId()))
+        .andExpect(jsonPath("$.list[1].ctfId").value(contest2.getId()))
+        .andExpect(jsonPath("$.list[2].ctfId").value(contest1.getId()))
         .andDo(document("get-contests",
             responseFields(
                 generateContestDtoResponseFields(ResponseType.LIST,

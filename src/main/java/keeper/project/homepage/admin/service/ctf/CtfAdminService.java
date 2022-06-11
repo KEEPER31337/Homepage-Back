@@ -97,7 +97,7 @@ public class CtfAdminService {
   }
 
   public List<CtfContestAdminDto> getContests() {
-    List<CtfContestEntity> contestEntities = ctfContestRepository.findAllByIdIsNot(
+    List<CtfContestEntity> contestEntities = ctfContestRepository.findAllByIdIsNotOrderByIdDesc(
         VIRTUAL_CONTEST_ID);
     return contestEntities.stream().map(CtfContestAdminDto::toDto).collect(Collectors.toList());
   }

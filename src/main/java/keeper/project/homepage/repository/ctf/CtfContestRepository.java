@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface CtfContestRepository extends
     JpaRepository<CtfContestEntity, Long> {
 
-  List<CtfContestEntity> findAllByIdIsNot(Long id);
+  List<CtfContestEntity> findAllByIdIsNotOrderByIdDesc(Long id);
 
   List<CtfContestEntity> findAllByIsJoinableTrue();
 }
