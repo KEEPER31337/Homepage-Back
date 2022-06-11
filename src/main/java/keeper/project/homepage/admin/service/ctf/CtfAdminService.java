@@ -84,7 +84,7 @@ public class CtfAdminService {
     }
     CtfContestEntity contestEntity = getCtfContestEntity(ctfId);
     contestEntity.setIsJoinable(true);
-    return CtfContestAdminDto.toDto(contestEntity);
+    return CtfContestAdminDto.toDto(ctfContestRepository.save(contestEntity));
   }
 
   public CtfContestAdminDto closeContest(Long ctfId) {
@@ -93,7 +93,7 @@ public class CtfAdminService {
     }
     CtfContestEntity contestEntity = getCtfContestEntity(ctfId);
     contestEntity.setIsJoinable(false);
-    return CtfContestAdminDto.toDto(contestEntity);
+    return CtfContestAdminDto.toDto(ctfContestRepository.save(contestEntity));
   }
 
   public List<CtfContestAdminDto> getContests() {
