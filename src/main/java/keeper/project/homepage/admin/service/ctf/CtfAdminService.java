@@ -284,4 +284,15 @@ public class CtfAdminService {
     return ctfSubmitLogRepository.findAllByIdIsNotAndContestId(CtfUtilService.VIRTUAL_SUBMIT_LOG_ID,
         pageable, ctfId).map(CtfSubmitLogDto::toDto);
   }
+
+  public CtfProbMakerDto disqualifyProbMaker(CtfProbMakerDto probMakerDto) {
+    MemberEntity probMaker = memberRepository.findById(probMakerDto.getMemberId())
+        .orElseThrow(CustomMemberNotFoundException::new);
+    MemberJobEntity probMakerJob = memberJobRepository.findByName(CtfUtilService.PROBLEM_MAKER_JOB)
+        .orElseThrow(() -> new RuntimeException("'ROLE_출제자'가 존재하지 않습니다. DB를 확인해주세요."));
+
+    memberHasMemberJobRepository.deleteAllByMemberEntityAndMemberJobEntity(probMaker, probMakerJob);
+
+    return CtfProbMakerDto.toDto(probMaker);
+  }
 }

@@ -30,16 +30,21 @@ import keeper.project.homepage.entity.ctf.CtfContestEntity;
 import keeper.project.homepage.entity.ctf.CtfSubmitLogEntity;
 import keeper.project.homepage.entity.ctf.CtfTeamEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
+import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.user.dto.ctf.CtfChallengeCategoryDto;
 import keeper.project.homepage.user.dto.ctf.CtfChallengeTypeDto;
 import keeper.project.homepage.user.dto.ctf.CtfDynamicChallengeInfoDto;
+import keeper.project.homepage.util.service.CtfUtilService;
 import lombok.extern.log4j.Log4j2;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
@@ -197,6 +202,50 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
                 generateProbMakerDtoResponseFields(ResponseType.SINGLE,
                     "성공: true +\n실패: false", "성공 시 0을 반환", "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
             )));
+  }
+
+  @Test
+  @DisplayName("회장 권한으로 문제 출제자 삭제 - 성공")
+  public void disqualifyProbMakerSuccess() throws Exception {
+    // given
+    MemberEntity probMaker = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원,
+        MemberRankName.일반회원);
+    MemberJobEntity probMakerRole = memberJobRepository.findByName(
+        CtfUtilService.PROBLEM_MAKER_JOB).get();
+    memberHasMemberJobRepository.save(MemberHasMemberJobEntity.builder()
+        .memberEntity(probMaker)
+        .memberJobEntity(probMakerRole)
+        .build());
+
+    // when
+    CtfProbMakerDto probMakerDto = CtfProbMakerDto.builder()
+        .memberId(probMaker.getId())
+        .build();
+
+    ResultActions result = mockMvc.perform(delete("/v1/admin/ctf/prob/maker")
+            .header("Authorization", adminToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonString(probMakerDto)))
+        .andDo(print());
+
+    // then
+    result.andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andDo(document("disqualify-probMaker",
+            requestFields(
+                fieldWithPath("memberId").description("출제자를 삭제할 member의 Id")
+            ),
+            responseFields(
+                generateCommonResponseFields("성공: true +\n실패: false", "성공 시 0을 반환",
+                    "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
+            )));
+    Assertions.assertThat(isDisqualifyProbMakerRole(probMaker, probMakerRole)).isTrue();
+  }
+
+  private boolean isDisqualifyProbMakerRole(MemberEntity probMaker, MemberJobEntity probMakerRole) {
+    return memberHasMemberJobRepository.findAllByMemberEntity_IdAndAndMemberJobEntity_Id(
+        probMaker.getId(), probMakerRole.getId()).size() == 0;
   }
 
   @Test

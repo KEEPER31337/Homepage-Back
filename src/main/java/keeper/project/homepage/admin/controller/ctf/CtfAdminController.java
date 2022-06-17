@@ -8,6 +8,7 @@ import keeper.project.homepage.admin.dto.ctf.CtfContestAdminDto;
 import keeper.project.homepage.admin.dto.ctf.CtfProbMakerDto;
 import keeper.project.homepage.admin.dto.ctf.CtfSubmitLogDto;
 import keeper.project.homepage.admin.service.ctf.CtfAdminService;
+import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.common.dto.result.PageResult;
 import keeper.project.homepage.common.dto.result.SingleResult;
@@ -71,6 +72,13 @@ public class CtfAdminController {
   public SingleResult<CtfProbMakerDto> designateProbMaker(
       @RequestBody CtfProbMakerDto probMakerDto) {
     return responseService.getSuccessSingleResult(ctfAdminService.designateProbMaker(probMakerDto));
+  }
+
+  @Secured("ROLE_회장")
+  @DeleteMapping("/prob/maker")
+  public CommonResult disqualifyProbMaker(@RequestBody CtfProbMakerDto probMakerDto) {
+    ctfAdminService.disqualifyProbMaker(probMakerDto);
+    return responseService.getSuccessResult();
   }
 
   @Secured({"ROLE_회장", "ROLE_출제자"})
