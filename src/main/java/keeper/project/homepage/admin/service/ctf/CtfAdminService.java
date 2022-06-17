@@ -96,10 +96,10 @@ public class CtfAdminService {
     return CtfContestAdminDto.toDto(ctfContestRepository.save(contestEntity));
   }
 
-  public List<CtfContestAdminDto> getContests() {
-    List<CtfContestEntity> contestEntities = ctfContestRepository.findAllByIdIsNotOrderByIdDesc(
-        VIRTUAL_CONTEST_ID);
-    return contestEntities.stream().map(CtfContestAdminDto::toDto).collect(Collectors.toList());
+  public Page<CtfContestAdminDto> getContests(Pageable pageable) {
+    Page<CtfContestEntity> contestEntities = ctfContestRepository.findAllByIdIsNotOrderByIdDesc(
+        VIRTUAL_CONTEST_ID, pageable);
+    return contestEntities.map(CtfContestAdminDto::toDto);
   }
 
   @Transactional
@@ -268,20 +268,31 @@ public class CtfAdminService {
     return CtfChallengeAdminDto.toDto(challenge);
   }
 
-  public List<CtfChallengeAdminDto> getProblemList(Long ctfId) {
+  public Page<CtfChallengeAdminDto> getProblemList(Pageable pageable, Long ctfId) {
     if (ctfId.equals(VIRTUAL_CONTEST_ID)) {
       throw new CustomContestNotFoundException();
     }
     CtfContestEntity contest = ctfContestRepository.findById(ctfId)
         .orElseThrow(CustomContestNotFoundException::new);
     return challengeRepository.findAllByIdIsNotAndCtfContestEntity(
-            CtfUtilService.VIRTUAL_PROBLEM_ID, contest)
-        .stream().map(CtfChallengeAdminDto::toDto).toList();
+            CtfUtilService.VIRTUAL_PROBLEM_ID, contest, pageable)
+        .map(CtfChallengeAdminDto::toDto);
   }
 
   public Page<CtfSubmitLogDto> getSubmitLogList(Pageable pageable, Long ctfId) {
     ctfUtilService.checkVirtualContest(ctfId);
     return ctfSubmitLogRepository.findAllByIdIsNotAndContestId(CtfUtilService.VIRTUAL_SUBMIT_LOG_ID,
         pageable, ctfId).map(CtfSubmitLogDto::toDto);
+  }
+
+  public CtfProbMakerDto disqualifyProbMaker(CtfProbMakerDto probMakerDto) {
+    MemberEntity probMaker = memberRepository.findById(probMakerDto.getMemberId())
+        .orElseThrow(CustomMemberNotFoundException::new);
+    MemberJobEntity probMakerJob = memberJobRepository.findByName(CtfUtilService.PROBLEM_MAKER_JOB)
+        .orElseThrow(() -> new RuntimeException("'ROLE_출제자'가 존재하지 않습니다. DB를 확인해주세요."));
+
+    memberHasMemberJobRepository.deleteAllByMemberEntityAndMemberJobEntity(probMaker, probMakerJob);
+
+    return CtfProbMakerDto.toDto(probMaker);
   }
 }

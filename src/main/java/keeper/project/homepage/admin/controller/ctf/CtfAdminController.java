@@ -8,6 +8,7 @@ import keeper.project.homepage.admin.dto.ctf.CtfContestAdminDto;
 import keeper.project.homepage.admin.dto.ctf.CtfProbMakerDto;
 import keeper.project.homepage.admin.dto.ctf.CtfSubmitLogDto;
 import keeper.project.homepage.admin.service.ctf.CtfAdminService;
+import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.common.dto.result.PageResult;
 import keeper.project.homepage.common.dto.result.SingleResult;
@@ -49,9 +50,10 @@ public class CtfAdminController {
 
   @Secured("ROLE_회장")
   @GetMapping("/contests")
-  public ListResult<CtfContestAdminDto> getContests() {
-    List<CtfContestAdminDto> contestList = ctfAdminService.getContests();
-    return responseService.getSuccessListResult(contestList);
+  public PageResult<CtfContestAdminDto> getContests(
+      @PageableDefault Pageable pageable
+  ) {
+    return responseService.getSuccessPageResult(ctfAdminService.getContests(pageable));
   }
 
   @Secured("ROLE_회장")
@@ -71,6 +73,13 @@ public class CtfAdminController {
   public SingleResult<CtfProbMakerDto> designateProbMaker(
       @RequestBody CtfProbMakerDto probMakerDto) {
     return responseService.getSuccessSingleResult(ctfAdminService.designateProbMaker(probMakerDto));
+  }
+
+  @Secured("ROLE_회장")
+  @DeleteMapping("/prob/maker")
+  public CommonResult disqualifyProbMaker(@RequestBody CtfProbMakerDto probMakerDto) {
+    ctfAdminService.disqualifyProbMaker(probMakerDto);
+    return responseService.getSuccessResult();
   }
 
   @Secured({"ROLE_회장", "ROLE_출제자"})
@@ -111,8 +120,10 @@ public class CtfAdminController {
 
   @Secured({"ROLE_회장", "ROLE_출제자"})
   @GetMapping("/prob")
-  public ListResult<CtfChallengeAdminDto> getProblemList(@RequestParam Long ctfId) {
-    return responseService.getSuccessListResult(ctfAdminService.getProblemList(ctfId));
+  public PageResult<CtfChallengeAdminDto> getProblemList(
+      @PageableDefault Pageable pageable,
+      @RequestParam Long ctfId) {
+    return responseService.getSuccessPageResult(ctfAdminService.getProblemList(pageable, ctfId));
   }
 
   @Secured({"ROLE_회장", "ROLE_출제자"})

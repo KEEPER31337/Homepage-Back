@@ -105,6 +105,10 @@ NOTE: 회장만 접근 가능합니다.
 
 include::{snippets}/get-contests/http-request.adoc[]
 
+==== Request Params
+
+include::{snippets}/get-contests/request-parameters.adoc[]
+
 === 응답
 
 ==== Response
@@ -139,6 +143,31 @@ include::{snippets}/designate-probMaker/http-response.adoc[]
 ==== Response Fields
 
 include::{snippets}/designate-probMaker/response-fields.adoc[]
+
+== *CTF 출제자 자격 박탈*
+
+NOTE: 회장만 접근 가능합니다.
+(출제자도 불가능)
+
+=== 요청
+
+==== Request
+
+include::{snippets}/disqualify-probMaker/http-request.adoc[]
+
+==== Request
+
+include::{snippets}/disqualify-probMaker/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/disqualify-probMaker/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/disqualify-probMaker/response-fields.adoc[]
 
 == *CTF 문제 생성*
 

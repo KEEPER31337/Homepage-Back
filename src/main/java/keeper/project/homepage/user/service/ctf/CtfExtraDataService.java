@@ -45,6 +45,7 @@ public class CtfExtraDataService {
   }
 
   public List<CtfContestDto> getContestList() {
-    return contestRepository.findAllByIsJoinableTrue().stream().map(CtfContestDto::toDto).toList();
+    return contestRepository.findAllByIsJoinableTrueOrderByIdDesc().stream()
+        .map(CtfContestDto::toDto).toList();
   }
 }
