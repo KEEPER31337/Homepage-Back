@@ -235,6 +235,19 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".joinable").description("CTF에 현재 참석 가능 한지 아닌지"),
         subsectionWithPath(prefix + ".creator").description("생성자의 정보가 담겨 나갑니다.")
     ));
+    if (type.equals(ResponseType.PAGE)) {
+      commonFields.addAll(Arrays.asList(
+          fieldWithPath("page.empty").description("페이지가 비었는 지 여부"),
+          fieldWithPath("page.first").description("첫 페이지 인지"),
+          fieldWithPath("page.last").description("마지막 페이지 인지"),
+          fieldWithPath("page.number").description("요소를 가져 온 페이지 번호 (0부터 시작)"),
+          fieldWithPath("page.numberOfElements").description("요소 개수"),
+          subsectionWithPath("page.pageable").description("해당 페이지에 대한 DB 정보"),
+          fieldWithPath("page.size").description("요청한 페이지 크기"),
+          subsectionWithPath("page.sort").description("정렬에 대한 정보"),
+          fieldWithPath("page.totalElements").description("총 요소 개수"),
+          fieldWithPath("page.totalPages").description("총 페이지")));
+    }
     if (addDescriptors.length > 0) {
       commonFields.addAll(Arrays.asList(addDescriptors));
     }

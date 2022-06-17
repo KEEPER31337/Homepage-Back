@@ -161,17 +161,22 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
     CtfContestEntity contest3 = generateCtfContest(userEntity, false);
 
     mockMvc.perform(get("/v1/admin/ctf/contests")
+            .param("page", "0")
+            .param("size", "10")
             .header("Authorization", adminToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.code").value(0))
-        .andExpect(jsonPath("$.list[0].ctfId").value(contest3.getId()))
-        .andExpect(jsonPath("$.list[1].ctfId").value(contest2.getId()))
-        .andExpect(jsonPath("$.list[2].ctfId").value(contest1.getId()))
+        .andExpect(jsonPath("$.page.content[0].ctfId").value(contest3.getId()))
+        .andExpect(jsonPath("$.page.content[1].ctfId").value(contest2.getId()))
+        .andExpect(jsonPath("$.page.content[2].ctfId").value(contest1.getId()))
         .andDo(document("get-contests",
+            requestParameters(
+                generateCommonPagingParameters("한 페이지당 출력 수(default = 10")
+            ),
             responseFields(
-                generateContestDtoResponseFields(ResponseType.LIST,
+                generateContestDtoResponseFields(ResponseType.PAGE,
                     "성공: true +\n실패: false", "성공 시 0을 반환", "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
             )));
   }

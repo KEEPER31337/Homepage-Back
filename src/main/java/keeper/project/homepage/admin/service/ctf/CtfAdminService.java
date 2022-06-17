@@ -96,10 +96,10 @@ public class CtfAdminService {
     return CtfContestAdminDto.toDto(ctfContestRepository.save(contestEntity));
   }
 
-  public List<CtfContestAdminDto> getContests() {
-    List<CtfContestEntity> contestEntities = ctfContestRepository.findAllByIdIsNotOrderByIdDesc(
-        VIRTUAL_CONTEST_ID);
-    return contestEntities.stream().map(CtfContestAdminDto::toDto).collect(Collectors.toList());
+  public Page<CtfContestAdminDto> getContests(Pageable pageable) {
+    Page<CtfContestEntity> contestEntities = ctfContestRepository.findAllByIdIsNotOrderByIdDesc(
+        VIRTUAL_CONTEST_ID, pageable);
+    return contestEntities.map(CtfContestAdminDto::toDto);
   }
 
   @Transactional

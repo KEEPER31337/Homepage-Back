@@ -105,6 +105,10 @@ NOTE: 회장만 접근 가능합니다.
 
 include::{snippets}/get-contests/http-request.adoc[]
 
+==== Request Params
+
+include::{snippets}/get-contests/request-parameters.adoc[]
+
 === 응답
 
 ==== Response

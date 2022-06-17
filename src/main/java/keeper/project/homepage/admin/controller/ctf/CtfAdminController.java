@@ -50,9 +50,10 @@ public class CtfAdminController {
 
   @Secured("ROLE_회장")
   @GetMapping("/contests")
-  public ListResult<CtfContestAdminDto> getContests() {
-    List<CtfContestAdminDto> contestList = ctfAdminService.getContests();
-    return responseService.getSuccessListResult(contestList);
+  public PageResult<CtfContestAdminDto> getContests(
+      @PageableDefault Pageable pageable
+  ) {
+    return responseService.getSuccessPageResult(ctfAdminService.getContests(pageable));
   }
 
   @Secured("ROLE_회장")
