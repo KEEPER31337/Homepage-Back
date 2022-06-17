@@ -43,7 +43,6 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
   @JsonSerialize(using = LocalDateTimeSerializer.class)
   private LocalDateTime registerTime;
 
-  @Nullable
   private CtfDynamicChallengeInfoDto dynamicInfo;
 
   public CtfChallengeEntity toEntity(CtfContestEntity contest, CtfChallengeTypeEntity type,

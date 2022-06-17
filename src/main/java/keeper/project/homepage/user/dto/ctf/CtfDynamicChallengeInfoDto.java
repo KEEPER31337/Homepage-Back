@@ -17,11 +17,10 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonInclude(Include.NON_NULL)
 public class CtfDynamicChallengeInfoDto {
 
-  @NonNull
   private Long maxScore;
-  @NonNull
   private Long minScore;
 
   public static CtfDynamicChallengeInfoDto toDto(CtfDynamicChallengeInfoEntity dynamicInfo) {
