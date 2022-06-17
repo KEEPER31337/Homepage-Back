@@ -119,8 +119,10 @@ public class CtfAdminController {
 
   @Secured({"ROLE_회장", "ROLE_출제자"})
   @GetMapping("/prob")
-  public ListResult<CtfChallengeAdminDto> getProblemList(@RequestParam Long ctfId) {
-    return responseService.getSuccessListResult(ctfAdminService.getProblemList(ctfId));
+  public PageResult<CtfChallengeAdminDto> getProblemList(
+      @PageableDefault Pageable pageable,
+      @RequestParam Long ctfId) {
+    return responseService.getSuccessPageResult(ctfAdminService.getProblemList(pageable, ctfId));
   }
 
   @Secured({"ROLE_회장", "ROLE_출제자"})

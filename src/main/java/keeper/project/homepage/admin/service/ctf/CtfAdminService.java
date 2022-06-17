@@ -268,15 +268,15 @@ public class CtfAdminService {
     return CtfChallengeAdminDto.toDto(challenge);
   }
 
-  public List<CtfChallengeAdminDto> getProblemList(Long ctfId) {
+  public Page<CtfChallengeAdminDto> getProblemList(Pageable pageable, Long ctfId) {
     if (ctfId.equals(VIRTUAL_CONTEST_ID)) {
       throw new CustomContestNotFoundException();
     }
     CtfContestEntity contest = ctfContestRepository.findById(ctfId)
         .orElseThrow(CustomContestNotFoundException::new);
     return challengeRepository.findAllByIdIsNotAndCtfContestEntity(
-            CtfUtilService.VIRTUAL_PROBLEM_ID, contest)
-        .stream().map(CtfChallengeAdminDto::toDto).toList();
+            CtfUtilService.VIRTUAL_PROBLEM_ID, contest, pageable)
+        .map(CtfChallengeAdminDto::toDto);
   }
 
   public Page<CtfSubmitLogDto> getSubmitLogList(Pageable pageable, Long ctfId) {

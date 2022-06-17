@@ -551,6 +551,8 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
     mockMvc.perform(multipart("/v1/admin/ctf/prob/file")
         .file(file)
         .param("challengeId", String.valueOf(challenge.getId()))
+        .param("page", "0")
+        .param("size", "10")
         .header("Authorization", adminToken)
         .contentType(MediaType.MULTIPART_FORM_DATA));
 
@@ -564,10 +566,11 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
         .andExpect(jsonPath("$.code").value(0))
         .andDo(document("get-problem-list",
             requestParameters(
-                parameterWithName("ctfId").description("문제 목록을 볼 CTF id")
+                generateCommonPagingParameters("한 페이지당 출력 수(default = 10)",
+                    parameterWithName("ctfId").description("문제 목록을 볼 CTF id"))
             ),
             responseFields(
-                generateChallengeAdminDtoResponseFields(ResponseType.LIST,
+                generateChallengeAdminDtoResponseFields(ResponseType.PAGE,
                     "성공: true +\n실패: false", "성공 시 0을 반환", "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
             )));
   }

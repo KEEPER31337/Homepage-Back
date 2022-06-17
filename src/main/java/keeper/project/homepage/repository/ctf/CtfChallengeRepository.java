@@ -5,6 +5,8 @@ import java.util.Optional;
 import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CtfChallengeRepository extends
@@ -14,6 +16,9 @@ public interface CtfChallengeRepository extends
 
   List<CtfChallengeEntity> findAllByIdIsNotAndCtfContestEntity(Long id,
       CtfContestEntity ctfContestEntity);
+
+  Page<CtfChallengeEntity> findAllByIdIsNotAndCtfContestEntity(Long id,
+      CtfContestEntity ctfContestEntity, Pageable pageable);
 
   List<CtfChallengeEntity> findAllByIdIsNotAndCtfContestEntityAndIsSolvable(Long id,
       CtfContestEntity ctfContestEntity, Boolean isSolvable);

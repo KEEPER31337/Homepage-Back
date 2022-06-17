@@ -297,12 +297,26 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id"),
         fieldWithPath(prefix + ".registerTime").description("문제의 등록 시간"),
         fieldWithPath(prefix + ".isSolvable").description("현재 풀 수 있는 지 여부"),
+        fieldWithPath(prefix + ".dynamicInfo").description("TYPE이 STANDARD일 경우 null").optional(),
         fieldWithPath(prefix + ".dynamicInfo.maxScore").description("TYPE이 DYNAMIC일 경우 maxScore")
             .optional(),
         fieldWithPath(prefix + ".dynamicInfo.minScore").description("TYPE이 DYNAMIC일 경우 minScore")
             .optional(),
         subsectionWithPath(prefix + ".file").description("문제에 해당하는 파일 정보").optional()
     ));
+    if (type.equals(ResponseType.PAGE)) {
+      commonFields.addAll(Arrays.asList(
+          fieldWithPath("page.empty").description("페이지가 비었는 지 여부"),
+          fieldWithPath("page.first").description("첫 페이지 인지"),
+          fieldWithPath("page.last").description("마지막 페이지 인지"),
+          fieldWithPath("page.number").description("요소를 가져 온 페이지 번호 (0부터 시작)"),
+          fieldWithPath("page.numberOfElements").description("요소 개수"),
+          subsectionWithPath("page.pageable").description("해당 페이지에 대한 DB 정보"),
+          fieldWithPath("page.size").description("요청한 페이지 크기"),
+          subsectionWithPath("page.sort").description("정렬에 대한 정보"),
+          fieldWithPath("page.totalElements").description("총 요소 개수"),
+          fieldWithPath("page.totalPages").description("총 페이지")));
+    }
     if (addDescriptors.length > 0) {
       commonFields.addAll(Arrays.asList(addDescriptors));
     }
@@ -327,6 +341,19 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".isSolved").description("내가 풀었는 지"),
         subsectionWithPath(prefix + ".file").description("문제에 해당하는 파일 정보").optional()
     ));
+    if (type.equals(ResponseType.PAGE)) {
+      commonFields.addAll(Arrays.asList(
+          fieldWithPath("page.empty").description("페이지가 비었는 지 여부"),
+          fieldWithPath("page.first").description("첫 페이지 인지"),
+          fieldWithPath("page.last").description("마지막 페이지 인지"),
+          fieldWithPath("page.number").description("요소를 가져 온 페이지 번호 (0부터 시작)"),
+          fieldWithPath("page.numberOfElements").description("요소 개수"),
+          subsectionWithPath("page.pageable").description("해당 페이지에 대한 DB 정보"),
+          fieldWithPath("page.size").description("요청한 페이지 크기"),
+          subsectionWithPath("page.sort").description("정렬에 대한 정보"),
+          fieldWithPath("page.totalElements").description("총 요소 개수"),
+          fieldWithPath("page.totalPages").description("총 페이지")));
+    }
     if (addDescriptors.length > 0) {
       commonFields.addAll(Arrays.asList(addDescriptors));
     }
