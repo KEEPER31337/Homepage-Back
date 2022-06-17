@@ -310,10 +310,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id"),
         fieldWithPath(prefix + ".registerTime").description("문제의 등록 시간"),
         fieldWithPath(prefix + ".isSolvable").description("현재 풀 수 있는 지 여부"),
-        fieldWithPath(prefix + ".dynamicInfo").description("TYPE이 STANDARD일 경우 null").optional(),
-        fieldWithPath(prefix + ".dynamicInfo.maxScore").description("TYPE이 DYNAMIC일 경우 maxScore")
-            .optional(),
-        fieldWithPath(prefix + ".dynamicInfo.minScore").description("TYPE이 DYNAMIC일 경우 minScore")
+        subsectionWithPath(prefix + ".dynamicInfo").description("TYPE이 STANDARD일 경우 null")
             .optional(),
         subsectionWithPath(prefix + ".file").description("문제에 해당하는 파일 정보").optional()
     ));
