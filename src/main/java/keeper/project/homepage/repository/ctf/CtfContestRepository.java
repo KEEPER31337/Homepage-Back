@@ -10,5 +10,5 @@ public interface CtfContestRepository extends
 
   List<CtfContestEntity> findAllByIdIsNotOrderByIdDesc(Long id);
 
-  List<CtfContestEntity> findAllByIsJoinableTrue();
+  List<CtfContestEntity> findAllByIsJoinableTrueOrderByIdDesc();
 }

@@ -20,6 +20,7 @@ import keeper.project.homepage.ApiControllerTestHelper.MemberJobName;
 import keeper.project.homepage.ApiControllerTestHelper.MemberRankName;
 import keeper.project.homepage.ApiControllerTestHelper.MemberTypeName;
 import keeper.project.homepage.controller.ctf.CtfSpringTestHelper;
+import keeper.project.homepage.entity.ctf.CtfContestEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -103,15 +104,21 @@ class CtfExtraDataControllerTest extends CtfSpringTestHelper {
   void getContestListSuccess() throws Exception {
     generateCtfContest(userEntity, false);
     generateCtfContest(userEntity, false);
-    generateCtfContest(userEntity, true);
-    generateCtfContest(userEntity, true);
+    CtfContestEntity joinableContest1 = generateCtfContest(userEntity, true);
+    CtfContestEntity joinableContest2 = generateCtfContest(userEntity, true);
+    CtfContestEntity joinableContest3 = generateCtfContest(userEntity, true);
+    CtfContestEntity joinableContest4 = generateCtfContest(userEntity, true);
     mockMvc.perform(get("/v1/ctf/extra/data/contests")
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.code").value(0))
-        .andExpect(jsonPath("$.list.size()").value(2))
+        .andExpect(jsonPath("$.list.size()").value(4))
+        .andExpect(jsonPath("$.list[0].ctfId").value(joinableContest4.getId()))
+        .andExpect(jsonPath("$.list[1].ctfId").value(joinableContest3.getId()))
+        .andExpect(jsonPath("$.list[2].ctfId").value(joinableContest2.getId()))
+        .andExpect(jsonPath("$.list[3].ctfId").value(joinableContest1.getId()))
         .andDo(document("get-contest-list",
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
