@@ -17,8 +17,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.study.StudyEntity;
+import keeper.project.homepage.entity.study.StudyHasMemberEntity;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -58,7 +63,7 @@ public class StudyControllerTest extends StudyControllerTestSetup {
   public static void clearFiles() {
     deleteTestFiles();
   }
-  
+
   @Test
   @DisplayName("스터디 년도 불러오기 성공")
   public void getAllStudyYearsAndSeasonSuccess() throws Exception {
@@ -130,6 +135,10 @@ public class StudyControllerTest extends StudyControllerTestSetup {
         + "IP를 공백으로 입력한 경우: " + exceptionAdvice.getMessage("ipAddressNotFound.code") + " +\n"
         + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
 
+    List<MemberEntity> memberEntities = new ArrayList<>();
+    memberEntities.add(memberEntity1);
+    memberEntities.add(memberEntity2);
+    memberEntities.add(memberEntity3);
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     MockMultipartFile thumbnail = new MockMultipartFile("thumbnail", getFileName(createTestImage),
         "image/jpg", new FileInputStream(userDirectory + File.separator + createTestImage));
@@ -138,8 +147,8 @@ public class StudyControllerTest extends StudyControllerTestSetup {
     params.add("studyDto.year", String.valueOf(VALID_YEAR));
     params.add("studyDto.season", String.valueOf(VALID_SEASON));
     params.add("studyDto.ipAddress", "127.0.0.1");
-    params.add("memberIdList[0]", String.valueOf(memberEntity2.getId()));
-    params.add("memberIdList[1]", String.valueOf(memberEntity3.getId()));
+    params.add("memberIdList[0]", String.valueOf(memberEntities.get(1).getId()));
+    params.add("memberIdList[1]", String.valueOf(memberEntities.get(2).getId()));
 
     mockMvc.perform(multipart("/v1/study")
             .file(thumbnail)
@@ -155,6 +164,7 @@ public class StudyControllerTest extends StudyControllerTestSetup {
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.code").value(0))
         .andExpect(jsonPath("$.data.title").value(NEW_TITLE))
+        .andExpect(jsonPath("$.data.memberNumber").value(memberEntities.size()))
         .andExpect(jsonPath("$.data.information").value(NEW_INFORMATION))
         .andExpect(jsonPath("$.data.year").value(VALID_YEAR))
         .andExpect(jsonPath("$.data.season").value(VALID_SEASON))
@@ -231,6 +241,11 @@ public class StudyControllerTest extends StudyControllerTestSetup {
             + " +\n"
             + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
 
+    List<MemberEntity> memberEntities = new ArrayList<>();
+    memberEntities.add(memberEntity1);
+    memberEntities.add(memberEntity2);
+    memberEntities.add(memberEntity4);
+
     MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
     MockMultipartFile thumbnail = new MockMultipartFile("thumbnail", getFileName(createTestImage),
         "image/jpg", new FileInputStream(userDirectory + File.separator + createTestImage));
@@ -242,6 +257,9 @@ public class StudyControllerTest extends StudyControllerTestSetup {
     params.add("studyDto.noteLink", NOTE_LINK);
     params.add("studyDto.ipAddress", "127.0.0.2");
     params.add("studyId", String.valueOf(studyEntity.getId()));
+    params.add("memberIdList[0]", String.valueOf(memberEntities.get(0).getId()));
+    params.add("memberIdList[1]", String.valueOf(memberEntities.get(1).getId()));
+    params.add("memberIdList[2]", String.valueOf(memberEntities.get(2).getId()));
 
     mockMvc.perform(multipart("/v1/study")
             .file(thumbnail)
@@ -274,7 +292,13 @@ public class StudyControllerTest extends StudyControllerTestSetup {
                 parameterWithName("studyDto.noteLink").description("notion 주소").optional(),
                 parameterWithName("studyDto.etcLink").description("그 외 스터디 링크").optional(),
                 parameterWithName("studyDto.ipAddress").description("IP 주소"),
-                parameterWithName("studyId").description("스터디 Id")
+                parameterWithName("studyId").description("스터디 Id"),
+                parameterWithName("memberIdList[0]").description(
+                    "새로운 스터디원들 Id List. 스터디원 Id들 전부 보내주시면 됩니다."),
+                parameterWithName("memberIdList[1]").description(
+                    "새로운 스터디원들 Id List. 스터디원 Id들 전부 보내주시면 됩니다."),
+                parameterWithName("memberIdList[2]").description(
+                    "새로운 스터디원들 Id List. 스터디원 Id들 전부 보내주시면 됩니다.")
             ),
             requestParts(
                 partWithName("thumbnail").description(
@@ -284,7 +308,11 @@ public class StudyControllerTest extends StudyControllerTestSetup {
                 generateStudyDtoResponseFields(ResponseType.SINGLE,
                     "성공: true +\n실패: false", docCode, docMsg)
             )));
-    ;
+
+    List<Long> studyMemberIdList = studyHasMemberRepository.findAllByStudyId(studyEntity.getId())
+        .stream().map(StudyHasMemberEntity::getMember).map(MemberEntity::getId).toList();
+    List<Long> modifyMemberIdList = memberEntities.stream().map(MemberEntity::getId).toList();
+    Assertions.assertThat(studyMemberIdList).isEqualTo(modifyMemberIdList);
   }
 
   // 시즌 실패, IP주소 없음 실패는 modify와 create에 중복되서 하나만 만들었습니다.

@@ -17,5 +17,8 @@ endif::[]
 
 == API 목록
 
-link:admin.html[API 목록으로 돌아가기]
+link:keeper.html[API 목록으로 돌아가기]
 
+== *뱃지 관리*
+
+link:badge.html[뱃지 관리]

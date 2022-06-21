@@ -1,0 +1,173 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+
+= KEEPER API 문서
+:icons: font
+:source-highlighter: highlight.js
+:toc: left
+:toclevels: 1
+:sectlinks:
+
+== CTF API 목록
+
+link:ctf.html[CTF API 목록으로 돌아가기]
+
+== *팀 생성*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/create-team/http-request.adoc[]
+
+==== Request Path
+
+include::{snippets}/create-team/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/create-team/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/create-team/response-fields.adoc[]
+
+== *팀 정보 수정*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/modify-team/http-request.adoc[]
+
+==== Request Path
+
+include::{snippets}/modify-team/path-parameters.adoc[]
+
+=== Request Fields
+
+include::{snippets}/modify-team/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/modify-team/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/modify-team/response-fields.adoc[]
+
+== *팀 가입*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/join-team/http-request.adoc[]
+
+==== Request Path
+
+include::{snippets}/join-team/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/join-team/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/join-team/response-fields.adoc[]
+
+== *팀 탈퇴*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/leave-team/http-request.adoc[]
+
+==== Request Path
+
+include::{snippets}/leave-team/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/leave-team/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/leave-team/response-fields.adoc[]
+
+== *팀 세부 정보 열람*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-team-detail/http-request.adoc[]
+
+==== Request Path
+
+include::{snippets}/get-team-detail/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-team-detail/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-team-detail/response-fields.adoc[]
+
+== *팀 목록 열람*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-team-list/http-request.adoc[]
+
+==== Request Path
+
+include::{snippets}/get-team-list/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-team-list/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-team-list/response-fields.adoc[]
+
+== *내가 속한 팀 세부 정보 열람*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-my-team-detail/http-request.adoc[]
+
+==== Request Path
+
+include::{snippets}/get-my-team-detail/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-my-team-detail/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-my-team-detail/response-fields.adoc[]
+

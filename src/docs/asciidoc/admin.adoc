@@ -62,3 +62,7 @@ link:librarymainAdmin.html[API 문서 보기]
 == *게임*
 
 link:gameAdmin.html[API 문서 보기]
+
+== *CTF*
+
+link:ctf/ctfAdmin.html[API 문서 보기]

@@ -6,13 +6,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
+import keeper.project.homepage.entity.member.MemberJobEntity;
+import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
+import keeper.project.homepage.exception.posting.CustomPostingAccessDeniedException;
+import keeper.project.homepage.exception.posting.CustomPostingIncorrectException;
+import keeper.project.homepage.exception.posting.CustomPostingNotFoundException;
+import keeper.project.homepage.exception.posting.CustomPostingTempException;
 import keeper.project.homepage.repository.attendance.AttendanceRepository;
+import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
+import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.user.dto.posting.LikeAndDislikeDto;
 import keeper.project.homepage.user.dto.posting.PostingBestDto;
 import keeper.project.homepage.user.dto.posting.PostingDto;
-import keeper.project.homepage.common.dto.result.PostingResult;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -32,6 +39,7 @@ import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.user.dto.posting.PostingResponseDto;
 import keeper.project.homepage.user.service.member.MemberService;
+import keeper.project.homepage.user.service.member.MemberUtilService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -45,12 +53,15 @@ public class PostingService {
   private final PostingRepository postingRepository;
   private final CategoryRepository categoryRepository;
   private final MemberRepository memberRepository;
+  private final MemberJobRepository memberJobRepository;
+  private final MemberHasMemberJobRepository memberHasMemberJobRepository;
   private final CommentRepository commentRepository;
   private final FileRepository fileRepository;
   private final ThumbnailRepository thumbnailRepository;
   private final MemberHasPostingLikeRepository memberHasPostingLikeRepository;
   private final MemberHasPostingDislikeRepository memberHasPostingDislikeRepository;
   private final AttendanceRepository attendanceRepository;
+  private final MemberUtilService memberUtilService;
   private final AuthService authService;
   private final MemberService memberService;
 
@@ -65,6 +76,7 @@ public class PostingService {
   public static final Integer EXAM_BOARD_ACCESS_COMMENT_COUNT = 5;
   public static final Integer EXAM_BOARD_ACCESS_ATTEND_COUNT = 10;
   public static final Long EXAM_CATEGORY_ID = 1377L;
+  public static final Long INFO_CATEGORY_ID = 5125L;
   public static final String EXAM_ACCESS_DENIED_TITLE = "접근할 수 없습니다.";
   public static final String EXAM_ACCESS_DENIED_CONTENT = "공지사항을 확인해 주세요.";
 
@@ -75,7 +87,7 @@ public class PostingService {
     List<PostingResponseDto> postingResponseDtos = new ArrayList<>();
 
     for (PostingEntity postingEntity : postingEntities) {
-      postingResponseDtos.add(new PostingResponseDto().initWithEntity(postingEntity,
+      postingResponseDtos.add(new PostingResponseDto(postingEntity,
           (int) postingEntities.getTotalElements(), false));
     }
 
@@ -91,7 +103,7 @@ public class PostingService {
     List<PostingResponseDto> postingResponseDtos = new ArrayList<>();
 
     for (PostingEntity postingEntity : postingEntities) {
-      postingResponseDtos.add(new PostingResponseDto().initWithEntity(postingEntity,
+      postingResponseDtos.add(new PostingResponseDto(postingEntity,
           (int) postingEntities.getTotalElements(), false));
     }
 
@@ -105,7 +117,7 @@ public class PostingService {
     List<PostingResponseDto> postingResponseDtos = new ArrayList<>();
 
     for (PostingEntity postingEntity : postingEntities) {
-      postingResponseDtos.add(new PostingResponseDto().initWithEntity(postingEntity,
+      postingResponseDtos.add(new PostingResponseDto(postingEntity,
           postingEntities.size(), false));
     }
 
@@ -121,7 +133,7 @@ public class PostingService {
     List<PostingResponseDto> postingResponseDtos = new ArrayList<>();
 
     for (PostingEntity postingEntity : postingEntities) {
-      postingResponseDtos.add(new PostingResponseDto().initWithEntity(postingEntity,
+      postingResponseDtos.add(new PostingResponseDto(postingEntity,
           postingEntities.size(), false));
     }
 
@@ -134,7 +146,6 @@ public class PostingService {
     LocalDateTime endDate = LocalDate.now().plusDays(1).atStartOfDay();
     List<PostingEntity> postingEntities = postingRepository.findAllByIsTempAndIsSecretAndIsNoticeAndRegisterTimeBetween(
         isNotTempPosting, isNotSecretPosting, isNotNoticePosting, startDate, endDate);
-//    setAllInfo(postingEntities);
 
     postingEntities.sort((posting1, posting2) -> {
       Integer posting1Score =
@@ -155,18 +166,8 @@ public class PostingService {
     return postingBestDtos;
   }
 
-  public PostingResponseDto findByPostId(Long postId) {
-    PostingEntity posting = getPostingById(postId);
-    // TODO : isTemp, isSecret 체크하는 예외처리 추가
-    // TODO : postingNotExist 예외처리 추가
-    // FIXME : request와 response용 dto를 나눴다면 initWithEntity() 대신 생성자로 초기화하는 게 좋을 것 같습니다
-    // TODO : postingResponseDto의 initWithEntity가 init하는 동작이 아니라 새로운 dto를 반환해주는 동작을 수행하고 있습니다
-    PostingResponseDto postingResponseDto = new PostingResponseDto();
-    return postingResponseDto.initWithEntity(posting, 1, true);
-  }
-
   public Map<String, Object> findAllByMemberId(Long otherMemberId, Pageable pageable) {
-    MemberEntity other = memberService.findById(otherMemberId);
+    MemberEntity other = memberUtilService.getById(otherMemberId);
 
     Page<PostingEntity> postingPage = postingRepository.findAllByMemberIdAndIsTempAndIsSecret(
         other, isNotTempPosting, isNotSecretPosting, pageable);
@@ -174,8 +175,7 @@ public class PostingService {
     Map<String, Object> result = new HashMap<>();
     List<PostingResponseDto> postingList = new ArrayList<>();
     for (PostingEntity posting : postingPage.getContent()) {
-      PostingResponseDto dto = new PostingResponseDto();
-      postingList.add(dto.initWithEntity(posting, (int) postingPage.getTotalElements(), false));
+      postingList.add(new PostingResponseDto(posting, (int) postingPage.getTotalElements(), false));
     }
 
     result.put("isLast", postingPage.isLast());
@@ -184,16 +184,39 @@ public class PostingService {
     return result;
   }
 
+  @Transactional
   public PostingEntity save(PostingDto dto) {
 
-    Optional<CategoryEntity> categoryEntity = categoryRepository.findById(
-        Long.valueOf(dto.getCategoryId()));
-    Optional<ThumbnailEntity> thumbnailEntity = thumbnailRepository.findById(dto.getThumbnailId());
-    MemberEntity memberEntity = getMemberEntityWithJWT();
+    CategoryEntity categoryEntity = categoryRepository.findById(dto.getCategoryId())
+        .orElseThrow(CustomCategoryNotFoundException::new);
+    ThumbnailEntity thumbnailEntity = thumbnailRepository.findById(dto.getThumbnailId())
+        .orElseThrow(CustomThumbnailEntityNotFoundException::new);
+    MemberEntity memberEntity = authService.getMemberEntityWithJWT();
     dto.setRegisterTime(LocalDateTime.now());
     dto.setUpdateTime(LocalDateTime.now());
-    PostingEntity postingEntity = dto.toEntity(categoryEntity.get(), memberEntity,
-        thumbnailEntity.get());
+    PostingEntity postingEntity = dto.toEntity(categoryEntity, memberEntity,
+        thumbnailEntity);
+
+    memberEntity.getPosting().add(postingEntity);
+    return postingRepository.save(postingEntity);
+  }
+
+  @Transactional
+  public PostingEntity autoSave(PostingDto dto) {
+
+    CategoryEntity categoryEntity = categoryRepository.findById(dto.getCategoryId())
+        .orElseThrow(CustomCategoryNotFoundException::new);
+    ThumbnailEntity thumbnailEntity = thumbnailRepository.findById(dto.getThumbnailId())
+        .orElseThrow(CustomThumbnailEntityNotFoundException::new);
+    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_대외부장")
+        .orElse(memberJobRepository.findByName("ROLE_회장").get());
+    MemberHasMemberJobEntity memberHasMemberJobEntity = memberHasMemberJobRepository.findFirstByMemberJobEntityOrderByIdDesc(
+        memberJobEntity);
+    MemberEntity memberEntity = memberHasMemberJobEntity.getMemberEntity();
+    dto.setRegisterTime(LocalDateTime.now());
+    dto.setUpdateTime(LocalDateTime.now());
+    PostingEntity postingEntity = dto.toEntity(categoryEntity, memberEntity,
+        thumbnailEntity);
 
     memberEntity.getPosting().add(postingEntity);
     return postingRepository.save(postingEntity);
@@ -202,35 +225,38 @@ public class PostingService {
   @Transactional
   public PostingEntity getPostingById(Long pid) {
 
+    return postingRepository.findById(pid)
+        .orElseThrow(CustomPostingNotFoundException::new);
+  }
+
+  @Transactional
+  public PostingResponseDto getPostingResponseById(Long pid, Long visitMemberId, String password) {
+
     PostingEntity postingEntity = postingRepository.findById(pid)
-        .orElseThrow(RuntimeException::new); // TODO: CustomPostingNotFoundException 만들어주세여~
+        .orElseThrow(CustomPostingNotFoundException::new);
 
-    return postingEntity;
-  }
+    if (isNotAccessExamBoard(postingEntity)) {
+      return createNotAccessDto(postingEntity);
+    }
+    if (visitMemberId != postingEntity.getMemberId().getId()) {
+      if (postingEntity.getIsTemp() == isTempPosting) {
+        throw new CustomPostingTempException();
+      } else if (postingEntity.getIsSecret() == isSecretPosting) {
+        if (!(postingEntity.getPassword().equals(password))) {
+          throw new CustomPostingIncorrectException();
+        }
+      }
+      postingEntity.increaseVisitCount();
+      updateInfoById(postingEntity, pid);
+    }
 
-  public PostingResult getSuccessPostingResult(PostingEntity postingEntity) {
-
-    PostingResult postingResult = new PostingResult(postingEntity);
-    postingResult.setSuccess(true);
-    postingResult.setCode(0);
-    postingResult.setMsg("성공하였습니다.");
-
-    return postingResult;
-  }
-
-  public PostingResult getFailPostingResult(String msg) {
-
-    PostingResult postingResult = new PostingResult(null);
-    postingResult.setSuccess(false);
-    postingResult.setCode(-1);
-    postingResult.setMsg(msg);
-
-    return postingResult;
+    return new PostingResponseDto(postingEntity, 1, true);
   }
 
   @Transactional
   public PostingEntity updateById(PostingDto dto, Long postingId, ThumbnailEntity newThumbnail) {
-    PostingEntity tempEntity = postingRepository.findById(postingId).get();
+    PostingEntity tempEntity = postingRepository.findById(postingId)
+        .orElseThrow(CustomPostingNotFoundException::new);
 
     dto.setUpdateTime(LocalDateTime.now());
     dto.setCommentCount(tempEntity.getCommentCount());
@@ -238,8 +264,8 @@ public class PostingService {
     dto.setDislikeCount(tempEntity.getDislikeCount());
     dto.setVisitCount(tempEntity.getVisitCount());
 
-    if (tempEntity.getMemberId().getId() != getMemberEntityWithJWT().getId()) {
-      throw new RuntimeException("작성자만 수정할 수 있습니다.");
+    if (tempEntity.getMemberId().getId() != authService.getMemberEntityWithJWT().getId()) {
+      throw new CustomPostingAccessDeniedException();
     }
 
     tempEntity.updateInfo(dto.getTitle(), dto.getContent(),
@@ -251,14 +277,15 @@ public class PostingService {
   }
 
   @Transactional
-  public PostingEntity updateInfoById(PostingEntity postingEntity, Long postingId) {
-    PostingEntity tempEntity = postingRepository.findById(postingId).get();
+  public void updateInfoById(PostingEntity postingEntity, Long postingId) {
+    PostingEntity tempEntity = postingRepository.findById(postingId)
+        .orElseThrow(CustomPostingNotFoundException::new);
 
     tempEntity.updateInfo(postingEntity.getTitle(), postingEntity.getContent(),
         postingEntity.getUpdateTime(), postingEntity.getIpAddress(),
         postingEntity.getAllowComment(), postingEntity.getIsNotice(), postingEntity.getIsSecret());
 
-    return postingRepository.save(tempEntity);
+    postingRepository.save(tempEntity);
   }
 
   @Transactional
@@ -267,8 +294,8 @@ public class PostingService {
     MemberEntity memberEntity = memberRepository.findById(
         postingEntity.getMemberId().getId()).orElseThrow(CustomMemberNotFoundException::new);
 
-    if (!memberEntity.getId().equals(getMemberEntityWithJWT().getId())) {
-      throw new RuntimeException("작성자만 삭제할 수 있습니다.");
+    if (!memberEntity.getId().equals(authService.getMemberEntityWithJWT().getId())) {
+      throw new CustomPostingAccessDeniedException();
     }
 
     // Foreign Key로 연결 된 file 제거
@@ -286,40 +313,31 @@ public class PostingService {
   public List<PostingResponseDto> searchPosting(String type, String keyword,
       Long categoryId, Pageable pageable) {
 
-    CategoryEntity categoryEntity = categoryRepository.findById(categoryId).get();
-    Page<PostingEntity> postingEntities = null;
+    CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
+        .orElseThrow(CustomPostingNotFoundException::new);
+    Page<PostingEntity> postingEntities = Page.empty();
     switch (type) {
-      case "T": {
-        postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingAndIsTempAndIsNotice(
-            categoryEntity, keyword, isNotTempPosting, isNotNoticePosting, pageable);
-        break;
-      }
-      case "C": {
-        postingEntities = postingRepository.findAllByCategoryIdAndContentContainingAndIsTempAndIsNotice(
-            categoryEntity, keyword, isNotTempPosting, isNotNoticePosting, pageable);
-        break;
-      }
-      case "TC": {
-        postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingOrCategoryIdAndContentContainingAndIsTempAndIsNotice(
-            categoryEntity, keyword, categoryEntity, keyword, isNotTempPosting, isNotNoticePosting,
-            pageable);
-        break;
-      }
-      case "W": {
-        Optional<MemberEntity> memberEntity = memberRepository.findByNickName(keyword);
-        if (!memberEntity.isPresent()) {
-          break;
-        }
+      case "T" -> postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingAndIsTempAndIsNotice(
+          categoryEntity, keyword, isNotTempPosting, isNotNoticePosting, pageable);
+
+      case "C" -> postingEntities = postingRepository.findAllByCategoryIdAndContentContainingAndIsTempAndIsNotice(
+          categoryEntity, keyword, isNotTempPosting, isNotNoticePosting, pageable);
+
+      case "TC" -> postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingOrCategoryIdAndContentContainingAndIsTempAndIsNotice(
+          categoryEntity, keyword, categoryEntity, keyword, isNotTempPosting, isNotNoticePosting,
+          pageable);
+
+      case "W" -> {
+        MemberEntity memberEntity = memberRepository.findByNickName(keyword)
+            .orElseThrow(CustomMemberNotFoundException::new);
         postingEntities = postingRepository.findAllByCategoryIdAndMemberIdAndIsTempAndIsNotice(
-            categoryEntity,
-            memberEntity.get(), isNotTempPosting, isNotNoticePosting, pageable);
-        break;
+            categoryEntity, memberEntity, isNotTempPosting, isNotNoticePosting, pageable);
       }
     }
     List<PostingResponseDto> postingResponseDtos = new ArrayList<>();
 
     for (PostingEntity postingEntity : postingEntities) {
-      postingResponseDtos.add(new PostingResponseDto().initWithEntity(postingEntity,
+      postingResponseDtos.add(new PostingResponseDto(postingEntity,
           (int) postingEntities.getTotalElements(), false));
     }
 
@@ -329,8 +347,9 @@ public class PostingService {
   @Transactional
   public boolean isPostingLike(Long postingId, String type) {
 
-    MemberEntity memberEntity = getMemberEntityWithJWT();
-    PostingEntity postingEntity = postingRepository.findById(postingId).get();
+    MemberEntity memberEntity = authService.getMemberEntityWithJWT();
+    PostingEntity postingEntity = postingRepository.findById(postingId)
+        .orElseThrow(CustomPostingNotFoundException::new);
     MemberHasPostingLikeEntity memberHasPostingLikeEntity = MemberHasPostingLikeEntity.builder()
         .memberId(memberEntity).postingId(postingEntity).build();
 
@@ -359,8 +378,9 @@ public class PostingService {
   @Transactional
   public boolean isPostingDislike(Long postingId, String type) {
 
-    MemberEntity memberEntity = getMemberEntityWithJWT();
-    PostingEntity postingEntity = postingRepository.findById(postingId).get();
+    MemberEntity memberEntity = authService.getMemberEntityWithJWT();
+    PostingEntity postingEntity = postingRepository.findById(postingId)
+        .orElseThrow(CustomPostingNotFoundException::new);
     MemberHasPostingDislikeEntity memberHasPostingDislikeEntity = MemberHasPostingDislikeEntity.builder()
         .memberId(memberEntity).postingId(postingEntity).build();
 
@@ -389,8 +409,9 @@ public class PostingService {
   @Transactional
   public LikeAndDislikeDto checkLikeAndDisLike(Long postingId) {
 
-    MemberEntity memberEntity = getMemberEntityWithJWT();
-    PostingEntity postingEntity = postingRepository.findById(postingId).get();
+    MemberEntity memberEntity = authService.getMemberEntityWithJWT();
+    PostingEntity postingEntity = postingRepository.findById(postingId)
+        .orElseThrow(CustomPostingNotFoundException::new);
     MemberHasPostingDislikeEntity memberHasPostingDislikeEntity = MemberHasPostingDislikeEntity.builder()
         .memberId(memberEntity).postingId(postingEntity).build();
     MemberHasPostingLikeEntity memberHasPostingLikeEntity = MemberHasPostingLikeEntity.builder()
@@ -410,19 +431,8 @@ public class PostingService {
     } else {
       checked.add(false);
     }
-    LikeAndDislikeDto likeAndDislikeDto = new LikeAndDislikeDto(checked.get(0), checked.get(1));
 
-    return likeAndDislikeDto;
-  }
-
-  // FIXME : authService.getMemberEntityWithJWT() 가 생겼습니다ㅏ
-  private MemberEntity getMemberEntityWithJWT() {
-    Long memberId = authService.getMemberIdByJWT();
-    Optional<MemberEntity> member = memberRepository.findById(memberId);
-    if (member.isEmpty()) {
-      throw new CustomMemberNotFoundException();
-    }
-    return member.get();
+    return new LikeAndDislikeDto(checked.get(0), checked.get(1));
   }
 
   public boolean isNotAccessExamBoard(PostingEntity postingEntity) {
@@ -450,7 +460,7 @@ public class PostingService {
   }
 
   public PostingResponseDto createNotAccessDto(PostingEntity postingEntity) {
-    PostingResponseDto postingResponseDto = new PostingResponseDto().initWithEntity(postingEntity,
+    PostingResponseDto postingResponseDto = new PostingResponseDto(postingEntity,
         1, true);
     postingResponseDto.setTitle(EXAM_ACCESS_DENIED_TITLE);
     postingResponseDto.setContent(EXAM_ACCESS_DENIED_CONTENT);

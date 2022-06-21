@@ -18,18 +18,23 @@ import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.entity.member.FriendEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
+import keeper.project.homepage.user.service.member.MemberUtilService;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @Log4j2
 public class MemberControllerTest extends ApiControllerTestHelper {
+
+  @Autowired
+  private MemberUtilService memberUtilService;
 
   private String userToken;
   private String deleteToken;
@@ -60,7 +65,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
   @Test
   @DisplayName("잘못된 토큰으로 접근하기")
   public void invalidToken() throws Exception {
-    mockMvc.perform(get("/v1/members")
+    mockMvc.perform(get("/v1/members/profile")
             .header("Authorization", "XXXXXXXXXX"))
         .andDo(print())
         .andExpect(jsonPath("$.success").value(false))
@@ -79,7 +84,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
   @Test
   @DisplayName("옳은 토큰으로 접근하기")
   public void validToken() throws Exception {
-    mockMvc.perform(get("/v1/members")
+    mockMvc.perform(get("/v1/members/profile")
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk());
@@ -124,7 +129,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
   @DisplayName("기본 권한으로 본인 정보 열람하기")
   public void findMember() throws Exception {
     mockMvc.perform(MockMvcRequestBuilders
-            .get("/v1/members")
+            .get("/v1/members/profile")
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -252,7 +257,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
         ));
 
     Assertions.assertThrows(CustomMemberNotFoundException.class, () -> {
-      memberService.findById(deleteMemberEntity.getId());
+      memberUtilService.getById(deleteMemberEntity.getId());
     });
   }
 

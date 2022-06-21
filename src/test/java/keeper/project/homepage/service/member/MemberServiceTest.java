@@ -7,13 +7,14 @@ import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.member.CustomAccountDeleteFailedException;
-import keeper.project.homepage.user.service.member.MemberService;
+import keeper.project.homepage.user.service.member.MemberUtilService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,9 +24,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class MemberServiceTest extends MemberServiceTestSetup {
 
+  @Autowired
+  private MemberUtilService memberUtilService;
+
   @BeforeEach
   public void setup() throws Exception {
-    virtualMember = memberRepository.findById(MemberService.VIRTUAL_MEMBER_ID).orElseThrow(null);
+    virtualMember = memberRepository.findById(memberUtilService.VIRTUAL_MEMBER_ID).orElseThrow(null);
     Assertions.assertNotNull(virtualMember, "id=1인 가상 멤버 레코드가 존재하지 않습니다.");
   }
 

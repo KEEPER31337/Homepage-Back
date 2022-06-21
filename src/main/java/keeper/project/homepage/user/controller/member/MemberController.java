@@ -9,6 +9,7 @@ import keeper.project.homepage.user.dto.member.MemberDto;
 import keeper.project.homepage.user.dto.member.MemberFollowDto;
 import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.common.dto.result.ListResult;
+import keeper.project.homepage.user.dto.member.MultiMemberResponseDto;
 import keeper.project.homepage.user.dto.member.OtherMemberInfoResult;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.service.ResponseService;
@@ -64,7 +65,16 @@ public class MemberController {
         memberService.getOtherMember(otherMemberId));
   }
 
-  @GetMapping(value = "")
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/multi")
+  public ListResult<MultiMemberResponseDto> getMultiMembers(
+      @RequestParam List<Long> ids
+  ) {
+    return responseService.getSuccessListResult(memberService.getMultiMembers(ids));
+  }
+
+  @Secured("ROLE_회원")
+  @GetMapping(value = "/profile")
   public SingleResult<MemberDto> getMember() {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
     Long id = authService.getMemberIdByJWT();
@@ -230,7 +240,8 @@ public class MemberController {
   public SingleResult<PostingResponseDto> findSinglePostingOfOther(
       @PathVariable("memberId") Long memberId,
       @PathVariable("postId") Long postId) {
-    PostingResponseDto posting = postingService.findByPostId(postId);
+    PostingResponseDto posting = postingService.getPostingResponseById(postId,
+        authService.getMemberIdByJWT(), null);
     System.out.println("In Controller : " + posting.getId());
     return responseService.getSuccessSingleResult(posting);
   }

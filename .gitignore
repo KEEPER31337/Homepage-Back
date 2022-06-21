@@ -81,4 +81,6 @@ docker/ESSENTIAL.zip
 
 src/main/generated
 
-.github
+application
+dependencies
+spring-boot-loader

@@ -1,0 +1,90 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+// 자동으로 생성된 snippet 설정하는 부분
+
+= KEEPER API 문서
+:icons: font
+// NOTE, TIP, WARNING, CAUTION, IMPORTANT 같은 경고구들 아이콘화 해줌
+:source-highlighter: highlight.js
+// source code 블럭에서 사용되는 highlighter 설정, 4개 정도 있던데 차이를 아직 잘 모르겠음.
+:toc: left
+// table of contents(toc) 왼쪽정렬하여 생성
+:toclevels: 1
+// default : 2 (==,  ===) 까지 toc에 보여줌.
+:sectlinks:
+// section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
+
+== CTF API 목록
+
+link:ctf.html[CTF API 목록으로 돌아가기]
+
+== *문제 Flag 제출*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/check-flag/http-request.adoc[]
+
+==== Request Path
+
+include::{snippets}/check-flag/path-parameters.adoc[]
+
+==== Request Fields
+
+include::{snippets}/check-flag/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/check-flag/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/check-flag/response-fields.adoc[]
+
+== *CTF 문제 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-common-problem-list/http-request.adoc[]
+
+==== Request Params
+
+include::{snippets}/get-common-problem-list/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-common-problem-list/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-common-problem-list/response-fields.adoc[]
+
+== *CTF 문제 세부 정보 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-problem-detail/http-request.adoc[]
+
+==== Request Path
+
+include::{snippets}/get-problem-detail/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-problem-detail/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-problem-detail/response-fields.adoc[]

@@ -51,7 +51,7 @@ public class SignUpController {
   ) {
 
     return responseService.getSuccessSingleResult(
-        duplicateCheckService.checkLoginIdDuplicate(loginId)
+        duplicateCheckService.isLoginIdDuplicate(loginId)
     );
   }
 
@@ -61,7 +61,7 @@ public class SignUpController {
   ) {
 
     return responseService.getSuccessSingleResult(
-        duplicateCheckService.checkEmailAddressDuplicate(emailAddress)
+        duplicateCheckService.isEmailAddressDuplicate(emailAddress)
     );
   }
 
@@ -71,7 +71,7 @@ public class SignUpController {
   ) {
 
     return responseService.getSuccessSingleResult(
-        duplicateCheckService.checkStudentIdDuplicate(studentId)
+        duplicateCheckService.isStudentIdDuplicate(studentId)
     );
   }
 }

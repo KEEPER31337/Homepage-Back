@@ -23,8 +23,10 @@ import javax.persistence.Transient;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.entity.study.StudyHasMemberEntity;
+import keeper.project.homepage.user.dto.member.MultiMemberResponseDto;
 import keeper.project.homepage.util.EnvironmentProperty;
 import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
+import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,7 +44,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @NoArgsConstructor          // 인자없는 생성자를 자동으로 생성합니다.
 @AllArgsConstructor         // 인자를 모두 갖춘 생성자를 자동으로 생성합니다.
 @Table(name = "member")     // 'member' 테이블과 매핑됨을 명시
-public class MemberEntity implements UserDetails, Serializable {
+public class MemberEntity implements Serializable {
 
   @Id // pk
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -160,51 +162,6 @@ public class MemberEntity implements UserDetails, Serializable {
   @Builder.Default
   private List<PostingEntity> posting = new ArrayList<>();
 
-  @Override
-  public Collection<? extends GrantedAuthority> getAuthorities() {
-    List<SimpleGrantedAuthority> roles = new ArrayList<>();
-
-    for (MemberHasMemberJobEntity memberJob : this.getMemberJobs()) {
-      roles.add(new SimpleGrantedAuthority(memberJob.getMemberJobEntity().getName()));
-    }
-    return roles;
-  }
-
-  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-  @Override
-  public String getPassword() {
-    return password;
-  }
-
-  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-  @Override
-  public String getUsername() {
-    return String.valueOf(this.id);
-  }
-
-  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-  @Override
-  public boolean isAccountNonExpired() {
-    return true;
-  }
-
-  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-  @Override
-  public boolean isAccountNonLocked() {
-    return true;
-  }
-
-  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return true;
-  }
-
-  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-  @Override
-  public boolean isEnabled() {
-    return true;
-  }
 
   public void updatePoint(int point) {
     this.point = point;
@@ -234,7 +191,7 @@ public class MemberEntity implements UserDetails, Serializable {
 
   public String getThumbnailPath() {
     return getThumbnail() == null ?
-        EnvironmentProperty.getThumbnailPath(DefaultThumbnailInfo.ThumbMember.getThumbnailId())
+        EnvironmentProperty.getThumbnailPath(ThumbType.MemberThumbnail.getDefaultThumbnailId())
         : EnvironmentProperty.getThumbnailPath(getThumbnail().getId());
   }
 
@@ -244,5 +201,17 @@ public class MemberEntity implements UserDetails, Serializable {
     this.level = (this.level == null ? 0 : this.level);
     this.merit = (this.merit == null ? 0 : this.merit);
     this.demerit = (this.demerit == null ? 0 : this.demerit);
+  }
+
+  public MultiMemberResponseDto toMultiMemberResponseDto() {
+    return MultiMemberResponseDto.builder()
+        .id(this.id)
+        .nickName(this.nickName)
+        .thumbnailPath(this.getThumbnailPath())
+        .generation(this.generation)
+        .jobs(this.getJobs())
+        .type(this.memberType.getName())
+        .msg("Success")
+        .build();
   }
 }

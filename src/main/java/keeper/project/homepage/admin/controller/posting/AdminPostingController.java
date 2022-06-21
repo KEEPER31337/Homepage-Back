@@ -39,15 +39,14 @@ public class AdminPostingController {
     PostingEntity postingEntity = postingService.getPostingById(postingId);
     ThumbnailEntity deleteThumbnail = null;
     if (postingEntity.getThumbnail() != null) {
-      deleteThumbnail = thumbnailService.findById(
+      deleteThumbnail = thumbnailService.find(
           postingEntity.getThumbnail().getId());
     }
     deletePrevFiles(postingEntity);
     adminPostingService.deleteByAdmin(postingEntity);
 
     if (postingEntity.getThumbnail() != null) {
-      thumbnailService.deleteById(deleteThumbnail.getId());
-      fileService.deleteOriginalThumbnail(deleteThumbnail);
+      thumbnailService.delete(deleteThumbnail.getId());
     }
 
     return responseService.getSuccessResult();
@@ -55,7 +54,7 @@ public class AdminPostingController {
 
 
   private void deletePrevFiles(PostingEntity postingEntity) {
-    List<FileEntity> fileEntities = fileService.findFileEntitiesByPostingId(
+    List<FileEntity> fileEntities = fileService.findAllByPostingId(
         postingEntity);
     fileService.deleteFiles(fileEntities);
   }

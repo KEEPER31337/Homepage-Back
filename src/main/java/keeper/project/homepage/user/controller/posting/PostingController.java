@@ -1,5 +1,7 @@
 package keeper.project.homepage.user.controller.posting;
 
+import static keeper.project.homepage.util.ClientUtil.getUserIP;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -7,23 +9,24 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Locale;
+import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.user.dto.posting.LikeAndDislikeDto;
 import keeper.project.homepage.user.dto.posting.PostingBestDto;
 import keeper.project.homepage.user.dto.posting.PostingDto;
 import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.common.dto.result.ListResult;
-import keeper.project.homepage.common.dto.result.PostingResult;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
 import keeper.project.homepage.user.dto.posting.PostingResponseDto;
+import keeper.project.homepage.util.image.preprocessing.ImageSize;
 import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.util.service.ThumbnailService;
-import keeper.project.homepage.util.ImageCenterCrop;
-import keeper.project.homepage.util.service.ThumbnailService.ThumbnailSize;
+import keeper.project.homepage.util.image.preprocessing.ImageCenterCropping;
+import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import keeper.project.homepage.user.service.posting.CommentService;
 import keeper.project.homepage.user.service.posting.PostingService;
 import keeper.project.homepage.common.service.util.AuthService;
@@ -64,9 +67,6 @@ public class PostingController {
   private final AuthService authService;
   private final CommentService commentService;
 
-  /* ex) http://localhost:8080/v1/posts?category=6&page=1
-   * page default 0, size default 10
-   */
   @GetMapping(value = "/latest")
   public ListResult<PostingResponseDto> findAllPosting(
       @PageableDefault(size = 10, sort = "registerTime", direction = Direction.DESC)
@@ -110,21 +110,17 @@ public class PostingController {
   public CommonResult createPosting(
       @RequestParam(value = "file", required = false) List<MultipartFile> files,
       @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
-      PostingDto dto) {
+      PostingDto dto, HttpServletRequest httpServletRequest) {
 
-    ThumbnailEntity thumbnailEntity = thumbnailService.saveThumbnail(new ImageCenterCrop(),
-        thumbnail, ThumbnailSize.LARGE, dto.getIpAddress());
-
-    if (thumbnailEntity == null) {
-      return responseService.getFailResult();
-    }
-
+    dto.setIpAddress(getUserIP(httpServletRequest));
+    ThumbnailEntity thumbnailEntity = thumbnailService.save(ThumbType.PostThumbnail,
+        new ImageCenterCropping(
+            ImageSize.LARGE), thumbnail, dto.getIpAddress());
     dto.setThumbnailId(thumbnailEntity.getId());
     PostingEntity postingEntity = postingService.save(dto);
     fileService.saveFiles(files, dto.getIpAddress(), postingEntity);
 
-    return postingEntity.getId() != null ? responseService.getSuccessResult()
-        : responseService.getFailResult();
+    return responseService.getSuccessResult();
   }
 
   @Secured("ROLE_회원")
@@ -132,42 +128,24 @@ public class PostingController {
   public SingleResult<PostingResponseDto> getPosting(@PathVariable("pid") Long postingId,
       @RequestParam(value = "password", required = false) String password) {
 
-    PostingEntity postingEntity = postingService.getPostingById(postingId);
-    Long visitMemberId = authService.getMemberIdByJWT();
+    PostingResponseDto postingResponseDto = postingService.getPostingResponseById(postingId,
+        authService.getMemberIdByJWT(), password);
 
-    // 키퍼 13기 이후부터 시험 게시판에 접근하려면 조건 충족해야함.
-    if (postingService.isNotAccessExamBoard(postingEntity)) {
-      return responseService.getSuccessSingleResult(
-          postingService.createNotAccessDto(postingEntity));
-    }
-    if (visitMemberId != postingEntity.getMemberId().getId()) {
-      if (postingEntity.getIsTemp() == PostingService.isTempPosting) {
-        return responseService.getFailSingleResult(null, -11100, "임시저장 게시물입니다.");
-      } else if (postingEntity.getIsSecret() == 1) {
-        if (!(postingEntity.getPassword().equals(password))) {
-          return responseService.getFailSingleResult(null, -11000, "비밀번호가 일치하지 않습니다.");
-        }
-      }
-      postingEntity.increaseVisitCount();
-      postingService.updateInfoById(postingEntity, postingId);
-    }
-
-    return responseService.getSuccessSingleResult(
-        new PostingResponseDto().initWithEntity(postingEntity, 1, true));
+    return responseService.getSuccessSingleResult(postingResponseDto);
   }
 
   @GetMapping(value = "/attach/{pid}")
   public ListResult<FileEntity> getAttachList(@PathVariable("pid") Long postingId) {
 
     return responseService.getSuccessListResult(
-        fileService.findFileEntitiesByPostingId(postingService.getPostingById(postingId)));
+        fileService.findAllByPostingId(postingService.getPostingById(postingId)));
   }
 
   // 다운로드는 ResponseEntity를 사용하는것이 더 용이하여 그대로 두었습니다.
   @GetMapping(value = "/download/{fileId}")
   public ResponseEntity<Resource> downloadFile(@PathVariable("fileId") Long fileId)
       throws IOException {
-    FileEntity fileEntity = fileService.findFileEntityById(fileId);
+    FileEntity fileEntity = fileService.find(fileId);
     Path path = Paths.get(fileEntity.getFilePath());
     Resource resource = new InputStreamResource(Files.newInputStream(path));
     String encodedFileName = UriUtils.encode(fileEntity.getFileName(), StandardCharsets.UTF_8);
@@ -185,34 +163,33 @@ public class PostingController {
   public CommonResult modifyPosting(
       @RequestParam(value = "file", required = false) List<MultipartFile> files,
       @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
-      PostingDto dto, @PathVariable("pid") Long postingId) {
+      PostingDto dto, HttpServletRequest httpServletRequest, @PathVariable("pid") Long postingId) {
 
+    dto.setIpAddress(getUserIP(httpServletRequest));
     ThumbnailEntity newThumbnail = saveThumbnail(thumbnail, dto);
-
     PostingEntity postingEntity = postingService.updateById(dto, postingId, newThumbnail);
     fileService.saveFiles(files, dto.getIpAddress(), postingEntity);
-
     deletePrevThumbnail(dto);
 
     return responseService.getSuccessResult();
   }
 
   @GetMapping(value = "/delete/{fileId}")
-  public CommonResult deleteFile(@PathVariable("fileId") Long fileId){
-    fileService.deleteFileById(fileId);
+  public CommonResult deleteFile(@PathVariable("fileId") Long fileId) {
+    fileService.deleteFile(fileId);
 
     return responseService.getSuccessResult();
   }
 
-  private void deletePrevFiles(PostingEntity postingEntity) {
-    List<FileEntity> fileEntities = fileService.findFileEntitiesByPostingId(
-        postingEntity);
-    fileService.deleteFiles(fileEntities);
+  @DeleteMapping(value = "/files")
+  public CommonResult deleteFiles(@RequestParam(value = "fileIdList") List<Long> fileIdList) {
+    fileService.deleteFilesByIdList(fileIdList);
+    return responseService.getSuccessResult();
   }
 
   private ThumbnailEntity saveThumbnail(MultipartFile thumbnail, PostingDto dto) {
-    ThumbnailEntity newThumbnail = thumbnailService.saveThumbnail(new ImageCenterCrop(), thumbnail,
-        ThumbnailSize.LARGE, dto.getIpAddress());
+    ThumbnailEntity newThumbnail = thumbnailService.save(ThumbType.PostThumbnail,
+        new ImageCenterCropping(ImageSize.LARGE), thumbnail, dto.getIpAddress());
     if (newThumbnail == null) {
       throw new CustomThumbnailEntityNotFoundException("썸네일 저장 중에 에러가 발생했습니다.");
     }
@@ -221,9 +198,8 @@ public class PostingController {
 
   private void deletePrevThumbnail(PostingDto dto) {
     if (dto.getThumbnailId() != null) {
-      ThumbnailEntity prevThumbnail = thumbnailService.findById(dto.getThumbnailId());
-      thumbnailService.deleteById(prevThumbnail.getId());
-      fileService.deleteOriginalThumbnail(prevThumbnail);
+      ThumbnailEntity prevThumbnail = thumbnailService.find(dto.getThumbnailId());
+      thumbnailService.delete(prevThumbnail.getId());
     }
   }
 
@@ -231,24 +207,28 @@ public class PostingController {
   public CommonResult removePosting(@PathVariable("pid") Long postingId) {
 
     PostingEntity postingEntity = postingService.getPostingById(postingId);
-
     // NOTE: 게시글에 연결 된 댓글 FK 삭제
     commentService.deleteByPostingId(postingEntity);
 
     ThumbnailEntity deleteThumbnail = null;
     if (postingEntity.getThumbnail() != null) {
-      deleteThumbnail = thumbnailService.findById(
+      deleteThumbnail = thumbnailService.find(
           postingEntity.getThumbnail().getId());
     }
     deletePrevFiles(postingEntity);
     postingService.delete(postingEntity);
 
-    if (postingEntity.getThumbnail() != null) {
-      thumbnailService.deleteById(deleteThumbnail.getId());
-      fileService.deleteOriginalThumbnail(deleteThumbnail);
+    if (deleteThumbnail != null) {
+      thumbnailService.delete(deleteThumbnail.getId());
     }
 
     return responseService.getSuccessResult();
+  }
+
+  private void deletePrevFiles(PostingEntity postingEntity) {
+    List<FileEntity> fileEntities = fileService.findAllByPostingId(
+        postingEntity);
+    fileService.deleteFiles(fileEntities);
   }
 
 

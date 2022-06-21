@@ -23,8 +23,7 @@ import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.user.dto.posting.CommentDto;
-import keeper.project.homepage.user.service.posting.PostingService;
-import keeper.project.homepage.util.ImageFormatChecking;
+import keeper.project.homepage.util.image.ImageFormatChecking;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -75,7 +74,6 @@ public class CommentControllerTest extends ApiControllerTestHelper {
     Long postId = postingEntity.getId();
     String content = "{\n"
         + "    \"content\": \"SDFASFASG\",\n"
-        + "    \"ipAddress\": \"672.523.937.636\",\n"
         + "    \"parentId\": \n" + 0L + "\n"
         + "}";
 
@@ -98,7 +96,6 @@ public class CommentControllerTest extends ApiControllerTestHelper {
             ),
             requestFields(
                 fieldWithPath("content").description("댓글 내용"),
-                fieldWithPath("ipAddress").description("댓글 작성자의 ip address"),
                 fieldWithPath("parentId").optional()
                     .description("모댓글: 입력 없음(db에는 0으로 설정), 대댓글: 부모 댓글의 id")
             ),
@@ -114,7 +111,6 @@ public class CommentControllerTest extends ApiControllerTestHelper {
     Long postId = postingEntity.getId();
     String content = "{\n"
         + "    \"content\": \"\",\n"
-        + "    \"ipAddress\": \"672.523.937.636\",\n"
         + "    \"parentId\": \n" + commentParentId + "\n"
         + "}";
 

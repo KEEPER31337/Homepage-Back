@@ -1,6 +1,9 @@
 package keeper.project.homepage.user.controller.posting;
 
+import static keeper.project.homepage.util.ClientUtil.getUserIP;
+
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.user.dto.posting.CommentDto;
 import keeper.project.homepage.common.dto.result.CommonResult;
 import keeper.project.homepage.common.dto.result.ListResult;
@@ -44,7 +47,8 @@ public class CommentController {
   @PostMapping(value = "/{postId}", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<CommonResult> createComment(
       @PathVariable("postId") Long postId,
-      @RequestBody CommentDto commentDto) {
+      @RequestBody CommentDto commentDto, HttpServletRequest httpServletRequest) {
+    commentDto.setIpAddress(getUserIP(httpServletRequest));
     Long memberId = authService.getMemberIdByJWT();
     commentService.save(commentDto, postId, memberId);
     return ResponseEntity.ok().body(responseService.getSuccessResult());
@@ -72,7 +76,8 @@ public class CommentController {
   @PutMapping(value = "/{commentId}", consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<SingleResult<CommentDto>> updateComment(
       @PathVariable("commentId") Long commentId,
-      @RequestBody CommentDto commentDto) {
+      @RequestBody CommentDto commentDto, HttpServletRequest httpServletRequest) {
+    commentDto.setIpAddress(getUserIP(httpServletRequest));
     Long memberId = authService.getMemberIdByJWT();
     CommentDto updateDto = commentService.updateById(commentDto, commentId, memberId);
     return ResponseEntity.ok().body(responseService.getSuccessSingleResult(updateDto));

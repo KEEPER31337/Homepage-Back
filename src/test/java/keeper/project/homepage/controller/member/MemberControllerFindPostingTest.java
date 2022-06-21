@@ -148,10 +148,10 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
             .param("password", "asd"))
         .andDo(print())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(-11100))
+        .andExpect(jsonPath("$.code").value(-11002))
         .andExpect(jsonPath("$.msg").value("임시저장 게시물입니다."))
-        .andExpect(jsonPath("$.data").isEmpty())
-        .andExpect(status().isOk());
+        .andExpect(jsonPath("$.data").doesNotExist())
+        .andExpect(status().isBadRequest());
   }
 
   @Test
