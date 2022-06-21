@@ -2,7 +2,7 @@ name: Keeper Homepage Backend CI/CD
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
   DEV_Deploy:
@@ -76,9 +76,6 @@ jobs:
 
   PROD_Deploy:
     if: contains(github.ref, 'main')
-          ${{ secrets.S3_PROD_BACK_LOCATION }}/$(date +%Y%m%d).tar.gz
-          host: ${{ secrets.HOST_PROD }}
-          key: ${{ secrets.KEY_PROD }}
     runs-on: ubuntu-18.04
     timeout-minutes: 10
 
