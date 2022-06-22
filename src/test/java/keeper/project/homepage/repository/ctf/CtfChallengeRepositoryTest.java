@@ -56,4 +56,51 @@ class CtfChallengeRepositoryTest extends CtfTestHelper {
     assertThat(findChallenge.getScore()).isEqualTo(score);
     assertThat(findChallenge.getCtfContestEntity()).isEqualTo(contest);
   }
+
+  @Test
+  @DisplayName("CTF challenge 매우 긴 description 테스트")
+  public void saveLargeDescriptionChallengeList() {
+    // given
+    final long epochTime = System.nanoTime();
+    String name = "name_" + epochTime;
+    String desc = generateDummyString(20000);
+    MemberEntity member = memberRepository.getById(1L);
+    boolean isSolvable = true;
+    CtfChallengeTypeEntity ctfChallengeTypeEntity = ctfChallengeTypeRepository.getById(
+        CtfChallengeType.STANDARD.getId());
+    CtfChallengeCategoryEntity ctfChallengeCategoryEntity = ctfChallengeCategoryRepository.getById(
+        CtfChallengeCategory.System.getId());
+    Long score = 1000L;
+    CtfContestEntity contest = generateCtfContest(member);
+
+    // when
+    CtfChallengeEntity challenge = CtfChallengeEntity.builder()
+        .name(name)
+        .description(desc)
+        .registerTime(LocalDateTime.now())
+        .creator(member) // Virtual Member
+        .isSolvable(isSolvable)
+        .ctfChallengeTypeEntity(ctfChallengeTypeEntity)
+        .ctfChallengeCategoryEntity(ctfChallengeCategoryEntity)
+        .score(score)
+        .ctfContestEntity(contest)
+        .ctfFlagEntity(new ArrayList<>())
+        .build();
+    ctfChallengeRepository.save(challenge);
+    CtfChallengeEntity findChallenge = ctfChallengeRepository.getById(challenge.getId());
+
+    // then
+    assertThat(findChallenge.getName()).isEqualTo(name);
+    assertThat(findChallenge.getDescription()).isEqualTo(desc);
+    assertThat(findChallenge.getCreator()).isEqualTo(member);
+    assertThat(findChallenge.getIsSolvable()).isEqualTo(isSolvable);
+    assertThat(findChallenge.getCtfChallengeTypeEntity()).isEqualTo(ctfChallengeTypeEntity);
+    assertThat(findChallenge.getCtfChallengeCategoryEntity()).isEqualTo(ctfChallengeCategoryEntity);
+    assertThat(findChallenge.getScore()).isEqualTo(score);
+    assertThat(findChallenge.getCtfContestEntity()).isEqualTo(contest);
+  }
+
+  private String generateDummyString(int stringSize) {
+    return "0".repeat(stringSize);
+  }
 }
