@@ -2,7 +2,7 @@ name: Keeper Homepage Backend CI/CD
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [main, develop]
 
 jobs:
   DEV_Deploy:
@@ -64,15 +64,12 @@ jobs:
         run: |
           aws s3 mv --region ap-northeast-2 \
           $(date +%Y%m%d).tar.gz \
-          ${{ secrets.S3_DEV_BACK_LOCATION }}/$(date +%Y%m%d).tar.gz
 
       - name: Deploy
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           port: ${{ secrets.PORT }}
-          key: ${{ secrets.KEY }}
           script: |
             cd ~/keeper
             ./deploy_back.sh

@@ -30,14 +30,17 @@ public class KeeperCrawler {
       }
 
       Elements elements = doc.select(elementQueries.get(i));
-      sb.append("==" + titles.get(i) + "==\n\n");
+      sb.append("### " + titles.get(i) + "\n\n");
       for (Element element : elements) {
+        sb.append("**");
         sb.append(titleQueries.get(i).equals("") ? element.text()
             : element.select(titleQueries.get(i)).text());
-        sb.append(" => ");
+        sb.append("**");
+        sb.append(" -> [");
         sb.append(urls.get(i), 0, urlEnds.get(i));
         sb.append(linkQueries.get(i).equals("") ? element.attr("href")
             : element.select(linkQueries.get(i)).get(0).attr("href"));
+        sb.append("](url)");
         sb.append("\n");
       }
       sb.append("\n\n");

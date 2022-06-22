@@ -10,6 +10,7 @@ import static keeper.project.homepage.user.service.posting.PostingService.INFO_C
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import keeper.project.homepage.user.dto.posting.PostingDto;
 import keeper.project.homepage.user.service.posting.PostingService;
 import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
@@ -25,7 +26,7 @@ public class ScheduledTasks {
   private final PostingService postingService;
 
   // 3일마다 한 번씩 실행
-  @Scheduled(cron = "0 0 */3 * * *", zone = "Asia/Seoul")
+  @Scheduled(cron = "0 0 0 */3 * *", zone = "Asia/Seoul")
   public void autoPosting() {
 
     LocalDateTime now = LocalDateTime.now();
@@ -36,7 +37,8 @@ public class ScheduledTasks {
         .commentCount(0).dislikeCount(0).likeCount(0).ipAddress("127.0.0.1").isNotice(0).isSecret(0)
         .isTemp(0).visitCount(0).registerTime(now).updateTime(now)
         .thumbnailId(DefaultThumbnailInfo.ThumbPosting.getThumbnailId())
-        .title(now.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 E요일자 정보")))
+        .title(now.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 E요일자 정보")
+            .withLocale(Locale.forLanguageTag("ko"))))
         .content(keeperCrawler.toString()).build();
 
     postingService.autoSave(postingDto);
