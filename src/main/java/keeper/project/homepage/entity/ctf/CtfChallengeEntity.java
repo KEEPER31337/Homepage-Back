@@ -41,7 +41,7 @@ public class CtfChallengeEntity {
   @Column(length = 200, nullable = false)
   String name;
 
-  @Column(length = 200)
+  @Column(columnDefinition = "TEXT")
   String description;
 
   @Column(nullable = false)

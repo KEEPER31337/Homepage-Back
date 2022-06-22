@@ -5,8 +5,8 @@ import java.util.List;
 public class CrawlerSettings {
 
   // NOTE: 좋은 설정파일 방식 있으면 바꾸기
-  public static final List<String> TITLES = List.of("BoanNews", "ItWorld", "ContestKorea",
-      "AllForYoung", "ItFind");
+  public static final List<String> TITLES = List.of("보안뉴스", "ItWorld", "콘텐스트 코리아",
+      "요즘것들(대외활동, 공모전)", "ItFind");
   public static final List<String> ELEMENT_QUERIES = List.of(
       "body > dl > dd > section > ul:not(:nth-child(1)) > li > a", "div.node-list > div h5 > a",
       "#frm > div > div.list_style_2 > ul > li",
