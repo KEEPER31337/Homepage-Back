@@ -20,7 +20,7 @@ public class RankDto {
   private String thumbnailPath;
   private List<String> jobs;
   private Integer point;
-  private Integer rank;
+  private Long rank;
 
   public static RankDto toDto(MemberEntity member) {
     return RankDto.builder()
