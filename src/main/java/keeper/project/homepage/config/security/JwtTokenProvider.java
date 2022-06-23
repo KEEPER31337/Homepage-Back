@@ -32,7 +32,8 @@ public class JwtTokenProvider { // JWT 토큰을 생성 및 검증 모듈
   @Value("spring.jwt.secret")
   private String secretKey;
 
-  private final long tokenValidMilisecond = 1000L * 60 * 60; // 1시간만 토큰 유효
+  // FIXME: CTF 기간동안 5일의 세션을 가짐!! CTF 종료 후 꼭 수정 필요
+  private final long tokenValidMilisecond = 1000L * 60 * 60 * 24 * 5;
 
   @PostConstruct
   protected void init() {
