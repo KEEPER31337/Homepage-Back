@@ -69,8 +69,10 @@ jobs:
       - name: Deploy
         uses: appleboy/ssh-action@master
         with:
+          host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           port: ${{ secrets.PORT }}
+          key: ${{ secrets.KEY }}
           script: |
             cd ~/keeper
             ./deploy_back.sh
