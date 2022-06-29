@@ -15,6 +15,7 @@
 ---
 
 ### How to contribute?
+
 - KEEPER 홈페이지의 발전에 기여해주세요!
 - KEEPER 홈페이지 백엔드 프로젝트는 2022학년도 1학기 이후, 오픈소스로 운영됩니다.
 
@@ -42,6 +43,8 @@
 
 #### 🛠️Code Reviewers🛠️
 
+##### 1안
+
 홈페이지 소개, 로그인 : [@gusah009](https://www.github.com/gusah009) , [@woo-chang](https://github.com/woo-chang)
 
 게시판: [@noonmap](https://github.com/noonmap), [@koty08](https://github.com/koty08)
@@ -60,8 +63,47 @@ CTF : [@gusah009](https://www.github.com/gusah009)
 
 이미지, 파일 관리 : [@noonmap](https://github.com/noonmap),[@koty08](https://github.com/koty08)
 
+##### 2안
+
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://www.github.com/gusah009">
+        <img src="https://github.com/gusah009.png" width="100px;" alt=""/>
+        <br/><b>@gusah009</b>
+      </a>
+    </td>
+    <td>
+      <ul>
+        <li>홈페이지 소개 <code>about</code></li>
+        <li>로그인 / 회원가입 <code>sign</code></li>
+        <li>출석부 <code>attendance</code></li>
+        <li>스터디 <code>study</code></li>
+        <li>CTF <code>ctf</code></li>
+      </ul>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="center">
+      <a href="https://www.github.com/woo-chang">
+        <img src="https://github.com/woo-chang.png" width="100px;" alt=""/>
+        <br/><b>@woo-chang</b>
+      </a>
+    </td>
+    <td>
+      <ul>
+        <li>홈페이지 소개 <code>about</code></li>
+        <li>로그인 / 회원가입 <code>sign</code></li>
+        <li>회원관리 <code>member</code></li>
+        <li>포인트 <code>point</code></li>
+      </ul>
+    </td>
+  </tr>
+<table>
 
 ---
+
 #### 📞기타 문의📞
 
 Backend / Spring 기타 문의 : [@gusah009](https://www.github.com/gusah009)
