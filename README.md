@@ -1,19 +1,5 @@
 # Homepage-Back
 
-### 프로젝트 배경
-
-![github이미지1](https://user-images.githubusercontent.com/26597702/148182283-1031d562-db6b-48b5-862c-608f6ad1dbb9.png)
-
-### 프로젝트 목적
-
-![github이미지2](https://user-images.githubusercontent.com/26597702/148182288-72db143f-3dff-42a3-a17a-c6a08e63ecca.png)
-
-### 전체 설계
-
-![github이미지3](https://user-images.githubusercontent.com/26597702/148182291-302667d1-9098-40c5-b56c-77facf2bb7e9.png)
-
----
-
 ### How to contribute?
 
 - KEEPER 홈페이지의 발전에 기여해주세요!
@@ -43,28 +29,6 @@
 
 #### 🛠️Code Reviewers🛠️
 
-##### 1안
-
-홈페이지 소개, 로그인 : [@gusah009](https://www.github.com/gusah009) , [@woo-chang](https://github.com/woo-chang)
-
-게시판: [@noonmap](https://github.com/noonmap), [@koty08](https://github.com/koty08)
-
-출석부 : [@gusah009](https://www.github.com/gusah009), [@koty08](https://github.com/koty08), [@JeonghakLee](https://github.com/JeonghakLee)
-
-멤버관리 : [@noonmap](https://github.com/noonmap), [@woo-chang](https://github.com/woo-chang)
-
-도서관, 기자재 : [@1004-head](https://github.com/1004-head)
-
-스터디 : [@gusah009](https://www.github.com/gusah009)
-
-CTF : [@gusah009](https://www.github.com/gusah009)
-
-대외활동 크롤링 : [@koty08](https://github.com/koty08)
-
-이미지, 파일 관리 : [@noonmap](https://github.com/noonmap),[@koty08](https://github.com/koty08)
-
-##### 2안
-
 <table>
   <tr>
     <td align="center">
@@ -86,6 +50,22 @@ CTF : [@gusah009](https://www.github.com/gusah009)
 
   <tr>
     <td align="center">
+      <a href="https://www.github.com/noonmap">
+        <img src="https://github.com/noonmap.png" width="100px;" alt=""/>
+        <br/><b>@noonmap</b>
+      </a>
+    </td>
+    <td>
+      <ul>
+        <li>게시판 <code>posting</code></li>
+        <li>회원관리 <code>member</code></li>
+        <li>파일/이미지 처리 <code>util</code></li>
+      </ul>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="center">
       <a href="https://www.github.com/woo-chang">
         <img src="https://github.com/woo-chang.png" width="100px;" alt=""/>
         <br/><b>@woo-chang</b>
@@ -100,14 +80,73 @@ CTF : [@gusah009](https://www.github.com/gusah009)
       </ul>
     </td>
   </tr>
-<table>
+  
+  <tr>
+    <td align="center">
+      <a href="https://www.github.com/1004-head">
+        <img src="https://github.com/1004-head.png" width="100px;" alt=""/>
+        <br/><b>@1004-head</b>
+      </a>
+    </td>
+    <td>
+      <ul>
+        <li>도서 / 기자재 <code>library</code></li>
+      </ul>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="center">
+      <a href="https://www.github.com/koty08">
+        <img src="https://github.com/koty08.png" width="100px;" alt=""/>
+        <br/><b>@koty08</b>
+      </a>
+    </td>
+    <td>
+      <ul>
+        <li>게시판 <code>posting</code></li>
+        <li>출석부 / 게임 <code>attendance</code></li>
+        <li>대외활동 수집 <code>crawler</code></li>
+      </ul>
+    </td>
+  </tr>
+
+  <tr>
+    <td align="center">
+      <a href="https://www.github.com/JeonghakLee">
+        <img src="https://github.com/JeonghakLee.png" width="100px;" alt=""/>
+        <br/><b>@JeonghakLee</b>
+      </a>
+    </td>
+    <td>
+      <ul>
+        <li>출석부 <code>attendance</code></li>
+      </ul>
+    </td>
+  </tr>
+
+</table>
 
 ---
 
 #### 📞기타 문의📞
 
-Backend / Spring 기타 문의 : [@gusah009](https://www.github.com/gusah009)
+Backend / Spring 문의 : [@gusah009](https://www.github.com/gusah009)
 
-Infra 기타 문의 : [@redundant4u](https://github.com/redundant4u)
+Infra / Github Action 문의 : [@redundant4u](https://github.com/redundant4u)
 
-DB 기타 문의 : [@shasuri](https://github.com/shasuri)
+Database 문의 : [@shasuri](https://github.com/shasuri)
+
+---
+
+### 프로젝트 배경
+
+![github이미지1](https://user-images.githubusercontent.com/26597702/148182283-1031d562-db6b-48b5-862c-608f6ad1dbb9.png)
+
+### 프로젝트 목적
+
+![github이미지2](https://user-images.githubusercontent.com/26597702/148182288-72db143f-3dff-42a3-a17a-c6a08e63ecca.png)
+
+### 전체 설계
+
+![github이미지3](https://user-images.githubusercontent.com/26597702/148182291-302667d1-9098-40c5-b56c-77facf2bb7e9.png)
