@@ -26,7 +26,9 @@ public class KeeperCrawler {
       try {
         doc = Jsoup.connect(urls.get(i)).get();
       } catch (IOException e) {
-        return String.format("Error : url %s is invalid", urls.get(i));
+        sb.append(String.format("Error : url %s is invalid", urls.get(i)));
+        sb.append("\n\n\n");
+        continue;
       }
 
       Elements elements = doc.select(elementQueries.get(i));
@@ -43,7 +45,7 @@ public class KeeperCrawler {
         sb.append("](url)");
         sb.append("\n");
       }
-      sb.append("\n\n");
+      sb.append("\n\n\n");
     }
 
     return sb.toString();
