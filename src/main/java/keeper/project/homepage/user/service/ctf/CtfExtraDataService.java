@@ -1,7 +1,10 @@
 package keeper.project.homepage.user.service.ctf;
 
+import static keeper.project.homepage.common.dto.member.CommonMemberDto.toDto;
+
 import java.util.List;
 import keeper.project.homepage.common.dto.member.CommonMemberDto;
+import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.repository.ctf.CtfChallengeCategoryRepository;
 import keeper.project.homepage.repository.ctf.CtfChallengeTypeRepository;
 import keeper.project.homepage.repository.ctf.CtfContestRepository;
@@ -26,26 +29,31 @@ public class CtfExtraDataService {
   private final CtfContestRepository contestRepository;
 
   public List<CommonMemberDto> getChallengeMakerList() {
-    return memberHasMemberJobRepository.findAllByMemberJobEntity(
-            memberJobRepository.findByName("ROLE_출제자").orElseThrow(
-                () -> new RuntimeException("출제자 권한이 없습니다. 전산 관리자에게 문의하세요.")))
-        .stream()
-        .map(memberHasMemberJob -> CommonMemberDto.toDto(memberHasMemberJob.getMemberEntity()))
+    return memberHasMemberJobRepository.findAllByMemberJobEntity(getProbMakerJob())
+        .stream().map(memberHasMemberJob -> toDto(memberHasMemberJob.getMemberEntity()))
         .toList();
 
   }
 
+  private MemberJobEntity getProbMakerJob() {
+    return memberJobRepository.findByName("ROLE_출제자").orElseThrow(
+        () -> new RuntimeException("출제자 권한이 없습니다. 전산 관리자에게 문의하세요."));
+  }
+
   public List<CtfChallengeTypeDto> getChallengeTypeList() {
-    return challengeTypeRepository.findAll().stream().map(CtfChallengeTypeDto::toDto).toList();
+    return challengeTypeRepository.findAll()
+        .stream().map(CtfChallengeTypeDto::toDto)
+        .toList();
   }
 
   public List<CtfChallengeCategoryDto> getChallengeCategoryList() {
-    return challengeCategoryRepository.findAll().stream().map(CtfChallengeCategoryDto::toDto)
+    return challengeCategoryRepository.findAll()
+        .stream().map(CtfChallengeCategoryDto::toDto)
         .toList();
   }
 
   public List<CtfContestDto> getContestList() {
-    return contestRepository.findAllByIsJoinableTrueOrderByIdDesc().stream()
-        .map(CtfContestDto::toDto).toList();
+    return contestRepository.findAllByIsJoinableTrueOrderByIdDesc()
+        .stream().map(CtfContestDto::toDto).toList();
   }
 }

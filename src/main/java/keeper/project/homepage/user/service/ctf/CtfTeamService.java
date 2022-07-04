@@ -47,56 +47,42 @@ public class CtfTeamService {
   @Transactional
   public CtfTeamDetailDto createTeam(CtfTeamDetailDto ctfTeamDetailDto) {
 
-    ctfUtilService.checkVirtualContest(ctfTeamDetailDto.getContestId());
-    ctfUtilService.checkJoinable(ctfTeamDetailDto.getContestId());
+    Long contestId = ctfTeamDetailDto.getContestId();
+
+    ctfUtilService.checkVirtualContest(contestId);
+    ctfUtilService.checkJoinable(contestId);
 
     ctfTeamDetailDto.setRegisterTime(LocalDateTime.now());
-    MemberEntity creator = authService.getMemberEntityWithJWT();
-    CtfContestEntity contest = contestRepository.findById(ctfTeamDetailDto.getContestId())
-        .orElseThrow(CustomContestNotFoundException::new);
+    MemberEntity creator = getMemberEntityByJWT();
+    CtfContestEntity contest = getContestEntity(contestId);
 
-    if (isAlreadyHasTeam(ctfTeamDetailDto.getContestId(), creator)) {
+    if (isAlreadyHasTeam(contestId, creator)) {
       throw new RuntimeException("이미 해당 CTF에서 가입한 팀이 존재합니다.");
     }
 
-    CtfTeamEntity newTeamEntity = teamRepository.save(ctfTeamDetailDto.toEntity(contest, creator));
+    CtfTeamEntity newTeamEntity = saveTeam(ctfTeamDetailDto.toEntity(contest, creator));
 
-    CtfTeamHasMemberEntity teamHasMemberEntity = new CtfTeamHasMemberEntity(newTeamEntity, creator);
-    teamHasMemberRepository.save(teamHasMemberEntity);
+    registerMemberToTeam(creator, newTeamEntity);
 
+    // 팀이 생성될 때 마다 Dynamic score 변경
     ctfUtilService.setAllDynamicScore();
 
-    List<CtfChallengeEntity> challengeEntities = challengeRepository.findAllByIdIsNotAndCtfContestEntity(
-        VIRTUAL_CONTEST_ID, contest);
-    challengeEntities.forEach(challenge -> {
-      CtfFlagEntity flagEntity = CtfFlagEntity.builder()
-          .content(challenge.getCtfFlagEntity().get(0).getContent())
-          .ctfTeamEntity(newTeamEntity)
-          .ctfChallengeEntity(challenge)
-          .isCorrect(false)
-          .build();
-      flagRepository.save(flagEntity);
-    });
-    return CtfTeamDetailDto.toDto(newTeamEntity, new ArrayList<>());
-  }
+    // 팀이 생성될 때 마다 모든 문제에 해당하는 flag 생성
+    createTeamFlag(contest, newTeamEntity);
 
-  private boolean isAlreadyHasTeam(Long ctfId, MemberEntity creator) {
-    return teamHasMemberRepository.findAllByMember(creator).stream().anyMatch(teamHasMemberEntity ->
-        ctfId.equals(teamHasMemberEntity.getTeam().getCtfContestEntity().getId())
-    );
+    return CtfTeamDetailDto.toDto(newTeamEntity, new ArrayList<>());
   }
 
   public CtfTeamDetailDto modifyTeam(Long teamId, CtfTeamDto ctfTeamDto) {
 
     ctfUtilService.checkVirtualTeam(teamId);
 
-    CtfTeamEntity teamEntity = teamRepository.findById(teamId)
-        .orElseThrow(CustomContestNotFoundException::new);
+    CtfTeamEntity teamEntity = getTeamEntity(teamId);
 
     ctfUtilService.checkJoinable(teamEntity.getCtfContestEntity().getId());
 
     Long modifyMemberId = authService.getMemberIdByJWT();
-    if (!modifyMemberId.equals(teamEntity.getCreator().getId())) {
+    if (!amICreator(teamEntity, modifyMemberId)) {
       throw new RuntimeException("본인이 생성한 팀이 아니면 수정할 수 없습니다.");
     }
 
@@ -105,27 +91,20 @@ public class CtfTeamService {
 
     List<CtfChallengeEntity> solvedChallengeList = getSolvedChallengeListByTeamId(teamId);
 
-    return CtfTeamDetailDto.toDto(teamRepository.save(teamEntity), solvedChallengeList);
-  }
-
-  private List<CtfChallengeEntity> getSolvedChallengeListByTeamId(Long teamId) {
-    return flagRepository.findAllByCtfTeamEntityIdAndIsCorrectTrue(
-        teamId).stream().map(CtfFlagEntity::getCtfChallengeEntity).toList();
+    return CtfTeamDetailDto.toDto(saveTeam(teamEntity), solvedChallengeList);
   }
 
   public CtfTeamHasMemberDto joinTeam(CtfJoinTeamRequestDto joinTeamRequestDto) {
 
     String teamName = joinTeamRequestDto.getTeamName();
-    CtfContestEntity joinTeamContest = contestRepository.findById(joinTeamRequestDto.getContestId())
-        .orElseThrow(CustomContestNotFoundException::new);
+    CtfContestEntity joinTeamContest = getContestEntity(joinTeamRequestDto.getContestId());
 
     ctfUtilService.checkVirtualTeamByName(teamName);
     ctfUtilService.checkVirtualContest(joinTeamRequestDto.getContestId());
     ctfUtilService.checkJoinable(joinTeamRequestDto.getContestId());
 
-    CtfTeamEntity joinTeam = teamRepository.findByNameAndCtfContestEntity(teamName, joinTeamContest)
-        .orElseThrow(CustomCtfTeamNotFoundException::new);
-    MemberEntity joinMember = authService.getMemberEntityWithJWT();
+    CtfTeamEntity joinTeam = getJoinTeam(teamName, joinTeamContest);
+    MemberEntity joinMember = getMemberEntityByJWT();
 
     if (isAlreadyHasTeam(joinTeam.getCtfContestEntity().getId(), joinMember)) {
       throw new RuntimeException("이미 해당 CTF에서 가입한 팀이 존재합니다.");
@@ -141,7 +120,7 @@ public class CtfTeamService {
   @Transactional
   public CtfTeamDetailDto leaveTeam(Long ctfId) {
 
-    MemberEntity leaveMember = authService.getMemberEntityWithJWT();
+    MemberEntity leaveMember = getMemberEntityByJWT();
     CtfTeamHasMemberEntity leaveTeamHasMemberEntity = ctfUtilService
         .getTeamHasMemberEntity(ctfId, leaveMember.getId());
     CtfTeamEntity leftTeam = leaveTeamHasMemberEntity.getTeam();
@@ -151,27 +130,18 @@ public class CtfTeamService {
     teamHasMemberRepository.delete(leaveTeamHasMemberEntity);
     if (isTeamCreator(leaveMember, leftTeam)) {
       removeTeam(leftTeam);
+
+      // 팀이 삭제될 때 마다 Dynamic score 변경
       ctfUtilService.setAllDynamicScore();
     }
 
     return CtfTeamDetailDto.toDto(leftTeam, new ArrayList<>());
   }
 
-  private void removeTeam(CtfTeamEntity leftTeam) {
-    teamHasMemberRepository.deleteAllByTeamId(leftTeam.getId());
-    flagRepository.deleteAllByCtfTeamEntityId(leftTeam.getId());
-    teamRepository.delete(leftTeam);
-  }
-
-  private boolean isTeamCreator(MemberEntity leaveMember, CtfTeamEntity leftTeam) {
-    return leftTeam.getCreator().getId().equals(leaveMember.getId());
-  }
-
   public CtfTeamDetailDto getTeamDetail(Long teamId) {
     ctfUtilService.checkVirtualTeam(teamId);
 
-    CtfTeamEntity teamEntity = teamRepository.findById(teamId)
-        .orElseThrow(CustomCtfTeamNotFoundException::new);
+    CtfTeamEntity teamEntity = getTeam(teamId);
 
     List<CtfChallengeEntity> solvedChallengeList = getSolvedChallengeListByTeamId(teamId);
 
@@ -194,5 +164,81 @@ public class CtfTeamService {
     List<CtfChallengeEntity> solvedChallengeList = getSolvedChallengeListByTeamId(myTeam.getId());
 
     return CtfTeamDetailDto.toDto(myTeam, solvedChallengeList);
+  }
+
+  private CtfTeamEntity getTeam(Long teamId) {
+    return teamRepository.findById(teamId)
+        .orElseThrow(CustomCtfTeamNotFoundException::new);
+  }
+
+  private CtfTeamEntity getJoinTeam(String teamName, CtfContestEntity joinTeamContest) {
+    return teamRepository.findByNameAndCtfContestEntity(teamName, joinTeamContest)
+        .orElseThrow(CustomCtfTeamNotFoundException::new);
+  }
+
+  private boolean amICreator(CtfTeamEntity teamEntity, Long modifyMemberId) {
+    return modifyMemberId.equals(teamEntity.getCreator().getId());
+  }
+
+  private CtfTeamEntity getTeamEntity(Long teamId) {
+    return teamRepository.findById(teamId)
+        .orElseThrow(CustomContestNotFoundException::new);
+  }
+
+  private void createTeamFlag(CtfContestEntity contest, CtfTeamEntity newTeamEntity) {
+    List<CtfChallengeEntity> challengeEntityList = getAllChallengeEntity(contest);
+    challengeEntityList.forEach(challenge -> {
+      CtfFlagEntity flagEntity = CtfFlagEntity.builder()
+          .content(challenge.getCtfFlagEntity().get(0).getContent())
+          .ctfTeamEntity(newTeamEntity)
+          .ctfChallengeEntity(challenge)
+          .isCorrect(false)
+          .build();
+      flagRepository.save(flagEntity);
+    });
+  }
+
+  private List<CtfChallengeEntity> getAllChallengeEntity(CtfContestEntity contest) {
+    return challengeRepository.findAllByIdIsNotAndCtfContestEntity(
+        VIRTUAL_CONTEST_ID, contest);
+  }
+
+  private void registerMemberToTeam(MemberEntity member, CtfTeamEntity team) {
+    CtfTeamHasMemberEntity teamHasMemberEntity = new CtfTeamHasMemberEntity(team, member);
+    teamHasMemberRepository.save(teamHasMemberEntity);
+  }
+
+  private CtfTeamEntity saveTeam(CtfTeamEntity ctfTeamEntity) {
+    return teamRepository.save(ctfTeamEntity);
+  }
+
+  private CtfContestEntity getContestEntity(Long ctfTeamDetailDto) {
+    return contestRepository.findById(ctfTeamDetailDto)
+        .orElseThrow(CustomContestNotFoundException::new);
+  }
+
+  private MemberEntity getMemberEntityByJWT() {
+    return authService.getMemberEntityWithJWT();
+  }
+
+  private boolean isAlreadyHasTeam(Long ctfId, MemberEntity creator) {
+    return teamHasMemberRepository.findAllByMember(creator).stream().anyMatch(teamHasMemberEntity ->
+        ctfId.equals(teamHasMemberEntity.getTeam().getCtfContestEntity().getId())
+    );
+  }
+
+  private List<CtfChallengeEntity> getSolvedChallengeListByTeamId(Long teamId) {
+    return flagRepository.findAllByCtfTeamEntityIdAndIsCorrectTrue(
+        teamId).stream().map(CtfFlagEntity::getCtfChallengeEntity).toList();
+  }
+
+  private void removeTeam(CtfTeamEntity leftTeam) {
+    teamHasMemberRepository.deleteAllByTeamId(leftTeam.getId());
+    flagRepository.deleteAllByCtfTeamEntityId(leftTeam.getId());
+    teamRepository.delete(leftTeam);
+  }
+
+  private boolean isTeamCreator(MemberEntity leaveMember, CtfTeamEntity leftTeam) {
+    return leftTeam.getCreator().getId().equals(leaveMember.getId());
   }
 }

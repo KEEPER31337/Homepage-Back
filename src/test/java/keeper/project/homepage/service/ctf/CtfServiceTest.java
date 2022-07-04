@@ -8,11 +8,9 @@ import static keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity.MISC
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import javax.persistence.Column;
 import keeper.project.homepage.admin.dto.ctf.CtfChallengeAdminDto;
 import keeper.project.homepage.admin.service.ctf.CtfAdminService;
 import keeper.project.homepage.controller.ctf.CtfSpringTestHelper;
-import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
 import keeper.project.homepage.entity.ctf.CtfFlagEntity;
 import keeper.project.homepage.entity.ctf.CtfSubmitLogEntity;
@@ -23,7 +21,6 @@ import keeper.project.homepage.user.dto.ctf.CtfFlagDto;
 import keeper.project.homepage.user.dto.ctf.CtfTeamDetailDto;
 import keeper.project.homepage.user.service.ctf.CtfChallengeService;
 import keeper.project.homepage.user.service.ctf.CtfTeamService;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -175,6 +172,6 @@ public class CtfServiceTest extends CtfSpringTestHelper {
             .id(MISC.getId())
             .build())
         .build();
-    return ctfAdminService.createProblem(createChallenge);
+    return ctfAdminService.createChallenge(createChallenge);
   }
 }

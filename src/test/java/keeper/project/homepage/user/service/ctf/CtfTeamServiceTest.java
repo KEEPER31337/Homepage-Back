@@ -15,8 +15,6 @@ import keeper.project.homepage.user.dto.ctf.CtfTeamDetailDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -187,7 +185,7 @@ class CtfTeamServiceTest extends CtfSpringTestHelper {
         .title(testTitle)
         .score(testScore)
         .build();
-    ctfAdminService.createProblem(createChallengeInfo);
+    ctfAdminService.createChallenge(createChallengeInfo);
 
     // when
     CtfTeamDetailDto result = ctfTeamService.leaveTeam(contest.getId());

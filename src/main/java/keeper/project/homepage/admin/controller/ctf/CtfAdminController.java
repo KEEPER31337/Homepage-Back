@@ -1,7 +1,6 @@
 package keeper.project.homepage.admin.controller.ctf;
 
 import java.nio.file.AccessDeniedException;
-import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.admin.dto.ctf.CtfChallengeAdminDto;
 import keeper.project.homepage.admin.dto.ctf.CtfContestAdminDto;
@@ -9,7 +8,6 @@ import keeper.project.homepage.admin.dto.ctf.CtfProbMakerDto;
 import keeper.project.homepage.admin.dto.ctf.CtfSubmitLogDto;
 import keeper.project.homepage.admin.service.ctf.CtfAdminService;
 import keeper.project.homepage.common.dto.result.CommonResult;
-import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.common.dto.result.PageResult;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.service.ResponseService;
@@ -18,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -87,7 +84,7 @@ public class CtfAdminController {
   public SingleResult<CtfChallengeAdminDto> createProblem(
       @RequestBody CtfChallengeAdminDto challengeAdminDto) {
     return responseService.getSuccessSingleResult(
-        ctfAdminService.createProblem(challengeAdminDto));
+        ctfAdminService.createChallenge(challengeAdminDto));
   }
 
   @Secured({"ROLE_회장", "ROLE_출제자"})
@@ -96,7 +93,7 @@ public class CtfAdminController {
       @RequestParam("file") MultipartFile file,
       @RequestParam("challengeId") Long challengeId, HttpServletRequest request) {
     return responseService.getSuccessSingleResult(
-        ctfAdminService.fileRegistrationInProblem(challengeId, request, file));
+        ctfAdminService.saveFileAndRegisterInChallenge(challengeId, request, file));
   }
 
   @Secured({"ROLE_회장", "ROLE_출제자"})

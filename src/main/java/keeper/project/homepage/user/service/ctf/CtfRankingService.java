@@ -23,12 +23,20 @@ public class CtfRankingService {
   public Page<CtfRankingDto> getRankingList(Long ctfId, Pageable pageable) {
 
     ctfUtilService.checkVirtualContest(ctfId);
-    Page<CtfTeamEntity> teamEntityPage = teamRepository.findAllByIdIsNotAndCtfContestEntity_Id(
-        VIRTUAL_TEAM_ID, ctfId, pageable);
 
-    Long rank = (long) teamEntityPage.getNumber() * teamEntityPage.getSize() + 1;
-    Page<CtfRankingDto> result = getCtfRankingDtoPage(teamEntityPage, rank);
-    return result;
+    Page<CtfTeamEntity> teamEntityPage = getAllTeamEntityByCtfId(ctfId, pageable);
+
+    Long rank = getRank(teamEntityPage);
+    return getCtfRankingDtoPage(teamEntityPage, rank);
+  }
+
+  private long getRank(Page<CtfTeamEntity> teamEntityPage) {
+    return (long) teamEntityPage.getNumber() * teamEntityPage.getSize() + 1;
+  }
+
+  private Page<CtfTeamEntity> getAllTeamEntityByCtfId(Long ctfId, Pageable pageable) {
+    return teamRepository.findAllByIdIsNotAndCtfContestEntity_Id(
+        VIRTUAL_TEAM_ID, ctfId, pageable);
   }
 
   private Page<CtfRankingDto> getCtfRankingDtoPage(Page<CtfTeamEntity> teamEntityPage, Long rank) {
