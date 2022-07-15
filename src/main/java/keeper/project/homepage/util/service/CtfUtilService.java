@@ -103,7 +103,6 @@ public class CtfUtilService {
       return;
     }
 
-    // 문제 점수 조정
     List<CtfFlagEntity> ctfSolvedList = flagRepository.
         findAllByCtfChallengeEntityIdAndIsCorrect(challenge.getId(), true);
     Long originalScore = challenge.getScore();
@@ -116,7 +115,6 @@ public class CtfUtilService {
     challenge.setScore(dynamicScore);
     challengeRepository.save(challenge);
 
-    // 해당 문제를 맞춘 팀 별로 점수 조정
     setTeamDynamicScore(ctfSolvedList, originalScore, dynamicScore);
   }
 
