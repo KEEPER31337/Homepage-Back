@@ -41,7 +41,8 @@ public class CtfAdminController {
   @Secured("ROLE_회장")
   @PostMapping("/contest")
   public SingleResult<CtfContestAdminDto> createContest(
-      @RequestBody CtfContestAdminDto contestDto) {
+      @RequestBody CtfContestAdminDto contestDto
+  ) {
     return responseService.getSuccessSingleResult(ctfAdminService.createContest(contestDto));
   }
 
@@ -55,26 +56,33 @@ public class CtfAdminController {
 
   @Secured("ROLE_회장")
   @PatchMapping("/contest/{cid}/open")
-  public SingleResult<CtfContestAdminDto> openContest(@PathVariable("cid") Long challengeId) {
+  public SingleResult<CtfContestAdminDto> openContest(
+      @PathVariable("cid") Long challengeId
+  ) {
     return responseService.getSuccessSingleResult(ctfAdminService.openContest(challengeId));
   }
 
   @Secured("ROLE_회장")
   @PatchMapping("/contest/{cid}/close")
-  public SingleResult<CtfContestAdminDto> closeContest(@PathVariable("cid") Long challengeId) {
+  public SingleResult<CtfContestAdminDto> closeContest(
+      @PathVariable("cid") Long challengeId
+  ) {
     return responseService.getSuccessSingleResult(ctfAdminService.closeContest(challengeId));
   }
 
   @Secured("ROLE_회장")
   @PostMapping("/prob/maker")
   public SingleResult<CtfProbMakerDto> designateProbMaker(
-      @RequestBody CtfProbMakerDto probMakerDto) {
+      @RequestBody CtfProbMakerDto probMakerDto
+  ) {
     return responseService.getSuccessSingleResult(ctfAdminService.designateProbMaker(probMakerDto));
   }
 
   @Secured("ROLE_회장")
   @DeleteMapping("/prob/maker")
-  public CommonResult disqualifyProbMaker(@RequestBody CtfProbMakerDto probMakerDto) {
+  public CommonResult disqualifyProbMaker(
+      @RequestBody CtfProbMakerDto probMakerDto
+  ) {
     ctfAdminService.disqualifyProbMaker(probMakerDto);
     return responseService.getSuccessResult();
   }
@@ -82,7 +90,8 @@ public class CtfAdminController {
   @Secured({"ROLE_회장", "ROLE_출제자"})
   @PostMapping(value = "/prob")
   public SingleResult<CtfChallengeAdminDto> createProblem(
-      @RequestBody CtfChallengeAdminDto challengeAdminDto) {
+      @RequestBody CtfChallengeAdminDto challengeAdminDto
+  ) {
     return responseService.getSuccessSingleResult(
         ctfAdminService.createChallenge(challengeAdminDto));
   }
@@ -91,27 +100,33 @@ public class CtfAdminController {
   @PostMapping(value = "/prob/file", consumes = "multipart/form-data")
   public SingleResult<FileDto> fileRegistrationInProblem(
       @RequestParam("file") MultipartFile file,
-      @RequestParam("challengeId") Long challengeId, HttpServletRequest request) {
+      @RequestParam("challengeId") Long challengeId, HttpServletRequest request
+  ) {
     return responseService.getSuccessSingleResult(
         ctfAdminService.saveFileAndRegisterInChallenge(challengeId, request, file));
   }
 
   @Secured({"ROLE_회장", "ROLE_출제자"})
   @PatchMapping("/prob/{pid}/open")
-  public SingleResult<CtfChallengeAdminDto> openProblem(@PathVariable("pid") Long problemId) {
+  public SingleResult<CtfChallengeAdminDto> openProblem(
+      @PathVariable("pid") Long problemId
+  ) {
     return responseService.getSuccessSingleResult(ctfAdminService.openProblem(problemId));
   }
 
   @Secured({"ROLE_회장", "ROLE_출제자"})
   @PatchMapping("/prob/{pid}/close")
-  public SingleResult<CtfChallengeAdminDto> closeProblem(@PathVariable("pid") Long problemId) {
+  public SingleResult<CtfChallengeAdminDto> closeProblem(
+      @PathVariable("pid") Long problemId
+  ) {
     return responseService.getSuccessSingleResult(ctfAdminService.closeProblem(problemId));
   }
 
   @Secured({"ROLE_회장", "ROLE_출제자"})
   @DeleteMapping("/prob/{pid}")
-  public SingleResult<CtfChallengeAdminDto> deleteProblem(@PathVariable("pid") Long problemId)
-      throws AccessDeniedException {
+  public SingleResult<CtfChallengeAdminDto> deleteProblem(
+      @PathVariable("pid") Long problemId
+  ) throws AccessDeniedException {
     return responseService.getSuccessSingleResult(ctfAdminService.deleteProblem(problemId));
   }
 
@@ -119,7 +134,8 @@ public class CtfAdminController {
   @GetMapping("/prob")
   public PageResult<CtfChallengeAdminDto> getProblemList(
       @PageableDefault Pageable pageable,
-      @RequestParam Long ctfId) {
+      @RequestParam Long ctfId
+  ) {
     return responseService.getSuccessPageResult(ctfAdminService.getProblemList(pageable, ctfId));
   }
 
@@ -127,7 +143,8 @@ public class CtfAdminController {
   @GetMapping("/submit-log/{cid}")
   public PageResult<CtfSubmitLogDto> getSubmitLogList(
       @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
-      @PathVariable("cid") Long contestId) {
+      @PathVariable("cid") Long contestId
+  ) {
     return responseService.getSuccessPageResult(
         ctfAdminService.getSubmitLogList(pageable, contestId));
   }

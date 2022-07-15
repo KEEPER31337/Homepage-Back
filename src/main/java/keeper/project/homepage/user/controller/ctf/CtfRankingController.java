@@ -29,7 +29,8 @@ public class CtfRankingController {
   @GetMapping("")
   public PageResult<CtfRankingDto> getRankingList(
       @RequestParam Long ctfId,
-      @PageableDefault(sort = "score", direction = Direction.DESC) Pageable pageable) {
+      @PageableDefault(sort = "score", direction = Direction.DESC) Pageable pageable
+  ) {
     return responseService.getSuccessPageResult(ctfRankingService.getRankingList(ctfId, pageable));
   }
 }

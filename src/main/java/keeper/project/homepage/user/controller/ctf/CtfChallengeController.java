@@ -30,7 +30,8 @@ public class CtfChallengeController {
 
   @GetMapping("")
   public ListResult<CtfCommonChallengeDto> getProblemList(
-      @RequestParam("cid") Long ctfId) {
+      @RequestParam("cid") Long ctfId
+  ) {
     return responseService.getSuccessListResult(
         ctfChallengeService.getProblemList(ctfId));
   }
