@@ -44,88 +44,105 @@ public class CtfChallengeService {
   private final AuthService authService;
 
   public List<CtfCommonChallengeDto> getProblemList(Long ctfId) {
+    checkCtfIdIsValid(ctfId);
+    return getChallengeListSetMyTeamSolved(ctfId);
+  }
 
+  private void checkCtfIdIsValid(Long ctfId) {
     ctfUtilService.checkVirtualContest(ctfId);
     ctfUtilService.checkJoinable(ctfId);
+  }
 
-    CtfTeamEntity myTeam = getTeamEntity(ctfId, authService.getMemberIdByJWT());
-    CtfContestEntity contestEntity = getContestEntity(ctfId);
-
-    List<CtfChallengeEntity> solvableChallengeList = getSolvableChallengeList(contestEntity);
-
+  private List<CtfCommonChallengeDto> getChallengeListSetMyTeamSolved(Long ctfId) {
+    List<CtfChallengeEntity> solvableChallengeList = getSolvableChallengeList(ctfId);
+    CtfTeamEntity myTeam = getMyTeamByCtfId(ctfId);
     return solvableChallengeList.stream()
         .map(solvableChallenge -> {
-          Boolean isMyTeamSolved = isCorrect(getCtfFlagEntity(solvableChallenge, myTeam));
+          CtfFlagEntity ctfFlagEntity = getCtfFlagEntity(solvableChallenge, myTeam);
+          Boolean isMyTeamSolved = isAlreadySolved(ctfFlagEntity);
           return CtfCommonChallengeDto.toDto(solvableChallenge, isMyTeamSolved);
         }).toList();
   }
 
+  private CtfTeamEntity getMyTeamByCtfId(Long ctfId) {
+    Long requestMemberId = authService.getMemberIdByJWT();
+    CtfTeamEntity myTeam = getTeamEntity(ctfId, requestMemberId);
+    return myTeam;
+  }
+
   @Transactional
   public CtfFlagDto checkFlag(Long probId, CtfFlagDto submitFlag) {
+    checkSubmitChallengeIsValidById(probId);
+    return SetIsCorrectAndGetCtfFlagDto(probId, submitFlag);
+  }
 
-    ctfUtilService.checkVirtualProblem(probId);
-
-    Long submitterId = authService.getMemberIdByJWT();
+  private CtfFlagDto SetIsCorrectAndGetCtfFlagDto(Long probId, CtfFlagDto submitFlag) {
     CtfChallengeEntity submitChallenge = getChallengeEntity(probId);
-    CtfTeamEntity submitTeam = getTeamEntity(getIdByChallenge(submitChallenge), submitterId);
+    Long submitterId = authService.getMemberIdByJWT();
+    CtfTeamEntity submitTeam = getTeamEntity(getCtfIdByChallenge(submitChallenge), submitterId);
     CtfFlagEntity flagEntity = getFlagEntity(probId, submitTeam);
-
-    // 참가 불가능 CTF면 Flag check 안함.
-    ctfUtilService.checkJoinable(getIdByChallenge(submitChallenge));
-
-    // 풀 수 없는 문제면 조치 안함.
-    if (!isSolvableChallenge(submitChallenge)) {
-      throw new AccessDeniedException("풀 수 없는 문제입니다.");
-    }
-
     // 이미 맞췄으면 제출한 flag 정답 유무만 체크하고 DB 갱신 안함.
-    if (isCorrect(flagEntity)) {
-      submitFlag.setIsCorrect(false);
-      if (isFlagCorrect(submitFlag, flagEntity)) {
-        submitFlag.setIsCorrect(true);
-      }
+    if (isAlreadySolved(flagEntity)) {
+      setSubmitFlagIsCorrect(submitFlag, flagEntity);
       return submitFlag;
     }
-
-    submitFlag.setIsCorrect(false);
     if (isFlagCorrect(submitFlag, flagEntity)) {
       submitFlag.setIsCorrect(true);
-
       setCorrect(flagEntity);
-
       updateTeamScore(submitChallenge, submitTeam);
-
       if (ctfUtilService.isTypeDynamic(submitChallenge)) {
         ctfUtilService.setDynamicScore(submitChallenge);
       }
+      return submitFlag;
     }
+    submitFlag.setIsCorrect(false);
     return submitFlag;
   }
 
-  public CtfChallengeDto getProblemDetail(Long probId) {
+  private void setSubmitFlagIsCorrect(CtfFlagDto submitFlag, CtfFlagEntity flagEntity) {
+    submitFlag.setIsCorrect(false);
+    if (isFlagCorrect(submitFlag, flagEntity)) {
+      submitFlag.setIsCorrect(true);
+    }
+  }
 
+  private void checkSubmitChallengeIsValidById(Long probId) {
+    checkSubmitChallengeIdIsValid(probId);
+    checkSubmitChallengeIsValid(probId);
+  }
+
+  private void checkSubmitChallengeIsValid(Long probId) {
+    CtfChallengeEntity submitChallenge = getChallengeEntity(probId);
+    ctfUtilService.checkJoinable(getCtfIdByChallenge(submitChallenge));
+    if (!isSolvableChallenge(submitChallenge)) {
+      throw new AccessDeniedException("풀 수 없는 문제입니다.");
+    }
+  }
+
+  private void checkSubmitChallengeIdIsValid(Long probId) {
     ctfUtilService.checkVirtualProblem(probId);
+  }
 
-    Long solvedTeamCount = getSolvedTeamCount(probId);
+  public CtfChallengeDto getProblemDetail(Long probId) {
+    checkSubmitChallengeIsValidById(probId);
+    return getChallengeDto(probId);
+  }
+
+  private CtfChallengeDto getChallengeDto(Long probId) {
     CtfChallengeEntity challengeEntity = getSolvableChallenge(probId);
-
-    ctfUtilService.checkJoinable(getIdByChallenge(challengeEntity));
-
-    CtfTeamEntity myTeam = getTeamEntity(getIdByChallenge(challengeEntity),
+    Long solvedTeamCount = getSolvedTeamCount(probId);
+    CtfTeamEntity myTeam = getTeamEntity(getCtfIdByChallenge(challengeEntity),
         authService.getMemberIdByJWT());
-    Boolean isSolved = isCorrect(getCtfFlagEntity(challengeEntity, myTeam));
-
-    return CtfChallengeDto.toDto(challengeEntity, solvedTeamCount, isSolved);
+    Boolean isAlreadySolved = isAlreadySolved(getCtfFlagEntity(challengeEntity, myTeam));
+    return CtfChallengeDto.toDto(challengeEntity, solvedTeamCount, isAlreadySolved);
   }
 
   public CtfSubmitLogEntity setLog(Long probId, CtfFlagDto submitFlag) {
     MemberEntity submitter = authService.getMemberEntityWithJWT();
-    CtfChallengeEntity submitChallenge = challengeRepository.findById(probId)
-        .orElseThrow(CustomCtfChallengeNotFoundException::new);
-    CtfTeamEntity submitTeam = getTeamEntity(getIdByChallenge(submitChallenge),
+    CtfChallengeEntity submitChallenge = getChallenge(probId);
+    CtfTeamEntity submitTeam = getTeamEntity(getCtfIdByChallenge(submitChallenge),
         submitter.getId());
     CtfFlagEntity flagEntity = getFlagEntity(probId, submitTeam);
-
     return submitLogRepository.save(CtfSubmitLogEntity.builder()
         .submitTime(LocalDateTime.now())
         .flagSubmitted(submitFlag.getContent())
@@ -137,6 +154,11 @@ public class CtfChallengeService {
         .contestName(submitChallenge.getCtfContestEntity().getName())
         .contest(submitChallenge.getCtfContestEntity())
         .build());
+  }
+
+  private CtfChallengeEntity getChallenge(Long probId) {
+    return challengeRepository.findById(probId)
+        .orElseThrow(CustomCtfChallengeNotFoundException::new);
   }
 
   private CtfChallengeEntity getSolvableChallenge(Long probId) {
@@ -154,8 +176,8 @@ public class CtfChallengeService {
         solvableChallenge.getId(), myTeam.getId()).get();
   }
 
-  private List<CtfChallengeEntity> getSolvableChallengeList(
-      CtfContestEntity contestEntity) {
+  private List<CtfChallengeEntity> getSolvableChallengeList(Long ctfId) {
+    CtfContestEntity contestEntity = getContestEntity(ctfId);
     return challengeRepository.findAllByIdIsNotAndCtfContestEntityAndIsSolvable(
         VIRTUAL_PROBLEM_ID, contestEntity, true);
   }
@@ -179,7 +201,7 @@ public class CtfChallengeService {
     flagRepository.save(flagEntity);
   }
 
-  private Boolean isCorrect(CtfFlagEntity flagEntity) {
+  private Boolean isAlreadySolved(CtfFlagEntity flagEntity) {
     return flagEntity.getIsCorrect();
   }
 
@@ -187,7 +209,7 @@ public class CtfChallengeService {
     return submitChallenge.getIsSolvable();
   }
 
-  private Long getIdByChallenge(CtfChallengeEntity submitChallenge) {
+  private Long getCtfIdByChallenge(CtfChallengeEntity submitChallenge) {
     return submitChallenge.getCtfContestEntity().getId();
   }
 
@@ -204,5 +226,4 @@ public class CtfChallengeService {
   private boolean isFlagCorrect(CtfFlagDto submitFlag, CtfFlagEntity flagEntity) {
     return flagEntity.getContent().equals(submitFlag.getContent());
   }
-
 }

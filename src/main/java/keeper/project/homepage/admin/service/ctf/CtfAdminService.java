@@ -80,18 +80,14 @@ public class CtfAdminService {
   }
 
   public CtfContestAdminDto openContest(Long ctfId) {
-    if (isVirtualContest(ctfId)) {
-      throw new CustomContestNotFoundException();
-    }
+    ctfUtilService.checkVirtualContest(ctfId);
     CtfContestEntity contestEntity = getCtfContestEntity(ctfId);
     contestEntity.setIsJoinable(true);
     return CtfContestAdminDto.toDto(ctfContestRepository.save(contestEntity));
   }
 
   public CtfContestAdminDto closeContest(Long ctfId) {
-    if (isVirtualContest(ctfId)) {
-      throw new CustomContestNotFoundException();
-    }
+    ctfUtilService.checkVirtualContest(ctfId);
     CtfContestEntity contestEntity = getCtfContestEntity(ctfId);
     contestEntity.setIsJoinable(false);
     return CtfContestAdminDto.toDto(ctfContestRepository.save(contestEntity));
@@ -107,87 +103,71 @@ public class CtfAdminService {
     MemberEntity probMaker = getProbMaker(probMakerDto);
     MemberJobEntity probMakerJob = getProbMakerJob();
     designateMemberAJob(probMaker, probMakerJob);
-
     return CtfProbMakerDto.toDto(probMaker);
   }
 
   @Transactional
   public CtfChallengeAdminDto createChallenge(CtfChallengeAdminDto challengeAdminDto) {
-
-    CtfChallengeEntity challenge = createChallengeEntity(challengeAdminDto);
-    challenge = challengeRepository.save(challenge);
-
+    CtfChallengeEntity newChallenge = createChallengeEntity(challengeAdminDto);
     if (isDynamicType(challengeAdminDto)) {
-      setDynamicInfoInChallenge(challenge, challengeAdminDto);
+      trySetDynamicInfoInChallenge(newChallenge, challengeAdminDto);
     }
-    challenge = challengeRepository.save(challenge);
-
-    setFlagAllTeam(challengeAdminDto.getFlag(), challenge);
-
-    return CtfChallengeAdminDto.toDto(challenge);
-
+    setFlagAllTeam(challengeAdminDto.getFlag(), newChallenge);
+    return CtfChallengeAdminDto.toDto(newChallenge);
   }
 
-  public FileDto saveFileAndRegisterInChallenge(Long challengeId,
-      HttpServletRequest request, MultipartFile file) {
-
+  public FileDto saveFileAndRegisterInChallenge(Long challengeId, HttpServletRequest request,
+      MultipartFile file) {
     FileEntity saveFile = saveFileAndGetEntity(request, file);
-    fileRegisterInChallenge(challengeId, saveFile);
-
+    tryFileRegisterInChallenge(challengeId, saveFile);
     return FileDto.toDto(saveFile);
   }
 
   public CtfChallengeAdminDto openProblem(Long problemId) {
-    if (isVirtualChallenge(problemId)) {
-      throw new CustomCtfChallengeNotFoundException();
-    }
+    ctfUtilService.checkVirtualProblem(problemId);
     CtfChallengeEntity challenge = getChallengeById(problemId);
     challenge.setIsSolvable(true);
     challengeRepository.save(challenge);
-
     return CtfChallengeAdminDto.toDto(challenge);
   }
 
   public CtfChallengeAdminDto closeProblem(Long problemId) {
-    if (isVirtualChallenge(problemId)) {
-      throw new CustomCtfChallengeNotFoundException();
-    }
+    ctfUtilService.checkVirtualProblem(problemId);
     CtfChallengeEntity challenge = getChallengeById(problemId);
     challenge.setIsSolvable(false);
     challengeRepository.save(challenge);
-
     return CtfChallengeAdminDto.toDto(challenge);
   }
 
   @Transactional
   public CtfChallengeAdminDto deleteProblem(Long problemId) throws AccessDeniedException {
-    if (isVirtualChallenge(problemId)) {
-      throw new CustomCtfChallengeNotFoundException();
-    }
-
+    ctfUtilService.checkVirtualProblem(problemId);
     MemberEntity requestMember = authService.getMemberEntityWithJWT();
     CtfChallengeEntity challenge = getChallengeById(problemId);
-    if (!requestMember.getJobs().contains("ROLE_회장")) {
-      if (!isChallengeCreator(challenge.getCreator(), requestMember)) {
-        throw new AccessDeniedException("문제 생성자나 회장만 삭제할 수 있습니다.");
-      }
+    if (isNotClubPresident(requestMember) &&
+        isNotChallengeCreator(challenge.getCreator(), requestMember)) {
+      throw new AccessDeniedException("문제 생성자나 회장만 삭제할 수 있습니다.");
     }
-
-    if (challenge.getFileEntity() != null) {
+    if (hasFileEntity(challenge)) {
       fileService.deleteFile(challenge.getFileEntity());
     }
     challengeRepository.delete(challenge);
-
     return CtfChallengeAdminDto.toDto(challenge);
   }
 
+  private boolean hasFileEntity(CtfChallengeEntity challenge) {
+    return challenge.getFileEntity() != null;
+  }
+
+  private boolean isNotClubPresident(MemberEntity requestMember) {
+    return !requestMember.getJobs().contains("ROLE_회장");
+  }
+
   public Page<CtfChallengeAdminDto> getProblemList(Pageable pageable, Long ctfId) {
-    if (isVirtualContest(ctfId)) {
-      throw new CustomContestNotFoundException();
-    }
+    ctfUtilService.checkVirtualContest(ctfId);
     CtfContestEntity contest = getContest(ctfId);
-    return challengeRepository.findAllByIdIsNotAndCtfContestEntity(
-            VIRTUAL_PROBLEM_ID, contest, pageable)
+    return challengeRepository
+        .findAllByIdIsNotAndCtfContestEntity(VIRTUAL_PROBLEM_ID, contest, pageable)
         .map(CtfChallengeAdminDto::toDto);
   }
 
@@ -203,40 +183,33 @@ public class CtfAdminService {
         .map(CtfSubmitLogDto::toDto);
   }
 
-  public CtfProbMakerDto disqualifyProbMaker(CtfProbMakerDto probMakerDto) {
+  public void disqualifyProbMaker(CtfProbMakerDto probMakerDto) {
     MemberEntity probMaker = getProbMaker(probMakerDto);
     MemberJobEntity probMakerJob = getProbMakerJob();
-
     disqualifyMemberAJob(probMaker, probMakerJob);
-
-    return CtfProbMakerDto.toDto(probMaker);
   }
 
   private void disqualifyMemberAJob(MemberEntity probMaker, MemberJobEntity probMakerJob) {
     memberHasMemberJobRepository.deleteAllByMemberEntityAndMemberJobEntity(probMaker, probMakerJob);
   }
 
-  private boolean isChallengeCreator(MemberEntity creator, MemberEntity requestMember) {
-    return creator.getId().equals(requestMember.getId());
+  private boolean isNotChallengeCreator(MemberEntity creator, MemberEntity requestMember) {
+    return !creator.getId().equals(requestMember.getId());
   }
 
-  private boolean isVirtualChallenge(Long challengeId) {
-    return challengeId.equals(VIRTUAL_PROBLEM_ID);
-  }
-
-  private boolean isVirtualContest(Long challengeId) {
-    return challengeId.equals(VIRTUAL_CONTEST_ID);
+  private void trySetDynamicInfoInChallenge(CtfChallengeEntity challenge,
+      CtfChallengeAdminDto challengeAdminDto) {
+    checkDynamicInfoValid(challengeAdminDto);
+    setDynamicInfoInChallenge(challenge, challengeAdminDto);
   }
 
   private void setDynamicInfoInChallenge(CtfChallengeEntity challenge,
       CtfChallengeAdminDto challengeAdminDto) {
-
-    checkDynamicInfoValid(challengeAdminDto);
-
     CtfDynamicChallengeInfoEntity dynamicInfoEntity = createDynamicInfoEntity(
         challengeAdminDto.getDynamicInfo(), challenge);
     challenge.setDynamicChallengeInfoEntity(dynamicInfoEntity);
     challenge.setScore(dynamicInfoEntity.getMaxScore());
+    challengeRepository.save(challenge);
   }
 
   private void checkDynamicInfoValid(CtfChallengeAdminDto challengeAdminDto) {
@@ -244,7 +217,6 @@ public class CtfAdminService {
       // TODO: DynamicInfo Exception
       throw new CustomCtfChallengeNotFoundException("Dynamic 관련 필드가 존재하지 않습니다.");
     }
-
     if (isMaxScoreLessThanMinScore(challengeAdminDto)) {
       // TODO: DynamicInfo Exception
       throw new CustomCtfChallengeNotFoundException(
@@ -253,8 +225,9 @@ public class CtfAdminService {
   }
 
   private boolean isMaxScoreLessThanMinScore(CtfChallengeAdminDto challengeAdminDto) {
-    return challengeAdminDto.getDynamicInfo().getMaxScore() < challengeAdminDto.getDynamicInfo()
-        .getMinScore();
+    Long maxScore = challengeAdminDto.getDynamicInfo().getMaxScore();
+    Long minScore = challengeAdminDto.getDynamicInfo().getMinScore();
+    return maxScore < minScore;
   }
 
   private Long getChallengeTypeId(CtfChallengeAdminDto challengeAdminDto) {
@@ -266,8 +239,8 @@ public class CtfAdminService {
   }
 
   private Page<CtfContestEntity> getAllContests(Pageable pageable) {
-    return ctfContestRepository.findAllByIdIsNotOrderByIdDesc(
-        VIRTUAL_CONTEST_ID, pageable);
+    return ctfContestRepository
+        .findAllByIdIsNotOrderByIdDesc(VIRTUAL_CONTEST_ID, pageable);
   }
 
   private FileEntity saveFileAndGetEntity(HttpServletRequest request, MultipartFile file) {
@@ -275,11 +248,9 @@ public class CtfAdminService {
     return saveFile(file, ipAddress);
   }
 
-  private void fileRegisterInChallenge(Long challengeId, FileEntity saveFile) {
+  private void tryFileRegisterInChallenge(Long challengeId, FileEntity saveFile) {
     try {
-      CtfChallengeEntity challenge = getChallengeById(challengeId);
-      challenge.setFileEntity(saveFile);
-      challengeRepository.save(challenge);
+      fileRegisterInChallenge(challengeId, saveFile);
     } catch (Exception e) {
       log.info(e.getMessage());
       if (saveFile != null) {
@@ -289,8 +260,15 @@ public class CtfAdminService {
     }
   }
 
+  private void fileRegisterInChallenge(Long challengeId, FileEntity saveFile) {
+    CtfChallengeEntity challenge = getChallengeById(challengeId);
+    challenge.setFileEntity(saveFile);
+    challengeRepository.save(challenge);
+  }
+
   private CtfChallengeEntity getChallengeById(Long challengeId) {
-    return challengeRepository.findById(challengeId)
+    return challengeRepository
+        .findById(challengeId)
         .orElseThrow(CustomCtfChallengeNotFoundException::new);
   }
 
@@ -310,9 +288,9 @@ public class CtfAdminService {
 
   private void setFlagAllTeam(String flag, CtfChallengeEntity challenge) {
     // team이 하나도 없을 때 flag가 유실되는 것을 방지하기 위해 VIRTUAL TEAM을 이용해 flag를 저장합니다.
-    List<CtfTeamEntity> ctfTeamEntities = ctfTeamRepository.findAllByIdOrCtfContestEntityId(
-        VIRTUAL_TEAM_ID, challenge.getCtfContestEntity().getId());
-    for (var ctfTeam : ctfTeamEntities) {
+    List<CtfTeamEntity> allCtfTeamList = ctfTeamRepository
+        .findAllByIdOrCtfContestEntityId(VIRTUAL_TEAM_ID, getCtfId(challenge));
+    for (CtfTeamEntity ctfTeam : allCtfTeamList) {
       CtfFlagEntity flagEntity = CtfFlagEntity.builder()
           .content(flag)
           .ctfTeamEntity(ctfTeam)
@@ -324,17 +302,19 @@ public class CtfAdminService {
     }
   }
 
+  private Long getCtfId(CtfChallengeEntity challenge) {
+    return challenge.getCtfContestEntity().getId();
+  }
+
   private CtfChallengeEntity createChallengeEntityWithFileEntity(
       CtfChallengeAdminDto challengeAdminDto, FileEntity fileEntity) {
     CtfContestEntity contest = getCtfContestEntity(challengeAdminDto.getContestId());
     CtfChallengeCategoryEntity category = getCategoryEntity(challengeAdminDto);
     CtfChallengeTypeEntity type = getTypeEntity(challengeAdminDto);
-
     MemberEntity creator = authService.getMemberEntityWithJWT();
-
     CtfChallengeEntity challenge = challengeAdminDto
         .toEntity(contest, type, category, fileEntity, creator);
-    return challenge;
+    return challengeRepository.save(challenge);
   }
 
   private CtfChallengeEntity createChallengeEntity(CtfChallengeAdminDto challengeAdminDto) {
@@ -365,12 +345,14 @@ public class CtfAdminService {
   }
 
   private MemberJobEntity getProbMakerJob() {
-    return memberJobRepository.findByName(CtfUtilService.PROBLEM_MAKER_JOB)
+    return memberJobRepository
+        .findByName(CtfUtilService.PROBLEM_MAKER_JOB)
         .orElseThrow(() -> new RuntimeException("'ROLE_출제자'가 존재하지 않습니다. DB를 확인해주세요."));
   }
 
   private MemberEntity getProbMaker(CtfProbMakerDto probMakerDto) {
-    return memberRepository.findById(probMakerDto.getMemberId())
+    return memberRepository
+        .findById(probMakerDto.getMemberId())
         .orElseThrow(CustomMemberNotFoundException::new);
   }
 }

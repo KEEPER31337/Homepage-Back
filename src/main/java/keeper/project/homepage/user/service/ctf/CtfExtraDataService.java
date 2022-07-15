@@ -36,8 +36,8 @@ public class CtfExtraDataService {
   }
 
   private MemberJobEntity getProbMakerJob() {
-    return memberJobRepository.findByName("ROLE_출제자").orElseThrow(
-        () -> new RuntimeException("출제자 권한이 없습니다. 전산 관리자에게 문의하세요."));
+    return memberJobRepository.findByName("ROLE_출제자")
+        .orElseThrow(() -> new RuntimeException("출제자 권한이 없습니다. 전산 관리자에게 문의하세요."));
   }
 
   public List<CtfChallengeTypeDto> getChallengeTypeList() {
@@ -54,6 +54,7 @@ public class CtfExtraDataService {
 
   public List<CtfContestDto> getContestList() {
     return contestRepository.findAllByIsJoinableTrueOrderByIdDesc()
-        .stream().map(CtfContestDto::toDto).toList();
+        .stream().map(CtfContestDto::toDto)
+        .toList();
   }
 }

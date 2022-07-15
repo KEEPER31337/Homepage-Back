@@ -53,14 +53,14 @@ public class CtfTeamController {
   public SingleResult<CtfTeamHasMemberDto> joinTeam(
       @RequestBody CtfJoinTeamRequestDto requestDto
   ) {
-    return responseService.getSuccessSingleResult(ctfTeamService.joinTeam(requestDto));
+    return responseService.getSuccessSingleResult(ctfTeamService.tryJoinTeam(requestDto));
   }
 
   @DeleteMapping(value = "/member")
   public SingleResult<CtfTeamDetailDto> leaveTeam(
       @RequestBody CtfLeaveTeamRequestDto requestDto
   ) {
-    return responseService.getSuccessSingleResult(ctfTeamService.leaveTeam(requestDto.getCtfId()));
+    return responseService.getSuccessSingleResult(ctfTeamService.tryLeaveTeam(requestDto.getCtfId()));
   }
 
   @GetMapping(value = "/{teamId}")

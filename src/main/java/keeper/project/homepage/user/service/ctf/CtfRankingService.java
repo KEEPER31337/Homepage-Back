@@ -21,29 +21,36 @@ public class CtfRankingService {
   private final CtfUtilService ctfUtilService;
 
   public Page<CtfRankingDto> getRankingList(Long ctfId, Pageable pageable) {
-
     ctfUtilService.checkVirtualContest(ctfId);
-
-    Page<CtfTeamEntity> teamEntityPage = getAllTeamEntityByCtfId(ctfId, pageable);
-
-    Long rank = getRank(teamEntityPage);
-    return getCtfRankingDtoPage(teamEntityPage, rank);
+    Page<CtfTeamEntity> teamEntityPage = getAllTeamEntityInRange(ctfId, pageable);
+    return getCtfRankingDtoPageAndSetRank(teamEntityPage);
   }
 
   private long getRank(Page<CtfTeamEntity> teamEntityPage) {
     return (long) teamEntityPage.getNumber() * teamEntityPage.getSize() + 1;
   }
 
-  private Page<CtfTeamEntity> getAllTeamEntityByCtfId(Long ctfId, Pageable pageable) {
+  private Page<CtfTeamEntity> getAllTeamEntityInRange(Long ctfId, Pageable pageable) {
     return teamRepository.findAllByIdIsNotAndCtfContestEntity_Id(
         VIRTUAL_TEAM_ID, ctfId, pageable);
   }
 
-  private Page<CtfRankingDto> getCtfRankingDtoPage(Page<CtfTeamEntity> teamEntityPage, Long rank) {
-    Page<CtfRankingDto> result = teamEntityPage.map(team -> CtfRankingDto.toDto(team, null));
-    for (var ctfRankingDto : result) {
+  private Page<CtfRankingDto> getCtfRankingDtoPageAndSetRank(Page<CtfTeamEntity> teamEntityPage) {
+    Page<CtfRankingDto> ctfRankingDtoPage = getCtfRankingDtoPage(teamEntityPage);
+    setRank(teamEntityPage, ctfRankingDtoPage);
+    return ctfRankingDtoPage;
+  }
+
+  private void setRank(Page<CtfTeamEntity> teamEntityPage, Page<CtfRankingDto> ctfRankingDtoPage) {
+    long rank = getRank(teamEntityPage);
+    for (var ctfRankingDto : ctfRankingDtoPage) {
       ctfRankingDto.setRank(rank++);
     }
+  }
+
+  private Page<CtfRankingDto> getCtfRankingDtoPage(Page<CtfTeamEntity> teamEntityPage) {
+    Page<CtfRankingDto> result = teamEntityPage
+        .map(team -> CtfRankingDto.toDto(team, null));
     return result;
   }
 }

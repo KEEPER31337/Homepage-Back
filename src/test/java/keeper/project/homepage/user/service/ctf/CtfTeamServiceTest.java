@@ -188,7 +188,7 @@ class CtfTeamServiceTest extends CtfSpringTestHelper {
     ctfAdminService.createChallenge(createChallengeInfo);
 
     // when
-    CtfTeamDetailDto result = ctfTeamService.leaveTeam(contest.getId());
+    CtfTeamDetailDto result = ctfTeamService.tryLeaveTeam(contest.getId());
 
     // then
     Assertions.assertThat(result.getContestId()).isEqualTo(contest.getId());
