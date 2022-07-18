@@ -201,6 +201,7 @@ public class PostingService {
     return postingRepository.save(postingEntity);
   }
 
+  // Crawler에서 사용
   @Transactional
   public PostingEntity autoSave(PostingDto dto) {
 
@@ -307,6 +308,22 @@ public class PostingService {
 
     memberEntity.getPosting().remove(postingEntity);
     postingRepository.delete(postingEntity);
+  }
+
+  // Crawler에서 사용
+  @Transactional
+  public PostingEntity getRecentPostingByCategoryId(Long categoryId) {
+
+    CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
+        .orElseThrow(CustomCategoryNotFoundException::new);
+    MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_대외부장")
+        .orElse(memberJobRepository.findByName("ROLE_회장").get());
+    MemberHasMemberJobEntity memberHasMemberJobEntity = memberHasMemberJobRepository.
+        findFirstByMemberJobEntityOrderByIdDesc(memberJobEntity);
+    MemberEntity memberEntity = memberHasMemberJobEntity.getMemberEntity();
+
+    return postingRepository.findFirstByCategoryIdAndMemberIdOrderByRegisterTimeDesc(categoryEntity,
+        memberEntity);
   }
 
   @Transactional
