@@ -46,6 +46,9 @@ public interface PostingRepository extends JpaRepository<PostingEntity, Long> {
   List<PostingEntity> findAllByIsTempAndIsSecretAndIsNoticeAndRegisterTimeBetween(Integer isTemp,
       Integer isSecret, Integer isNotice, LocalDateTime registerTime, LocalDateTime registerTime2);
 
+  PostingEntity findFirstByCategoryIdAndMemberIdOrderByRegisterTimeDesc(CategoryEntity category,
+      MemberEntity memberEntity);
+
   boolean existsByMemberHasPostingLikeEntitiesContaining(
       MemberHasPostingLikeEntity memberHasPostingLikeEntity);
 
