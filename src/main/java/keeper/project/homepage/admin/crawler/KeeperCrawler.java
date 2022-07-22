@@ -17,6 +17,7 @@ public class KeeperCrawler {
   private final List<String> linkQueries;
   private final List<String> urls;
   private final List<Integer> urlEnds;
+  private final List<String> existUrls;
 
   @Override
   public String toString() {
@@ -27,25 +28,34 @@ public class KeeperCrawler {
         doc = Jsoup.connect(urls.get(i)).get();
       } catch (IOException e) {
         sb.append(String.format("Error : url %s is invalid", urls.get(i)));
-        sb.append("\n\n\n");
+        sb.append("- - -\n");
         continue;
       }
 
       Elements elements = doc.select(elementQueries.get(i));
       sb.append("### " + titles.get(i) + "\n\n");
+      boolean hasNew = false;
       for (Element element : elements) {
+        String title = titleQueries.get(i).equals("") ? element.text()
+            : element.select(titleQueries.get(i)).text();
+        String link = urls.get(i).substring(0, urlEnds.get(i));
+        link += linkQueries.get(i).equals("") ? element.attr("href")
+            : element.select(linkQueries.get(i)).get(0).attr("href");
+        if (existUrls.contains(link)) {
+          continue;
+        }
+        hasNew = true;
         sb.append("**");
-        sb.append(titleQueries.get(i).equals("") ? element.text()
-            : element.select(titleQueries.get(i)).text());
+        sb.append(title);
         sb.append("**");
-        sb.append(" -> [");
-        sb.append(urls.get(i), 0, urlEnds.get(i));
-        sb.append(linkQueries.get(i).equals("") ? element.attr("href")
-            : element.select(linkQueries.get(i)).get(0).attr("href"));
-        sb.append("](url)");
-        sb.append("\n");
+        sb.append(" -> [링크](");
+        sb.append(link);
+        sb.append(")\n");
       }
-      sb.append("\n\n\n");
+      if (!hasNew) {
+        sb.append("전의 정보와 비교해 새로운 정보가 없습니다.\n");
+      }
+      sb.append("- - -\n");
     }
 
     return sb.toString();
