@@ -5,11 +5,13 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "election_voter")

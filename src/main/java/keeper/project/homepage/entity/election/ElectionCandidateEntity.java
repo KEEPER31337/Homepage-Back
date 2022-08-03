@@ -13,11 +13,13 @@ import javax.persistence.Table;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "election_candidate")
@@ -45,7 +47,7 @@ public class ElectionCandidateEntity {
   private Integer voteCount;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "job_id", nullable = false)
+  @JoinColumn(name = "member_job_id", nullable = false)
   private MemberJobEntity memberJob;
 
 }

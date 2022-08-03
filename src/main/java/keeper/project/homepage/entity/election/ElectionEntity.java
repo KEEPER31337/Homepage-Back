@@ -12,11 +12,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "election")
@@ -41,4 +43,10 @@ public class ElectionEntity {
 
   @Column(nullable = false)
   private Boolean isAvailable;
+
+  public void openElection() {
+    this.isAvailable = true;
+  }
+
+  public void closeElection() { this.isAvailable = false; }
 }
