@@ -1,0 +1,270 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+// 자동으로 생성된 snippet 설정하는 부분
+
+= KEEPER API 문서
+:icons: font
+// NOTE, TIP, WARNING, CAUTION, IMPORTANT 같은 경고구들 아이콘화 해줌
+:source-highlighter: highlight.js
+// source code 블럭에서 사용되는 highlighter 설정, 4개 정도 있던데 차이를 아직 잘 모르겠음.
+:toc: left
+// table of contents(toc) 왼쪽정렬하여 생성
+:toclevels: 1
+// default : 2 (==,  ===) 까지 toc에 보여줌.
+:sectlinks:
+// section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== *선거 개설*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/election-setUp/http-request.adoc[]
+
+==== Request Body
+
+include::{snippets}/election-setUp/request-body.adoc[]
+
+==== Request Field
+
+include::{snippets}/election-setUp/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/election-setUp/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/election-setUp/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/election-setUp/response-fields.adoc[]
+
+== *선거 오픈*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/election-open/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/election-open/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/election-open/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/election-open/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/election-open/response-fields.adoc[]
+
+== *선거 종료*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/election-close/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/election-close/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/election-close/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/election-close/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/election-close/response-fields.adoc[]
+
+== *선거 후보자 다수 등록*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/election-register-candidates/http-request.adoc[]
+
+==== Request Body
+
+include::{snippets}/election-register-candidates/request-body.adoc[]
+
+==== Request Field
+
+include::{snippets}/election-register-candidates/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/election-register-candidates/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/election-register-candidates/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/election-register-candidates/response-fields.adoc[]
+
+== *선거 후보자 단일 등록*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/election-register-candidate/http-request.adoc[]
+
+==== Request Body
+
+include::{snippets}/election-register-candidate/request-body.adoc[]
+
+==== Request Field
+
+include::{snippets}/election-register-candidate/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/election-register-candidate/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/election-register-candidate/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/election-register-candidate/response-fields.adoc[]
+
+== *선거 후보자 단일 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/election-delete-candidate/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/election-delete-candidate/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/election-delete-candidate/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/election-delete-candidate/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/election-delete-candidate/response-fields.adoc[]
+
+== *선거 투표자 다중 등록*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/election-register-voters/http-request.adoc[]
+
+==== Request Body
+
+include::{snippets}/election-register-voters/request-body.adoc[]
+
+==== Request Field
+
+include::{snippets}/election-register-voters/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/election-register-voters/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/election-register-voters/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/election-register-voters/response-fields.adoc[]
+
+== *선거 투표자 단일 등록*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/election-register-voter/http-request.adoc[]
+
+==== Request Parameter
+
+include::{snippets}/election-register-voter/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/election-register-voter/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/election-register-voter/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/election-register-voter/response-fields.adoc[]
+
+== *선거 투표자 단일 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/election-delete-voter/http-request.adoc[]
+
+==== Request Parameter
+
+include::{snippets}/election-delete-voter/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/election-delete-voter/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/election-delete-voter/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/election-delete-voter/response-fields.adoc[]
