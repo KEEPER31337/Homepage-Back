@@ -1,0 +1,31 @@
+package keeper.project.homepage.admin.dto.election.response;
+
+import keeper.project.homepage.entity.election.ElectionCandidateEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class ElectionCandidateResponseDto {
+
+  private Long deletedId;
+  private Long candidateMemberId;
+  private Long electionId;
+  private Long memberJobId;
+
+  public static ElectionCandidateResponseDto from(ElectionCandidateEntity entity) {
+    return ElectionCandidateResponseDto.builder()
+        .deletedId(entity.getId())
+        .candidateMemberId(entity.getCandidate().getId())
+        .electionId(entity.getElection().getId())
+        .memberJobId(entity.getMemberJob().getId())
+        .build();
+  }
+
+}
