@@ -17,10 +17,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.Arrays;
 import keeper.project.homepage.admin.dto.election.ElectionCandidateDto;
-import keeper.project.homepage.admin.dto.election.request.ElectionCandidateRegisterRequestDto;
-import keeper.project.homepage.admin.dto.election.request.ElectionCandidateRequestDto;
-import keeper.project.homepage.admin.dto.election.request.ElectionRequestDto;
-import keeper.project.homepage.admin.dto.election.request.ElectionVoterRegisterRequestDto;
+import keeper.project.homepage.admin.dto.election.request.ElectionCandidateMultiSaveRequestDto;
+import keeper.project.homepage.admin.dto.election.request.ElectionCandidateSaveRequestDto;
+import keeper.project.homepage.admin.dto.election.request.ElectionCreateRequestDto;
+import keeper.project.homepage.admin.dto.election.request.ElectionVoterMultiSaveRequestDto;
 import keeper.project.homepage.controller.election.ElectionSpringTestHelper;
 import keeper.project.homepage.entity.election.ElectionCandidateEntity;
 import keeper.project.homepage.entity.election.ElectionEntity;
@@ -59,7 +59,7 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
     String description = "새로운 회장 선출을 위한 투표";
     Boolean isAvailable = true;
 
-    ElectionRequestDto electionRequestDto = ElectionRequestDto.builder()
+    ElectionCreateRequestDto electionCreateRequestDto = ElectionCreateRequestDto.builder()
         .name(electionName)
         .description(description)
         .isAvailable(isAvailable)
@@ -68,7 +68,7 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
     mockMvc.perform(post("/v1/admin/elections")
             .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(asJsonString(electionRequestDto)))
+            .content(asJsonString(electionCreateRequestDto)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -83,8 +83,8 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
                 fieldWithPath("isAvailable").description("생성할 선거의 오픈 여부")
             ),
             responseFields(
-                fieldWithPath("success").description("\"성공: true +\\n실패: false\""),
-                fieldWithPath("code").description("\"성공 시 0을 반환\""),
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("data").description("생성에 성공한 선거의 ID")
             )));
@@ -97,7 +97,7 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
     String description = "새로운 회장 선출을 위한 투표";
     Boolean isAvailable = true;
 
-    ElectionRequestDto electionRequestDto = ElectionRequestDto.builder()
+    ElectionCreateRequestDto electionCreateRequestDto = ElectionCreateRequestDto.builder()
         .name(electionName)
         .description(description)
         .isAvailable(isAvailable)
@@ -106,7 +106,7 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
     mockMvc.perform(post("/v1/admin/elections")
             .header("Authorization", userToken)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(asJsonString(electionRequestDto)))
+            .content(asJsonString(electionCreateRequestDto)))
         .andDo(print())
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
@@ -119,14 +119,14 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
   public void setUpElectionFailByNotInput() throws Exception {
     String description = "새로운 회장 선출을 위한 투표";
 
-    ElectionRequestDto electionRequestDto = ElectionRequestDto.builder()
+    ElectionCreateRequestDto electionCreateRequestDto = ElectionCreateRequestDto.builder()
         .description(description)
         .build();
 
     mockMvc.perform(post("/v1/admin/elections")
             .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(asJsonString(electionRequestDto)))
+            .content(asJsonString(electionCreateRequestDto)))
         .andDo(print())
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
@@ -140,7 +140,7 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
     String description = "새로운 회장 선출을 위한 투표";
     Boolean isAvailable = true;
 
-    ElectionRequestDto electionRequestDto = ElectionRequestDto.builder()
+    ElectionCreateRequestDto electionCreateRequestDto = ElectionCreateRequestDto.builder()
         .name(electionName)
         .description(description)
         .isAvailable(isAvailable)
@@ -149,7 +149,7 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
     mockMvc.perform(post("/v1/admin/elections")
             .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(asJsonString(electionRequestDto)))
+            .content(asJsonString(electionCreateRequestDto)))
         .andDo(print())
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
@@ -177,8 +177,8 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
                 parameterWithName("id").description("오픈하고자 하는 선거의 ID")
             ),
             responseFields(
-                fieldWithPath("success").description("\"성공: true +\\n실패: false\""),
-                fieldWithPath("code").description("\"성공 시 0을 반환\""),
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("data.electionId").description("오픈한 선거의 ID"),
                 fieldWithPath("data.name").description("오픈한 선거의 이름"),
@@ -222,8 +222,8 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
                 parameterWithName("id").description("종료하고자 하는 선거의 ID")
             ),
             responseFields(
-                fieldWithPath("success").description("\"성공: true +\\n실패: false\""),
-                fieldWithPath("code").description("\"성공 시 0을 반환\""),
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("data.electionId").description("종료한 선거의 ID"),
                 fieldWithPath("data.name").description("종료한 선거의 이름"),
@@ -243,7 +243,7 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
         .memberId(admin.getId())
         .description("후보2")
         .build();
-    ElectionCandidateRegisterRequestDto request = ElectionCandidateRegisterRequestDto.builder()
+    ElectionCandidateMultiSaveRequestDto request = ElectionCandidateMultiSaveRequestDto.builder()
         .electionId(election.getId())
         .memberJobId(1L)
         .candidates(new ArrayList<>(Arrays.asList(candidate1, candidate2)))
@@ -269,13 +269,13 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
                 fieldWithPath("candidates[].description").description("등록될 후보자 멤버의 정보")
             ),
             responseFields(
-                fieldWithPath("success").description("\"성공: true +\\n실패: false\""),
-                fieldWithPath("code").description("\"성공 시 0을 반환\""),
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("data.total").description("등록된 후보자의 총 인원 수"),
                 fieldWithPath("data.memberJob.id").description("후보자가 등록된 직위 ID"),
                 fieldWithPath("data.memberJob.name").description("후보자가 등록된 직위 이름"),
-                fieldWithPath("data.candidateIds").description("등록된 후보자들의 멤버 ID")
+                fieldWithPath("data.candidateIds").description("등록된 후보자 테이블 ID")
             )));
   }
 
@@ -292,7 +292,7 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
         .memberId(admin.getId())
         .description("후보2")
         .build();
-    ElectionCandidateRegisterRequestDto request = ElectionCandidateRegisterRequestDto.builder()
+    ElectionCandidateMultiSaveRequestDto request = ElectionCandidateMultiSaveRequestDto.builder()
         .electionId(election.getId())
         .memberJobId(1L)
         .candidates(new ArrayList<>(Arrays.asList(candidate1, candidate2)))
@@ -324,7 +324,7 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
         .memberId(admin.getId())
         .description("후보2")
         .build();
-    ElectionCandidateRegisterRequestDto request = ElectionCandidateRegisterRequestDto.builder()
+    ElectionCandidateMultiSaveRequestDto request = ElectionCandidateMultiSaveRequestDto.builder()
         .electionId(id)
         .memberJobId(1L)
         .candidates(new ArrayList<>(Arrays.asList(candidate1, candidate2)))
@@ -357,7 +357,7 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
         .memberId(admin.getId())
         .description("후보2")
         .build();
-    ElectionCandidateRegisterRequestDto request = ElectionCandidateRegisterRequestDto.builder()
+    ElectionCandidateMultiSaveRequestDto request = ElectionCandidateMultiSaveRequestDto.builder()
         .electionId(election.getId())
         .memberJobId(id)
         .candidates(new ArrayList<>(Arrays.asList(candidate1, candidate2)))
@@ -387,7 +387,7 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
     ElectionCandidateDto candidate2 = ElectionCandidateDto.builder()
         .description("후보2")
         .build();
-    ElectionCandidateRegisterRequestDto request = ElectionCandidateRegisterRequestDto.builder()
+    ElectionCandidateMultiSaveRequestDto request = ElectionCandidateMultiSaveRequestDto.builder()
         .candidates(new ArrayList<>(Arrays.asList(candidate1, candidate2)))
         .build();
 
@@ -408,7 +408,7 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
   @DisplayName("[SUCCESS] 선거 후보자 단일 등록")
   public void registerCandidate() throws Exception {
     ElectionEntity election = generateElection(admin, true);
-    ElectionCandidateRequestDto request = ElectionCandidateRequestDto.builder()
+    ElectionCandidateSaveRequestDto request = ElectionCandidateSaveRequestDto.builder()
         .memberId(admin.getId())
         .description("후보")
         .electionId(election.getId())
@@ -431,8 +431,8 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
                 fieldWithPath("memberJobId").description("후보자가 등록될 직위의 ID")
             ),
             responseFields(
-                fieldWithPath("success").description("\"성공: true +\\n실패: false\""),
-                fieldWithPath("code").description("\"성공 시 0을 반환\""),
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("data").description("등록에 성공한 선거 후보자 테이블 ID")
             )));
@@ -441,7 +441,7 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
   @Test
   @DisplayName("[FAIL] 선거 후보자 단일 등록")
   public void registerCandidateFailByNullInfo() throws Exception {
-    ElectionCandidateRequestDto request = ElectionCandidateRequestDto.builder()
+    ElectionCandidateSaveRequestDto request = ElectionCandidateSaveRequestDto.builder()
         .description("후보")
         .build();
 
@@ -461,7 +461,7 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
     ElectionEntity election = generateElection(admin, true);
     MemberJobEntity memberJob = memberJobRepository.findByName("ROLE_회장").get();
     generateElectionCandidate(admin, election, memberJob);
-    ElectionCandidateRequestDto request = ElectionCandidateRequestDto.builder()
+    ElectionCandidateSaveRequestDto request = ElectionCandidateSaveRequestDto.builder()
         .memberId(admin.getId())
         .description("후보")
         .electionId(election.getId())
@@ -504,8 +504,8 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
                 parameterWithName("id").description("삭제하고자 하는 후보자 테이블 ID")
             ),
             responseFields(
-                fieldWithPath("success").description("\"성공: true +\\n실패: false\""),
-                fieldWithPath("code").description("\"성공 시 0을 반환\""),
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("data.deletedId").description("삭제에 성공한 후보자 테이블 ID"),
                 fieldWithPath("data.candidateMemberId").description("삭제된 후보자 멤버 ID"),
@@ -531,9 +531,9 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
   @DisplayName("[SUCCESS] 선거 투표자 등록")
   public void registerVoters() throws Exception {
     ElectionEntity election = generateElection(admin, true);
-    ElectionVoterRegisterRequestDto request = ElectionVoterRegisterRequestDto.builder()
+    ElectionVoterMultiSaveRequestDto request = ElectionVoterMultiSaveRequestDto.builder()
         .electionId(election.getId())
-        .voterIds(new ArrayList<>(Arrays.asList(user.getId(), admin.getId())))
+        .memberIds(new ArrayList<>(Arrays.asList(user.getId(), admin.getId())))
         .build();
 
     mockMvc.perform(post("/v1/admin/elections/voters")
@@ -549,11 +549,11 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
         .andDo(document("election-register-voters",
             requestFields(
               fieldWithPath("electionId").description("투표자가 등록될 선거 ID"),
-              fieldWithPath("voterIds[]").description("투표자로 등록할 멤버 ID")
+              fieldWithPath("memberIds[]").description("투표자로 등록할 멤버 ID")
             ),
             responseFields(
-                fieldWithPath("success").description("\"성공: true +\\n실패: false\""),
-                fieldWithPath("code").description("\"성공 시 0을 반환\""),
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("data.electionId").description("투표자가 등록된 선거 ID"),
                 fieldWithPath("data.total").description("등록된 투표자 총 인원 수"),
@@ -565,9 +565,9 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
   @DisplayName("[FAIL] 존재하지 않는 선거")
   public void registerVotersFailByNoneElection() throws Exception {
     Long id = -1L;
-    ElectionVoterRegisterRequestDto request = ElectionVoterRegisterRequestDto.builder()
+    ElectionVoterMultiSaveRequestDto request = ElectionVoterMultiSaveRequestDto.builder()
         .electionId(id)
-        .voterIds(new ArrayList<>(Arrays.asList(user.getId(), admin.getId())))
+        .memberIds(new ArrayList<>(Arrays.asList(user.getId(), admin.getId())))
         .build();
 
     mockMvc.perform(post("/v1/admin/elections/voters")
@@ -586,9 +586,9 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
   public void registerVotersFailByNoneVoter() throws Exception {
     Long id = -1L;
     ElectionEntity election = generateElection(admin, true);
-    ElectionVoterRegisterRequestDto request = ElectionVoterRegisterRequestDto.builder()
+    ElectionVoterMultiSaveRequestDto request = ElectionVoterMultiSaveRequestDto.builder()
         .electionId(election.getId())
-        .voterIds(new ArrayList<>(Arrays.asList(user.getId(), id)))
+        .memberIds(new ArrayList<>(Arrays.asList(user.getId(), id)))
         .build();
 
     mockMvc.perform(post("/v1/admin/elections/voters")
@@ -605,8 +605,8 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
   @Test
   @DisplayName("[FAIL] 입력하지 않은 선거")
   public void registerVotersFailByNullElection() throws Exception {
-    ElectionVoterRegisterRequestDto request = ElectionVoterRegisterRequestDto.builder()
-        .voterIds(new ArrayList<>(Arrays.asList(user.getId(), admin.getId())))
+    ElectionVoterMultiSaveRequestDto request = ElectionVoterMultiSaveRequestDto.builder()
+        .memberIds(new ArrayList<>(Arrays.asList(user.getId(), admin.getId())))
         .build();
 
     mockMvc.perform(post("/v1/admin/elections/voters")
@@ -628,7 +628,7 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
             .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON)
             .param("electionId", String.valueOf(election.getId()))
-            .param("voterId", String.valueOf(user.getId())))
+            .param("memberId", String.valueOf(user.getId())))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -636,11 +636,11 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
         .andDo(document("election-register-voter",
             requestParameters(
               parameterWithName("electionId").description("투표자가 등록될 선거 ID"),
-              parameterWithName("voterId").description("등록할 투표자 멤버 ID")
+              parameterWithName("memberId").description("등록할 투표자 멤버 ID")
             ),
             responseFields(
-                fieldWithPath("success").description("\"성공: true +\\n실패: false\""),
-                fieldWithPath("code").description("\"성공 시 0을 반환\""),
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("data.electionId").description("투표자가 등록된 선거 ID"),
                 fieldWithPath("data.total").description("등록된 투표자 총 인원 수"),
@@ -658,7 +658,7 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
             .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON)
             .param("electionId", String.valueOf(election.getId()))
-            .param("voterId", String.valueOf(user.getId())))
+            .param("memberId", String.valueOf(user.getId())))
         .andDo(print())
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
@@ -675,7 +675,7 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
             .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON)
             .param("electionId", String.valueOf(id))
-            .param("voterId", String.valueOf(user.getId())))
+            .param("memberId", String.valueOf(user.getId())))
         .andDo(print())
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
@@ -693,7 +693,7 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
             .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON)
             .param("electionId", String.valueOf(election.getId()))
-            .param("voterId", String.valueOf(id)))
+            .param("memberId", String.valueOf(id)))
         .andDo(print())
         .andExpect(status().is5xxServerError())
         .andExpect(jsonPath("$.success").value(false))
@@ -725,8 +725,8 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
                 parameterWithName("voterId").description("삭제할 투표자 멤버 ID")
             ),
             responseFields(
-                fieldWithPath("success").description("\"성공: true +\\n실패: false\""),
-                fieldWithPath("code").description("\"성공 시 0을 반환\""),
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("data").description("삭제된 투표자 멤버 ID")
             )));
