@@ -1,14 +1,14 @@
 package keeper.project.homepage.admin.controller.election;
 
 import javax.validation.Valid;
-import keeper.project.homepage.admin.dto.election.request.ElectionCandidateRegisterRequestDto;
-import keeper.project.homepage.admin.dto.election.request.ElectionCandidateRequestDto;
-import keeper.project.homepage.admin.dto.election.request.ElectionRequestDto;
-import keeper.project.homepage.admin.dto.election.request.ElectionVoterRegisterRequestDto;
-import keeper.project.homepage.admin.dto.election.response.ElectionCandidateResponseDto;
-import keeper.project.homepage.admin.dto.election.response.ElectionCandidateRegisterResponseDto;
-import keeper.project.homepage.admin.dto.election.response.ElectionResponseDto;
-import keeper.project.homepage.admin.dto.election.response.ElectionVoterRegisterResponseDto;
+import keeper.project.homepage.admin.dto.election.request.ElectionCandidateMultiSaveRequestDto;
+import keeper.project.homepage.admin.dto.election.request.ElectionCandidateSaveRequestDto;
+import keeper.project.homepage.admin.dto.election.request.ElectionCreateRequestDto;
+import keeper.project.homepage.admin.dto.election.request.ElectionVoterMultiSaveRequestDto;
+import keeper.project.homepage.admin.dto.election.response.ElectionCandidateDeleteResponseDto;
+import keeper.project.homepage.admin.dto.election.response.ElectionCandidateMultiSaveResponseDto;
+import keeper.project.homepage.admin.dto.election.response.ElectionUpdateResponseDto;
+import keeper.project.homepage.admin.dto.election.response.ElectionVoterMultiSaveResponseDto;
 import keeper.project.homepage.admin.service.election.AdminElectionService;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.service.ResponseService;
@@ -35,61 +35,59 @@ public class AdminElectionController {
   private final AdminElectionService adminElectionService;
 
   @PostMapping("")
-  public SingleResult<Long> setUpElection(
-      @RequestBody @Valid ElectionRequestDto electionRequestDto) {
-    return responseService.getSuccessSingleResult(
-        adminElectionService.setUpElection(electionRequestDto));
+  public SingleResult<Long> createElection(
+      @RequestBody @Valid ElectionCreateRequestDto requestDto) {
+    return responseService.getSuccessSingleResult(adminElectionService.createElection(requestDto));
   }
 
   @PatchMapping("/{id}/open")
-  public SingleResult<ElectionResponseDto> openElection(
+  public SingleResult<ElectionUpdateResponseDto> openElection(
       @PathVariable("id") Long electionId) {
     return responseService.getSuccessSingleResult(adminElectionService.openElection(electionId));
   }
 
   @PatchMapping("/{id}/close")
-  public SingleResult<ElectionResponseDto> closeElection(
+  public SingleResult<ElectionUpdateResponseDto> closeElection(
       @PathVariable("id") Long electionId) {
     return responseService.getSuccessSingleResult(adminElectionService.closeElection(electionId));
   }
 
   @PostMapping("/candidates")
-  public SingleResult<ElectionCandidateRegisterResponseDto> registerCandidates(
-      @RequestBody @Valid ElectionCandidateRegisterRequestDto electionRegistryRequestDto
+  public SingleResult<ElectionCandidateMultiSaveResponseDto> registerCandidates(
+      @RequestBody @Valid ElectionCandidateMultiSaveRequestDto requestDto
   ) {
     return responseService.getSuccessSingleResult(
-        adminElectionService.registerCandidates(electionRegistryRequestDto));
+        adminElectionService.registerCandidates(requestDto));
   }
 
   @PostMapping("/candidate")
   public SingleResult<Long> registerCandidate(
-      @RequestBody @Valid ElectionCandidateRequestDto electionCandidateRequestDto) {
+      @RequestBody @Valid ElectionCandidateSaveRequestDto requestDto) {
     return responseService.getSuccessSingleResult(
-        adminElectionService.registerCandidate(electionCandidateRequestDto));
+        adminElectionService.registerCandidate(requestDto));
   }
 
   @DeleteMapping("/candidate/{id}")
-  public SingleResult<ElectionCandidateResponseDto> deleteCandidate(
+  public SingleResult<ElectionCandidateDeleteResponseDto> deleteCandidate(
       @PathVariable("id") Long candidateId) {
     return responseService.getSuccessSingleResult(
         adminElectionService.deleteCandidate(candidateId));
   }
 
   @PostMapping("/voters")
-  public SingleResult<ElectionVoterRegisterResponseDto> registerVoters(
-      @RequestBody @Valid ElectionVoterRegisterRequestDto electionVoterRegisterRequestDto
+  public SingleResult<ElectionVoterMultiSaveResponseDto> registerVoters(
+      @RequestBody @Valid ElectionVoterMultiSaveRequestDto requestDto
   ) {
-    return responseService.getSuccessSingleResult(
-        adminElectionService.registerVoters(electionVoterRegisterRequestDto));
+    return responseService.getSuccessSingleResult(adminElectionService.registerVoters(requestDto));
   }
 
   @PostMapping("/voter")
-  public SingleResult<ElectionVoterRegisterResponseDto> registerVoter(
+  public SingleResult<ElectionVoterMultiSaveResponseDto> registerVoter(
       @RequestParam Long electionId,
-      @RequestParam Long voterId
+      @RequestParam Long memberId
   ) {
     return responseService.getSuccessSingleResult(
-        adminElectionService.registerVoter(electionId, voterId));
+        adminElectionService.registerVoter(electionId, memberId));
   }
 
   @DeleteMapping("/voter")

@@ -3,14 +3,14 @@ package keeper.project.homepage.admin.service.election;
 import java.time.LocalDateTime;
 import java.util.List;
 import keeper.project.homepage.admin.dto.election.ElectionCandidateDto;
-import keeper.project.homepage.admin.dto.election.request.ElectionCandidateRegisterRequestDto;
-import keeper.project.homepage.admin.dto.election.request.ElectionCandidateRequestDto;
-import keeper.project.homepage.admin.dto.election.request.ElectionRequestDto;
-import keeper.project.homepage.admin.dto.election.request.ElectionVoterRegisterRequestDto;
-import keeper.project.homepage.admin.dto.election.response.ElectionCandidateResponseDto;
-import keeper.project.homepage.admin.dto.election.response.ElectionCandidateRegisterResponseDto;
-import keeper.project.homepage.admin.dto.election.response.ElectionResponseDto;
-import keeper.project.homepage.admin.dto.election.response.ElectionVoterRegisterResponseDto;
+import keeper.project.homepage.admin.dto.election.request.ElectionCandidateMultiSaveRequestDto;
+import keeper.project.homepage.admin.dto.election.request.ElectionCandidateSaveRequestDto;
+import keeper.project.homepage.admin.dto.election.request.ElectionCreateRequestDto;
+import keeper.project.homepage.admin.dto.election.request.ElectionVoterMultiSaveRequestDto;
+import keeper.project.homepage.admin.dto.election.response.ElectionCandidateDeleteResponseDto;
+import keeper.project.homepage.admin.dto.election.response.ElectionCandidateMultiSaveResponseDto;
+import keeper.project.homepage.admin.dto.election.response.ElectionUpdateResponseDto;
+import keeper.project.homepage.admin.dto.election.response.ElectionVoterMultiSaveResponseDto;
 import keeper.project.homepage.admin.service.member.AdminMemberUtilService;
 import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.entity.election.ElectionCandidateEntity;
@@ -57,105 +57,111 @@ public class AdminElectionService {
   }
 
   @Transactional
-  public Long setUpElection(ElectionRequestDto request) {
+  public Long createElection(ElectionCreateRequestDto electionCreateRequestDto) {
     MemberEntity creator = authService.getMemberEntityWithJWT();
-    request.setRegisterTime(LocalDateTime.now());
-    return electionRepository.save(request.toEntity(creator)).getId();
+    electionCreateRequestDto.setRegisterTime(LocalDateTime.now());
+    return electionRepository.save(electionCreateRequestDto.toEntity(creator)).getId();
   }
 
   @Transactional
-  public ElectionResponseDto openElection(Long electionId) {
+  public ElectionUpdateResponseDto openElection(Long electionId) {
     ElectionEntity election = getElectionById(electionId);
     election.openElection();
-    return ElectionResponseDto.from(election);
+    return ElectionUpdateResponseDto.from(election);
   }
 
   @Transactional
-  public ElectionResponseDto closeElection(Long electionId) {
+  public ElectionUpdateResponseDto closeElection(Long electionId) {
     ElectionEntity election = getElectionById(electionId);
     election.closeElection();
-    return ElectionResponseDto.from(election);
+    return ElectionUpdateResponseDto.from(election);
   }
 
   @Transactional
-  public ElectionCandidateRegisterResponseDto registerCandidates(
-      ElectionCandidateRegisterRequestDto request) {
-    ElectionEntity election = getElectionById(request.getElectionId());
-    MemberJobEntity memberJob = adminMemberUtilService.getJobById(request.getMemberJobId());
-    ElectionCandidateRegisterResponseDto result = new ElectionCandidateRegisterResponseDto(0,
+  public ElectionCandidateMultiSaveResponseDto registerCandidates(
+      ElectionCandidateMultiSaveRequestDto requestDto) {
+    ElectionEntity election = getElectionById(requestDto.getElectionId());
+    MemberJobEntity memberJob = adminMemberUtilService.getJobById(requestDto.getMemberJobId());
+    ElectionCandidateMultiSaveResponseDto response = new ElectionCandidateMultiSaveResponseDto(0,
         memberJob);
-    for (ElectionCandidateDto candidateInfo : request.getCandidates()) {
-      MemberEntity candidate = adminMemberUtilService.getMemberById(candidateInfo.getMemberId());
-      if(isExistElectionCandidate(candidate, election, memberJob)) continue;
-      ElectionCandidateEntity savedCandidate = electionCandidateRepository.save(
-          candidateInfo.toEntity(candidate, election, memberJob)
+    for (ElectionCandidateDto candidateDto : requestDto.getCandidates()) {
+      MemberEntity member = adminMemberUtilService.getMemberById(candidateDto.getMemberId());
+      if (isExistElectionCandidate(member, election, memberJob)) {
+        continue;
+      }
+      ElectionCandidateEntity candidate = electionCandidateRepository.save(
+          candidateDto.toEntity(member, election, memberJob)
       );
-      result.increaseRegisterCount();
-      result.registerCandidateId(savedCandidate.getId());
+      response.increaseRegisterCount();
+      response.registerCandidateId(candidate.getId());
     }
-    return result;
+    return response;
   }
 
   @Transactional
-  public Long registerCandidate(ElectionCandidateRequestDto request) {
-    ElectionEntity election = getElectionById(request.getElectionId());
-    MemberEntity candidate = adminMemberUtilService.getMemberById(request.getMemberId());
-    MemberJobEntity memberJob = adminMemberUtilService.getJobById(request.getMemberJobId());
-    if (isExistElectionCandidate(candidate, election, memberJob))
+  public Long registerCandidate(ElectionCandidateSaveRequestDto requestDto) {
+    ElectionEntity election = getElectionById(requestDto.getElectionId());
+    MemberEntity member = adminMemberUtilService.getMemberById(requestDto.getMemberId());
+    MemberJobEntity memberJob = adminMemberUtilService.getJobById(requestDto.getMemberJobId());
+    if (isExistElectionCandidate(member, election, memberJob)) {
       throw new CustomElectionCandidateExistException();
-    return electionCandidateRepository.save(request.toEntity(candidate, election, memberJob))
+    }
+    return electionCandidateRepository.save(requestDto.toEntity(member, election, memberJob))
         .getId();
   }
 
   @Transactional
-  public ElectionCandidateResponseDto deleteCandidate(Long candidateId) {
-    ElectionCandidateEntity electionCandidate = electionCandidateRepository.findById(candidateId)
+  public ElectionCandidateDeleteResponseDto deleteCandidate(Long candidateId) {
+    ElectionCandidateEntity candidate = electionCandidateRepository.findById(candidateId)
         .orElseThrow(CustomElectionCandidateNotFoundException::new);
-    electionCandidateRepository.delete(electionCandidate);
-    return ElectionCandidateResponseDto.from(electionCandidate);
+    electionCandidateRepository.delete(candidate);
+    return ElectionCandidateDeleteResponseDto.from(candidate);
   }
 
   @Transactional
-  public ElectionVoterRegisterResponseDto registerVoters(ElectionVoterRegisterRequestDto request) {
-    ElectionEntity election = getElectionById(request.getElectionId());
-    ElectionVoterRegisterResponseDto result = new ElectionVoterRegisterResponseDto(election, 0);
-    for (Long voterId : request.getVoterIds()) {
-      MemberEntity voter = adminMemberUtilService.getMemberById(voterId);
-      ElectionVoterPK pk = new ElectionVoterPK(voter, election);
-      if (electionVoterRepository.findById(pk).isPresent()) continue;
-      electionVoterRepository.save(request.toEntity(pk));
-      result.increaseRegisterCount();
-      result.addVoterId(voter.getId());
+  public ElectionVoterMultiSaveResponseDto registerVoters(
+      ElectionVoterMultiSaveRequestDto electionVoterMultiSaveRequestDto) {
+    ElectionEntity election = getElectionById(electionVoterMultiSaveRequestDto.getElectionId());
+    ElectionVoterMultiSaveResponseDto response = new ElectionVoterMultiSaveResponseDto(election, 0);
+    for (Long memberId : electionVoterMultiSaveRequestDto.getMemberIds()) {
+      MemberEntity member = adminMemberUtilService.getMemberById(memberId);
+      ElectionVoterPK pk = new ElectionVoterPK(member, election);
+      if (electionVoterRepository.findById(pk).isPresent()) {
+        continue;
+      }
+      electionVoterRepository.save(electionVoterMultiSaveRequestDto.toEntity(pk));
+      response.increaseRegisterCount();
+      response.addVoterId(member.getId());
     }
-    return result;
+    return response;
   }
 
   @Transactional
-  public ElectionVoterRegisterResponseDto registerVoter(Long electionId, Long voterId) {
+  public ElectionVoterMultiSaveResponseDto registerVoter(Long electionId, Long memberId) {
     ElectionEntity election = getElectionById(electionId);
-    MemberEntity voter = adminMemberUtilService.getMemberById(voterId);
-    ElectionVoterPK pk = new ElectionVoterPK(voter, election);
-    if (electionVoterRepository.findById(pk).isPresent())
+    MemberEntity member = adminMemberUtilService.getMemberById(memberId);
+    ElectionVoterPK pk = new ElectionVoterPK(member, election);
+    if (electionVoterRepository.findById(pk).isPresent()) {
       throw new CustomElectionVoterExistException();
-    ElectionVoterRegisterResponseDto result = new ElectionVoterRegisterResponseDto(election, 0);
-    electionVoterRepository.save(ElectionVoterEntity.builder()
-        .electionVoterPK(pk)
-        .isVoted(false)
-        .build());
-    result.increaseRegisterCount();
-    result.addVoterId(voter.getId());
-    return result;
+    }
+    ElectionVoterMultiSaveResponseDto response = new ElectionVoterMultiSaveResponseDto(election, 0);
+    ElectionVoterEntity voter = ElectionVoterEntity.builder().electionVoterPK(pk).isVoted(false)
+        .build();
+    electionVoterRepository.save(voter);
+    response.increaseRegisterCount();
+    response.addVoterId(member.getId());
+    return response;
   }
 
   @Transactional
   public Long deleteVoter(Long electionId, Long voterId) {
     ElectionEntity election = getElectionById(electionId);
-    MemberEntity voter = adminMemberUtilService.getMemberById(voterId);
-    ElectionVoterPK pk = new ElectionVoterPK(voter, election);
-    ElectionVoterEntity voterEntity = electionVoterRepository.findById(pk).orElseThrow(
+    MemberEntity member = adminMemberUtilService.getMemberById(voterId);
+    ElectionVoterPK pk = new ElectionVoterPK(member, election);
+    ElectionVoterEntity voter = electionVoterRepository.findById(pk).orElseThrow(
         CustomElectionVoterNotFoundException::new);
-    electionVoterRepository.delete(voterEntity);
-    return voter.getId();
+    electionVoterRepository.delete(voter);
+    return member.getId();
   }
 
 }
