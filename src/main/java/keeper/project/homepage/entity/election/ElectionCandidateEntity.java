@@ -50,4 +50,7 @@ public class ElectionCandidateEntity {
   @JoinColumn(name = "member_job_id", nullable = false)
   private MemberJobEntity memberJob;
 
+  public void winVote() {
+    voteCount += 1;
+  }
 }

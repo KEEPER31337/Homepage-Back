@@ -11,11 +11,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "election_chart_log")
@@ -31,4 +33,11 @@ public class ElectionChartLogEntity {
 
   @Column(nullable = false)
   private LocalDateTime voteTime;
+
+  public static ElectionChartLogEntity createChartLog(ElectionCandidateEntity candidate) {
+    return ElectionChartLogEntity.builder()
+        .electionCandidate(candidate)
+        .voteTime(LocalDateTime.now())
+        .build();
+  }
 }

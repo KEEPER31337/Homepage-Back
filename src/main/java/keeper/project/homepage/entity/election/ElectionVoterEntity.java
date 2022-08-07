@@ -23,4 +23,14 @@ public class ElectionVoterEntity {
   @Column(nullable = false)
   private Boolean isVoted;
 
+  public static ElectionVoterEntity createVoter(ElectionVoterPK pk) {
+    return ElectionVoterEntity.builder()
+        .electionVoterPK(pk)
+        .isVoted(false)
+        .build();
+  }
+
+  public void vote() {
+    isVoted = true;
+  }
 }
