@@ -25,29 +25,55 @@ link:../keeper.html[API 목록으로 돌아가기]
 
 ==== Request
 
-include::{snippets}/election-setUp/http-request.adoc[]
+include::{snippets}/election-create/http-request.adoc[]
 
 ==== Request Body
 
-include::{snippets}/election-setUp/request-body.adoc[]
+include::{snippets}/election-create/request-body.adoc[]
 
 ==== Request Field
 
-include::{snippets}/election-setUp/request-fields.adoc[]
+include::{snippets}/election-create/request-fields.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/election-setUp/http-response.adoc[]
+include::{snippets}/election-create/http-response.adoc[]
 
 ==== Response Body
 
-include::{snippets}/election-setUp/response-body.adoc[]
+include::{snippets}/election-create/response-body.adoc[]
 
 ==== Response Field
 
-include::{snippets}/election-setUp/response-fields.adoc[]
+include::{snippets}/election-create/response-fields.adoc[]
+
+== *선거 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/election-delete/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/election-delete/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/election-delete/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/election-delete/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/election-delete/response-fields.adoc[]
 
 == *선거 오픈*
 
@@ -100,36 +126,6 @@ include::{snippets}/election-close/response-body.adoc[]
 ==== Response Field
 
 include::{snippets}/election-close/response-fields.adoc[]
-
-== *선거 후보자 다수 등록*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/election-register-candidates/http-request.adoc[]
-
-==== Request Body
-
-include::{snippets}/election-register-candidates/request-body.adoc[]
-
-==== Request Field
-
-include::{snippets}/election-register-candidates/request-fields.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/election-register-candidates/http-response.adoc[]
-
-==== Response Body
-
-include::{snippets}/election-register-candidates/response-body.adoc[]
-
-==== Response Field
-
-include::{snippets}/election-register-candidates/response-fields.adoc[]
 
 == *선거 후보자 단일 등록*
 
@@ -187,36 +183,6 @@ include::{snippets}/election-delete-candidate/response-body.adoc[]
 
 include::{snippets}/election-delete-candidate/response-fields.adoc[]
 
-== *선거 투표자 다중 등록*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/election-register-voters/http-request.adoc[]
-
-==== Request Body
-
-include::{snippets}/election-register-voters/request-body.adoc[]
-
-==== Request Field
-
-include::{snippets}/election-register-voters/request-fields.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/election-register-voters/http-response.adoc[]
-
-==== Response Body
-
-include::{snippets}/election-register-voters/response-body.adoc[]
-
-==== Response Field
-
-include::{snippets}/election-register-voters/response-fields.adoc[]
-
 == *선거 투표자 단일 등록*
 
 === 요청
@@ -225,9 +191,9 @@ include::{snippets}/election-register-voters/response-fields.adoc[]
 
 include::{snippets}/election-register-voter/http-request.adoc[]
 
-==== Request Parameter
+==== Path Parameter
 
-include::{snippets}/election-register-voter/request-parameters.adoc[]
+include::{snippets}/election-register-voter/path-parameters.adoc[]
 
 === 응답
 
@@ -251,9 +217,9 @@ include::{snippets}/election-register-voter/response-fields.adoc[]
 
 include::{snippets}/election-delete-voter/http-request.adoc[]
 
-==== Request Parameter
+==== Path Parameter
 
-include::{snippets}/election-delete-voter/request-parameters.adoc[]
+include::{snippets}/election-delete-voter/path-parameters.adoc[]
 
 === 응답
 

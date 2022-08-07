@@ -18,3 +18,163 @@ endif::[]
 == API 목록
 
 link:../keeper.html[API 목록으로 돌아가기]
+
+== *선거 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/election-lists/http-request.adoc[]
+
+==== Request Parameter
+
+include::{snippets}/election-lists/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/election-lists/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/election-lists/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/election-lists/response-fields.adoc[]
+
+== *선거 참여 여부*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/election-join/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/election-join/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/election-join/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/election-join/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/election-join/response-fields.adoc[]
+
+== *선거 후보자 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/election-candidates/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/election-candidates/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/election-candidates/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/election-candidates/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/election-candidates/response-fields.adoc[]
+
+== *선거 투표*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/election-vote/http-request.adoc[]
+
+==== Request Body
+
+include::{snippets}/election-vote/request-body.adoc[]
+
+==== Request Field
+
+include::{snippets}/election-vote/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/election-vote/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/election-vote/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/election-vote/response-body.adoc[]
+
+== *선거 투표 여부*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/election-isVoted/http-request.adoc[]
+
+==== Request Parameter
+
+include::{snippets}/election-isVoted/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/election-isVoted/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/election-isVoted/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/election-isVoted/response-fields.adoc[]
+
+== *투표 결과 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/election-results/http-request.adoc[]
+
+==== Request Parameter
+
+include::{snippets}/election-results/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/election-results/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/election-results/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/election-results/response-fields.adoc[]
