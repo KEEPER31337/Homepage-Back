@@ -1,14 +1,12 @@
 package keeper.project.homepage.admin.controller.election;
 
 import javax.validation.Valid;
-import keeper.project.homepage.admin.dto.election.request.ElectionCandidateMultiSaveRequestDto;
-import keeper.project.homepage.admin.dto.election.request.ElectionCandidateSaveRequestDto;
+import keeper.project.homepage.admin.dto.election.request.ElectionCandidateCreateRequestDto;
 import keeper.project.homepage.admin.dto.election.request.ElectionCreateRequestDto;
-import keeper.project.homepage.admin.dto.election.request.ElectionVoterMultiSaveRequestDto;
 import keeper.project.homepage.admin.dto.election.response.ElectionCandidateDeleteResponseDto;
-import keeper.project.homepage.admin.dto.election.response.ElectionCandidateMultiSaveResponseDto;
+import keeper.project.homepage.admin.dto.election.response.ElectionDeleteResponseDto;
 import keeper.project.homepage.admin.dto.election.response.ElectionUpdateResponseDto;
-import keeper.project.homepage.admin.dto.election.response.ElectionVoterMultiSaveResponseDto;
+import keeper.project.homepage.admin.dto.election.response.ElectionVoterCreateResponseDto;
 import keeper.project.homepage.admin.service.election.AdminElectionService;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.service.ResponseService;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -40,6 +37,13 @@ public class AdminElectionController {
     return responseService.getSuccessSingleResult(adminElectionService.createElection(requestDto));
   }
 
+  @DeleteMapping("/{id}")
+  public SingleResult<ElectionDeleteResponseDto> deleteElection(
+      @PathVariable("id") Long electionId
+  ) {
+    return responseService.getSuccessSingleResult(adminElectionService.deleteElection(electionId));
+  }
+
   @PatchMapping("/{id}/open")
   public SingleResult<ElectionUpdateResponseDto> openElection(
       @PathVariable("id") Long electionId) {
@@ -52,17 +56,9 @@ public class AdminElectionController {
     return responseService.getSuccessSingleResult(adminElectionService.closeElection(electionId));
   }
 
-  @PostMapping("/candidates")
-  public SingleResult<ElectionCandidateMultiSaveResponseDto> registerCandidates(
-      @RequestBody @Valid ElectionCandidateMultiSaveRequestDto requestDto
-  ) {
-    return responseService.getSuccessSingleResult(
-        adminElectionService.registerCandidates(requestDto));
-  }
-
   @PostMapping("/candidate")
   public SingleResult<Long> registerCandidate(
-      @RequestBody @Valid ElectionCandidateSaveRequestDto requestDto) {
+      @RequestBody @Valid ElectionCandidateCreateRequestDto requestDto) {
     return responseService.getSuccessSingleResult(
         adminElectionService.registerCandidate(requestDto));
   }
@@ -74,26 +70,19 @@ public class AdminElectionController {
         adminElectionService.deleteCandidate(candidateId));
   }
 
-  @PostMapping("/voters")
-  public SingleResult<ElectionVoterMultiSaveResponseDto> registerVoters(
-      @RequestBody @Valid ElectionVoterMultiSaveRequestDto requestDto
-  ) {
-    return responseService.getSuccessSingleResult(adminElectionService.registerVoters(requestDto));
-  }
-
-  @PostMapping("/voter")
-  public SingleResult<ElectionVoterMultiSaveResponseDto> registerVoter(
-      @RequestParam Long electionId,
-      @RequestParam Long memberId
+  @PostMapping("/{eid}/voters/{vid}")
+  public SingleResult<ElectionVoterCreateResponseDto> registerVoter(
+      @PathVariable("eid") Long electionId,
+      @PathVariable("vid") Long memberId
   ) {
     return responseService.getSuccessSingleResult(
         adminElectionService.registerVoter(electionId, memberId));
   }
 
-  @DeleteMapping("/voter")
+  @DeleteMapping("/{eid}/voters/{vid}")
   public SingleResult<Long> deleteVoter(
-      @RequestParam Long electionId,
-      @RequestParam Long voterId
+      @PathVariable("eid") Long electionId,
+      @PathVariable("vid") Long voterId
   ) {
     return responseService.getSuccessSingleResult(
         adminElectionService.deleteVoter(electionId, voterId)
