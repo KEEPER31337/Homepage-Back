@@ -11,4 +11,9 @@ public interface ElectionCandidateRepository extends JpaRepository<ElectionCandi
 
   List<ElectionCandidateEntity> findByCandidateAndElectionAndMemberJob(MemberEntity candidate,
       ElectionEntity election, MemberJobEntity memberJob);
+
+  List<ElectionCandidateEntity> findAllByElectionAndMemberJob(ElectionEntity election,
+      MemberJobEntity memberJob);
+
+  Long countDistinctMemberJobByElection(ElectionEntity election);
 }
