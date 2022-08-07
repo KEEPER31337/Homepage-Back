@@ -1,25 +1,20 @@
 package keeper.project.homepage.controller.election;
 
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.entity.election.ElectionCandidateEntity;
+import keeper.project.homepage.entity.election.ElectionChartLogEntity;
 import keeper.project.homepage.entity.election.ElectionEntity;
 import keeper.project.homepage.entity.election.ElectionVoterEntity;
 import keeper.project.homepage.entity.election.ElectionVoterPK;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.repository.election.ElectionCandidateRepository;
+import keeper.project.homepage.repository.election.ElectionChartLogRepository;
 import keeper.project.homepage.repository.election.ElectionRepository;
 import keeper.project.homepage.repository.election.ElectionVoterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.restdocs.payload.FieldDescriptor;
 
 public class ElectionSpringTestHelper extends ApiControllerTestHelper {
 
@@ -31,6 +26,9 @@ public class ElectionSpringTestHelper extends ApiControllerTestHelper {
 
   @Autowired
   protected ElectionVoterRepository electionVoterRepository;
+
+  @Autowired
+  protected ElectionChartLogRepository electionChartLogRepository;
 
   protected String asJsonString(final Object obj) {
     try {
@@ -68,12 +66,22 @@ public class ElectionSpringTestHelper extends ApiControllerTestHelper {
     );
   }
 
-  protected ElectionVoterEntity generateElectionVoter(MemberEntity voter, ElectionEntity election) {
+  protected ElectionVoterEntity generateElectionVoter(MemberEntity voter, ElectionEntity election,
+      Boolean isVoted) {
     ElectionVoterPK pk = new ElectionVoterPK(voter, election);
     return electionVoterRepository.save(
         ElectionVoterEntity.builder()
             .electionVoterPK(pk)
-            .isVoted(false)
+            .isVoted(isVoted)
+            .build()
+    );
+  }
+
+  protected ElectionChartLogEntity generateElectionChartLog(ElectionCandidateEntity candidate) {
+    return electionChartLogRepository.save(
+        ElectionChartLogEntity.builder()
+            .electionCandidate(candidate)
+            .voteTime(LocalDateTime.now())
             .build()
     );
   }
