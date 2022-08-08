@@ -1,21 +1,35 @@
 package keeper.project.homepage.admin.service.election;
 
+import static org.assertj.core.api.Assertions.*;
+
 import java.time.LocalDateTime;
-import keeper.project.homepage.ApiControllerTestHelper;
+import java.util.List;
+import javax.persistence.EntityManager;
+import keeper.project.homepage.controller.election.ElectionSpringTestHelper;
+import keeper.project.homepage.entity.election.ElectionCandidateEntity;
 import keeper.project.homepage.entity.election.ElectionEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.repository.election.ElectionRepository;
-import org.assertj.core.api.Assertions;
+import keeper.project.homepage.entity.member.MemberJobEntity;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-public class AdminElectionServiceTest extends ApiControllerTestHelper {
+public class AdminElectionServiceTest extends ElectionSpringTestHelper {
 
   @Autowired
-  private ElectionRepository electionRepository;
+  private EntityManager em;
+
+  private MemberEntity user;
+  private MemberEntity admin;
+
+  @BeforeEach
+  public void setUp() throws Exception {
+    user = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
+    admin = generateMemberEntity(MemberJobName.회장, MemberTypeName.정회원, MemberRankName.우수회원);
+  }
 
   @Test
   @DisplayName("선거 오픈")
@@ -37,7 +51,7 @@ public class AdminElectionServiceTest extends ApiControllerTestHelper {
     ElectionEntity findElection = electionRepository.getById(election.getId());
 
     //then
-    Assertions.assertThat(findElection.getIsAvailable()).isTrue();
+    assertThat(findElection.getIsAvailable()).isTrue();
   }
 
   @Test
@@ -60,7 +74,58 @@ public class AdminElectionServiceTest extends ApiControllerTestHelper {
     ElectionEntity findElection = electionRepository.getById(election.getId());
 
     //then
-    Assertions.assertThat(findElection.getIsAvailable()).isFalse();
+    assertThat(findElection.getIsAvailable()).isFalse();
   }
 
+  @Test
+  @DisplayName("선거 삭제 시 연관된 후보자 삭제")
+  public void deleteElectionWithCandidate() throws Exception {
+    //given
+    Long VIRTUAL_ELECTION_ID = 1L;
+    Long VIRTUAL_CANDIDATE_ID = 1L;
+    ElectionEntity election = generateElection(admin, true);
+    MemberJobEntity memberJob = memberJobRepository.findByName("ROLE_회원").get();
+    generateElectionCandidate(admin, election, memberJob);
+    generateElectionCandidate(user, election, memberJob);
+
+    //when
+    electionRepository.delete(election);
+
+    em.flush();
+    em.clear();
+
+    //then
+    List<ElectionEntity> elections = electionRepository.findAll();
+    List<ElectionCandidateEntity> candidates = electionCandidateRepository.findAll();
+
+    assertThat(elections).containsExactly(electionRepository.getById(VIRTUAL_ELECTION_ID));
+    assertThat(elections.size()).isEqualTo(1);
+    assertThat(candidates).containsExactly(electionCandidateRepository.getById(VIRTUAL_CANDIDATE_ID));
+    assertThat(candidates.size()).isEqualTo(1);
+  }
+
+  @Test
+  @DisplayName("후보 삭제 시 연관된 차트 로그 삭제")
+  public void deleteElectionWithCascade() throws Exception {
+    //given
+    Long VIRTUAL_CANDIDATE_ID = 1L;
+    ElectionEntity election = generateElection(admin, true);
+    MemberJobEntity memberJob = memberJobRepository.findByName("ROLE_회장").get();
+    ElectionCandidateEntity candidate = generateElectionCandidate(user, election, memberJob);
+    generateElectionChartLog(candidate);
+    generateElectionChartLog(candidate);
+
+    //when
+    electionCandidateRepository.delete(candidate);
+
+    em.flush();
+    em.clear();
+
+    //then
+    List<ElectionCandidateEntity> candidates = electionCandidateRepository.findAll();
+
+    assertThat(candidates).containsExactly(electionCandidateRepository.getById(VIRTUAL_CANDIDATE_ID));
+    assertThat(candidates.size()).isEqualTo(1);
+    assertThat(electionChartLogRepository.findAll().size()).isEqualTo(0);
+  }
 }

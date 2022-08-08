@@ -153,7 +153,7 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
   @Test
   @DisplayName("[SUCCESS] 선거 삭제")
   public void deleteElection() throws Exception {
-    ElectionEntity election = generateElection(admin, true);
+    ElectionEntity election = generateElection(admin, false);
 
     mockMvc.perform(delete("/v1/admin/elections/{id}", election.getId())
             .header("Authorization", adminToken)
@@ -188,6 +188,21 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-14000))
         .andExpect(jsonPath("$.msg").value("존재하지 않는 선거입니다."));
+  }
+
+  @Test
+  @DisplayName("[FAIL] 선거 삭제 - 종료되지 않은 선거")
+  public void deleteElectionFailByNotClose() throws Exception {
+    ElectionEntity election = generateElection(admin, true);
+
+    mockMvc.perform(delete("/v1/admin/elections/{id}", election.getId())
+            .header("Authorization", adminToken)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().is4xxClientError())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(-14010))
+        .andExpect(jsonPath("$.msg").value("종료되지 않은 투표입니다."));
   }
 
   @Test

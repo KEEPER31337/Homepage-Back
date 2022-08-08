@@ -54,36 +54,39 @@ public class ElectionSpringTestHelper extends ApiControllerTestHelper {
   protected ElectionCandidateEntity generateElectionCandidate(MemberEntity candidate,
       ElectionEntity election, MemberJobEntity memberJob) {
     final long epochTime = System.nanoTime();
-    return electionCandidateRepository.save(
-        ElectionCandidateEntity.builder()
-            .candidate(candidate)
-            .election(election)
-            .description("description_" + epochTime)
-            .registerTime(LocalDateTime.now())
-            .voteCount(0)
-            .memberJob(memberJob)
-            .build()
-    );
+    ElectionCandidateEntity newCandidate = ElectionCandidateEntity.builder()
+        .candidate(candidate)
+        .election(election)
+        .description("description_" + epochTime)
+        .registerTime(LocalDateTime.now())
+        .voteCount(0)
+        .memberJob(memberJob)
+        .build();
+    electionCandidateRepository.save(newCandidate);
+    election.getCandidates().add(newCandidate);
+    return newCandidate;
   }
 
   protected ElectionVoterEntity generateElectionVoter(MemberEntity voter, ElectionEntity election,
       Boolean isVoted) {
     ElectionVoterPK pk = new ElectionVoterPK(voter, election);
-    return electionVoterRepository.save(
-        ElectionVoterEntity.builder()
-            .electionVoterPK(pk)
-            .isVoted(isVoted)
-            .build()
-    );
+    ElectionVoterEntity newVoter = ElectionVoterEntity.builder()
+        .electionVoterPK(pk)
+        .isVoted(isVoted)
+        .build();
+    electionVoterRepository.save(newVoter);
+    election.getVoters().add(newVoter);
+    return newVoter;
   }
 
   protected ElectionChartLogEntity generateElectionChartLog(ElectionCandidateEntity candidate) {
-    return electionChartLogRepository.save(
-        ElectionChartLogEntity.builder()
-            .electionCandidate(candidate)
-            .voteTime(LocalDateTime.now())
-            .build()
-    );
+    ElectionChartLogEntity newChartLog = ElectionChartLogEntity.builder()
+        .electionCandidate(candidate)
+        .voteTime(LocalDateTime.now())
+        .build();
+    electionChartLogRepository.save(newChartLog);
+    candidate.getChartLogs().add(newChartLog);
+    return newChartLog;
   }
 
 }
