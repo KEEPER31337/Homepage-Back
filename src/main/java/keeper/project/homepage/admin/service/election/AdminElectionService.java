@@ -18,6 +18,7 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.exception.election.CustomElectionCandidateExistException;
 import keeper.project.homepage.exception.election.CustomElectionCandidateNotFoundException;
+import keeper.project.homepage.exception.election.CustomElectionIsNotClosedException;
 import keeper.project.homepage.exception.election.CustomElectionVoterExistException;
 import keeper.project.homepage.exception.election.CustomElectionVoterNotFoundException;
 import keeper.project.homepage.repository.election.ElectionCandidateRepository;
@@ -59,6 +60,10 @@ public class AdminElectionService {
   @Transactional
   public ElectionDeleteResponseDto deleteElection(Long electionId) {
     ElectionEntity election = electionUtilService.getElectionById(electionId);
+    if (election.getIsAvailable()) {
+      throw new CustomElectionIsNotClosedException();
+    }
+    electionVoterRepository.deleteAllInBatch(election.getVoters());
     electionRepository.delete(election);
     return ElectionDeleteResponseDto.from(election);
   }
