@@ -1,6 +1,9 @@
 package keeper.project.homepage.entity.election;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -9,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
@@ -49,6 +53,10 @@ public class ElectionCandidateEntity {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "member_job_id", nullable = false)
   private MemberJobEntity memberJob;
+
+  @Builder.Default
+  @OneToMany(mappedBy = "electionCandidate", cascade = CascadeType.REMOVE)
+  List<ElectionChartLogEntity> chartLogs = new ArrayList<>();
 
   public void winVote() {
     voteCount += 1;
