@@ -116,7 +116,7 @@ public class ElectionService {
         throw new CustomElectionVoteDuplicationJobException();
       }
       electionChartLogRepository.save(ElectionChartLogEntity.createChartLog(candidate));
-      candidate.winVote();
+      candidate.gainVote();
       candidateJobs.add(candidate.getMemberJob());
     }
   }

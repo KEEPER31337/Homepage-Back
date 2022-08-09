@@ -58,7 +58,7 @@ public class ElectionCandidateEntity {
   @OneToMany(mappedBy = "electionCandidate", cascade = CascadeType.REMOVE)
   List<ElectionChartLogEntity> chartLogs = new ArrayList<>();
 
-  public void winVote() {
+  public void gainVote() {
     voteCount += 1;
   }
 }
