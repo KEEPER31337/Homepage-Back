@@ -89,7 +89,7 @@ public class ExceptionAdvice {
   protected CommonResult defaultException(HttpServletRequest request, Exception e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(Integer.parseInt(getMessage("unKnown.code")),
-        getMessage("unKnown.msg"));
+        e.getMessage() == null ? getMessage("unKnown.msg") : e.getMessage());
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
