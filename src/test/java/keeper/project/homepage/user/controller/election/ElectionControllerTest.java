@@ -74,8 +74,8 @@ public class ElectionControllerTest extends ElectionSpringTestHelper {
         .andExpect(jsonPath("$.page.last").value(true))
         .andDo(document("election-lists",
             requestParameters(
-                parameterWithName("page").description("선거 목록의 페이지 번호(default = 0)"),
-                parameterWithName("size").description("선거 목록 한 페이지의 개수(default = 10)")
+                parameterWithName("page").description("선거 목록의 페이지 번호(default = 0)").optional(),
+                parameterWithName("size").description("선거 목록 한 페이지의 개수(default = 10)").optional()
             ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
