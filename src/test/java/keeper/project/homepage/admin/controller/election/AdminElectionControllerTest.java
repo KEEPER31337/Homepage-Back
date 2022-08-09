@@ -73,7 +73,7 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
             requestFields(
                 fieldWithPath("name").description("생성할 선거의 이름"),
                 fieldWithPath("description").description("생성할 선거의 설명"),
-                fieldWithPath("registerTime").description("선거 생성 시간(서버에서 입력)"),
+                fieldWithPath("registerTime").description("선거 생성 시간(서버에서 입력)").optional(),
                 fieldWithPath("isAvailable").description("생성할 선거의 오픈 여부")
             ),
             responseFields(
@@ -317,7 +317,7 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
         .andDo(document("election-register-candidate",
             requestFields(
                 fieldWithPath("memberId").description("후보자로 등록할 멤버의 ID"),
-                fieldWithPath("description").description("후보자로 등록할 멤버의 정보"),
+                fieldWithPath("description").description("후보자로 등록할 멤버의 정보").optional(),
                 fieldWithPath("electionId").description("후보자가 등록될 선거의 ID"),
                 fieldWithPath("memberJobId").description("후보자가 등록될 직위의 ID")
             ),
