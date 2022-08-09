@@ -66,3 +66,7 @@ link:gameAdmin.html[API 문서 보기]
 == *CTF*
 
 link:ctf/ctfAdmin.html[API 문서 보기]
+
+== *선거*
+
+link:election/electionAdmin.html[API 문서 보기]

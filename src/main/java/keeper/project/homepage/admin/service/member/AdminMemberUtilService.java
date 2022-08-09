@@ -22,6 +22,10 @@ public class AdminMemberUtilService {
   private final MemberTypeRepository memberTypeRepository;
   private final MemberJobRepository memberJobRepository;
 
+  public MemberEntity getMemberById(Long memberId) {
+    return memberRepository.findById(memberId).orElseThrow(CustomMemberNotFoundException::new);
+  }
+
   public MemberEntity getByLoginId(String loginId) {
     return memberRepository.findByLoginId(loginId).orElseThrow(CustomMemberNotFoundException::new);
   }
@@ -34,6 +38,11 @@ public class AdminMemberUtilService {
   public MemberTypeEntity getByTypeName(String name) {
     return memberTypeRepository.findByName(name).orElseThrow(
         () -> new CustomMemberInfoNotFoundException(name + "인 MemberTypeEntity가 존재하지 않습니다."));
+  }
+
+  public MemberJobEntity getJobById(Long jobId) {
+    return memberJobRepository.findById(jobId).orElseThrow(
+        () -> new CustomMemberInfoNotFoundException("ID가 " + jobId + "인 MemberJob이 존재하지 않습니다."));
   }
 
   public MemberJobEntity getByJobName(String name) {
