@@ -81,4 +81,4 @@ link:ctf/ctf.html[API 문서 보기]
 
 == *선거*
 
-link:election/election.adoc[API 문서 보기]
+link:election/election.html[API 문서 보기]
