@@ -45,9 +45,8 @@ public class AdminElectionService {
 
   private boolean isExistElectionCandidate(MemberEntity candidate, ElectionEntity election,
       MemberJobEntity memberJob) {
-    List<ElectionCandidateEntity> result = electionCandidateRepository.findByCandidateAndElectionAndMemberJob(
-        candidate, election, memberJob);
-    return result.size() > 0;
+    return electionCandidateRepository.existsByCandidateAndElectionAndMemberJob(candidate, election,
+        memberJob);
   }
 
   @Transactional

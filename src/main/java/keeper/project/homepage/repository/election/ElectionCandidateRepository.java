@@ -9,8 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ElectionCandidateRepository extends JpaRepository<ElectionCandidateEntity, Long> {
 
-  List<ElectionCandidateEntity> findByCandidateAndElectionAndMemberJob(MemberEntity candidate,
-      ElectionEntity election, MemberJobEntity memberJob);
+  Boolean existsByCandidateAndElectionAndMemberJob(MemberEntity candidate, ElectionEntity election, MemberJobEntity memberJob);
 
   List<ElectionCandidateEntity> findAllByElectionAndMemberJob(ElectionEntity election,
       MemberJobEntity memberJob);
