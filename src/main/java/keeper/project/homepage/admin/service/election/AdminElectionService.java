@@ -1,6 +1,7 @@
 package keeper.project.homepage.admin.service.election;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import keeper.project.homepage.admin.dto.election.request.ElectionCandidateCreateRequestDto;
 import keeper.project.homepage.admin.dto.election.request.ElectionCreateRequestDto;
 import keeper.project.homepage.admin.dto.election.response.ElectionCandidateDeleteResponseDto;
@@ -23,9 +24,7 @@ import keeper.project.homepage.exception.election.CustomElectionVoterNotFoundExc
 import keeper.project.homepage.repository.election.ElectionCandidateRepository;
 import keeper.project.homepage.repository.election.ElectionRepository;
 import keeper.project.homepage.repository.election.ElectionVoterRepository;
-import keeper.project.homepage.user.dto.election.response.ElectionVoteStatus;
 import keeper.project.homepage.util.service.ElectionUtilService;
-import keeper.project.homepage.util.service.WebSocketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,7 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminElectionService {
 
   private final AuthService authService;
-  private final WebSocketService webSocketService;
   private final AdminMemberUtilService adminMemberUtilService;
   private final ElectionUtilService electionUtilService;
   private final ElectionRepository electionRepository;
@@ -81,11 +79,6 @@ public class AdminElectionService {
     ElectionEntity election = electionUtilService.getElectionById(electionId);
     election.closeElection();
     return ElectionUpdateResponseDto.from(election);
-  }
-
-  public void sendVoteEnd() {
-    ElectionVoteStatus status = ElectionVoteStatus.createStatus(0, 0, false);
-    webSocketService.sendVoteStatusMessage("/topics/votes/end", status);
   }
 
   @Transactional
