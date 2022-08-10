@@ -53,7 +53,9 @@ public class AdminElectionController {
   @PatchMapping("/{id}/close")
   public SingleResult<ElectionUpdateResponseDto> closeElection(
       @PathVariable("id") Long electionId) {
-    return responseService.getSuccessSingleResult(adminElectionService.closeElection(electionId));
+    ElectionUpdateResponseDto result = adminElectionService.closeElection(electionId);
+    adminElectionService.sendVoteEnd();
+    return responseService.getSuccessSingleResult(result);
   }
 
   @PostMapping("/candidate")
