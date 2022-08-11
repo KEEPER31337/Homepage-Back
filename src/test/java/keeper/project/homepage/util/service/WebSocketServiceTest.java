@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
 import org.springframework.messaging.simp.stomp.StompFrameHandler;
 import org.springframework.messaging.simp.stomp.StompHeaders;
@@ -24,13 +25,15 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 import org.springframework.web.socket.sockjs.client.SockJsClient;
 import org.springframework.web.socket.sockjs.client.WebSocketTransport;
 
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class WebSocketServiceTest {
+
+  @LocalServerPort
+  private int port;
 
   @Autowired
   private WebSocketService webSocketService;
 
-  static final String WEBSOCKET_URI = "ws://localhost:8080/v1/websocket";
   static final String WEBSOCKET_TOPIC = "/topic/votes/result";
 
   static BlockingQueue<ElectionVoteStatus> blockingQueue;
@@ -49,7 +52,7 @@ public class WebSocketServiceTest {
     stompClient.setMessageConverter(new MappingJackson2MessageConverter());
 
     StompSession session = stompClient
-        .connect(WEBSOCKET_URI, new StompSessionHandlerAdapter() {
+        .connect("ws://localhost:" + port + "/v1/websocket", new StompSessionHandlerAdapter() {
         })
         .get(2, SECONDS);
 
@@ -58,6 +61,7 @@ public class WebSocketServiceTest {
     ElectionVoteStatus status = ElectionVoteStatus.createStatus(10, 5, true);
 
     webSocketService.sendVoteStatusMessage(WEBSOCKET_TOPIC, status);
+    session.send(WEBSOCKET_TOPIC, status);
 
     ElectionVoteStatus result = blockingQueue.poll(2, SECONDS);
 
