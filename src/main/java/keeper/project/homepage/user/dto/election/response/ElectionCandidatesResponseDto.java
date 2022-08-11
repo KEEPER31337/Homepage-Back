@@ -16,6 +16,7 @@ import lombok.Setter;
 public class ElectionCandidatesResponseDto {
 
   private Long candidateId;
+  private Long memberId;
   private String realName;
   private String thumbnailPath;
   private Float generation;
@@ -25,6 +26,7 @@ public class ElectionCandidatesResponseDto {
   public static ElectionCandidatesResponseDto from(ElectionCandidateEntity entity) {
     return ElectionCandidatesResponseDto.builder()
         .candidateId(entity.getId())
+        .memberId(entity.getCandidate().getId())
         .realName(entity.getCandidate().getRealName())
         .thumbnailPath(entity.getCandidate().getThumbnailPath())
         .generation(entity.getCandidate().getGeneration())
