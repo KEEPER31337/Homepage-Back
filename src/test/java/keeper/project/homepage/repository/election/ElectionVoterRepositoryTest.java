@@ -1,32 +1,16 @@
 package keeper.project.homepage.repository.election;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
-import javax.persistence.EntityManager;
-import keeper.project.homepage.controller.election.ElectionSpringTestHelper;
 import keeper.project.homepage.entity.election.ElectionEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.user.dto.election.response.ElectionVoteStatus;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-public class ElectionVoterRepositoryTest extends ElectionSpringTestHelper {
-
-  @Autowired
-  private EntityManager em;
-
-  private MemberEntity user;
-  private MemberEntity admin;
-
-  @BeforeEach
-  public void setUp() throws Exception {
-    user = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
-    admin = generateMemberEntity(MemberJobName.회장, MemberTypeName.정회원, MemberRankName.우수회원);
-  }
+public class ElectionVoterRepositoryTest extends ElectionRepositoryTestHelper {
 
   @Test
   @DisplayName("투표 현황 DTO")
@@ -45,9 +29,9 @@ public class ElectionVoterRepositoryTest extends ElectionSpringTestHelper {
   @DisplayName("투표를 진행한 투표자 목록 수")
   public void getVotersIsVoted() throws Exception {
     //given
-    ElectionEntity election = generateElection(admin, true);
-    generateElectionVoter(admin, election, true);
-    generateElectionVoter(user, election, false);
+    MemberEntity member = memberRepository.getById(1L);
+    ElectionEntity election = generateElection(member, true);
+    generateElectionVoter(member, election, true);
 
     em.flush();
     em.clear();
