@@ -7,9 +7,7 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.user.dto.election.response.ElectionVoteStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.transaction.annotation.Transactional;
 
-@Transactional
 public class ElectionVoterRepositoryTest extends ElectionRepositoryTestHelper {
 
   @Test
