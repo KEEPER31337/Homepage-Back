@@ -62,8 +62,8 @@ public class ElectionService {
     ElectionEntity election = electionUtilService.getElectionById(electionId);
     MemberEntity member = authService.getMemberEntityWithJWT();
     ElectionVoterPK pk = new ElectionVoterPK(member, election);
-    electionVoterRepository.findById(pk).orElseThrow(CustomElectionVoterNotFoundException::new);
-    return election.getIsAvailable();
+    boolean voterExist = electionVoterRepository.existsById(pk);
+    return voterExist ? election.getIsAvailable() : false;
   }
 
   public List<ElectionCandidatesResponseDto> getCandidates(Long electionId, Long jobId) {

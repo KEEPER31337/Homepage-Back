@@ -152,7 +152,7 @@ public class ElectionControllerTest extends ElectionSpringTestHelper {
   }
 
   @Test
-  @DisplayName("[Fail] 선거 참여 - 등록되지 않은 투표자")
+  @DisplayName("[FAIL] 선거 참여 - 등록되지 않은 투표자")
   public void joinElectionFailByNotVoter() throws Exception {
     ElectionEntity election = generateElection(admin, true);
 
@@ -160,14 +160,14 @@ public class ElectionControllerTest extends ElectionSpringTestHelper {
             .header("Authorization", userToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
-        .andExpect(status().is4xxClientError())
-        .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(-14002))
-        .andExpect(jsonPath("$.msg").value("존재하지 않는 투표자입니다."));
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.data").value(false));
   }
 
   @Test
-  @DisplayName("[Fail] 선거 참여 - 열리지 않은 투표")
+  @DisplayName("[FAIL] 선거 참여 - 열리지 않은 투표")
   public void joinElectionFailByNotOpen() throws Exception {
     ElectionEntity election = generateElection(admin, false);
     generateElectionVoter(user, election, false);
@@ -215,9 +215,9 @@ public class ElectionControllerTest extends ElectionSpringTestHelper {
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("list[].candidateId").description("후보자 테이블 ID"),
-                fieldWithPath("list[].memberId").description("해당 후보자 멤버 ID"),
-                fieldWithPath("list[].electionId").description("후보자가 등록된 선거 ID"),
-                fieldWithPath("list[].memberJobId").description("후보자가 등록된 직위 ID"),
+                fieldWithPath("list[].realName").description("후보자 실제 이름"),
+                fieldWithPath("list[].thumbnailPath").description("후보자 썸네일 경로"),
+                fieldWithPath("list[].generation").description("후보자 기수"),
                 fieldWithPath("list[].description").description("후보자에 대한 설명"),
                 fieldWithPath("list[].registerTime").description("후보자가 등록된 시간")
             )));
