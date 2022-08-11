@@ -16,18 +16,18 @@ import lombok.Setter;
 public class ElectionCandidatesResponseDto {
 
   private Long candidateId;
-  private Long memberId;
-  private Long electionId;
-  private Long memberJobId;
+  private String realName;
+  private String thumbnailPath;
+  private Float generation;
   private String description;
   private LocalDateTime registerTime;
 
   public static ElectionCandidatesResponseDto from(ElectionCandidateEntity entity) {
     return ElectionCandidatesResponseDto.builder()
         .candidateId(entity.getId())
-        .memberId(entity.getCandidate().getId())
-        .electionId(entity.getElection().getId())
-        .memberJobId(entity.getMemberJob().getId())
+        .realName(entity.getCandidate().getRealName())
+        .thumbnailPath(entity.getCandidate().getThumbnailPath())
+        .generation(entity.getCandidate().getGeneration())
         .description(entity.getDescription())
         .registerTime(entity.getRegisterTime())
         .build();
