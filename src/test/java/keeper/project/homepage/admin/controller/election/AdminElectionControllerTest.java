@@ -1,6 +1,7 @@
 package keeper.project.homepage.admin.controller.election;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -416,6 +417,67 @@ public class AdminElectionControllerTest extends ElectionSpringTestHelper {
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(jsonPath("$.code").value(-14001))
         .andExpect(jsonPath("$.msg").value("존재하지 않는 후보자입니다."));
+  }
+
+  @Test
+  @DisplayName("[SUCCESS] 선거 투표자 목록 조회")
+  public void getVoters() throws Exception {
+    ElectionEntity election1 = generateElection(admin, true);
+    ElectionEntity election2 = generateElection(admin, true);
+    generateElectionVoter(admin, election1, false);
+    generateElectionVoter(user, election1, false);
+    generateElectionVoter(user, election2, false);
+
+    mockMvc.perform(get("/v1/admin/elections/{eid}/voters", election1.getId())
+            .header("Authorization", adminToken)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andDo(document("election-voters",
+            pathParameters(
+                parameterWithName("eid").description("투표자를 조회하고자 하는 선거 ID")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("list[].memberId").description("투표자 멤버 ID"),
+                fieldWithPath("list[].realName").description("투표자 실제 이름"),
+                fieldWithPath("list[].thumbnailPath").description("투표자 썸네일 경로"),
+                fieldWithPath("list[].generation").description("투표자 기수")
+            )));
+  }
+
+  @Test
+  @DisplayName("[FAIL] 선거 투표자 목록 조회 - 존재하지 않는 선거")
+  public void getVotersFailByNoneElection() throws Exception {
+    Long id = -1L;
+
+    mockMvc.perform(get("/v1/admin/elections/{eid}/voters", id)
+            .header("Authorization", adminToken)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().is4xxClientError())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(-14000))
+        .andExpect(jsonPath("$.msg").value("존재하지 않는 선거입니다."));
+  }
+
+  @Test
+  @DisplayName("[FAIL] 선거 투표자 목록 조회 - 문자열 파라미터")
+  public void getVotersFailByString() throws Exception {
+    String param = "xxx";
+
+    mockMvc.perform(get("/v1/admin/elections/{eid}/voters", param)
+            .header("Authorization", adminToken)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().is4xxClientError())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(-9998))
+        .andExpect(jsonPath("$.msg").value("파라미터 타입이 일치하지 않습니다."));
   }
 
   @Test
