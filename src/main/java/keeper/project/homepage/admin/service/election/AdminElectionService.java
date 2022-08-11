@@ -1,12 +1,15 @@
 package keeper.project.homepage.admin.service.election;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import keeper.project.homepage.admin.dto.election.request.ElectionCandidateCreateRequestDto;
 import keeper.project.homepage.admin.dto.election.request.ElectionCreateRequestDto;
 import keeper.project.homepage.admin.dto.election.response.ElectionCandidateDeleteResponseDto;
 import keeper.project.homepage.admin.dto.election.response.ElectionDeleteResponseDto;
 import keeper.project.homepage.admin.dto.election.response.ElectionUpdateResponseDto;
 import keeper.project.homepage.admin.dto.election.response.ElectionVoterCreateResponseDto;
+import keeper.project.homepage.admin.dto.election.response.ElectionVoterResponseDto;
 import keeper.project.homepage.admin.service.member.AdminMemberUtilService;
 import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.entity.election.ElectionCandidateEntity;
@@ -106,6 +109,13 @@ public class AdminElectionService {
         .orElseThrow(CustomElectionCandidateNotFoundException::new);
     electionCandidateRepository.delete(candidate);
     return ElectionCandidateDeleteResponseDto.from(candidate);
+  }
+
+  public List<ElectionVoterResponseDto> getVoters(Long electionId) {
+    ElectionEntity election = electionUtilService.getElectionById(electionId);
+    List<ElectionVoterEntity> voters = electionVoterRepository.findAllByElectionVoterPK_Election(
+        election);
+    return voters.stream().map(ElectionVoterResponseDto::from).collect(Collectors.toList());
   }
 
   @Transactional
