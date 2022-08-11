@@ -86,7 +86,6 @@ include::{snippets}/comment-delete/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/comment-delete/http-response.adoc[]
-include::{snippets}/comment-delete-fail/http-response.adoc[]
 
 ==== Response Fields
 
