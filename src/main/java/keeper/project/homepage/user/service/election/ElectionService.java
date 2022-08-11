@@ -58,6 +58,18 @@ public class ElectionService {
         .map(ElectionResponseDto::from);
   }
 
+  public Page<ElectionResponseDto> getOpenElections(Pageable pageable) {
+    return electionRepository.findAllByIdIsNotAndIsAvailableIsTrue(
+            ElectionUtilService.VIRTUAL_ELECTION_ID, pageable)
+        .map(ElectionResponseDto::from);
+  }
+
+  public Page<ElectionResponseDto> getCloseElections(Pageable pageable) {
+    return electionRepository.findAllByIdIsNotAndIsAvailableIsFalse(
+            ElectionUtilService.VIRTUAL_ELECTION_ID, pageable)
+        .map(ElectionResponseDto::from);
+  }
+
   public Boolean joinElection(Long electionId) {
     ElectionEntity election = electionUtilService.getElectionById(electionId);
     MemberEntity member = authService.getMemberEntityWithJWT();
@@ -71,6 +83,10 @@ public class ElectionService {
     MemberJobEntity memberJob = memberUtilService.getJobById(jobId);
     return electionCandidateRepository.findAllByElectionAndMemberJob(election, memberJob)
         .stream().map(ElectionCandidatesResponseDto::from).toList();
+  }
+
+  public ElectionVoteStatus getVoteStatus(Long electionId) {
+    return electionUtilService.getVoteStatus(electionId);
   }
 
   @Transactional
@@ -101,7 +117,8 @@ public class ElectionService {
   }
 
   private void validateCandidatesCount(ElectionEntity election, List<Long> candidateIds) {
-    Long electionJobCount = electionCandidateRepository.countDistinctMemberJobByElection(election);
+    Long electionJobCount = electionCandidateRepository.getDistinctCountMemberJobByElection(
+        election);
     if (candidateIds.size() != electionJobCount) {
       throw new CustomElectionVoteCountNotMatchException();
     }
@@ -125,10 +142,7 @@ public class ElectionService {
   }
 
   public void sendVoteStatus(Long electionId) {
-    ElectionEntity election = electionUtilService.getElectionById(electionId);
-    Integer total = election.getVoters().size();
-    Integer voted = electionVoterRepository.countAllByElectionVoterPK_ElectionAndIsVotedIsTrue(election);
-    ElectionVoteStatus status = ElectionVoteStatus.createStatus(total, voted, election.getIsAvailable());
+    ElectionVoteStatus status = electionUtilService.getVoteStatus(electionId);
     webSocketService.sendVoteStatusMessage("/topics/votes/result", status);
   }
 

@@ -9,4 +9,8 @@ public interface ElectionRepository extends JpaRepository<ElectionEntity, Long> 
 
   Page<ElectionEntity> findAllByIdIsNot(Long electionId, Pageable pageable);
 
+  Page<ElectionEntity> findAllByIdIsNotAndIsAvailableIsTrue(Long electionId, Pageable pageable);
+
+  Page<ElectionEntity> findAllByIdIsNotAndIsAvailableIsFalse(Long electionId, Pageable pageable);
+
 }

@@ -183,6 +183,32 @@ include::{snippets}/election-delete-candidate/response-body.adoc[]
 
 include::{snippets}/election-delete-candidate/response-fields.adoc[]
 
+== *선거 투표자 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/election-voters/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/election-voters/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/election-voters/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/election-voters/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/election-voters/response-fields.adoc[]
+
 == *선거 투표자 단일 등록*
 
 === 요청

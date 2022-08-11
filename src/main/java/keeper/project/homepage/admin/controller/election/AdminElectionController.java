@@ -7,13 +7,16 @@ import keeper.project.homepage.admin.dto.election.response.ElectionCandidateDele
 import keeper.project.homepage.admin.dto.election.response.ElectionDeleteResponseDto;
 import keeper.project.homepage.admin.dto.election.response.ElectionUpdateResponseDto;
 import keeper.project.homepage.admin.dto.election.response.ElectionVoterCreateResponseDto;
+import keeper.project.homepage.admin.dto.election.response.ElectionVoterResponseDto;
 import keeper.project.homepage.admin.service.election.AdminElectionService;
+import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -70,6 +73,13 @@ public class AdminElectionController {
       @PathVariable("id") Long candidateId) {
     return responseService.getSuccessSingleResult(
         adminElectionService.deleteCandidate(candidateId));
+  }
+
+  @GetMapping("/{eid}/voters")
+  public ListResult<ElectionVoterResponseDto> getVoters(
+      @PathVariable("eid") Long electionId
+  ) {
+    return responseService.getSuccessListResult(adminElectionService.getVoters(electionId));
   }
 
   @PostMapping("/{eid}/voters/{vid}")

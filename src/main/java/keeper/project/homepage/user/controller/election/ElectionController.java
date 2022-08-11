@@ -9,6 +9,7 @@ import keeper.project.homepage.user.dto.election.request.ElectionVoteRequestDto;
 import keeper.project.homepage.user.dto.election.response.ElectionCandidatesResponseDto;
 import keeper.project.homepage.user.dto.election.response.ElectionResponseDto;
 import keeper.project.homepage.user.dto.election.response.ElectionResultResponseDto;
+import keeper.project.homepage.user.dto.election.response.ElectionVoteStatus;
 import keeper.project.homepage.user.service.election.ElectionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,20 @@ public class ElectionController {
     return responseService.getSuccessPageResult(electionService.getElections(pageable));
   }
 
+  @GetMapping("/open")
+  public PageResult<ElectionResponseDto> getOpenElections(
+      @PageableDefault(sort = "id", direction = Direction.DESC) Pageable pageable
+  ) {
+    return responseService.getSuccessPageResult(electionService.getOpenElections(pageable));
+  }
+
+  @GetMapping("/close")
+  public PageResult<ElectionResponseDto> getCloseElections(
+      @PageableDefault(sort = "id", direction = Direction.DESC) Pageable pageable
+  ) {
+    return responseService.getSuccessPageResult(electionService.getCloseElections(pageable));
+  }
+
   @GetMapping("/join/{id}")
   public SingleResult<Boolean> joinElection(
       @PathVariable("id") Long electionId
@@ -54,6 +69,13 @@ public class ElectionController {
       @PathVariable("jid") Long jobId
   ) {
     return responseService.getSuccessListResult(electionService.getCandidates(electionId, jobId));
+  }
+
+  @GetMapping("/{eid}/votes")
+  public SingleResult<ElectionVoteStatus> getVoteStatus(
+      @PathVariable("eid") Long electionId
+  ) {
+    return responseService.getSuccessSingleResult(electionService.getVoteStatus(electionId));
   }
 
   @PostMapping("/votes")
