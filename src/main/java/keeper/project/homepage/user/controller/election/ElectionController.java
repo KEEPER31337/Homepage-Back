@@ -60,8 +60,9 @@ public class ElectionController {
   public SingleResult<Boolean> voteElection(
       @RequestBody @Valid ElectionVoteRequestDto electionVoteRequestDto
   ) {
-    return responseService.getSuccessSingleResult(
-        electionService.voteElection(electionVoteRequestDto));
+    Boolean result = electionService.voteElection(electionVoteRequestDto);
+    electionService.sendVoteStatus(electionVoteRequestDto.getElectionId());
+    return responseService.getSuccessSingleResult(result);
   }
 
   @GetMapping("/votes")
@@ -74,8 +75,8 @@ public class ElectionController {
 
   @GetMapping("/results")
   public ListResult<ElectionResultResponseDto> countVotes(
-    @RequestParam Long electionId,
-    @RequestParam Long jobId
+      @RequestParam Long electionId,
+      @RequestParam Long jobId
   ) {
     return responseService.getSuccessListResult(electionService.countVotes(electionId, jobId));
   }

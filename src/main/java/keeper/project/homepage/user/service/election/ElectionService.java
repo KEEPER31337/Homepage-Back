@@ -27,8 +27,10 @@ import keeper.project.homepage.user.dto.election.request.ElectionVoteRequestDto;
 import keeper.project.homepage.user.dto.election.response.ElectionCandidatesResponseDto;
 import keeper.project.homepage.user.dto.election.response.ElectionResponseDto;
 import keeper.project.homepage.user.dto.election.response.ElectionResultResponseDto;
+import keeper.project.homepage.user.dto.election.response.ElectionVoteStatus;
 import keeper.project.homepage.user.service.member.MemberUtilService;
 import keeper.project.homepage.util.service.ElectionUtilService;
+import keeper.project.homepage.util.service.WebSocketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -43,6 +45,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ElectionService {
 
   private final AuthService authService;
+  private final WebSocketService webSocketService;
   private final ElectionUtilService electionUtilService;
   private final MemberUtilService memberUtilService;
   private final ElectionRepository electionRepository;
@@ -119,6 +122,14 @@ public class ElectionService {
       candidate.gainVote();
       candidateJobs.add(candidate.getMemberJob());
     }
+  }
+
+  public void sendVoteStatus(Long electionId) {
+    ElectionEntity election = electionUtilService.getElectionById(electionId);
+    Integer total = election.getVoters().size();
+    Integer voted = electionVoterRepository.countAllByElectionVoterPK_ElectionAndIsVotedIsTrue(election);
+    ElectionVoteStatus status = ElectionVoteStatus.createStatus(total, voted, election.getIsAvailable());
+    webSocketService.sendVoteStatusMessage("/topics/votes/result", status);
   }
 
   public Boolean isVoted(Long electionId, Long voterId) {
