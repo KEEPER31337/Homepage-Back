@@ -11,6 +11,17 @@ import keeper.project.homepage.exception.ctf.CustomContestNotFoundException;
 import keeper.project.homepage.exception.ctf.CustomCtfCategoryNotFoundException;
 import keeper.project.homepage.exception.ctf.CustomCtfChallengeNotFoundException;
 import keeper.project.homepage.exception.ctf.CustomCtfTypeNotFoundException;
+import keeper.project.homepage.exception.election.CustomCloseElectionVoteException;
+import keeper.project.homepage.exception.election.CustomElectionAlreadyVotedException;
+import keeper.project.homepage.exception.election.CustomElectionIsNotClosedException;
+import keeper.project.homepage.exception.election.CustomElectionNotMatchCandidateException;
+import keeper.project.homepage.exception.election.CustomElectionVoteCountNotMatchException;
+import keeper.project.homepage.exception.election.CustomElectionCandidateExistException;
+import keeper.project.homepage.exception.election.CustomElectionCandidateNotFoundException;
+import keeper.project.homepage.exception.election.CustomElectionNotFoundException;
+import keeper.project.homepage.exception.election.CustomElectionVoteDuplicationJobException;
+import keeper.project.homepage.exception.election.CustomElectionVoterExistException;
+import keeper.project.homepage.exception.election.CustomElectionVoterNotFoundException;
 import keeper.project.homepage.exception.file.CustomInvalidImageFileException;
 import keeper.project.homepage.exception.ctf.CustomCtfTeamNotFoundException;
 import keeper.project.homepage.exception.file.CustomFileDeleteFailedException;
@@ -57,9 +68,13 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -67,7 +82,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class ExceptionAdvice {
 
   private final ResponseService responseService;
-
   private final MessageSource messageSource;
 
   @ExceptionHandler(Exception.class)
@@ -75,7 +89,33 @@ public class ExceptionAdvice {
   protected CommonResult defaultException(HttpServletRequest request, Exception e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(Integer.parseInt(getMessage("unKnown.code")),
-        getMessage("unKnown.msg"));
+        e.getMessage() == null ? getMessage("unKnown.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult methodArgumentNotValidException(HttpServletRequest request,
+      MethodArgumentNotValidException e) {
+    BindingResult bindingResult = e.getBindingResult();
+    StringBuilder errorMessage = new StringBuilder();
+    for (FieldError fieldError : bindingResult.getFieldErrors()) {
+      errorMessage.append("[");
+      errorMessage.append(fieldError.getField());
+      errorMessage.append("] 입력: ");
+      errorMessage.append(fieldError.getRejectedValue()).append(" / ");
+      errorMessage.append(fieldError.getDefaultMessage()).append(" ");
+
+    }
+    return responseService.getFailResult(HttpStatus.BAD_REQUEST.value(),
+        errorMessage.toString().trim());
+  }
+
+  @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult methodArgumentTypeMismatchException(HttpServletRequest request,
+      MethodArgumentTypeMismatchException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("argumentTypeMismatch.code")),
+        getMessage("argumentTypeMismatch.msg"));
   }
 
   @ExceptionHandler(CustomMemberNotFoundException.class)
@@ -257,7 +297,7 @@ public class ExceptionAdvice {
       CustomMemberInfoNotFoundException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(Integer.parseInt(getMessage("memberInfoNotFound.code")),
-        getMessage("memberInfoNotFound.msg"));
+        e.getMessage() == null ? getMessage("memberInfoNotFound.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomMemberDuplicateException.class)
@@ -292,7 +332,7 @@ public class ExceptionAdvice {
       CustomCommentEmptyFieldException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(Integer.parseInt(getMessage("commentEmptyField.code")),
-        getMessage("commentEmptyField.msg"));
+        e.getMessage() == null ? getMessage("commentEmptyField.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomNumberOverflowException.class)
@@ -512,5 +552,95 @@ public class ExceptionAdvice {
       DataIntegrityViolationException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("dataDuplicate.code")),
         e.getMessage() == null ? getMessage("dataDuplicate.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomElectionNotFoundException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult electionNotFound(HttpServletRequest request,
+      CustomElectionNotFoundException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("electionNotFound.code")),
+        e.getMessage() == null ? getMessage("electionNotFound.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomElectionCandidateNotFoundException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult electionCandidateNotFound(HttpServletRequest request,
+      CustomElectionCandidateNotFoundException e) {
+    return responseService.getFailResult(
+        Integer.parseInt(getMessage("electionCandidateNotFound.code")),
+        e.getMessage() == null ? getMessage("electionCandidateNotFound.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomElectionVoterNotFoundException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult electionVoterNotFound(HttpServletRequest request,
+      CustomElectionVoterNotFoundException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("electionVoterNotFound.code")),
+        e.getMessage() == null ? getMessage("electionVoterNotFound.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomElectionCandidateExistException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult electionCandidateExist(HttpServletRequest request,
+      CustomElectionCandidateExistException e) {
+    return responseService.getFailResult(
+        Integer.parseInt(getMessage("electionCandidateExist.code")),
+        e.getMessage() == null ? getMessage("electionCandidateExist.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomElectionVoterExistException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult electionVoterExist(HttpServletRequest request,
+      CustomElectionVoterExistException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("electionVoterExist.code")),
+        e.getMessage() == null ? getMessage("electionVoterExist.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomElectionVoteCountNotMatchException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult electionCandidateCountNotMatch(HttpServletRequest request,
+      CustomElectionVoteCountNotMatchException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("electionVoteCountNotMatch.code")),
+        e.getMessage() == null ? getMessage("electionVoteCountNotMatch.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomElectionVoteDuplicationJobException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult electionVoteDuplicationJob(HttpServletRequest request,
+      CustomElectionVoteDuplicationJobException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("electionVoteDuplicationJob.code")),
+        e.getMessage() == null ? getMessage("electionVoteDuplicationJob.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomCloseElectionVoteException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult closeElectionVote(HttpServletRequest request,
+      CustomCloseElectionVoteException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("closeElectionVote.code")),
+        e.getMessage() == null ? getMessage("closeElectionVote.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomElectionNotMatchCandidateException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult electionNotMatchCandidate(HttpServletRequest request,
+      CustomElectionNotMatchCandidateException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("electionNotMatchCandidate.code")),
+        e.getMessage() == null ? getMessage("electionNotMatchCandidate.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomElectionAlreadyVotedException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult electionAlreadyVoted(HttpServletRequest request,
+      CustomElectionAlreadyVotedException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("alreadyVoted.code")),
+        e.getMessage() == null ? getMessage("alreadyVoted.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomElectionIsNotClosedException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult electionIsNotClosed(HttpServletRequest request,
+      CustomElectionIsNotClosedException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("IsNotClosedElection.code")),
+        e.getMessage() == null ? getMessage("IsNotClosedElection.msg") : e.getMessage());
   }
 }

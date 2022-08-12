@@ -219,7 +219,7 @@ include::{snippets}/file-registration/http-response.adoc[]
 
 ==== Response Fields
 
-include::{snippets}/ctf-file-registration/response-fields.adoc[]
+include::{snippets}/file-registration/response-fields.adoc[]
 
 == *CTF 문제 오픈*
 
