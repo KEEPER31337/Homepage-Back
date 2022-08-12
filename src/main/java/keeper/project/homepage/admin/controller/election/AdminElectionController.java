@@ -57,7 +57,7 @@ public class AdminElectionController {
   public SingleResult<ElectionUpdateResponseDto> closeElection(
       @PathVariable("id") Long electionId) {
     ElectionUpdateResponseDto result = adminElectionService.closeElection(electionId);
-    adminElectionService.sendVoteEnd();
+    adminElectionService.sendVoteEnd(electionId);
     return responseService.getSuccessSingleResult(result);
   }
 

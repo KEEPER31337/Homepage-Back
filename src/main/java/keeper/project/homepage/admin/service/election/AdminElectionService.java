@@ -86,8 +86,12 @@ public class AdminElectionService {
     return ElectionUpdateResponseDto.from(election);
   }
 
-  public void sendVoteEnd() {
-    ElectionVoteStatus status = ElectionVoteStatus.createStatus(0, 0, false);
+  public void sendVoteEnd(Long electionId) {
+    ElectionEntity election = electionUtilService.getElectionById(electionId);
+    Integer total = election.getVoters().size();
+    Integer voted = electionVoterRepository.countAllByElectionVoterPK_ElectionAndIsVotedIsTrue(
+        election);
+    ElectionVoteStatus status = ElectionVoteStatus.createStatus(total, voted, false);
     webSocketService.sendVoteStatusMessage("/topics/votes/end", status);
   }
 
