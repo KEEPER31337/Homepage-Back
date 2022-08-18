@@ -8,12 +8,7 @@ import keeper.project.homepage.entity.clerk.SeminarEntity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = Replace.NONE)
 class SeminarAttendanceRepositoryTest extends SeminarRepositoryTestHelper {
 
   @Test
@@ -22,9 +17,10 @@ class SeminarAttendanceRepositoryTest extends SeminarRepositoryTestHelper {
     // given
     MemberEntity memberEntity = memberRepository.getById(1L);
     SeminarEntity seminarEntity = seminarRepository.getById(1L);
+    SeminarAttendanceStatusEntity ATTENDANCE = seminarAttendanceStatusRepository.getById(1L);
     SeminarAttendanceEntity seminarAttendanceEntity = generateSeminarAttendance(memberEntity,
         seminarEntity,
-        SeminarAttendanceStatusEntity.ATTENDANCE);
+        ATTENDANCE);
 
     em.flush();
     em.clear();
@@ -36,15 +32,16 @@ class SeminarAttendanceRepositoryTest extends SeminarRepositoryTestHelper {
     Assertions.assertThat(seminarAttendanceEntity.getSeminarAttendTime())
         .isEqualTo(findSeminarAttendanceEntity.getSeminarAttendTime());
   }
+
   @Test
   @DisplayName("세미나, 멤버로 세미나 출석 조회 테스트")
   void findSeminarAttendanceBySeminarAndMemberTest() {
     // given
     MemberEntity memberEntity = memberRepository.getById(1L);
     SeminarEntity seminarEntity = seminarRepository.getById(1L);
+    SeminarAttendanceStatusEntity ATTENDANCE = seminarAttendanceStatusRepository.getById(1L);
     SeminarAttendanceEntity seminarAttendanceEntity = generateSeminarAttendance(memberEntity,
-        seminarEntity,
-        SeminarAttendanceStatusEntity.ATTENDANCE);
+        seminarEntity, ATTENDANCE);
 
     em.flush();
     em.clear();
@@ -64,8 +61,10 @@ class SeminarAttendanceRepositoryTest extends SeminarRepositoryTestHelper {
     // given
     MemberEntity memberEntity = memberRepository.getById(1L);
     SeminarEntity seminarEntity = seminarRepository.getById(1L);
+    SeminarAttendanceStatusEntity PERSONAL = seminarAttendanceStatusRepository.getById(4L);
+
     SeminarAttendanceEntity seminarAttendanceEntity = generateSeminarAttendance(memberEntity,
-        seminarEntity, SeminarAttendanceStatusEntity.PERSONAL);
+        seminarEntity, PERSONAL);
 
     SeminarAttendanceExcuseEntity seminarAttendanceExcuseEntity = generateSeminarAttendanceExcuse(
         seminarAttendanceEntity);

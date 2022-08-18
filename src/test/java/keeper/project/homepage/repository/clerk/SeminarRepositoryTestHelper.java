@@ -30,6 +30,8 @@ public class SeminarRepositoryTestHelper {
   SeminarAttendanceExcuseRepository seminarAttendanceExcuseRepository;
 
   @Autowired
+  SeminarAttendanceStatusRepository seminarAttendanceStatusRepository;
+  @Autowired
   MemberRepository memberRepository;
 
   SeminarAttendanceEntity generateSeminarAttendance(MemberEntity member,

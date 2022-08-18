@@ -16,10 +16,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "seminar_attendance_status")
 public class SeminarAttendanceStatusEntity {
-  public static final SeminarAttendanceStatusEntity ATTENDANCE = new SeminarAttendanceStatusEntity(1L, "ATTENDANCE");
-  public static final SeminarAttendanceStatusEntity LATENESS = new SeminarAttendanceStatusEntity(2L, "LATENESS");
-  public static final SeminarAttendanceStatusEntity ABSENCE = new SeminarAttendanceStatusEntity(3L, "ABSENCE");
-  public static final SeminarAttendanceStatusEntity PERSONAL = new SeminarAttendanceStatusEntity(4L, "PERSONAL");
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
