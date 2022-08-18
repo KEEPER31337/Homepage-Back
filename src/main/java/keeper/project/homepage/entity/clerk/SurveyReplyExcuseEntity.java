@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 public class SurveyReplyExcuseEntity {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "survey_member_reply_id")
   private Long id;
 
   @OneToOne
