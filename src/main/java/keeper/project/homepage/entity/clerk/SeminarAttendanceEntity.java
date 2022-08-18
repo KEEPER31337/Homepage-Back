@@ -1,6 +1,7 @@
 package keeper.project.homepage.entity.clerk;
 
 import java.time.LocalDateTime;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -39,12 +40,12 @@ public class SeminarAttendanceEntity {
   @JoinColumn(name = "seminar_id")
   private SeminarEntity seminarEntity;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "status_id")
   private SeminarAttendanceStatusEntity seminarAttendanceStatusEntity;
 
+  @OneToOne(mappedBy = "seminarAttendanceEntity", cascade = CascadeType.REMOVE)
   @PrimaryKeyJoinColumn
-  @OneToOne(mappedBy = "seminarAttendanceEntity")
   private SeminarAttendanceExcuseEntity seminarAttendanceExcuseEntity;
 
   @NotNull
