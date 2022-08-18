@@ -1,9 +1,12 @@
 package keeper.project.homepage.repository.clerk;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import keeper.project.homepage.entity.clerk.SeminarEntity;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 class SeminarRepositoryTest extends SeminarRepositoryTestHelper {
 
@@ -14,10 +17,25 @@ class SeminarRepositoryTest extends SeminarRepositoryTestHelper {
     SeminarEntity seminarEntity = seminarRepository.getById(1L);
 
     // when
-    SeminarEntity findSeminarEntity = seminarRepository.findByName(seminarEntity.getName());
+    SeminarEntity findSeminarEntity = seminarRepository.findByNameIsLike(seminarEntity.getName());
 
     // then
-    Assertions.assertThat(findSeminarEntity).isEqualTo(seminarEntity);
+    assertThat(findSeminarEntity).isEqualTo(seminarEntity);
+  }
+
+  @Test
+  @DisplayName("name 이 null 일 때 seminarEntity 조회시 예외 발생 테스트")
+  void findByNameIsNullTest() {
+    // given
+
+    // when
+    InvalidDataAccessApiUsageException invalidDataAccessApiUsageException = assertThrows(
+        InvalidDataAccessApiUsageException.class,
+        () -> seminarRepository.findByNameIsLike(null));
+
+    // then
+    assertThat(invalidDataAccessApiUsageException.getClass()).isEqualTo(
+        InvalidDataAccessApiUsageException.class);
   }
 
 }
