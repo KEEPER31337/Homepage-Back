@@ -8,7 +8,6 @@ import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
 import keeper.project.homepage.entity.clerk.SurveyReplyExcuseEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.repository.member.MemberRepository;
-import lombok.Getter;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -36,15 +35,9 @@ public class SurveyTestHelper {
   @Autowired
   protected SurveyRepository surveyRepository;
 
-  protected SurveyEntity generateSurvey(LocalDateTime openTime, LocalDateTime closeTime) {
+  protected SurveyEntity generateSurvey(LocalDateTime openTime, LocalDateTime closeTime,
+      Boolean isVisible) {
     final long epochTime = System.nanoTime();
-    Boolean isVisible;
-    LocalDateTime now = LocalDateTime.now();
-    if (now.isAfter(openTime) && now.isBefore(closeTime)) {
-      isVisible = true;
-    } else {
-      isVisible = false;
-    }
     return surveyRepository.save(
         SurveyEntity.builder()
             .name("name_" + epochTime)
@@ -55,6 +48,7 @@ public class SurveyTestHelper {
             .build()
     );
   }
+
 
   protected SurveyReplyEntity generateSurveyReply(SurveyReplyEntity reply) {
     return surveyReplyRepository.save(
