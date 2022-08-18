@@ -20,7 +20,8 @@ public class SurveyRepositoryTest extends SurveyTestHelper {
     LocalDateTime closeTime = LocalDateTime.of(2022, 8, 20, 0, 0, 0);
     SurveyEntity survey = generateSurvey(openTime, closeTime);
     MemberEntity member = memberRepository.getById(1L);
-    SurveyReplyEntity reply = generateSurveyReply(SurveyReplyEntity.ACTIVITY);
+    SurveyReplyEntity reply = generateSurveyReply(
+        SurveyReplyEntity.builder().id(1L).type("활동").build());
 
     generateSurveyMemberReply(survey, member, reply);
 
@@ -37,11 +38,12 @@ public class SurveyRepositoryTest extends SurveyTestHelper {
 
   @Test
   @DisplayName("설문 조사의 응답이 휴면(기타)일 경우")
-  public void 휴면() {
+  public void responseOtherDormant() {
     //given
     SurveyEntity survey = surveyRepository.getById(1L);
     MemberEntity member = memberRepository.getById(1L);
-    SurveyReplyEntity reply = generateSurveyReply(SurveyReplyEntity.OTHER_DORMANT);
+    SurveyReplyEntity reply = generateSurveyReply(
+        SurveyReplyEntity.builder().id(3L).type("휴면(기타)").build());
 
     SurveyMemberReplyEntity surveyMemberReplyEntity = generateSurveyMemberReply(survey, member,
         reply);

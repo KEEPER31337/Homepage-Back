@@ -19,13 +19,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "survey_reply")
 public class SurveyReplyEntity {
 
-  public static final SurveyReplyEntity ACTIVITY = new SurveyReplyEntity(1L, "활동");
-  public static final SurveyReplyEntity MILITARY_DORMANT = new SurveyReplyEntity(2L,
-      "휴면(군휴학)");
-  public static final SurveyReplyEntity OTHER_DORMANT = new SurveyReplyEntity(3L, "휴면(기타)");
-  public static final SurveyReplyEntity GRADUATE = new SurveyReplyEntity(4L, "졸업");
-  public static final SurveyReplyEntity LEAVE = new SurveyReplyEntity(5L, "탈퇴");
-
   @Id
   @Column(nullable = false)
   @GeneratedValue(strategy = GenerationType.IDENTITY)

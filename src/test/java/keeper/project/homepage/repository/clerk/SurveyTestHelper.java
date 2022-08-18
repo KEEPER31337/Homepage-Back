@@ -8,6 +8,7 @@ import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
 import keeper.project.homepage.entity.clerk.SurveyReplyExcuseEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.repository.member.MemberRepository;
+import lombok.Getter;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
