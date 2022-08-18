@@ -1,16 +1,17 @@
-package keeper.project.homepage.repository.clerk.survey;
+package keeper.project.homepage.repository.clerk;
 
 import java.util.ArrayList;
 import java.util.List;
-import keeper.project.homepage.entity.clerk.survey.SurveyReplyEntity;
+import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class SurveyReplyRepositoryTest extends SurveyTestHelper{
+public class SurveyReplyRepositoryTest extends SurveyTestHelper {
+
   @Test
   @DisplayName("응답 종류 조회 테스트")
-  void viewReplyTest(){
+  void viewReplyTest() {
     //given
     // 1: "활동" 2: "휴면(군휴학)" 3: "휴면(기타)" 4: "졸업" 5: "탈퇴"
 

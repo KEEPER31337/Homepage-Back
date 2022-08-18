@@ -1,4 +1,4 @@
-package keeper.project.homepage.entity.clerk.survey;
+package keeper.project.homepage.entity.clerk;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

@@ -1,4 +1,4 @@
-package keeper.project.homepage.entity.clerk.survey;
+package keeper.project.homepage.entity.clerk;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

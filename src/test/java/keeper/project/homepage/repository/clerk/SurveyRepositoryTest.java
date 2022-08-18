@@ -1,30 +1,28 @@
-package keeper.project.homepage.repository.clerk.survey;
+package keeper.project.homepage.repository.clerk;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import keeper.project.homepage.entity.clerk.survey.SurveyMemberReplyEntity;
+import keeper.project.homepage.entity.clerk.SurveyEntity;
+import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
+import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
+import keeper.project.homepage.entity.clerk.SurveyReplyExcuseEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.clerk.survey.SurveyEntity;
-import keeper.project.homepage.entity.clerk.survey.SurveyReplyEntity;
-import keeper.project.homepage.entity.clerk.survey.SurveyReplyExcuseEntity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-public class SurveyRepositoryTest extends SurveyTestHelper{
+public class SurveyRepositoryTest extends SurveyTestHelper {
 
   @Test
   @DisplayName("설문 조사의 응답자 수 확인")
-  public void getRespondentsInSurvey(){
+  public void getRespondentsInSurvey() {
     //given
-    LocalDateTime openTime = LocalDateTime.of(2022,8,18,0,0,0);
-    LocalDateTime closeTime = LocalDateTime.of(2022,8,20,0,0,0);
-    SurveyEntity survey = generateSurvey(openTime,closeTime);
+    LocalDateTime openTime = LocalDateTime.of(2022, 8, 18, 0, 0, 0);
+    LocalDateTime closeTime = LocalDateTime.of(2022, 8, 20, 0, 0, 0);
+    SurveyEntity survey = generateSurvey(openTime, closeTime);
     MemberEntity member = memberRepository.getById(1L);
     SurveyReplyEntity reply = generateSurveyReply(SurveyReplyEntity.ACTIVITY);
 
-    generateSurveyMemberReply(survey,member,reply);
+    generateSurveyMemberReply(survey, member, reply);
 
     em.flush();
     em.clear();
@@ -39,24 +37,28 @@ public class SurveyRepositoryTest extends SurveyTestHelper{
 
   @Test
   @DisplayName("설문 조사의 응답이 휴면(기타)일 경우")
-  public void 휴면(){
+  public void 휴면() {
     //given
     SurveyEntity survey = surveyRepository.getById(1L);
     MemberEntity member = memberRepository.getById(1L);
     SurveyReplyEntity reply = generateSurveyReply(SurveyReplyEntity.OTHER_DORMANT);
 
-    SurveyMemberReplyEntity surveyMemberReplyEntity = generateSurveyMemberReply(survey,member,reply);
+    SurveyMemberReplyEntity surveyMemberReplyEntity = generateSurveyMemberReply(survey, member,
+        reply);
 
-    SurveyReplyExcuseEntity surveyReplyExcuseEntity = generateSurveyReplyExcuse(surveyMemberReplyEntity,"BOB");
+    SurveyReplyExcuseEntity surveyReplyExcuseEntity = generateSurveyReplyExcuse(
+        surveyMemberReplyEntity, "BOB");
 
     em.flush();
     em.clear();
 
     //when
-    SurveyMemberReplyEntity find = surveyMemberReplyRepository.getById(surveyMemberReplyEntity.getId());
+    SurveyMemberReplyEntity find = surveyMemberReplyRepository.getById(
+        surveyMemberReplyEntity.getId());
 
     //then
-    Assertions.assertThat(surveyReplyExcuseEntity.getRestExcuse()).isEqualTo(find.getSurveyReplyExcuseEntity().getRestExcuse());
+    Assertions.assertThat(surveyReplyExcuseEntity.getRestExcuse())
+        .isEqualTo(find.getSurveyReplyExcuseEntity().getRestExcuse());
   }
 
 }

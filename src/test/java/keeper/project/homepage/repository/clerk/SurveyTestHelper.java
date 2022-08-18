@@ -1,16 +1,12 @@
-package keeper.project.homepage.repository.clerk.survey;
+package keeper.project.homepage.repository.clerk;
 
 import java.time.LocalDateTime;
 import javax.persistence.EntityManager;
+import keeper.project.homepage.entity.clerk.SurveyEntity;
+import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
+import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
+import keeper.project.homepage.entity.clerk.SurveyReplyExcuseEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.clerk.survey.SurveyEntity;
-import keeper.project.homepage.entity.clerk.survey.SurveyMemberReplyEntity;
-import keeper.project.homepage.entity.clerk.survey.SurveyReplyEntity;
-import keeper.project.homepage.entity.clerk.survey.SurveyReplyExcuseEntity;
-import keeper.project.homepage.repository.clerk.survey.SurveyMemberReplyRepository;
-import keeper.project.homepage.repository.clerk.survey.SurveyReplyExcuseRepository;
-import keeper.project.homepage.repository.clerk.survey.SurveyReplyRepository;
-import keeper.project.homepage.repository.clerk.survey.SurveyRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,14 +35,13 @@ public class SurveyTestHelper {
   @Autowired
   protected SurveyRepository surveyRepository;
 
-  protected SurveyEntity generateSurvey(LocalDateTime openTime,LocalDateTime closeTime) {
+  protected SurveyEntity generateSurvey(LocalDateTime openTime, LocalDateTime closeTime) {
     final long epochTime = System.nanoTime();
     Boolean isVisible;
     LocalDateTime now = LocalDateTime.now();
-    if (now.isAfter(openTime) && now.isBefore(closeTime)){
+    if (now.isAfter(openTime) && now.isBefore(closeTime)) {
       isVisible = true;
-    }
-    else{
+    } else {
       isVisible = false;
     }
     return surveyRepository.save(
@@ -60,7 +55,7 @@ public class SurveyTestHelper {
     );
   }
 
-  protected SurveyReplyEntity generateSurveyReply(SurveyReplyEntity reply){
+  protected SurveyReplyEntity generateSurveyReply(SurveyReplyEntity reply) {
     return surveyReplyRepository.save(
         SurveyReplyEntity.builder()
             .type(reply.getType())
@@ -68,7 +63,8 @@ public class SurveyTestHelper {
     );
   }
 
-  protected SurveyMemberReplyEntity generateSurveyMemberReply(SurveyEntity survey,MemberEntity member,
+  protected SurveyMemberReplyEntity generateSurveyMemberReply(SurveyEntity survey,
+      MemberEntity member,
       SurveyReplyEntity reply) {
     return surveyMemberReplyRepository.save(
         SurveyMemberReplyEntity.builder()
@@ -80,7 +76,8 @@ public class SurveyTestHelper {
     );
   }
 
-  protected SurveyReplyExcuseEntity generateSurveyReplyExcuse(SurveyMemberReplyEntity surveyMemberReplyEntity,String because){
+  protected SurveyReplyExcuseEntity generateSurveyReplyExcuse(
+      SurveyMemberReplyEntity surveyMemberReplyEntity, String because) {
     return surveyReplyExcuseRepository.save(
         SurveyReplyExcuseEntity.builder()
             .surveyMemberReplyEntity(surveyMemberReplyEntity)
