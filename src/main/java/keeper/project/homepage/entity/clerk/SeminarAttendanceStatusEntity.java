@@ -1,4 +1,4 @@
-package keeper.project.homepage.entity.seminar;
+package keeper.project.homepage.entity.clerk;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;

@@ -1,6 +1,6 @@
-package keeper.project.homepage.repository.seminar;
+package keeper.project.homepage.repository.clerk;
 
-import keeper.project.homepage.entity.seminar.SeminarAttendanceExcuseEntity;
+import keeper.project.homepage.entity.clerk.SeminarAttendanceExcuseEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SeminarAttendanceExcuseRepository extends

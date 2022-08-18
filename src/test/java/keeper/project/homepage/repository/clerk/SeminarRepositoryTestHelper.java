@@ -1,12 +1,12 @@
-package keeper.project.homepage.repository.seminar;
+package keeper.project.homepage.repository.clerk;
 
 import java.time.LocalDateTime;
 import javax.persistence.EntityManager;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.seminar.SeminarAttendanceEntity;
-import keeper.project.homepage.entity.seminar.SeminarAttendanceExcuseEntity;
-import keeper.project.homepage.entity.seminar.SeminarAttendanceStatusEntity;
-import keeper.project.homepage.entity.seminar.SeminarEntity;
+import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
+import keeper.project.homepage.entity.clerk.SeminarAttendanceExcuseEntity;
+import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
+import keeper.project.homepage.entity.clerk.SeminarEntity;
 import keeper.project.homepage.repository.member.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;

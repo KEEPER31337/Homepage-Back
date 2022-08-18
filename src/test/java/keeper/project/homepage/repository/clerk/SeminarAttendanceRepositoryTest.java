@@ -1,10 +1,10 @@
-package keeper.project.homepage.repository.seminar;
+package keeper.project.homepage.repository.clerk;
 
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.seminar.SeminarAttendanceEntity;
-import keeper.project.homepage.entity.seminar.SeminarAttendanceExcuseEntity;
-import keeper.project.homepage.entity.seminar.SeminarAttendanceStatusEntity;
-import keeper.project.homepage.entity.seminar.SeminarEntity;
+import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
+import keeper.project.homepage.entity.clerk.SeminarAttendanceExcuseEntity;
+import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
+import keeper.project.homepage.entity.clerk.SeminarEntity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

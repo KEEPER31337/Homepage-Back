@@ -1,10 +1,8 @@
-package keeper.project.homepage.repository.seminar;
+package keeper.project.homepage.repository.clerk;
 
-import java.awt.print.Pageable;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.seminar.SeminarAttendanceEntity;
-import keeper.project.homepage.entity.seminar.SeminarEntity;
-import org.springframework.data.domain.Page;
+import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
+import keeper.project.homepage.entity.clerk.SeminarEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SeminarAttendanceRepository extends JpaRepository<SeminarAttendanceEntity, Long> {
