@@ -49,15 +49,6 @@ public class SurveyTestHelper {
     );
   }
 
-
-  protected SurveyReplyEntity generateSurveyReply(SurveyReplyEntity reply) {
-    return surveyReplyRepository.save(
-        SurveyReplyEntity.builder()
-            .type(reply.getType())
-            .build()
-    );
-  }
-
   protected SurveyMemberReplyEntity generateSurveyMemberReply(SurveyEntity survey,
       MemberEntity member,
       SurveyReplyEntity reply) {

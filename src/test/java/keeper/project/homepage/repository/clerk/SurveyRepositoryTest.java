@@ -18,8 +18,7 @@ public class SurveyRepositoryTest extends SurveyTestHelper {
     //given
     SurveyEntity survey = surveyRepository.getById(1L);
     MemberEntity member = memberRepository.getById(1L);
-    SurveyReplyEntity reply = generateSurveyReply(
-        SurveyReplyEntity.builder().id(1L).type("활동").build());
+    SurveyReplyEntity reply = surveyReplyRepository.getById(1L);
 
     generateSurveyMemberReply(survey, member, reply);
 
@@ -42,8 +41,7 @@ public class SurveyRepositoryTest extends SurveyTestHelper {
     LocalDateTime closeTime = LocalDateTime.now().plusDays(5);
     SurveyEntity survey = generateSurvey(openTime, closeTime, true);
     MemberEntity member = memberRepository.getById(1L);
-    SurveyReplyEntity reply = generateSurveyReply(
-        SurveyReplyEntity.builder().id(1L).type("활동").build());
+    SurveyReplyEntity reply = surveyReplyRepository.getById(1L);
 
     generateSurveyMemberReply(survey, member, reply);
 
@@ -66,8 +64,7 @@ public class SurveyRepositoryTest extends SurveyTestHelper {
     //given
     SurveyEntity survey = surveyRepository.getById(1L);
     MemberEntity member = memberRepository.getById(1L);
-    SurveyReplyEntity reply = generateSurveyReply(
-        SurveyReplyEntity.builder().id(3L).type("휴면(기타)").build());
+    SurveyReplyEntity reply = surveyReplyRepository.getById(3L); // 휴면(기타)
 
     SurveyMemberReplyEntity surveyMemberReplyEntity = generateSurveyMemberReply(survey, member,
         reply);
