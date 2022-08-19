@@ -20,6 +20,6 @@ public interface MemberHasMemberJobRepository extends
 
   MemberHasMemberJobEntity findFirstByMemberJobEntityOrderByIdDesc(MemberJobEntity memberJobEntity);
 
-  List<MemberHasMemberJobEntity> deleteAllByMemberEntityAndMemberJobEntity(
+  void deleteAllByMemberEntityAndMemberJobEntity(
       MemberEntity memberEntity, MemberJobEntity memberJobEntity);
 }

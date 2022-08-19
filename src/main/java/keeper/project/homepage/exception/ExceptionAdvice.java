@@ -7,6 +7,7 @@ import keeper.project.homepage.exception.about.CustomStaticWriteTitleNotFoundExc
 import keeper.project.homepage.exception.about.CustomStaticWriteTypeNotFoundException;
 import keeper.project.homepage.exception.attendance.CustomAttendanceException;
 import keeper.project.homepage.exception.attendance.CustomGameIsOverException;
+import keeper.project.homepage.exception.clerk.CustomClerkInaccessibleJobException;
 import keeper.project.homepage.exception.ctf.CustomContestNotFoundException;
 import keeper.project.homepage.exception.ctf.CustomCtfCategoryNotFoundException;
 import keeper.project.homepage.exception.ctf.CustomCtfChallengeNotFoundException;
@@ -600,7 +601,8 @@ public class ExceptionAdvice {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult electionCandidateCountNotMatch(HttpServletRequest request,
       CustomElectionVoteCountNotMatchException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("electionVoteCountNotMatch.code")),
+    return responseService.getFailResult(
+        Integer.parseInt(getMessage("electionVoteCountNotMatch.code")),
         e.getMessage() == null ? getMessage("electionVoteCountNotMatch.msg") : e.getMessage());
   }
 
@@ -608,7 +610,8 @@ public class ExceptionAdvice {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult electionVoteDuplicationJob(HttpServletRequest request,
       CustomElectionVoteDuplicationJobException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("electionVoteDuplicationJob.code")),
+    return responseService.getFailResult(
+        Integer.parseInt(getMessage("electionVoteDuplicationJob.code")),
         e.getMessage() == null ? getMessage("electionVoteDuplicationJob.msg") : e.getMessage());
   }
 
@@ -624,7 +627,8 @@ public class ExceptionAdvice {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult electionNotMatchCandidate(HttpServletRequest request,
       CustomElectionNotMatchCandidateException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("electionNotMatchCandidate.code")),
+    return responseService.getFailResult(
+        Integer.parseInt(getMessage("electionNotMatchCandidate.code")),
         e.getMessage() == null ? getMessage("electionNotMatchCandidate.msg") : e.getMessage());
   }
 
@@ -643,4 +647,12 @@ public class ExceptionAdvice {
     return responseService.getFailResult(Integer.parseInt(getMessage("IsNotClosedElection.code")),
         e.getMessage() == null ? getMessage("IsNotClosedElection.msg") : e.getMessage());
   }
+
+  @ExceptionHandler(CustomClerkInaccessibleJobException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult clerkInaccessibleJob(CustomClerkInaccessibleJobException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("inaccessibleJob.code")),
+        e.getMessage() == null ? getMessage("inaccessibleJob.msg") : e.getMessage());
+  }
+
 }
