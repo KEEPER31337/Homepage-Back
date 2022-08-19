@@ -1,0 +1,90 @@
+package keeper.project.homepage.admin.controller.clerk;
+
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import keeper.project.homepage.ApiControllerTestHelper;
+import keeper.project.homepage.admin.dto.member.job.JobDto;
+import keeper.project.homepage.admin.dto.member.type.TypeDto;
+import keeper.project.homepage.entity.election.ElectionCandidateEntity;
+import keeper.project.homepage.entity.election.ElectionChartLogEntity;
+import keeper.project.homepage.entity.election.ElectionEntity;
+import keeper.project.homepage.entity.election.ElectionVoterEntity;
+import keeper.project.homepage.entity.election.ElectionVoterPK;
+import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.member.MemberJobEntity;
+import keeper.project.homepage.repository.election.ElectionCandidateRepository;
+import keeper.project.homepage.repository.election.ElectionChartLogRepository;
+import keeper.project.homepage.repository.election.ElectionRepository;
+import keeper.project.homepage.repository.election.ElectionVoterRepository;
+import lombok.NonNull;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.restdocs.payload.FieldDescriptor;
+
+public class ClerkControllerTestHelper extends ApiControllerTestHelper {
+
+  protected String asJsonString(final Object obj) {
+    try {
+      final ObjectMapper mapper = new ObjectMapper();
+      return mapper.writeValueAsString(obj);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  protected List<FieldDescriptor> generateJobDtoResponseFields(ResponseType type,
+      String success, String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(Arrays.asList(
+        fieldWithPath(prefix + ".id").description("해당 ROLE의 Id"),
+        fieldWithPath(prefix + ".name").description("해당 ROLE의 이름")
+    ));
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
+    }
+    return commonFields;
+  }
+
+  protected List<FieldDescriptor> generateTypeDtoResponseFields(ResponseType type,
+      String success, String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(Arrays.asList(
+        fieldWithPath(prefix + ".id").description("해당 TYPE의 Id"),
+        fieldWithPath(prefix + ".name").description("해당 TYPE의 이름")
+    ));
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
+    }
+    return commonFields;
+  }
+
+  protected List<FieldDescriptor> generateClerkMemberJobTypeResponseFields(ResponseType type,
+      String success, String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(Arrays.asList(
+        fieldWithPath(prefix + ".memberId").description("member의 Id"),
+        fieldWithPath(prefix + ".generation").description("member의 기수"),
+        subsectionWithPath(prefix + ".hasJobs[]").description("member의 현재 직책"),
+        fieldWithPath(prefix + ".hasJobs[].id").description("member의 현재 직책의 id"),
+        fieldWithPath(prefix + ".hasJobs[].name").description("member의 현재 직책의 이름"),
+        subsectionWithPath(prefix + ".type").description("member의 활동 상태"),
+        fieldWithPath(prefix + ".type.id").description("member의 활동 상태의 id"),
+        fieldWithPath(prefix + ".type.name").description("member의 활동 상태의 이름")
+    ));
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
+    }
+    return commonFields;
+  }
+}
