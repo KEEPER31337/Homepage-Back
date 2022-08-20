@@ -20,7 +20,13 @@ public class ClerkMemberJobTypeResponseDto {
   @NonNull
   private Long memberId;
   @NonNull
+  private String nickName;
+  @NonNull
+  private String realName;
+  @NonNull
   private Float generation;
+
+  private String profileImagePath;
   @NonNull
   private List<JobResponseDto> hasJobs;
   @NonNull
@@ -29,7 +35,10 @@ public class ClerkMemberJobTypeResponseDto {
   public static ClerkMemberJobTypeResponseDto toDto(MemberEntity member) {
     return ClerkMemberJobTypeResponseDto.builder()
         .memberId(member.getId())
+        .nickName(member.getNickName())
+        .realName(member.getRealName())
         .generation(member.getGeneration())
+        .profileImagePath(member.getThumbnailPath())
         .hasJobs(getJobsMemberHas(member))
         .type(TypeResponseDto.toDto(member.getMemberType()))
         .build();
