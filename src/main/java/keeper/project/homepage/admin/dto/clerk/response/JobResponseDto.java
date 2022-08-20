@@ -21,11 +21,14 @@ public class JobResponseDto {
   private Long id;
   @NonNull
   private String name;
+  @NonNull
+  private String badgePath;
 
   public static JobResponseDto toDto(MemberJobEntity memberJobEntity) {
     return JobResponseDto.builder()
         .id(memberJobEntity.getId())
         .name(memberJobEntity.getName())
+        .badgePath(memberJobEntity.getBadgePath())
         .build();
   }
 }

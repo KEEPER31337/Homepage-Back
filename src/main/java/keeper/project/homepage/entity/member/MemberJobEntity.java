@@ -1,6 +1,9 @@
 package keeper.project.homepage.entity.member;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import keeper.project.homepage.entity.ThumbnailEntity;
+import keeper.project.homepage.util.EnvironmentProperty;
+import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,9 +29,18 @@ public class MemberJobEntity implements Serializable {
   @Column(name = "name", length = 45)
   private String name;
 
+  @OneToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "badge_thumbnail_id")
+  private ThumbnailEntity badge;
+
   @OneToMany(mappedBy = "memberJobEntity", fetch = FetchType.EAGER)
   @JsonBackReference(value = "member-jobs")
   @Builder.Default
   private List<MemberHasMemberJobEntity> members = new ArrayList<>();
 
+  public String getBadgePath() {
+    return getBadge() == null ?
+        EnvironmentProperty.getThumbnailPath(ThumbType.Badge.getDefaultThumbnailId())
+        : EnvironmentProperty.getThumbnailPath(getBadge().getId());
+  }
 }
