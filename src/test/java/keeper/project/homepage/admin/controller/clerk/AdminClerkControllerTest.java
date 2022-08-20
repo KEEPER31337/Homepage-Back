@@ -101,7 +101,7 @@ public class AdminClerkControllerTest extends ClerkControllerTestHelper {
 
     AssignJobRequestDto assignJobRequestDto = new AssignJobRequestDto(subMasterRole.getId());
 
-    mockMvc.perform(post("/v1/admin/clerk/jobs/{memberId}", member.getId())
+    mockMvc.perform(post("/v1/admin/clerk/members/{memberId}/jobs", member.getId())
             .header("Authorization", clerkToken)
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonString(assignJobRequestDto)))
@@ -138,7 +138,7 @@ public class AdminClerkControllerTest extends ClerkControllerTestHelper {
 
     DeleteJobRequestDto deleteJobRequestDto = new DeleteJobRequestDto(subMasterRole.getId());
 
-    mockMvc.perform(delete("/v1/admin/clerk/jobs/{memberId}", member.getId())
+    mockMvc.perform(delete("/v1/admin/clerk/members/{memberId}/jobs", member.getId())
             .header("Authorization", clerkToken)
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonString(deleteJobRequestDto)))

@@ -45,7 +45,7 @@ public class AdminClerkController {
     return responseService.getSuccessListResult(adminClerkService.getTypeList());
   }
 
-  @PostMapping("/jobs/{memberId}")
+  @PostMapping("/members/{memberId}/jobs")
   public SingleResult<ClerkMemberJobTypeResponseDto> assignJob(
       @PathVariable @NotNull Long memberId,
       @RequestBody @Valid AssignJobRequestDto requestDto) {
@@ -53,7 +53,7 @@ public class AdminClerkController {
         adminClerkService.assignJob(memberId, requestDto));
   }
 
-  @DeleteMapping("/jobs/{memberId}")
+  @DeleteMapping("/members/{memberId}/jobs")
   public SingleResult<ClerkMemberJobTypeResponseDto> deleteJob(
       @PathVariable @NotNull Long memberId,
       @RequestBody @Valid DeleteJobRequestDto requestDto) {
