@@ -28,7 +28,8 @@ public class ClerkControllerTestHelper extends ApiControllerTestHelper {
     commonFields.addAll(generateCommonResponseFields(success, code, msg));
     commonFields.addAll(Arrays.asList(
         fieldWithPath(prefix + ".id").description("해당 ROLE의 Id"),
-        fieldWithPath(prefix + ".name").description("해당 ROLE의 이름")
+        fieldWithPath(prefix + ".name").description("해당 ROLE의 이름"),
+        fieldWithPath(prefix + ".badgePath").description("해당 ROLE의 badge 경로")
     ));
     if (addDescriptors.length > 0) {
       commonFields.addAll(Arrays.asList(addDescriptors));
@@ -43,7 +44,8 @@ public class ClerkControllerTestHelper extends ApiControllerTestHelper {
     commonFields.addAll(generateCommonResponseFields(success, code, msg));
     commonFields.addAll(Arrays.asList(
         fieldWithPath(prefix + ".id").description("해당 TYPE의 Id"),
-        fieldWithPath(prefix + ".name").description("해당 TYPE의 이름")
+        fieldWithPath(prefix + ".name").description("해당 TYPE의 이름"),
+        fieldWithPath(prefix + ".badgePath").description("해당 TYPE의 badge 경로")
     ));
     if (addDescriptors.length > 0) {
       commonFields.addAll(Arrays.asList(addDescriptors));
@@ -58,7 +60,11 @@ public class ClerkControllerTestHelper extends ApiControllerTestHelper {
     commonFields.addAll(generateCommonResponseFields(success, code, msg));
     commonFields.addAll(Arrays.asList(
         fieldWithPath(prefix + ".memberId").description("member의 Id"),
+        fieldWithPath(prefix + ".nickName").description("member의 닉네임"),
+        fieldWithPath(prefix + ".realName").description("member의 실명"),
         fieldWithPath(prefix + ".generation").description("member의 기수"),
+        fieldWithPath(prefix + ".profileImagePath").description(
+            "프로필 이미지 경로 (없으면 default 아미지 경로를 가르킴)"),
         subsectionWithPath(prefix + ".hasJobs[]").description("member의 현재 직책"),
         fieldWithPath(prefix + ".hasJobs[].id").description("member의 현재 직책의 id"),
         fieldWithPath(prefix + ".hasJobs[].name").description("member의 현재 직책의 이름"),
