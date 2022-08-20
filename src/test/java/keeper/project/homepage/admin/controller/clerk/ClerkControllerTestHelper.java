@@ -4,26 +4,10 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.admin.dto.member.job.JobDto;
-import keeper.project.homepage.admin.dto.member.type.TypeDto;
-import keeper.project.homepage.entity.election.ElectionCandidateEntity;
-import keeper.project.homepage.entity.election.ElectionChartLogEntity;
-import keeper.project.homepage.entity.election.ElectionEntity;
-import keeper.project.homepage.entity.election.ElectionVoterEntity;
-import keeper.project.homepage.entity.election.ElectionVoterPK;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberJobEntity;
-import keeper.project.homepage.repository.election.ElectionCandidateRepository;
-import keeper.project.homepage.repository.election.ElectionChartLogRepository;
-import keeper.project.homepage.repository.election.ElectionRepository;
-import keeper.project.homepage.repository.election.ElectionVoterRepository;
-import lombok.NonNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.restdocs.payload.FieldDescriptor;
 
 public class ClerkControllerTestHelper extends ApiControllerTestHelper {

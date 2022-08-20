@@ -5,8 +5,8 @@ import javax.validation.constraints.NotNull;
 import keeper.project.homepage.admin.dto.clerk.request.AssignJobRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.DeleteJobRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.ClerkMemberJobTypeResponseDto;
-import keeper.project.homepage.admin.dto.member.job.JobDto;
-import keeper.project.homepage.admin.dto.member.type.TypeDto;
+import keeper.project.homepage.admin.dto.clerk.response.JobResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.TypeResponseDto;
 import keeper.project.homepage.admin.service.clerk.AdminClerkService;
 import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.common.dto.result.SingleResult;
@@ -16,13 +16,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -36,12 +34,12 @@ public class AdminClerkController {
   private final AdminClerkService adminClerkService;
 
   @GetMapping("/jobs")
-  public ListResult<JobDto> getJobList() {
+  public ListResult<JobResponseDto> getJobList() {
     return responseService.getSuccessListResult(adminClerkService.getJobList());
   }
 
   @GetMapping("/types")
-  public ListResult<TypeDto> getTypeList() {
+  public ListResult<TypeResponseDto> getTypeList() {
     return responseService.getSuccessListResult(adminClerkService.getTypeList());
   }
 

@@ -1,8 +1,6 @@
 package keeper.project.homepage.admin.dto.clerk.response;
 
 import java.util.List;
-import keeper.project.homepage.admin.dto.member.job.JobDto;
-import keeper.project.homepage.admin.dto.member.type.TypeDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import lombok.AllArgsConstructor;
@@ -24,23 +22,23 @@ public class ClerkMemberJobTypeResponseDto {
   @NonNull
   private Float generation;
   @NonNull
-  private List<JobDto> hasJobs;
+  private List<JobResponseDto> hasJobs;
   @NonNull
-  private TypeDto type;
+  private TypeResponseDto type;
 
   public static ClerkMemberJobTypeResponseDto toDto(MemberEntity member) {
     return ClerkMemberJobTypeResponseDto.builder()
         .memberId(member.getId())
         .generation(member.getGeneration())
         .hasJobs(getJobsMemberHas(member))
-        .type(TypeDto.toDto(member.getMemberType()))
+        .type(TypeResponseDto.toDto(member.getMemberType()))
         .build();
   }
 
-  private static List<JobDto> getJobsMemberHas(MemberEntity member) {
+  private static List<JobResponseDto> getJobsMemberHas(MemberEntity member) {
     return member.getMemberJobs().stream()
         .map(MemberHasMemberJobEntity::getMemberJobEntity)
-        .map(JobDto::toDto)
+        .map(JobResponseDto::toDto)
         .toList();
   }
 }

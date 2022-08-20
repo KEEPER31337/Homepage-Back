@@ -4,8 +4,8 @@ import java.util.List;
 import keeper.project.homepage.admin.dto.clerk.request.AssignJobRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.DeleteJobRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.ClerkMemberJobTypeResponseDto;
-import keeper.project.homepage.admin.dto.member.job.JobDto;
-import keeper.project.homepage.admin.dto.member.type.TypeDto;
+import keeper.project.homepage.admin.dto.clerk.response.JobResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.TypeResponseDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
@@ -35,18 +35,18 @@ public class AdminClerkService {
 
   private static final List<String> INACCESSIBLE_JOB = List.of("ROLE_회원", "ROLE_출제자");
 
-  public List<JobDto> getJobList() {
+  public List<JobResponseDto> getJobList() {
     return memberJobRepository.findAll()
         .stream()
-        .map(JobDto::toDto)
+        .map(JobResponseDto::toDto)
         .filter(jobDto -> !INACCESSIBLE_JOB.contains(jobDto.getName()))
         .toList();
   }
 
-  public List<TypeDto> getTypeList() {
+  public List<TypeResponseDto> getTypeList() {
     return memberTypeRepository.findAll()
         .stream()
-        .map(TypeDto::toDto)
+        .map(TypeResponseDto::toDto)
         .toList();
   }
 

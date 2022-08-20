@@ -1,8 +1,5 @@
-package keeper.project.homepage.admin.dto.member.type;
+package keeper.project.homepage.admin.dto.clerk.response;
 
-import keeper.project.homepage.admin.dto.member.MemberTypeDto;
-import keeper.project.homepage.admin.dto.member.job.JobDto;
-import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +15,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class TypeDto {
+public class TypeResponseDto {
 
   @NonNull
   private Long id;
@@ -26,8 +23,8 @@ public class TypeDto {
   @NonNull
   private String name;
 
-  public static TypeDto toDto(MemberTypeEntity memberTypeEntity) {
-    return TypeDto.builder()
+  public static TypeResponseDto toDto(MemberTypeEntity memberTypeEntity) {
+    return TypeResponseDto.builder()
         .id(memberTypeEntity.getId())
         .name(memberTypeEntity.getName())
         .build();

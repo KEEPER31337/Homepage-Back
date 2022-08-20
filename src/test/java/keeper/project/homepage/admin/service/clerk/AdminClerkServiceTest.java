@@ -3,7 +3,6 @@ package keeper.project.homepage.admin.service.clerk;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,25 +10,22 @@ import java.util.stream.Stream;
 import keeper.project.homepage.admin.dto.clerk.request.AssignJobRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.DeleteJobRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.ClerkMemberJobTypeResponseDto;
-import keeper.project.homepage.admin.dto.member.job.JobDto;
-import keeper.project.homepage.admin.dto.member.type.TypeDto;
+import keeper.project.homepage.admin.dto.clerk.response.JobResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.TypeResponseDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
-import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.member.MemberTypeRepository;
 import keeper.project.homepage.user.service.member.MemberUtilService;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
@@ -82,13 +78,13 @@ class AdminClerkServiceTest {
         .willReturn(jobs);
 
     // when
-    List<JobDto> result = adminClerkService.getJobList();
+    List<JobResponseDto> result = adminClerkService.getJobList();
 
     // then
-    List<JobDto> actual = jobs.stream().map(JobDto::toDto).toList();
+    List<JobResponseDto> actual = jobs.stream().map(JobResponseDto::toDto).toList();
     assertThat(actual).containsAll(result);
-    assertThat("ROLE_회원").isNotIn(result.stream().map(JobDto::getName).toList());
-    assertThat("ROLE_출제자").isNotIn(result.stream().map(JobDto::getName).toList());
+    assertThat("ROLE_회원").isNotIn(result.stream().map(JobResponseDto::getName).toList());
+    assertThat("ROLE_출제자").isNotIn(result.stream().map(JobResponseDto::getName).toList());
   }
 
   @Test
@@ -98,10 +94,10 @@ class AdminClerkServiceTest {
     given(memberTypeRepository.findAll()).willReturn(types);
 
     // when
-    List<TypeDto> result = adminClerkService.getTypeList();
+    List<TypeResponseDto> result = adminClerkService.getTypeList();
 
     // then
-    List<TypeDto> actual = types.stream().map(TypeDto::toDto).toList();
+    List<TypeResponseDto> actual = types.stream().map(TypeResponseDto::toDto).toList();
     assertThat(actual).containsAll(result);
   }
 
@@ -128,8 +124,8 @@ class AdminClerkServiceTest {
     // then
     assertThat(member.getGeneration()).isEqualTo(result.getGeneration());
     assertThat(member.getId()).isEqualTo(result.getMemberId());
-    assertThat(JobDto.toDto(job)).isIn(result.getHasJobs());
-    assertThat(TypeDto.toDto(member.getMemberType())).isEqualTo(result.getType());
+    assertThat(JobResponseDto.toDto(job)).isIn(result.getHasJobs());
+    assertThat(TypeResponseDto.toDto(member.getMemberType())).isEqualTo(result.getType());
   }
 
   @Test
@@ -150,8 +146,8 @@ class AdminClerkServiceTest {
     // then
     assertThat(member.getGeneration()).isEqualTo(result.getGeneration());
     assertThat(member.getId()).isEqualTo(result.getMemberId());
-    assertThat(JobDto.toDto(job)).isNotIn(result.getHasJobs());
-    assertThat(TypeDto.toDto(member.getMemberType())).isEqualTo(result.getType());
+    assertThat(JobResponseDto.toDto(job)).isNotIn(result.getHasJobs());
+    assertThat(TypeResponseDto.toDto(member.getMemberType())).isEqualTo(result.getType());
   }
 
   private static MemberEntity generateMemberEntity(MemberJobEntity... memberJobEntities) {
