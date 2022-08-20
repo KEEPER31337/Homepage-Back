@@ -77,6 +77,28 @@ include::{snippets}/get-clerk-member-list-by-type/http-response.adoc[]
 
 include::{snippets}/get-clerk-member-list-by-type/response-fields.adoc[]
 
+== *활동 상태별 회원 목록 불러오기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-clerk-member-list-by-role/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/get-clerk-member-list-by-role/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-clerk-member-list-by-role/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/get-clerk-member-list-by-role/response-fields.adoc[]
+
 == *직책(ROLE) 등록*
 
 === 요청
