@@ -107,4 +107,14 @@ public class AdminClerkService {
 
     return ClerkMemberJobTypeResponseDto.toDto(member);
   }
+
+  public List<ClerkMemberJobTypeResponseDto> getClerkMemberListByJob(Long jobId) {
+    MemberJobEntity job = memberUtilService.getJobById(jobId);
+    List<MemberHasMemberJobEntity> everyoneHasThatRole = memberHasMemberJobRepository
+        .findAllByMemberJobEntity(job);
+    return everyoneHasThatRole.stream()
+        .map(MemberHasMemberJobEntity::getMemberEntity)
+        .map(ClerkMemberJobTypeResponseDto::toDto)
+        .toList();
+  }
 }

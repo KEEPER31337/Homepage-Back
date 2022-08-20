@@ -72,4 +72,10 @@ public class AdminClerkController {
     return responseService.getSuccessSingleResult(
         adminClerkService.updateMemberType(memberId, typeId));
   }
+
+  @GetMapping("/members/jobs/{jobId}")
+  public ListResult<ClerkMemberJobTypeResponseDto> getClerkMemberListByJob(
+      @PathVariable @NotNull Long jobId) {
+    return responseService.getSuccessListResult(adminClerkService.getClerkMemberListByJob(jobId));
+  }
 }
