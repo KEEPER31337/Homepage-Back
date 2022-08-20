@@ -226,4 +226,35 @@ public class AdminClerkControllerTest extends ClerkControllerTestHelper {
                     "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
             )));
   }
+
+  @Test
+  @DisplayName("[SUCCESS] 역할별 회원 목록 불러오기")
+  public void getClerkMemberListByJob() throws Exception {
+    generateMemberEntity(부회장, 휴면회원, 일반회원);
+    generateMemberEntity(부회장, 휴면회원, 일반회원);
+    generateMemberEntity(부회장, 휴면회원, 일반회원);
+
+    MemberJobEntity subMasterJob = memberJobRepository.findByName(부회장.getJobName()).get();
+
+    mockMvc.perform(get("/v1/admin/clerk/members/jobs/{jobId}", subMasterJob.getId())
+            .header("Authorization", clerkToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").value("성공하였습니다."))
+        .andExpect(jsonPath("$.list.size()").value(3))
+        .andExpect(jsonPath("$.list[0].hasJobs[0].name").value(부회장.getJobName()))
+        .andDo(document("get-clerk-member-list-by-role",
+            pathParameters(
+                parameterWithName("jobId").description("회원 목록을 불러올 ROLE Id")
+            ),
+            responseFields(
+                generateClerkMemberJobTypeResponseFields(ResponseType.LIST,
+                    "성공: true +\n실패: false",
+                    "성공 시 0을 반환",
+                    "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
+            )));
+  }
+
 }
