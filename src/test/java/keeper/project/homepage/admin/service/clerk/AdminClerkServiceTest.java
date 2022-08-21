@@ -12,6 +12,7 @@ import keeper.project.homepage.admin.dto.clerk.request.DeleteJobRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.ClerkMemberJobTypeResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.JobResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.TypeResponseDto;
+import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
@@ -21,12 +22,16 @@ import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberTypeRepository;
 import keeper.project.homepage.user.service.member.MemberUtilService;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 @ExtendWith(MockitoExtension.class)
 class AdminClerkServiceTest {
@@ -55,6 +60,9 @@ class AdminClerkServiceTest {
             MemberJobEntity.builder()
                 .id(jobSequence++)
                 .name(jobName)
+                .badge(ThumbnailEntity.builder()
+                    .path("testJobPath_" + jobSequence)
+                    .build())
                 .build())
         );
   }
@@ -66,8 +74,17 @@ class AdminClerkServiceTest {
             MemberTypeEntity.builder()
                 .id(typeSequence++)
                 .name(typeName)
+                .badge(ThumbnailEntity.builder()
+                    .path("testTypePath_" + jobSequence)
+                    .build())
                 .build())
         );
+  }
+
+  @BeforeEach
+  void setUp() {
+    MockHttpServletRequest request = new MockHttpServletRequest();
+    RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
   }
 
   @Test
@@ -154,6 +171,8 @@ class AdminClerkServiceTest {
     MemberEntity member = MemberEntity.builder()
         .id(memberSequence++)
         .generation(10.0f)
+        .nickName("nickName" + memberSequence)
+        .realName("realName" + memberSequence)
         .memberType(types.get(0))
         .memberJobs(new ArrayList<>())
         .build();
