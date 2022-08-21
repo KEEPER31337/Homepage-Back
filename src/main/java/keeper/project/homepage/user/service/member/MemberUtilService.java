@@ -5,11 +5,13 @@ import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.entity.member.FriendEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
+import keeper.project.homepage.entity.member.MemberTypeEntity;
 import keeper.project.homepage.exception.member.CustomAccessVirtualMemberException;
 import keeper.project.homepage.exception.member.CustomMemberInfoNotFoundException;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
+import keeper.project.homepage.repository.member.MemberTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +25,7 @@ public class MemberUtilService {
   private final AuthService authService;
   private final MemberRepository memberRepository;
   private final MemberJobRepository memberJobRepository;
+  private final MemberTypeRepository memberTypeRepository;
 
   public MemberEntity getById(Long id) {
     return memberRepository.findById(id).orElseThrow(CustomMemberNotFoundException::new);
@@ -31,6 +34,11 @@ public class MemberUtilService {
   public MemberJobEntity getJobById(Long jobId) {
     return memberJobRepository.findById(jobId).orElseThrow(
         () -> new CustomMemberInfoNotFoundException("ID가 " + jobId + "인 MemberJob이 존재하지 않습니다."));
+  }
+
+  public MemberTypeEntity getTypeById(Long typeId) {
+    return memberTypeRepository.findById(typeId).orElseThrow(
+        () -> new CustomMemberInfoNotFoundException("ID가 " + typeId + "인 MemberType이 존재하지 않습니다."));
   }
 
   public void checkVirtualMember(Long id) {

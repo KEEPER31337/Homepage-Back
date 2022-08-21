@@ -282,6 +282,11 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     memberType.getMembers().add(memberEntity);
     memberRank.getMembers().add(memberEntity);
 
+    assignJob(memberEntity, memberJob);
+    return memberEntity;
+  }
+
+  public void assignJob(MemberEntity memberEntity, MemberJobEntity memberJob) {
     MemberHasMemberJobEntity hasMemberJobEntity = memberHasMemberJobRepository.save(
         MemberHasMemberJobEntity.builder()
             .memberJobEntity(memberJob)
@@ -289,7 +294,6 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
             .build());
     memberJob.getMembers().add(hasMemberJobEntity);
     memberEntity.getMemberJobs().add(hasMemberJobEntity);
-    return memberEntity;
   }
 
   private String memberLogin(String content) throws Exception {
