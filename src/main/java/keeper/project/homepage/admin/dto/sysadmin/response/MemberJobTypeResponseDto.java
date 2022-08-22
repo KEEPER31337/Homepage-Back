@@ -1,8 +1,6 @@
 package keeper.project.homepage.admin.dto.sysadmin.response;
 
 import java.util.List;
-import keeper.project.homepage.admin.dto.clerk.response.JobResponseDto;
-import keeper.project.homepage.admin.dto.clerk.response.TypeResponseDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import lombok.AllArgsConstructor;
