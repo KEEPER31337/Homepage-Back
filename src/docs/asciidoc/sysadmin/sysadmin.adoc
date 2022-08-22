@@ -94,10 +94,6 @@ include::{snippets}/assign-job/http-request.adoc[]
 
 include::{snippets}/assign-job/path-parameters.adoc[]
 
-==== Request Fields
-
-include::{snippets}/assign-job/request-fields.adoc[]
-
 === 응답
 
 ==== Response
@@ -119,10 +115,6 @@ include::{snippets}/delete-job/http-request.adoc[]
 ==== Path Parameter
 
 include::{snippets}/delete-job/path-parameters.adoc[]
-
-==== Request Fields
-
-include::{snippets}/delete-job/request-fields.adoc[]
 
 === 응답
 

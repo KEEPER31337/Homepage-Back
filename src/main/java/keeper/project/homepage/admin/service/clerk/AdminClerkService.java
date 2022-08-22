@@ -23,9 +23,7 @@ public class AdminClerkService {
 
   private final MemberUtilService memberUtilService;
   private final MemberRepository memberRepository;
-  private final MemberJobRepository memberJobRepository;
   private final MemberTypeRepository memberTypeRepository;
-  private final MemberHasMemberJobRepository memberHasMemberJobRepository;
 
   private static final List<String> INACCESSIBLE_JOB = List.of("ROLE_회원", "ROLE_출제자");
 

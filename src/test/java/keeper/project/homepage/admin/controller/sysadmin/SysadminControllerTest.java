@@ -23,8 +23,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import keeper.project.homepage.admin.dto.sysadmin.request.AssignJobRequestDto;
-import keeper.project.homepage.admin.dto.sysadmin.request.DeleteJobRequestDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import org.junit.jupiter.api.BeforeEach;
@@ -77,12 +75,10 @@ class SysadminControllerTest extends SysadminControllerTestHelper {
     MemberEntity member = generateMemberEntity(회원, 정회원, 일반회원);
     MemberJobEntity subMasterRole = memberJobRepository.findByName(부회장.getJobName()).get();
 
-    AssignJobRequestDto assignJobRequestDto = new AssignJobRequestDto(subMasterRole.getId());
-
-    mockMvc.perform(post("/v1/admin/sysadmin/members/{memberId}/jobs", member.getId())
+    mockMvc.perform(post("/v1/admin/sysadmin/members/{memberId}/jobs/{jobId}", member.getId(),
+            subMasterRole.getId())
             .header("Authorization", sysadminToken)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(asJsonString(assignJobRequestDto)))
+            .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -94,10 +90,8 @@ class SysadminControllerTest extends SysadminControllerTestHelper {
         .andExpect(jsonPath("$.data.type.name").value(member.getMemberType().getName()))
         .andDo(document("assign-job",
             pathParameters(
-                parameterWithName("memberId").description("ROLE을 부여할 member의 ID")
-            ),
-            requestFields(
-                fieldWithPath("jobId").description("등록할 ROLE id")
+                parameterWithName("memberId").description("ROLE을 부여할 member의 ID"),
+                parameterWithName("jobId").description("등록할 ROLE id")
             ),
             responseFields(
                 generateMemberJobTypeResponseFields(ResponseType.SINGLE,
@@ -114,12 +108,10 @@ class SysadminControllerTest extends SysadminControllerTestHelper {
     MemberJobEntity subMasterRole = memberJobRepository.findByName(부회장.getJobName()).get();
     assignJob(member, subMasterRole);
 
-    DeleteJobRequestDto deleteJobRequestDto = new DeleteJobRequestDto(subMasterRole.getId());
-
-    mockMvc.perform(delete("/v1/admin/sysadmin/members/{memberId}/jobs", member.getId())
+    mockMvc.perform(delete("/v1/admin/sysadmin/members/{memberId}/jobs/{jobId}", member.getId(),
+            subMasterRole.getId())
             .header("Authorization", sysadminToken)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(asJsonString(deleteJobRequestDto)))
+            .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -131,10 +123,8 @@ class SysadminControllerTest extends SysadminControllerTestHelper {
         .andExpect(jsonPath("$.data.type.name").value(member.getMemberType().getName()))
         .andDo(document("delete-job",
             pathParameters(
-                parameterWithName("memberId").description("ROLE을 삭제할 member의 ID")
-            ),
-            requestFields(
-                fieldWithPath("jobId").description("회원에게서 삭제할 ROLE id")
+                parameterWithName("memberId").description("ROLE을 삭제할 member의 ID"),
+                parameterWithName("jobId").description("회원에게서 삭제할 ROLE id")
             ),
             responseFields(
                 generateMemberJobTypeResponseFields(ResponseType.SINGLE,

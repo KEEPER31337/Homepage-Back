@@ -2,8 +2,6 @@ package keeper.project.homepage.admin.controller.sysadmin;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import keeper.project.homepage.admin.dto.sysadmin.request.AssignJobRequestDto;
-import keeper.project.homepage.admin.dto.sysadmin.request.DeleteJobRequestDto;
 import keeper.project.homepage.admin.dto.sysadmin.response.JobResponseDto;
 import keeper.project.homepage.admin.dto.sysadmin.response.MemberJobTypeResponseDto;
 import keeper.project.homepage.admin.service.sysadmin.SysadminService;
@@ -36,20 +34,20 @@ public class SysadminController {
     return responseService.getSuccessListResult(sysadminService.getJobList());
   }
 
-  @PostMapping("/members/{memberId}/jobs")
+  @PostMapping("/members/{memberId}/jobs/{jobId}")
   public SingleResult<MemberJobTypeResponseDto> assignJob(
       @PathVariable @NotNull Long memberId,
-      @RequestBody @Valid AssignJobRequestDto requestDto) {
+      @PathVariable @NotNull Long jobId) {
     return responseService.getSuccessSingleResult(
-        sysadminService.assignJob(memberId, requestDto));
+        sysadminService.assignJob(memberId, jobId));
   }
 
-  @DeleteMapping("/members/{memberId}/jobs")
+  @DeleteMapping("/members/{memberId}/jobs/{jobId}")
   public SingleResult<MemberJobTypeResponseDto> deleteJob(
       @PathVariable @NotNull Long memberId,
-      @RequestBody @Valid DeleteJobRequestDto requestDto) {
+      @PathVariable @NotNull Long jobId) {
     return responseService.getSuccessSingleResult(
-        sysadminService.deleteJob(memberId, requestDto));
+        sysadminService.deleteJob(memberId, jobId));
   }
 
   @GetMapping("/members/jobs/{jobId}")

@@ -2,8 +2,6 @@ package keeper.project.homepage.admin.service.sysadmin;
 
 import java.util.ArrayList;
 import java.util.List;
-import keeper.project.homepage.admin.dto.sysadmin.request.AssignJobRequestDto;
-import keeper.project.homepage.admin.dto.sysadmin.request.DeleteJobRequestDto;
 import keeper.project.homepage.admin.dto.sysadmin.response.JobResponseDto;
 import keeper.project.homepage.admin.dto.sysadmin.response.MemberJobTypeResponseDto;
 import keeper.project.homepage.admin.dto.sysadmin.response.TypeResponseDto;
@@ -28,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class SysadminService {
 
   private final MemberUtilService memberUtilService;
-  private final MemberRepository memberRepository;
   private final MemberJobRepository memberJobRepository;
   private final MemberTypeRepository memberTypeRepository;
   private final MemberHasMemberJobRepository memberHasMemberJobRepository;
@@ -51,9 +48,9 @@ public class SysadminService {
   }
 
   @Transactional
-  public MemberJobTypeResponseDto assignJob(Long memberId, AssignJobRequestDto requestDto) {
+  public MemberJobTypeResponseDto assignJob(Long memberId, Long jobId) {
     MemberEntity member = memberUtilService.getById(memberId);
-    MemberJobEntity job = memberUtilService.getJobById(requestDto.getJobId());
+    MemberJobEntity job = memberUtilService.getJobById(jobId);
     checkValidJob(job);
     assignJobToMember(member, job);
     return MemberJobTypeResponseDto.toDto(member);
@@ -76,9 +73,9 @@ public class SysadminService {
   }
 
   @Transactional
-  public MemberJobTypeResponseDto deleteJob(Long memberId, DeleteJobRequestDto requestDto) {
+  public MemberJobTypeResponseDto deleteJob(Long memberId, Long jobId) {
     MemberEntity member = memberUtilService.getById(memberId);
-    MemberJobEntity job = memberUtilService.getJobById(requestDto.getJobId());
+    MemberJobEntity job = memberUtilService.getJobById(jobId);
     checkValidJob(job);
     deleteJobToMember(member, job);
     return MemberJobTypeResponseDto.toDto(member);
