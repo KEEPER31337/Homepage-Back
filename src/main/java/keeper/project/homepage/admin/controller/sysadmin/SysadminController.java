@@ -57,4 +57,9 @@ public class SysadminController {
       @PathVariable @NotNull Long jobId) {
     return responseService.getSuccessListResult(sysadminService.getMemberListByJob(jobId));
   }
+
+  @GetMapping("/jobs/members")
+  public ListResult<MemberJobTypeResponseDto> getMemberListHasJob() {
+    return responseService.getSuccessListResult(sysadminService.getMemberListHasJob());
+  }
 }

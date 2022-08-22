@@ -1,5 +1,6 @@
 package keeper.project.homepage.admin.service.sysadmin;
 
+import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.admin.dto.sysadmin.request.AssignJobRequestDto;
 import keeper.project.homepage.admin.dto.sysadmin.request.DeleteJobRequestDto;
@@ -94,6 +95,31 @@ public class SysadminService {
     List<MemberHasMemberJobEntity> everyoneHasThatRole = memberHasMemberJobRepository
         .findAllByMemberJobEntity(job);
     return everyoneHasThatRole.stream()
+        .map(MemberHasMemberJobEntity::getMemberEntity)
+        .map(MemberJobTypeResponseDto::toDto)
+        .toList();
+  }
+
+  public List<MemberJobTypeResponseDto> getMemberListHasJob() {
+    List<MemberJobEntity> accessibleJobList = getAccessibleJobList();
+    List<MemberJobTypeResponseDto> memberListHasJob = new ArrayList<>();
+    for (MemberJobEntity job : accessibleJobList) {
+      List<MemberJobTypeResponseDto> memberListHasEachJob = getMemberListHasEachJob(job);
+      memberListHasJob.addAll(memberListHasEachJob);
+    }
+    return memberListHasJob;
+  }
+
+  private List<MemberJobEntity> getAccessibleJobList() {
+    return memberJobRepository.findAll()
+        .stream()
+        .filter(job -> !INACCESSIBLE_JOB.contains(job.getName()))
+        .toList();
+  }
+
+  private List<MemberJobTypeResponseDto> getMemberListHasEachJob(MemberJobEntity job) {
+    return memberHasMemberJobRepository.findAllByMemberJobEntity(job)
+        .stream()
         .map(MemberHasMemberJobEntity::getMemberEntity)
         .map(MemberJobTypeResponseDto::toDto)
         .toList();
