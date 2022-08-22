@@ -60,7 +60,7 @@ include::{snippets}/get-member-list-has-job/http-response.adoc[]
 
 include::{snippets}/get-member-list-has-job/response-fields.adoc[]
 
-== *활동 상태별 회원 목록 불러오기*
+== *직책별 회원 목록 불러오기*
 
 === 요청
 
