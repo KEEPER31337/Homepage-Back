@@ -3,6 +3,8 @@ package keeper.project.homepage.admin.controller.sysadmin;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.부회장;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.서기;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.전산관리자;
+import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.총무;
+import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.출제자;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.우수회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.일반회원;
@@ -164,6 +166,31 @@ class SysadminControllerTest extends SysadminControllerTestHelper {
             pathParameters(
                 parameterWithName("jobId").description("회원 목록을 불러올 ROLE Id")
             ),
+            responseFields(
+                generateMemberJobTypeResponseFields(ResponseType.LIST,
+                    "성공: true +\n실패: false",
+                    "성공 시 0을 반환",
+                    "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
+            )));
+  }
+
+  @Test
+  @DisplayName("[SUCCESS] 역할을 가진 모든 회원 목록 불러오기")
+  public void getMemberListHasJob() throws Exception {
+    generateMemberEntity(부회장, 휴면회원, 일반회원);
+    generateMemberEntity(총무, 휴면회원, 일반회원);
+    generateMemberEntity(서기, 휴면회원, 일반회원);
+    generateMemberEntity(출제자, 휴면회원, 일반회원); // ROLE_회원, ROLE_출제자는 역할을 가진 회원 목록에 집계 안됨
+
+    mockMvc.perform(get("/v1/admin/sysadmin/jobs/members")
+            .header("Authorization", sysadminToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").value("성공하였습니다."))
+        .andExpect(jsonPath("$.list.size()").value(4))
+        .andDo(document("get-member-list-has-job",
             responseFields(
                 generateMemberJobTypeResponseFields(ResponseType.LIST,
                     "성공: true +\n실패: false",
