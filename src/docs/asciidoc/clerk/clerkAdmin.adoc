@@ -4,6 +4,9 @@ endif::[]
 // 자동으로 생성된 snippet 설정하는 부분
 
 = KEEPER API 문서
+
+IMPORTANT: *회장, 부회장, 서기만 접근 가능합니다.*
+
 :icons: font
 // NOTE, TIP, WARNING, CAUTION, IMPORTANT 같은 경고구들 아이콘화 해줌
 :source-highlighter: highlight.js
