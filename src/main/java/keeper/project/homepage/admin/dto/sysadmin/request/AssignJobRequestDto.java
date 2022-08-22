@@ -1,4 +1,4 @@
-package keeper.project.homepage.admin.dto.clerk.request;
+package keeper.project.homepage.admin.dto.sysadmin.request;
 
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

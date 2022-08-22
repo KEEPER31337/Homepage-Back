@@ -1,4 +1,4 @@
-package keeper.project.homepage.admin.controller.clerk;
+package keeper.project.homepage.admin.controller.sysadmin;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
@@ -10,7 +10,7 @@ import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
 import org.springframework.restdocs.payload.FieldDescriptor;
 
-public class ClerkControllerTestHelper extends ApiControllerTestHelper {
+public class SysadminControllerTestHelper extends ApiControllerTestHelper {
 
   protected String asJsonString(final Object obj) {
     try {
@@ -21,15 +21,15 @@ public class ClerkControllerTestHelper extends ApiControllerTestHelper {
     }
   }
 
-  protected List<FieldDescriptor> generateTypeDtoResponseFields(ResponseType type,
+  protected List<FieldDescriptor> generateJobDtoResponseFields(ResponseType type,
       String success, String code, String msg, FieldDescriptor... addDescriptors) {
     String prefix = type.getReponseFieldPrefix();
     List<FieldDescriptor> commonFields = new ArrayList<>();
     commonFields.addAll(generateCommonResponseFields(success, code, msg));
     commonFields.addAll(Arrays.asList(
-        fieldWithPath(prefix + ".id").description("해당 TYPE의 Id"),
-        fieldWithPath(prefix + ".name").description("해당 TYPE의 이름"),
-        fieldWithPath(prefix + ".badgePath").description("해당 TYPE의 badge 경로")
+        fieldWithPath(prefix + ".id").description("해당 ROLE의 Id"),
+        fieldWithPath(prefix + ".name").description("해당 ROLE의 이름"),
+        fieldWithPath(prefix + ".badgePath").description("해당 ROLE의 badge 경로")
     ));
     if (addDescriptors.length > 0) {
       commonFields.addAll(Arrays.asList(addDescriptors));
@@ -37,7 +37,7 @@ public class ClerkControllerTestHelper extends ApiControllerTestHelper {
     return commonFields;
   }
 
-  protected List<FieldDescriptor> generateClerkMemberJobTypeResponseFields(ResponseType type,
+  protected List<FieldDescriptor> generateMemberJobTypeResponseFields(ResponseType type,
       String success, String code, String msg, FieldDescriptor... addDescriptors) {
     String prefix = type.getReponseFieldPrefix();
     List<FieldDescriptor> commonFields = new ArrayList<>();
