@@ -4,6 +4,9 @@ endif::[]
 // 자동으로 생성된 snippet 설정하는 부분
 
 = KEEPER API 문서
+
+IMPORTANT: *회장, 부회장, 전산관리자만 접근 가능합니다.*
+
 :icons: font
 // NOTE, TIP, WARNING, CAUTION, IMPORTANT 같은 경고구들 아이콘화 해줌
 :source-highlighter: highlight.js
@@ -36,6 +39,26 @@ include::{snippets}/get-job-list/http-response.adoc[]
 ==== Response Field
 
 include::{snippets}/get-job-list/response-fields.adoc[]
+
+== *역할을 가진 모든 회원 목록 불러오기*
+
+NOTE: ROLE_회원, ROLE_출제자는 제외하고 불러옵니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-member-list-has-job/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-member-list-has-job/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/get-member-list-has-job/response-fields.adoc[]
 
 == *활동 상태별 회원 목록 불러오기*
 
