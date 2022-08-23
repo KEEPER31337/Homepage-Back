@@ -1,7 +1,9 @@
 package keeper.project.homepage.admin.service.systemadmin;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import keeper.project.homepage.admin.dto.systemadmin.response.JobResponseDto;
 import keeper.project.homepage.admin.dto.systemadmin.response.MemberJobTypeResponseDto;
 import keeper.project.homepage.admin.dto.systemadmin.response.TypeResponseDto;
@@ -96,12 +98,12 @@ public class SystemAdminService {
 
   public List<MemberJobTypeResponseDto> getMemberListHasJob() {
     List<MemberJobEntity> accessibleJobList = getAccessibleJobList();
-    List<MemberJobTypeResponseDto> memberListHasJob = new ArrayList<>();
+    Set<MemberJobTypeResponseDto> memberListHasJob = new LinkedHashSet<>();
     for (MemberJobEntity job : accessibleJobList) {
       List<MemberJobTypeResponseDto> memberListHasEachJob = getMemberListHasEachJob(job);
       memberListHasJob.addAll(memberListHasEachJob);
     }
-    return memberListHasJob;
+    return new ArrayList<>(memberListHasJob);
   }
 
   private List<MemberJobEntity> getAccessibleJobList() {

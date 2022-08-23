@@ -5,7 +5,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Stream;
 import keeper.project.homepage.admin.dto.systemadmin.response.JobResponseDto;
 import keeper.project.homepage.admin.dto.systemadmin.response.MemberJobTypeResponseDto;
@@ -165,5 +167,77 @@ class SystemAdminServiceTest {
           .build());
     }
     return member;
+  }
+
+  @Test
+  @DisplayName("[SUCCESS] 역할별 회원 전체 목록 가져오기 - 회원, 출제자 제외")
+  void getMemberListHasJob() {
+
+    // given
+    MemberJobEntity master = jobs.get(0);
+    MemberJobEntity subMaster = jobs.get(1);
+    MemberJobEntity clerk = jobs.get(2);
+    MemberJobEntity memberRole = jobs.get(3);
+    MemberJobEntity challengeMaker = jobs.get(4);
+
+    MemberEntity masterMember = generateMemberEntity(master);
+    MemberEntity subMasterMember = generateMemberEntity(subMaster);
+    MemberEntity clerkMember = generateMemberEntity(clerk);
+    generateMemberEntity(memberRole);
+    generateMemberEntity(challengeMaker);
+
+    // mocking
+    given(memberJobRepository.findAll()).willReturn(jobs);
+    mockingFindAllByMemberJob(jobs.get(0), masterMember);
+    mockingFindAllByMemberJob(jobs.get(1), subMasterMember);
+    mockingFindAllByMemberJob(jobs.get(2), clerkMember);
+
+    // when
+    List<MemberJobTypeResponseDto> result = systemAdminService.getMemberListHasJob();
+
+    // then
+    assertThat(result.size()).isEqualTo(3);
+    assertThat(result).contains(MemberJobTypeResponseDto.toDto(masterMember));
+    assertThat(result).contains(MemberJobTypeResponseDto.toDto(subMasterMember));
+    assertThat(result).contains(MemberJobTypeResponseDto.toDto(clerkMember));
+  }
+
+  @Test
+  @DisplayName("[SUCCESS] 역할별 회원 전체 목록 가져오기 - 회원 중복 없음")
+  void getMemberListHasJobUniqueMember() {
+
+    // given
+    MemberJobEntity master = jobs.get(0);
+    MemberJobEntity subMaster = jobs.get(1);
+    MemberJobEntity clerk = jobs.get(2);
+
+    MemberEntity masterMember = generateMemberEntity(master);
+    MemberEntity member1 = generateMemberEntity(subMaster, clerk);
+    MemberEntity member2 = generateMemberEntity(subMaster, clerk);
+    MemberEntity member3 = generateMemberEntity(subMaster, clerk);
+
+    // mocking
+    given(memberJobRepository.findAll()).willReturn(jobs);
+    mockingFindAllByMemberJob(jobs.get(0), masterMember);
+    mockingFindAllByMemberJob(jobs.get(1), member1, member2, member3);
+    mockingFindAllByMemberJob(jobs.get(2), member1, member2, member3);
+
+    // when
+    List<MemberJobTypeResponseDto> result = systemAdminService.getMemberListHasJob();
+
+    // then
+    assertThat(result.size()).isEqualTo(4);
+    assertThat(result).contains(MemberJobTypeResponseDto.toDto(masterMember));
+    assertThat(result).contains(MemberJobTypeResponseDto.toDto(member1));
+    assertThat(result).contains(MemberJobTypeResponseDto.toDto(member2));
+    assertThat(result).contains(MemberJobTypeResponseDto.toDto(member3));
+  }
+
+  private void mockingFindAllByMemberJob(MemberJobEntity findJob, MemberEntity... resultMembers) {
+    Long uniqueId = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
+    given(memberHasMemberJobRepository.findAllByMemberJobEntity(findJob))
+        .willReturn(Arrays.stream(resultMembers)
+            .map(member -> new MemberHasMemberJobEntity(uniqueId, member, findJob))
+            .toList());
   }
 }
