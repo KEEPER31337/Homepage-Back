@@ -34,6 +34,14 @@ public class SeminarRepositoryTestHelper {
   @Autowired
   MemberRepository memberRepository;
 
+  SeminarEntity generateSeminar(LocalDateTime openTime) {
+    return seminarRepository.save(SeminarEntity.builder()
+        .name(openTime + "세미나")
+        .openTime(openTime)
+        .build()
+    );
+  }
+
   SeminarAttendanceEntity generateSeminarAttendance(MemberEntity member,
       SeminarEntity seminar, SeminarAttendanceStatusEntity seminarAttendanceStatus) {
     return seminarAttendanceRepository.save(
@@ -46,11 +54,14 @@ public class SeminarRepositoryTestHelper {
     );
   }
 
-  SeminarAttendanceExcuseEntity generateSeminarAttendanceExcuse(SeminarAttendanceEntity seminarAttendanceEntity) {
+  SeminarAttendanceExcuseEntity generateSeminarAttendanceExcuse(
+      SeminarAttendanceEntity seminarAttendanceEntity) {
     return seminarAttendanceExcuseRepository.save(
         SeminarAttendanceExcuseEntity.builder()
             .seminarAttendanceEntity(seminarAttendanceEntity)
             .absenceExcuse("개인 사정")
             .build());
   }
+
+
 }

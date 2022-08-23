@@ -1,5 +1,10 @@
 package keeper.project.homepage.repository.clerk;
 
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.ABSENCE;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.ATTENDANCE;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.LATENESS;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.PERSONAL;
+
 import java.util.List;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
 import org.assertj.core.api.Assertions;
@@ -27,15 +32,15 @@ public class SeminarAttendanceStatusRepositoryTest extends SeminarRepositoryTest
     // given
 
     // when
-    SeminarAttendanceStatusEntity ATTENDANCE = seminarAttendanceStatusRepository.getById(1L);
-    SeminarAttendanceStatusEntity LATENESS = seminarAttendanceStatusRepository.getById(2L);
-    SeminarAttendanceStatusEntity ABSENCE = seminarAttendanceStatusRepository.getById(3L);
-    SeminarAttendanceStatusEntity PERSONAL = seminarAttendanceStatusRepository.getById(4L);
+    SeminarAttendanceStatusEntity attendance = seminarAttendanceStatusRepository.getById(1L);
+    SeminarAttendanceStatusEntity lateness = seminarAttendanceStatusRepository.getById(2L);
+    SeminarAttendanceStatusEntity absence = seminarAttendanceStatusRepository.getById(3L);
+    SeminarAttendanceStatusEntity personal = seminarAttendanceStatusRepository.getById(4L);
 
     // then
-    Assertions.assertThat(ATTENDANCE.getType()).isEqualTo("출석");
-    Assertions.assertThat(LATENESS.getType()).isEqualTo("지각");
-    Assertions.assertThat(ABSENCE.getType()).isEqualTo("결석");
-    Assertions.assertThat(PERSONAL.getType()).isEqualTo("개인사정");
+    Assertions.assertThat(attendance.getType()).isEqualTo(ATTENDANCE.getType());
+    Assertions.assertThat(lateness.getType()).isEqualTo(LATENESS.getType());
+    Assertions.assertThat(absence.getType()).isEqualTo(ABSENCE.getType());
+    Assertions.assertThat(personal.getType()).isEqualTo(PERSONAL.getType());
   }
 }

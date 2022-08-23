@@ -5,6 +5,7 @@ import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceExcuseEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
 import keeper.project.homepage.entity.clerk.SeminarEntity;
+import keeper.project.homepage.exception.clerk.CustomSeminarAttendanceNotFoundException;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,7 +33,6 @@ class SeminarAttendanceRepositoryTest extends SeminarRepositoryTestHelper {
     Assertions.assertThat(seminarAttendanceEntity.getSeminarAttendTime())
         .isEqualTo(findSeminarAttendanceEntity.getSeminarAttendTime());
   }
-
   @Test
   @DisplayName("세미나, 멤버로 세미나 출석 조회 테스트")
   void findSeminarAttendanceBySeminarAndMemberTest() {
@@ -48,7 +48,7 @@ class SeminarAttendanceRepositoryTest extends SeminarRepositoryTestHelper {
 
     // when
     SeminarAttendanceEntity findSeminarAttendanceEntity = seminarAttendanceRepository.findBySeminarEntityAndMemberEntity(
-        seminarEntity, memberEntity);
+        seminarEntity, memberEntity).orElseThrow(CustomSeminarAttendanceNotFoundException::new);
 
     // then
     Assertions.assertThat(seminarAttendanceEntity.getId())
