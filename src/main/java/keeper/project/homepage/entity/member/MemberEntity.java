@@ -21,6 +21,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import keeper.project.homepage.entity.ThumbnailEntity;
+import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.entity.study.StudyHasMemberEntity;
 import keeper.project.homepage.user.dto.member.MultiMemberResponseDto;
@@ -162,6 +163,9 @@ public class MemberEntity implements Serializable {
   @Builder.Default
   private List<PostingEntity> posting = new ArrayList<>();
 
+  @OneToMany(mappedBy = "memberEntity")
+  @Builder.Default
+  private List<SeminarAttendanceEntity> seminarAttendances = new ArrayList<>();
 
   public void updatePoint(int point) {
     this.point = point;

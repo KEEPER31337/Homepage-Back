@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table(name = "seminar_attendance_excuse")
-public class SeminarAttendanceExcuseEntity{
+public class SeminarAttendanceExcuseEntity {
 
   @Id
   @Column(name = "seminar_attendance_id")
@@ -35,5 +35,12 @@ public class SeminarAttendanceExcuseEntity{
   @Column(length = 200)
   private String absenceExcuse;
 
+  public static SeminarAttendanceExcuseEntity createSeminarAttendanceExcuse(
+      SeminarAttendanceEntity seminarAttendance, String absenceExcuses) {
+    return SeminarAttendanceExcuseEntity.builder()
+        .seminarAttendanceEntity(seminarAttendance)
+        .absenceExcuse(absenceExcuses)
+        .build();
+  }
 }
 
