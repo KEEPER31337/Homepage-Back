@@ -81,9 +81,7 @@ public class SystemAdminService {
   }
 
   private void deleteJobToMember(MemberEntity member, MemberJobEntity job) {
-    memberHasMemberJobRepository.deleteAllByMemberEntityAndMemberJobEntity(member, job);
-    member.getMemberJobs().removeIf(entity -> entity.getMemberJobEntity().equals(job));
-    job.getMembers().removeIf(entity -> entity.getMemberEntity().equals(member));
+    member.removeMemberJob(job);
   }
 
   public List<MemberJobTypeResponseDto> getMemberListByJob(Long jobId) {
