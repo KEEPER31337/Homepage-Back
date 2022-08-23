@@ -1,4 +1,4 @@
-package keeper.project.homepage.admin.service.sysadmin;
+package keeper.project.homepage.admin.service.systemadmin;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -7,9 +7,9 @@ import static org.mockito.BDDMockito.given;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-import keeper.project.homepage.admin.dto.sysadmin.response.JobResponseDto;
-import keeper.project.homepage.admin.dto.sysadmin.response.MemberJobTypeResponseDto;
-import keeper.project.homepage.admin.dto.sysadmin.response.TypeResponseDto;
+import keeper.project.homepage.admin.dto.systemadmin.response.JobResponseDto;
+import keeper.project.homepage.admin.dto.systemadmin.response.MemberJobTypeResponseDto;
+import keeper.project.homepage.admin.dto.systemadmin.response.TypeResponseDto;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
@@ -31,7 +31,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 @ExtendWith(MockitoExtension.class)
-class SysadminServiceTest {
+class SystemAdminServiceTest {
 
   private static long memberSequence = 1L;
   private static long jobSequence = 1L;
@@ -40,7 +40,7 @@ class SysadminServiceTest {
   private static final List<MemberTypeEntity> types = new ArrayList<>();
 
   @InjectMocks
-  private SysadminService sysadminService;
+  private SystemAdminService systemAdminService;
   @Mock
   private MemberUtilService memberUtilService;
   @Mock
@@ -90,7 +90,7 @@ class SysadminServiceTest {
         .willReturn(jobs);
 
     // when
-    List<JobResponseDto> result = sysadminService.getJobList();
+    List<JobResponseDto> result = systemAdminService.getJobList();
 
     // then
     List<JobResponseDto> actual = jobs.stream().map(JobResponseDto::toDto).toList();
@@ -116,7 +116,7 @@ class SysadminServiceTest {
     given(memberUtilService.getJobById(job.getId())).willReturn(job);
 
     // when
-    MemberJobTypeResponseDto result = sysadminService.assignJob(member.getId(), job.getId());
+    MemberJobTypeResponseDto result = systemAdminService.assignJob(member.getId(), job.getId());
 
     // then
     assertThat(member.getGeneration()).isEqualTo(result.getGeneration());
@@ -137,7 +137,7 @@ class SysadminServiceTest {
     given(memberUtilService.getJobById(job.getId())).willReturn(job);
 
     // when
-    MemberJobTypeResponseDto result = sysadminService.deleteJob(member.getId(), job.getId());
+    MemberJobTypeResponseDto result = systemAdminService.deleteJob(member.getId(), job.getId());
 
     // then
     assertThat(member.getGeneration()).isEqualTo(result.getGeneration());

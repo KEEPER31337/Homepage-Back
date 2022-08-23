@@ -1,4 +1,4 @@
-package keeper.project.homepage.admin.controller.sysadmin;
+package keeper.project.homepage.admin.controller.systemadmin;
 
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.부회장;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.서기;
@@ -14,7 +14,6 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
-import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
@@ -32,28 +31,28 @@ import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
-class SysadminControllerTest extends SysadminControllerTestHelper {
+class SystemAdminControllerTest extends SystemAdminControllerTestHelper {
 
   private MemberEntity user;
-  private MemberEntity sysadmin;
+  private MemberEntity systemAdmin;
 
   private String userToken;
-  private String sysadminToken;
+  private String systemAdminToken;
 
   @BeforeEach
   public void setUp() throws Exception {
     user = generateMemberEntity(회원, 정회원, 일반회원);
     userToken = generateJWTToken(user);
-    sysadmin = generateMemberEntity(전산관리자, 정회원, 우수회원);
-    sysadminToken = generateJWTToken(sysadmin);
+    systemAdmin = generateMemberEntity(전산관리자, 정회원, 우수회원);
+    systemAdminToken = generateJWTToken(systemAdmin);
   }
 
   @Test
   @DisplayName("[SUCCESS] 수정 가능한 ROLE 목록 불러오기")
   public void getJobList() throws Exception {
 
-    mockMvc.perform(get("/v1/admin/sysadmin/jobs")
-            .header("Authorization", sysadminToken))
+    mockMvc.perform(get("/v1/admin/system-admin/jobs")
+            .header("Authorization", systemAdminToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -75,9 +74,9 @@ class SysadminControllerTest extends SysadminControllerTestHelper {
     MemberEntity member = generateMemberEntity(회원, 정회원, 일반회원);
     MemberJobEntity subMasterRole = memberJobRepository.findByName(부회장.getJobName()).get();
 
-    mockMvc.perform(post("/v1/admin/sysadmin/members/{memberId}/jobs/{jobId}", member.getId(),
+    mockMvc.perform(post("/v1/admin/system-admin/members/{memberId}/jobs/{jobId}", member.getId(),
             subMasterRole.getId())
-            .header("Authorization", sysadminToken)
+            .header("Authorization", systemAdminToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
         .andExpect(status().isOk())
@@ -108,9 +107,9 @@ class SysadminControllerTest extends SysadminControllerTestHelper {
     MemberJobEntity subMasterRole = memberJobRepository.findByName(부회장.getJobName()).get();
     assignJob(member, subMasterRole);
 
-    mockMvc.perform(delete("/v1/admin/sysadmin/members/{memberId}/jobs/{jobId}", member.getId(),
+    mockMvc.perform(delete("/v1/admin/system-admin/members/{memberId}/jobs/{jobId}", member.getId(),
             subMasterRole.getId())
-            .header("Authorization", sysadminToken)
+            .header("Authorization", systemAdminToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
         .andExpect(status().isOk())
@@ -143,8 +142,8 @@ class SysadminControllerTest extends SysadminControllerTestHelper {
 
     MemberJobEntity subMasterJob = memberJobRepository.findByName(부회장.getJobName()).get();
 
-    mockMvc.perform(get("/v1/admin/sysadmin/members/jobs/{jobId}", subMasterJob.getId())
-            .header("Authorization", sysadminToken))
+    mockMvc.perform(get("/v1/admin/system-admin/members/jobs/{jobId}", subMasterJob.getId())
+            .header("Authorization", systemAdminToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -172,8 +171,8 @@ class SysadminControllerTest extends SysadminControllerTestHelper {
     generateMemberEntity(서기, 휴면회원, 일반회원);
     generateMemberEntity(출제자, 휴면회원, 일반회원); // ROLE_회원, ROLE_출제자는 역할을 가진 회원 목록에 집계 안됨
 
-    mockMvc.perform(get("/v1/admin/sysadmin/jobs/members")
-            .header("Authorization", sysadminToken))
+    mockMvc.perform(get("/v1/admin/system-admin/jobs/members")
+            .header("Authorization", systemAdminToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))

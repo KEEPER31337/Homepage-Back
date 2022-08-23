@@ -1,4 +1,4 @@
-package keeper.project.homepage.admin.controller.sysadmin;
+package keeper.project.homepage.admin.controller.systemadmin;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
@@ -10,7 +10,7 @@ import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
 import org.springframework.restdocs.payload.FieldDescriptor;
 
-public class SysadminControllerTestHelper extends ApiControllerTestHelper {
+public class SystemAdminControllerTestHelper extends ApiControllerTestHelper {
 
   protected String asJsonString(final Object obj) {
     try {

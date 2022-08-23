@@ -1,4 +1,4 @@
-package keeper.project.homepage.admin.dto.sysadmin.response;
+package keeper.project.homepage.admin.dto.systemadmin.response;
 
 import java.util.List;
 import keeper.project.homepage.entity.member.MemberEntity;

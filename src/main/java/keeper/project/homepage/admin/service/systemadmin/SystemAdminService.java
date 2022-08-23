@@ -1,17 +1,16 @@
-package keeper.project.homepage.admin.service.sysadmin;
+package keeper.project.homepage.admin.service.systemadmin;
 
 import java.util.ArrayList;
 import java.util.List;
-import keeper.project.homepage.admin.dto.sysadmin.response.JobResponseDto;
-import keeper.project.homepage.admin.dto.sysadmin.response.MemberJobTypeResponseDto;
-import keeper.project.homepage.admin.dto.sysadmin.response.TypeResponseDto;
+import keeper.project.homepage.admin.dto.systemadmin.response.JobResponseDto;
+import keeper.project.homepage.admin.dto.systemadmin.response.MemberJobTypeResponseDto;
+import keeper.project.homepage.admin.dto.systemadmin.response.TypeResponseDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.exception.clerk.CustomClerkInaccessibleJobException;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
-import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.member.MemberTypeRepository;
 import keeper.project.homepage.user.service.member.MemberUtilService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class SysadminService {
+public class SystemAdminService {
 
   private final MemberUtilService memberUtilService;
   private final MemberJobRepository memberJobRepository;
