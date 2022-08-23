@@ -129,20 +129,22 @@ class SystemAdminServiceTest {
   @DisplayName("[SUCCESS] 역할 삭제")
   void deleteJob() {
     // given
-    MemberEntity member = generateMemberEntity(jobs.get(0), jobs.get(1));
-    MemberJobEntity job = jobs.get(0);
+    MemberJobEntity jobToBeDeleted = jobs.get(0);
+    MemberJobEntity jobToBeRemained = jobs.get(1);
+    MemberEntity member = generateMemberEntity(jobToBeDeleted, jobToBeRemained);
 
     // mocking
     given(memberUtilService.getById(member.getId())).willReturn(member);
-    given(memberUtilService.getJobById(job.getId())).willReturn(job);
+    given(memberUtilService.getJobById(jobToBeDeleted.getId())).willReturn(jobToBeDeleted);
 
     // when
-    MemberJobTypeResponseDto result = systemAdminService.deleteJob(member.getId(), job.getId());
-
+    MemberJobTypeResponseDto result = systemAdminService.deleteJob(member.getId(),
+        jobToBeDeleted.getId());
     // then
     assertThat(member.getGeneration()).isEqualTo(result.getGeneration());
     assertThat(member.getId()).isEqualTo(result.getMemberId());
-    assertThat(JobResponseDto.toDto(job)).isNotIn(result.getHasJobs());
+    assertThat(JobResponseDto.toDto(jobToBeDeleted)).isNotIn(result.getHasJobs());
+    assertThat(JobResponseDto.toDto(jobToBeRemained)).isIn(result.getHasJobs());
     assertThat(TypeResponseDto.toDto(member.getMemberType())).isEqualTo(result.getType());
   }
 
