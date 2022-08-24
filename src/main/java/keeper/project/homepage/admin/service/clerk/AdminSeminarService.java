@@ -48,7 +48,6 @@ public class AdminSeminarService {
         .toList();
   }
 
-  @Transactional
   public Page<SeminarAttendanceResponseDto> getSeminarAttendances(Pageable pageable) {
     return seminarRepository.findAll(pageable).map(SeminarAttendanceResponseDto::toDto);
   }
