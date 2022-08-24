@@ -1,6 +1,7 @@
 package keeper.project.homepage.admin.dto.clerk;
 
 import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
+import keeper.project.homepage.entity.clerk.SeminarAttendanceExcuseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,10 +26,9 @@ public class SeminarAttendanceDto {
   private String absenceExcuse;
 
   public static SeminarAttendanceDto toDto(SeminarAttendanceEntity seminarAttendanceEntity) {
-    String absenceExcuse = null;
-    if (seminarAttendanceEntity.getSeminarAttendanceExcuseEntity() != null) {
-      absenceExcuse = seminarAttendanceEntity.getSeminarAttendanceExcuseEntity().getAbsenceExcuse();
-    }
+    SeminarAttendanceExcuseEntity attendanceExcuse = seminarAttendanceEntity.getSeminarAttendanceExcuseEntity();
+    String absenceExcuse = attendanceExcuse == null ? null : attendanceExcuse.getAbsenceExcuse();
+
     return SeminarAttendanceDto.builder()
         .generation(seminarAttendanceEntity.getMemberEntity().getGeneration())
         .memberName(seminarAttendanceEntity.getMemberEntity().getRealName())
