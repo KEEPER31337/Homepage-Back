@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-
+@Transactional
 @SpringBootTest
 public class AdminSeminarServiceTest {
 
@@ -38,7 +38,6 @@ public class AdminSeminarServiceTest {
   @Autowired
   SeminarRepository seminarRepository;
 
-  @Transactional
   @Test
   @DisplayName("[SUCCESS] 개인사유 출석 수정")
   void updateSeminarAttendanceTest() {
@@ -64,7 +63,6 @@ public class AdminSeminarServiceTest {
         .isEqualTo("예비군 훈련");
   }
 
-  @Transactional
   @Test
   @DisplayName("[SUCCESS] 결석으로 수정시 벌점 3점 증가")
   void updateAbsenceTest() {
@@ -90,7 +88,6 @@ public class AdminSeminarServiceTest {
     Assertions.assertThat(beforeDemerit + ABSENCE_DEMERIT).isEqualTo(afterDemerit);
   }
 
-  @Transactional
   @Test
   @DisplayName("[SUCCESS] 이전 상태가 결석인 경우 상태 변경시 벌점 3점 감소")
   void updateStatusWhenBeforeStateIsAbsence() {
@@ -115,7 +112,6 @@ public class AdminSeminarServiceTest {
     Assertions.assertThat(beforeDemerit - ABSENCE_DEMERIT).isEqualTo(afterDemerit);
   }
 
-  @Transactional
   @Test
   @DisplayName("[SUCCESS] 지각으로 변경 시 세미나에서 지각을 홀수번 한 적이 있으면 결석으로 간주")
   void updateStatusToLatenessIfEverBeenLate() {
