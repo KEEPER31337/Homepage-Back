@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Secured({"ROLE_회장", "ROLE_부회장", "ROLE_서기"})
-@RequestMapping("/v1/admin/clerk/seminar")
+@RequestMapping("/v1/admin/clerk/seminars")
 public class AdminSeminarController {
 
   private final ResponseService responseService;
@@ -38,7 +38,7 @@ public class AdminSeminarController {
     return responseService.getSuccessListResult(seminarService.getSeminars());
   }
 
-  @GetMapping("/attendance")
+  @GetMapping("/attendances")
   PageResult<SeminarAttendanceResponseDto> getSeminarAttendances(Pageable pageable) {
     return responseService.getSuccessPageResult(seminarService.getSeminarAttendances(pageable));
   }
@@ -48,7 +48,7 @@ public class AdminSeminarController {
     return responseService.getSuccessListResult(seminarService.getSeminarAttendanceStatuses());
   }
 
-  @PatchMapping("/attendance/{seminarId}/{memberId}")
+  @PatchMapping("/{seminarId}/attendances/members/{memberId}")
   SingleResult<SeminarAttendanceUpdateResponseDto> updateSeminarAttendance(
       @PathVariable @NotNull Long seminarId,
       @PathVariable @NotNull Long memberId,

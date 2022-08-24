@@ -54,7 +54,7 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
     generateSeminar(LocalDateTime.now().plusWeeks(2L));
     generateSeminar(LocalDateTime.now().minusWeeks(2L));
     generateSeminar(LocalDateTime.now().plusWeeks(1L));
-    mockMvc.perform(get("/v1/admin/clerk/seminar")
+    mockMvc.perform(get("/v1/admin/clerk/seminars")
             .header("Authorization", clerkToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -74,7 +74,7 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
   @Test
   @DisplayName("[SUCCESS] 세미나 출석 상태 목록 불러오기")
   public void getSeminarAttendanceStatuses() throws Exception {
-    mockMvc.perform(get("/v1/admin/clerk/seminar/statuses")
+    mockMvc.perform(get("/v1/admin/clerk/seminars/statuses")
             .header("Authorization", clerkToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -112,7 +112,7 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
     seminar.getSeminarAttendanceEntity().add(attendance3);
     seminar.getSeminarAttendanceEntity().add(personal);
 
-    mockMvc.perform(get("/v1/admin/clerk/seminar/attendance")
+    mockMvc.perform(get("/v1/admin/clerk/seminars/attendances")
             .header("Authorization", clerkToken)
             .param("page", "0")
             .param("size", "10"))
@@ -147,7 +147,7 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
         .build();
 
     mockMvc.perform(
-            patch("/v1/admin/clerk/seminar/attendance/{seminarId}/{memberId}",
+            patch("/v1/admin/clerk/seminars/{seminarId}/attendances/members/{memberId}",
                 seminar.getId(),
                 member.getId())
                 .header("Authorization", clerkToken)
