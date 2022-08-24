@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -20,6 +19,7 @@ import keeper.project.homepage.entity.member.MemberTypeEntity;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.user.service.member.MemberUtilService;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,7 +37,8 @@ class SystemAdminServiceTest {
 
   private static long memberSequence = 1L;
   private static long jobSequence = 1L;
-  private static final List<MemberJobEntity> jobs = new ArrayList<>();
+  private static final List<MemberJobEntity> accessibleJobs = new ArrayList<>();
+  private static final List<MemberJobEntity> inAccessibleJobs = new ArrayList<>();
   private static long typeSequence = 1L;
   private static final List<MemberTypeEntity> types = new ArrayList<>();
 
@@ -52,8 +53,18 @@ class SystemAdminServiceTest {
 
   @BeforeAll
   static void initJobs() {
-    Stream.of("ROLE_회장", "ROLE_부회장", "ROLE_서기", "ROLE_출제자", "ROLE_회원")
-        .forEach(jobName -> jobs.add(
+    Stream.of("ROLE_회장", "ROLE_부회장", "ROLE_서기")
+        .forEach(jobName -> accessibleJobs.add(
+            MemberJobEntity.builder()
+                .id(jobSequence++)
+                .name(jobName)
+                .badge(ThumbnailEntity.builder()
+                    .path("testJobPath_" + jobSequence)
+                    .build())
+                .build())
+        );
+    Stream.of("ROLE_출제자", "ROLE_회원")
+        .forEach(jobName -> inAccessibleJobs.add(
             MemberJobEntity.builder()
                 .id(jobSequence++)
                 .name(jobName)
@@ -84,18 +95,31 @@ class SystemAdminServiceTest {
     RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
   }
 
+  @AfterEach
+  void cleanAll() {
+    for (var accessibleJob : accessibleJobs) {
+      accessibleJob.getMembers().clear();
+    }
+    for (var inAccessibleJob : inAccessibleJobs) {
+      inAccessibleJob.getMembers().clear();
+    }
+    for (var type : types) {
+      type.getMembers().clear();
+    }
+  }
+
   @Test
   @DisplayName("[SUCCESS] 회원 역할 리스트 불러오기 (회원, 출제자 제외)")
   void getJobList() {
     // mocking
     given(memberJobRepository.findAll())
-        .willReturn(jobs);
+        .willReturn(accessibleJobs);
 
     // when
     List<JobResponseDto> result = systemAdminService.getJobList();
 
     // then
-    List<JobResponseDto> actual = jobs.stream().map(JobResponseDto::toDto).toList();
+    List<JobResponseDto> actual = accessibleJobs.stream().map(JobResponseDto::toDto).toList();
     assertThat(actual).containsAll(result);
     assertThat("ROLE_회원").isNotIn(result.stream().map(JobResponseDto::getName).toList());
     assertThat("ROLE_출제자").isNotIn(result.stream().map(JobResponseDto::getName).toList());
@@ -106,7 +130,7 @@ class SystemAdminServiceTest {
   void assignJob() {
     // given
     MemberEntity member = generateMemberEntity();
-    MemberJobEntity job = jobs.get(0);
+    MemberJobEntity job = accessibleJobs.get(0);
     MemberHasMemberJobEntity save = MemberHasMemberJobEntity.builder()
         .memberEntity(member)
         .memberJobEntity(job)
@@ -131,8 +155,8 @@ class SystemAdminServiceTest {
   @DisplayName("[SUCCESS] 역할 삭제")
   void deleteJob() {
     // given
-    MemberJobEntity jobToBeDeleted = jobs.get(0);
-    MemberJobEntity jobToBeRemained = jobs.get(1);
+    MemberJobEntity jobToBeDeleted = accessibleJobs.get(0);
+    MemberJobEntity jobToBeRemained = accessibleJobs.get(1);
     MemberEntity member = generateMemberEntity(jobToBeDeleted, jobToBeRemained);
 
     // mocking
@@ -160,11 +184,14 @@ class SystemAdminServiceTest {
         .memberJobs(new ArrayList<>())
         .build();
     for (MemberJobEntity memberJobEntity : memberJobEntities) {
-      member.getMemberJobs().add(MemberHasMemberJobEntity
-          .builder()
+      Long uniqueId = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
+      MemberHasMemberJobEntity memberHasMemberJob = MemberHasMemberJobEntity.builder()
+          .id(uniqueId)
           .memberEntity(member)
           .memberJobEntity(memberJobEntity)
-          .build());
+          .build();
+      member.getMemberJobs().add(memberHasMemberJob);
+      memberJobEntity.getMembers().add(memberHasMemberJob);
     }
     return member;
   }
@@ -174,11 +201,11 @@ class SystemAdminServiceTest {
   void getMemberListHasJob() {
 
     // given
-    MemberJobEntity master = jobs.get(0);
-    MemberJobEntity subMaster = jobs.get(1);
-    MemberJobEntity clerk = jobs.get(2);
-    MemberJobEntity memberRole = jobs.get(3);
-    MemberJobEntity challengeMaker = jobs.get(4);
+    MemberJobEntity master = accessibleJobs.get(0);
+    MemberJobEntity subMaster = accessibleJobs.get(1);
+    MemberJobEntity clerk = accessibleJobs.get(2);
+    MemberJobEntity memberRole = inAccessibleJobs.get(0);
+    MemberJobEntity challengeMaker = inAccessibleJobs.get(1);
 
     MemberEntity masterMember = generateMemberEntity(master);
     MemberEntity subMasterMember = generateMemberEntity(subMaster);
@@ -187,10 +214,8 @@ class SystemAdminServiceTest {
     generateMemberEntity(challengeMaker);
 
     // mocking
-    given(memberJobRepository.findAll()).willReturn(jobs);
-    mockingFindAllByMemberJob(jobs.get(0), masterMember);
-    mockingFindAllByMemberJob(jobs.get(1), subMasterMember);
-    mockingFindAllByMemberJob(jobs.get(2), clerkMember);
+    given(memberJobRepository.findAll()).willReturn(accessibleJobs);
+    mockingFindAllByMemberJobsIn(accessibleJobs);
 
     // when
     List<MemberJobTypeResponseDto> result = systemAdminService.getMemberListHasJob();
@@ -207,9 +232,9 @@ class SystemAdminServiceTest {
   void getMemberListHasJobUniqueMember() {
 
     // given
-    MemberJobEntity master = jobs.get(0);
-    MemberJobEntity subMaster = jobs.get(1);
-    MemberJobEntity clerk = jobs.get(2);
+    MemberJobEntity master = accessibleJobs.get(0);
+    MemberJobEntity subMaster = accessibleJobs.get(1);
+    MemberJobEntity clerk = accessibleJobs.get(2);
 
     MemberEntity masterMember = generateMemberEntity(master);
     MemberEntity member1 = generateMemberEntity(subMaster, clerk);
@@ -217,10 +242,8 @@ class SystemAdminServiceTest {
     MemberEntity member3 = generateMemberEntity(subMaster, clerk);
 
     // mocking
-    given(memberJobRepository.findAll()).willReturn(jobs);
-    mockingFindAllByMemberJob(jobs.get(0), masterMember);
-    mockingFindAllByMemberJob(jobs.get(1), member1, member2, member3);
-    mockingFindAllByMemberJob(jobs.get(2), member1, member2, member3);
+    given(memberJobRepository.findAll()).willReturn(accessibleJobs);
+    mockingFindAllByMemberJobsIn(accessibleJobs);
 
     // when
     List<MemberJobTypeResponseDto> result = systemAdminService.getMemberListHasJob();
@@ -233,11 +256,12 @@ class SystemAdminServiceTest {
     assertThat(result).contains(MemberJobTypeResponseDto.toDto(member3));
   }
 
-  private void mockingFindAllByMemberJob(MemberJobEntity findJob, MemberEntity... resultMembers) {
-    Long uniqueId = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;
-    given(memberHasMemberJobRepository.findAllByMemberJobEntity(findJob))
-        .willReturn(Arrays.stream(resultMembers)
-            .map(member -> new MemberHasMemberJobEntity(uniqueId, member, findJob))
-            .toList());
+  private void mockingFindAllByMemberJobsIn(List<MemberJobEntity> findJobs) {
+    List<MemberHasMemberJobEntity> result = new ArrayList<>();
+    for (MemberJobEntity findJob : findJobs) {
+      result.addAll(findJob.getMembers());
+    }
+    given(memberHasMemberJobRepository.findByMemberJobEntityIn(findJobs))
+        .willReturn(result);
   }
 }

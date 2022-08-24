@@ -1,5 +1,6 @@
 package keeper.project.homepage.repository.member;
 
+import java.util.Collection;
 import java.util.List;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
@@ -19,6 +20,8 @@ public interface MemberHasMemberJobRepository extends
   List<MemberHasMemberJobEntity> findAllByMemberJobEntity(MemberJobEntity memberJobEntity);
 
   MemberHasMemberJobEntity findFirstByMemberJobEntityOrderByIdDesc(MemberJobEntity memberJobEntity);
+
+  List<MemberHasMemberJobEntity> findByMemberJobEntityIn(List<MemberJobEntity> memberJobEntity);
 
   void deleteAllByMemberEntityAndMemberJobEntity(
       MemberEntity memberEntity, MemberJobEntity memberJobEntity);
