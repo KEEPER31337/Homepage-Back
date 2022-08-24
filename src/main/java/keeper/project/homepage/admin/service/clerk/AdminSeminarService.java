@@ -41,7 +41,7 @@ public class AdminSeminarService {
   private final SeminarAttendanceStatusRepository seminarAttendanceStatusRepository;
   private final MemberUtilService memberUtilService;
 
-  public List<SeminarResponseDto> findSeminarList() {
+  public List<SeminarResponseDto> getSeminars() {
     return seminarRepository.findAllByOrderByOpenTimeDesc()
         .stream()
         .map(SeminarResponseDto::toDto)
@@ -49,7 +49,7 @@ public class AdminSeminarService {
   }
 
   @Transactional
-  public Page<SeminarAttendanceResponseDto> findAllSeminarAttendance(Pageable pageable) {
+  public Page<SeminarAttendanceResponseDto> getSeminarAttendances(Pageable pageable) {
     return seminarRepository.findAll(pageable).map(SeminarAttendanceResponseDto::toDto);
   }
 
@@ -65,7 +65,7 @@ public class AdminSeminarService {
     return SeminarAttendanceUpdateResponseDto.toDto(seminarAttendance);
   }
 
-  public List<SeminarAttendanceStatusResponseDto> findSeminarAttendanceStatuses() {
+  public List<SeminarAttendanceStatusResponseDto> getSeminarAttendanceStatuses() {
     return seminarAttendanceStatusRepository.findAll()
         .stream()
         .map(SeminarAttendanceStatusResponseDto::toDto).toList();

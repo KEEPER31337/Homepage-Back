@@ -33,19 +33,19 @@ public class AdminSeminarController {
   private final ResponseService responseService;
   private final AdminSeminarService seminarService;
 
-  @GetMapping("/")
+  @GetMapping()
   ListResult<SeminarResponseDto> getSeminars() {
-    return responseService.getSuccessListResult(seminarService.findSeminarList());
+    return responseService.getSuccessListResult(seminarService.getSeminars());
   }
 
   @GetMapping("/attendance")
   PageResult<SeminarAttendanceResponseDto> getSeminarAttendances(Pageable pageable) {
-    return responseService.getSuccessPageResult(seminarService.findAllSeminarAttendance(pageable));
+    return responseService.getSuccessPageResult(seminarService.getSeminarAttendances(pageable));
   }
 
   @GetMapping("/statuses")
   ListResult<SeminarAttendanceStatusResponseDto> getSeminarAttendanceStatuses() {
-    return responseService.getSuccessListResult(seminarService.findSeminarAttendanceStatuses());
+    return responseService.getSuccessListResult(seminarService.getSeminarAttendanceStatuses());
   }
 
   @PatchMapping("/attendance/{seminarId}/{memberId}")

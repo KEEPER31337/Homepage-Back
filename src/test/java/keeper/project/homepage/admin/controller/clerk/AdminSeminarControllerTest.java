@@ -54,7 +54,7 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
     generateSeminar(LocalDateTime.now().plusWeeks(2L));
     generateSeminar(LocalDateTime.now().minusWeeks(2L));
     generateSeminar(LocalDateTime.now().plusWeeks(1L));
-    mockMvc.perform(get("/v1/admin/clerk/seminar/")
+    mockMvc.perform(get("/v1/admin/clerk/seminar")
             .header("Authorization", clerkToken))
         .andDo(print())
         .andExpect(status().isOk())
@@ -91,7 +91,6 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
             )));
   }
 
-  @Transactional
   @Test
   @DisplayName("[SUCCESS] 모든 세미나의 출석 목록 불러오기")
   public void getAllSeminarAttendances() throws Exception {
@@ -113,7 +112,6 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
     seminar.getSeminarAttendanceEntity().add(attendance3);
     seminar.getSeminarAttendanceEntity().add(personal);
 
-    System.out.println("personal: " + personal.getSeminarAttendanceStatusEntity().getType());
     mockMvc.perform(get("/v1/admin/clerk/seminar/attendance")
             .header("Authorization", clerkToken)
             .param("page", "0")
@@ -174,6 +172,5 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
                 fieldWithPath("data.seminarAttendanceStatusType").description("수정 후 세미나 출석 상태")
             )));
   }
-
 
 }
