@@ -47,8 +47,8 @@ public class SurveyService {
     SurveyReplyEntity reply = surveyUtilService.getReplyById(
         requestDto.getReplyId());
 
-    SurveyMemberReplyEntity memberReply = surveyUtilService.generateSurveyMemberReplyEntity(member,
-        survey, reply);
+    SurveyMemberReplyEntity memberReply = surveyUtilService.generateSurveyMemberReplyEntity(survey,
+        member, reply);
 
     saveSurveyMemberReply(survey, memberReply);
     saveSurveyReplyExcuse(reply, memberReply, requestDto);

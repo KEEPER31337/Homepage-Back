@@ -29,7 +29,7 @@ public class SurveyUtilService {
 
   public SurveyEntity getSurveyById(Long surveyId) {
     return surveyRepository.findById(surveyId)
-        .orElseThrow();// 찾을 수 없을 때는 오류 띄우기.
+        .orElseThrow(CustomSurveyNotFoundException::new);
   }
 
   public SurveyReplyEntity getReplyById(Long replyId) {
@@ -60,11 +60,11 @@ public class SurveyUtilService {
         surveyId);
   }
 
-  public SurveyMemberReplyEntity generateSurveyMemberReplyEntity(MemberEntity member,
-      SurveyEntity survey, SurveyReplyEntity reply) {
+  public SurveyMemberReplyEntity generateSurveyMemberReplyEntity(SurveyEntity survey,
+      MemberEntity member, SurveyReplyEntity reply) {
     return SurveyMemberReplyEntity.builder()
-        .member(member)
         .survey(survey)
+        .member(member)
         .reply(reply)
         .replyTime(LocalDateTime.now())
         .build();
