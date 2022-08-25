@@ -22,13 +22,13 @@ public class SeminarAttendanceResponseDto {
   @NonNull
   private String seminarName;
 
-  List<SeminarAttendanceDto> seminarAttendances;
+  List<SeminarAttendanceDto> sortedSeminarAttendances;
 
   public static SeminarAttendanceResponseDto toDto(SeminarEntity seminar) {
     return SeminarAttendanceResponseDto.builder()
         .seminarId(seminar.getId())
         .seminarName(seminar.getName())
-        .seminarAttendances(
+        .sortedSeminarAttendances(
             seminar.getSeminarAttendanceEntity().stream()
                 .map(SeminarAttendanceDto::toDto)
                 .sorted(Comparator.comparing(SeminarAttendanceDto::getGeneration)

@@ -126,12 +126,12 @@ public class ClerkControllerTestHelper extends ApiControllerTestHelper {
     commonFields.addAll(Arrays.asList(
         fieldWithPath(prefix + ".seminarId").description("세미나 id"),
         fieldWithPath(prefix + ".seminarName").description("세미나 이름"),
-        fieldWithPath(prefix + ".seminarAttendances").description("세미나 출석 정보"),
-        fieldWithPath(prefix + ".seminarAttendances.[].generation").description("회원 기수"),
-        fieldWithPath(prefix + ".seminarAttendances.[].memberName").description("회원 이름"),
-        fieldWithPath(prefix + ".seminarAttendances.[].seminarAttendanceStatusType").description(
+        fieldWithPath(prefix + ".sortedSeminarAttendances").description("세미나 출석 정보"),
+        fieldWithPath(prefix + ".sortedSeminarAttendances.[].generation").description("회원 기수"),
+        fieldWithPath(prefix + ".sortedSeminarAttendances.[].memberName").description("회원 이름"),
+        fieldWithPath(prefix + ".sortedSeminarAttendances.[].seminarAttendanceStatusType").description(
             "출석 상태"),
-        fieldWithPath(prefix + ".seminarAttendances.[].absenceExcuse").optional().description(
+        fieldWithPath(prefix + ".sortedSeminarAttendances.[].absenceExcuse").optional().description(
             "결석사유")
     ));
     if (type.equals(ResponseType.PAGE)) {
