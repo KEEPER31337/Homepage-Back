@@ -9,6 +9,7 @@ import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
 import keeper.project.homepage.entity.clerk.SurveyReplyExcuseEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.clerk.CustomSurveyInVisibleException;
+import keeper.project.homepage.exception.clerk.CustomSurveyMemberReplyNotFoundException;
 import keeper.project.homepage.exception.clerk.CustomSurveyNotFoundException;
 import keeper.project.homepage.repository.clerk.SurveyMemberReplyRepository;
 import keeper.project.homepage.repository.clerk.SurveyReplyExcuseRepository;
@@ -82,7 +83,8 @@ public class SurveyService {
 
   public SurveyModifyResponseDto modifyResponse(Long surveyId,
       SurveyResponseRequestDto requestDto) {
-    SurveyMemberReplyEntity memberReply = surveyMemberReplyRepository.findBySurveyId(surveyId);
+    SurveyMemberReplyEntity memberReply = surveyMemberReplyRepository.findBySurveyId(surveyId)
+        .orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
     SurveyReplyEntity reply = surveyReplyRepository.getById(requestDto.getReplyId());
 
     modifyReplyAndExcuse(memberReply, reply, requestDto);
@@ -148,7 +150,7 @@ public class SurveyService {
     if (isUserRespondedSurvey(survey, member)) {
       isResponded = true;
       SurveyMemberReplyEntity surveyMemberReplyEntity = surveyMemberReplyRepository.findByMemberId(
-          requestDto.getMemberId());
+          requestDto.getMemberId()).orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
       reply = surveyMemberReplyEntity.getReply().getType();
     } else {
       isResponded = false;

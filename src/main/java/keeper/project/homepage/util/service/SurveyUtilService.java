@@ -7,6 +7,7 @@ import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
 import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
 import keeper.project.homepage.entity.clerk.SurveyReplyExcuseEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.exception.clerk.CustomSurveyMemberReplyNotFoundException;
 import keeper.project.homepage.exception.clerk.CustomSurveyNotFoundException;
 import keeper.project.homepage.repository.clerk.SurveyMemberReplyRepository;
 import keeper.project.homepage.repository.clerk.SurveyReplyExcuseRepository;
@@ -56,8 +57,8 @@ public class SurveyUtilService {
   }
 
   public List<SurveyMemberReplyEntity> getSurveyMemberReplyEntityById(Long surveyId) {
-    return surveyMemberReplyRepository.findAllBySurveyId(
-        surveyId);
+    return surveyMemberReplyRepository.findAllBySurveyId(surveyId)
+        .orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
   }
 
   public SurveyMemberReplyEntity generateSurveyMemberReplyEntity(SurveyEntity survey,
