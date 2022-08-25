@@ -13,11 +13,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SurveyUpdateResponseDto {
+
   private Long surveyId;
   private String surveyName;
   private Boolean isVisible;
 
-  public static SurveyUpdateResponseDto from(SurveyEntity survey){
+  public static SurveyUpdateResponseDto from(SurveyEntity survey) {
     return SurveyUpdateResponseDto.builder()
         .surveyId(survey.getId())
         .surveyName(survey.getName())

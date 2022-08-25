@@ -20,6 +20,7 @@ import org.springframework.lang.Nullable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SurveyModifyResponseDto {
+
   private Long surveyId;
   private Long memberId;
   @NotNull(message = "응답 ID는 필수 입력입니다.")
@@ -28,7 +29,8 @@ public class SurveyModifyResponseDto {
   private String excuse;
   private LocalDateTime replyTime;
 
-  public static SurveyModifyResponseDto toDto(SurveyMemberReplyEntity surveyMemberReplyEntity, String excuse){
+  public static SurveyModifyResponseDto toDto(SurveyMemberReplyEntity surveyMemberReplyEntity,
+      String excuse) {
     return SurveyModifyResponseDto.builder()
         .surveyId(surveyMemberReplyEntity.getSurvey().getId())
         .memberId(surveyMemberReplyEntity.getMember().getId())
@@ -38,7 +40,8 @@ public class SurveyModifyResponseDto {
         .build();
   }
 
-  public static SurveyMemberReplyEntity toEntity(SurveyEntity survey, MemberEntity member, SurveyReplyEntity reply, LocalDateTime replyTime, SurveyReplyExcuseEntity excuse){
+  public static SurveyMemberReplyEntity toEntity(SurveyEntity survey, MemberEntity member,
+      SurveyReplyEntity reply, LocalDateTime replyTime, SurveyReplyExcuseEntity excuse) {
     return SurveyMemberReplyEntity.builder()
         .survey(survey)
         .member(member)

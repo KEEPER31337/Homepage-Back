@@ -12,6 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SurveyInformationRequestDto {
+
   private Long surveyId;
   private Long memberId;
 }

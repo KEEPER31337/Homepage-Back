@@ -80,7 +80,7 @@ public class SurveySpringTestHelper extends ApiControllerTestHelper {
 
   }
 
-  public enum Reply{
+  public enum Reply {
     ACTIVITY(1L),
     MILITARY_DORMANT(2L),
     OTHER_DORMANT(3L),
@@ -89,11 +89,11 @@ public class SurveySpringTestHelper extends ApiControllerTestHelper {
 
     private Long replyId;
 
-    Reply(Long replyId){
+    Reply(Long replyId) {
       this.replyId = replyId;
     }
 
-    public Long getReplyId(){
+    public Long getReplyId() {
       return this.replyId;
     }
   }

@@ -35,7 +35,8 @@ public class SurveyController {
       @PathVariable("surveyId") Long surveyId,
       @RequestBody @Valid SurveyResponseRequestDto responseRequestDto
   ) {
-    return responseService.getSuccessSingleResult(surveyService.responseSurvey(surveyId,responseRequestDto));
+    return responseService.getSuccessSingleResult(
+        surveyService.responseSurvey(surveyId, responseRequestDto));
   }
 
   @RequestMapping(value = "/{surveyId}", method = {RequestMethod.PUT, RequestMethod.PATCH})
@@ -43,13 +44,14 @@ public class SurveyController {
       @PathVariable("surveyId") Long surveyId,
       @RequestBody @Valid SurveyResponseRequestDto responseRequestDto
   ) {
-    return responseService.getSuccessSingleResult(surveyService.modifyResponse(surveyId, responseRequestDto));
+    return responseService.getSuccessSingleResult(
+        surveyService.modifyResponse(surveyId, responseRequestDto));
   }
 
   @GetMapping("")
   public SingleResult<SurveyInformationDto> getSurveyInformation(
       @RequestBody @Valid SurveyInformationRequestDto requestDto
-  ){
+  ) {
     return responseService.getSuccessSingleResult(surveyService.getSurveyInformation(requestDto));
   }
 }

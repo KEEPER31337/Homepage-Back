@@ -15,6 +15,7 @@ import org.springframework.lang.Nullable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SurveyResponseRequestDto {
+
   private Long memberId;
   @NotNull(message = "응답 ID는 필수 입력입니다.")
   private Long replyId;

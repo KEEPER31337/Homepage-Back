@@ -49,10 +49,11 @@ public class SurveyEntity {
   @OneToMany(mappedBy = "survey", cascade = CascadeType.REMOVE)
   List<SurveyMemberReplyEntity> respondents = new ArrayList<>();
 
-  public void openSurvey(){
+  public void openSurvey() {
     this.isVisible = true;
   }
-  public void closeSurvey(){
+
+  public void closeSurvey() {
     this.isVisible = false;
   }
 }

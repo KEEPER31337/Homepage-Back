@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public class SurveyServiceTest extends SurveySpringTestHelper {
+
   @Autowired
   private EntityManager em;
 
@@ -38,7 +39,8 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
   public void responseSurvey() throws Exception {
     //given
     SurveyEntity survey = surveyRepository.getById(1L);
-    SurveyMemberReplyEntity surveyMemberReplyEntity = generateSurveyMemberReply(survey,user,surveyReplyRepository.getById(GRADUATE.getReplyId()));
+    SurveyMemberReplyEntity surveyMemberReplyEntity = generateSurveyMemberReply(survey, user,
+        surveyReplyRepository.getById(GRADUATE.getReplyId()));
 
     //when
     SurveyEntity findSurvey = surveyRepository.getById(survey.getId());

@@ -42,9 +42,11 @@ public class AdminSurveyService {
   }
 
   public List<SurveyRespondentResponseDto> getRespondents(Long surveyId) {
-    List<SurveyMemberReplyEntity> respondents = surveyUtilService.getSurveyMemberReplyEntityById(surveyId);
+    List<SurveyMemberReplyEntity> respondents = surveyUtilService.getSurveyMemberReplyEntityById(
+        surveyId);
     return respondents.stream().map(SurveyRespondentResponseDto::from).collect(Collectors.toList());
   }
+
   @Transactional
   public AdminSurveyResponseDto modifySurvey(Long surveyId,
       AdminSurveyRequestDto requestDto) {

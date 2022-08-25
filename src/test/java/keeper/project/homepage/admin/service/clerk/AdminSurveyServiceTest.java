@@ -70,7 +70,7 @@ public class AdminSurveyServiceTest extends SurveySpringTestHelper {
             .isVisible(true)
             .build()
     );
-    generateSurveyMemberReply(survey,user,surveyReplyRepository.getById(ACTIVITY.getReplyId()));
+    generateSurveyMemberReply(survey, user, surveyReplyRepository.getById(ACTIVITY.getReplyId()));
 
     //when
     surveyRepository.delete(survey);
@@ -85,6 +85,7 @@ public class AdminSurveyServiceTest extends SurveySpringTestHelper {
     assertThat(surveys.size()).isEqualTo(1); // virtual value
     assertThat(respondents.size()).isEqualTo(0);
   }
+
   @Test
   @DisplayName("설문 공개")
   public void openSurvey() throws Exception {
@@ -106,6 +107,7 @@ public class AdminSurveyServiceTest extends SurveySpringTestHelper {
     //then
     assertThat(findSurvey.getIsVisible()).isEqualTo(true);
   }
+
   @Test
   @DisplayName("설문 비공개")
   public void closeSurvey() throws Exception {
@@ -127,6 +129,7 @@ public class AdminSurveyServiceTest extends SurveySpringTestHelper {
     //then
     assertThat(findSurvey.getIsVisible()).isEqualTo(false);
   }
+
   @Test
   @DisplayName("설문 응답자 조회")
   public void getSurveyRespondents() throws Exception {
@@ -140,8 +143,8 @@ public class AdminSurveyServiceTest extends SurveySpringTestHelper {
             .isVisible(true)
             .build()
     );
-    generateSurveyMemberReply(survey,user,surveyReplyRepository.getById(GRADUATE.getReplyId()));
-    generateSurveyMemberReply(survey,admin,surveyReplyRepository.getById(ACTIVITY.getReplyId()));
+    generateSurveyMemberReply(survey, user, surveyReplyRepository.getById(GRADUATE.getReplyId()));
+    generateSurveyMemberReply(survey, admin, surveyReplyRepository.getById(ACTIVITY.getReplyId()));
 
     //when
     SurveyEntity findSurvey = surveyRepository.getById(survey.getId());

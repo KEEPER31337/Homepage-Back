@@ -14,6 +14,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdminSurveyRequestDto {
+
   private String surveyName;
   private LocalDateTime openTime;
   private LocalDateTime closeTime;
@@ -21,7 +22,7 @@ public class AdminSurveyRequestDto {
   private String description;
   private Boolean isVisible;
 
-  public SurveyEntity toEntity(){
+  public SurveyEntity toEntity() {
     return SurveyEntity.builder()
         .name(this.surveyName)
         .openTime(this.openTime)

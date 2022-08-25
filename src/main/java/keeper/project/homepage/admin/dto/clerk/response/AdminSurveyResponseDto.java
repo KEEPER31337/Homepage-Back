@@ -16,6 +16,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AdminSurveyResponseDto {
+
   private Long surveyId;
   private String surveyName;
   private LocalDateTime openTime;
@@ -32,7 +33,8 @@ public class AdminSurveyResponseDto {
         .closeTime(survey.getCloseTime())
         .description(survey.getDescription())
         .isVisible(survey.getIsVisible())
-        .respondents(survey.getRespondents().stream().map(SurveyRespondentResponseDto::from).toList())
+        .respondents(
+            survey.getRespondents().stream().map(SurveyRespondentResponseDto::from).toList())
         .build();
   }
 }

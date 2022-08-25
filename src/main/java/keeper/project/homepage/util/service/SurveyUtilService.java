@@ -20,25 +20,28 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 public class SurveyUtilService {
+
   public static final Long VIRTUAL_SURVEY_ID = 1L;
   private final SurveyRepository surveyRepository;
   private final SurveyReplyRepository surveyReplyRepository;
   private final SurveyMemberReplyRepository surveyMemberReplyRepository;
   private final SurveyReplyExcuseRepository surveyReplyExcuseRepository;
 
-  public SurveyEntity getSurveyById(Long surveyId){
+  public SurveyEntity getSurveyById(Long surveyId) {
     return surveyRepository.findById(surveyId)
         .orElseThrow();// 찾을 수 없을 때는 오류 띄우기.
   }
 
-  public SurveyReplyEntity getReplyById(Long replyId){
+  public SurveyReplyEntity getReplyById(Long replyId) {
     return surveyReplyRepository.getById(replyId);
   }
-  public void checkVirtualSurvey(Long surveyId){
-    if (VIRTUAL_SURVEY_ID.equals(surveyId)){
+
+  public void checkVirtualSurvey(Long surveyId) {
+    if (VIRTUAL_SURVEY_ID.equals(surveyId)) {
       throw new CustomSurveyNotFoundException();
     }
   }
+
   public SurveyReplyExcuseEntity generateSurveyReplyExcuse(
       SurveyMemberReplyEntity surveyMemberReplyEntity, String because) {
     SurveyReplyExcuseEntity excuse = SurveyReplyExcuseEntity.builder()
@@ -67,7 +70,7 @@ public class SurveyUtilService {
         .build();
   }
 
-  public enum Reply{
+  public enum Reply {
     ACTIVITY(1L),
     MILITARY_DORMANT(2L),
     OTHER_DORMANT(3L),
@@ -76,11 +79,11 @@ public class SurveyUtilService {
 
     private Long replyId;
 
-    Reply(Long replyId){
+    Reply(Long replyId) {
       this.replyId = replyId;
     }
 
-    public Long getReplyId(){
+    public Long getReplyId() {
       return this.replyId;
     }
   }
