@@ -1,9 +1,6 @@
 package keeper.project.homepage.admin.dto.clerk.response;
 
-import javax.validation.constraints.Null;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
-import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
-import keeper.project.homepage.entity.clerk.SurveyReplyExcuseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,7 +23,7 @@ public class SurveyRespondentResponseDto {
   @Nullable
   private String excuse;
 
-  public static SurveyRespondentResponseDto from(SurveyMemberReplyEntity entity) {
+  public static SurveyRespondentResponseDto toDto(SurveyMemberReplyEntity entity) {
     return SurveyRespondentResponseDto.builder()
         .memberId(entity.getMember().getId())
         .realName(entity.getMember().getRealName())

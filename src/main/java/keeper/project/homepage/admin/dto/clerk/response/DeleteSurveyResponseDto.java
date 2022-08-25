@@ -16,7 +16,7 @@ public class DeleteSurveyResponseDto {
   private Long surveyId;
   private String surveyName;
 
-  public static DeleteSurveyResponseDto from(SurveyEntity survey){
+  public static DeleteSurveyResponseDto toDto(SurveyEntity survey){
     return DeleteSurveyResponseDto.builder()
         .surveyId(survey.getId())
         .surveyName(survey.getName())

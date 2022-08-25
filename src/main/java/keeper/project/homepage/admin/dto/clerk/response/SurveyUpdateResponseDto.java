@@ -18,7 +18,7 @@ public class SurveyUpdateResponseDto {
   private String surveyName;
   private Boolean isVisible;
 
-  public static SurveyUpdateResponseDto from(SurveyEntity survey) {
+  public static SurveyUpdateResponseDto toDto(SurveyEntity survey) {
     return SurveyUpdateResponseDto.builder()
         .surveyId(survey.getId())
         .surveyName(survey.getName())

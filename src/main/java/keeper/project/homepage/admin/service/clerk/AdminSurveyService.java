@@ -38,14 +38,14 @@ public class AdminSurveyService {
     SurveyEntity survey = surveyUtilService.getSurveyById(surveyId);
     surveyMemberReplyRepository.deleteAllInBatch(survey.getRespondents());
     surveyRepository.delete(survey);
-    return DeleteSurveyResponseDto.from(survey);
+    return DeleteSurveyResponseDto.toDto(survey);
   }
 
   public List<SurveyRespondentResponseDto> getRespondents(Long surveyId) {
     List<SurveyMemberReplyEntity> respondents = surveyUtilService.getSurveyMemberReplyEntityById(
         surveyId);
     return respondents.stream()
-        .map(SurveyRespondentResponseDto::from)
+        .map(SurveyRespondentResponseDto::toDto)
         .collect(Collectors.toList());
   }
 
@@ -71,14 +71,14 @@ public class AdminSurveyService {
   public SurveyUpdateResponseDto openSurvey(Long surveyId) {
     SurveyEntity survey = surveyUtilService.getSurveyById(surveyId);
     survey.openSurvey();
-    return SurveyUpdateResponseDto.from(survey);
+    return SurveyUpdateResponseDto.toDto(survey);
   }
 
   @Transactional
   public SurveyUpdateResponseDto closeSurvey(Long surveyId) {
     SurveyEntity survey = surveyUtilService.getSurveyById(surveyId);
     survey.closeSurvey();
-    return SurveyUpdateResponseDto.from(survey);
+    return SurveyUpdateResponseDto.toDto(survey);
   }
 
 }

@@ -23,7 +23,6 @@ public class SurveyModifyResponseDto {
 
   private Long surveyId;
   private Long memberId;
-  @NotNull(message = "응답 ID는 필수 입력입니다.")
   private Long replyId;
   @Nullable
   private String excuse;
