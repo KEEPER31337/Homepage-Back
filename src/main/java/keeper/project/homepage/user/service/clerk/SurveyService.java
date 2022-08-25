@@ -140,8 +140,8 @@ public class SurveyService {
   }
 
   public SurveyInformationResponseDto getSurveyInformation(SurveyInformationRequestDto requestDto) {
-    SurveyEntity survey = surveyRepository.findById(requestDto.getSurveyId()).orElseThrow(
-        CustomSurveyNotFoundException::new);
+    SurveyEntity survey = surveyRepository.findById(requestDto.getSurveyId())
+        .orElseThrow(CustomSurveyNotFoundException::new);
     MemberEntity member = memberUtilService.getById(requestDto.getMemberId());
 
     Boolean isResponded = false;
@@ -150,8 +150,10 @@ public class SurveyService {
     if (isUserRespondedSurvey(survey, member)) {
       isResponded = true;
       SurveyMemberReplyEntity surveyMemberReplyEntity = surveyMemberReplyRepository.findByMemberId(
-          requestDto.getMemberId()).orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
-      reply = surveyMemberReplyEntity.getReply().getType();
+              requestDto.getMemberId())
+          .orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
+      reply = surveyMemberReplyEntity.getReply()
+          .getType();
     } else {
       isResponded = false;
     }
@@ -160,7 +162,10 @@ public class SurveyService {
   }
 
   private Boolean isUserRespondedSurvey(SurveyEntity survey, MemberEntity member) {
-    if (survey.getRespondents().stream().map(SurveyMemberReplyEntity::getMember).toList()
+    if (survey.getRespondents()
+        .stream()
+        .map(SurveyMemberReplyEntity::getMember)
+        .toList()
         .contains(member)) {
       return true;
     } else {

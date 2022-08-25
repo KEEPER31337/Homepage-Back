@@ -1,9 +1,7 @@
 package keeper.project.homepage.repository.clerk;
 
-import io.lettuce.core.dynamic.annotation.Param;
 import java.util.List;
 import java.util.Optional;
-import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
