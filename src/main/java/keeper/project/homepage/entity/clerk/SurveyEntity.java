@@ -15,9 +15,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -46,4 +48,11 @@ public class SurveyEntity {
   @Builder.Default
   @OneToMany(mappedBy = "survey", cascade = CascadeType.REMOVE)
   List<SurveyMemberReplyEntity> respondents = new ArrayList<>();
+
+  public void openSurvey(){
+    this.isVisible = true;
+  }
+  public void closeSurvey(){
+    this.isVisible = false;
+  }
 }
