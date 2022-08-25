@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @Secured("ROLE_회원")
-@RequestMapping("/v1/clerk/survey")
+@RequestMapping("/v1/clerk/surveys")
 public class SurveyController {
 
   private final ResponseService responseService;

@@ -57,7 +57,7 @@ public class SurveyControllerTest extends SurveySpringTestHelper {
         .replyTime(LocalDateTime.now())
         .build();
 
-    mockMvc.perform(post("/v1/clerk/survey/{surveyId}", survey.getId())
+    mockMvc.perform(post("/v1/clerk/surveys/{surveyId}", survey.getId())
             .header("Authorization", userToken)
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonString(surveyResponseRequestDto)))
@@ -103,7 +103,7 @@ public class SurveyControllerTest extends SurveySpringTestHelper {
         .replyTime(replyTime)
         .build();
 
-    mockMvc.perform(patch("/v1/clerk/survey/{surveyId}", survey.getId())
+    mockMvc.perform(patch("/v1/clerk/surveys/{surveyId}", survey.getId())
             .header("Authorization", userToken)
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonString(surveyResponseRequestDto)))
@@ -145,7 +145,7 @@ public class SurveyControllerTest extends SurveySpringTestHelper {
         .memberId(user.getId())
         .build();
 
-    mockMvc.perform(get("/v1/clerk/survey/")
+    mockMvc.perform(get("/v1/clerk/surveys")
             .header("Authorization", userToken)
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonString(surveyInformationRequestDto)))

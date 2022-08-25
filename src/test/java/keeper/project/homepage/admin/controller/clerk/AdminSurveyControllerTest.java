@@ -63,7 +63,7 @@ public class AdminSurveyControllerTest extends SurveySpringTestHelper {
         .isVisible(isVisible)
         .build();
 
-    mockMvc.perform(post("/v1/admin/clerk/survey")
+    mockMvc.perform(post("/v1/admin/clerk/surveys")
             .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonString(adminSurveyRequestDto)))
@@ -95,7 +95,7 @@ public class AdminSurveyControllerTest extends SurveySpringTestHelper {
     SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(2),
         true);
 
-    mockMvc.perform(delete("/v1/admin/clerk/survey/{surveyId}", survey.getId())
+    mockMvc.perform(delete("/v1/admin/clerk/surveys/{surveyId}", survey.getId())
             .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
@@ -125,7 +125,7 @@ public class AdminSurveyControllerTest extends SurveySpringTestHelper {
         surveyReplyRepository.getById(OTHER_DORMANT.getReplyId()));
     generateSurveyReplyExcuse(surveyMemberReplyEntity, "BOB");
 
-    mockMvc.perform(get("/v1/admin/clerk/survey/{surveyId}/respondents", survey.getId())
+    mockMvc.perform(get("/v1/admin/clerk/surveys/{surveyId}/respondents", survey.getId())
             .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
@@ -170,7 +170,7 @@ public class AdminSurveyControllerTest extends SurveySpringTestHelper {
         .isVisible(isVisible)
         .build();
 
-    mockMvc.perform(patch("/v1/admin/clerk/survey/{surveyId}", survey.getId())
+    mockMvc.perform(patch("/v1/admin/clerk/surveys/{surveyId}", survey.getId())
             .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonString(adminSurveyRequestDto)))
@@ -209,7 +209,7 @@ public class AdminSurveyControllerTest extends SurveySpringTestHelper {
     SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(2),
         false);
 
-    mockMvc.perform(patch("/v1/admin/clerk/survey/{surveyId}/open", survey.getId())
+    mockMvc.perform(patch("/v1/admin/clerk/surveys/{surveyId}/open", survey.getId())
             .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
@@ -240,7 +240,7 @@ public class AdminSurveyControllerTest extends SurveySpringTestHelper {
     SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(2),
         true);
 
-    mockMvc.perform(patch("/v1/admin/clerk/survey/{surveyId}/close", survey.getId())
+    mockMvc.perform(patch("/v1/admin/clerk/surveys/{surveyId}/close", survey.getId())
             .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
