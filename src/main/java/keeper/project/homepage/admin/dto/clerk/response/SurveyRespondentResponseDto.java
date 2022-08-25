@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
@@ -15,10 +16,15 @@ import org.springframework.lang.Nullable;
 @AllArgsConstructor
 public class SurveyRespondentResponseDto {
 
+  @NonNull
   private Long memberId;
+  @NonNull
   private String realName;
+  @NonNull
   private String thumbnailPath;
+  @NonNull
   private Float generation;
+  @NonNull
   private String reply;
   @Nullable
   private String excuse;

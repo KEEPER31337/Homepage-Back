@@ -1,6 +1,7 @@
 package keeper.project.homepage.admin.controller.clerk;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import keeper.project.homepage.admin.dto.clerk.request.AdminSurveyRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.AdminSurveyResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.DeleteSurveyResponseDto;
@@ -43,21 +44,21 @@ public class AdminSurveyController {
 
   @DeleteMapping("/{surveyId}")
   public SingleResult<DeleteSurveyResponseDto> deleteSurvey(
-      @PathVariable("surveyId") Long surveyId
+      @PathVariable("surveyId") @NotNull Long surveyId
   ) {
     return responseService.getSuccessSingleResult(adminSurveyService.deleteSurvey(surveyId));
   }
 
   @GetMapping("/{surveyId}/respondents")
   public ListResult<SurveyRespondentResponseDto> getRespondents(
-      @PathVariable("surveyId") Long surveyId
+      @PathVariable("surveyId") @NotNull Long surveyId
   ) {
     return responseService.getSuccessListResult(adminSurveyService.getRespondents(surveyId));
   }
 
   @PatchMapping("/{surveyId}")
   public SingleResult<AdminSurveyResponseDto> modifySurvey(
-      @PathVariable("surveyId") Long surveyId,
+      @PathVariable("surveyId") @NotNull Long surveyId,
       @RequestBody @Valid AdminSurveyRequestDto adminSurveyRequestDto
   ) {
     return responseService.getSuccessSingleResult(
@@ -66,14 +67,14 @@ public class AdminSurveyController {
 
   @PatchMapping("/{surveyId}/open")
   public SingleResult<SurveyUpdateResponseDto> openSurvey(
-      @PathVariable("surveyId") Long surveyId
+      @PathVariable("surveyId") @NotNull Long surveyId
   ) {
     return responseService.getSuccessSingleResult(adminSurveyService.openSurvey(surveyId));
   }
 
   @PatchMapping("/{surveyId}/close")
   public SingleResult<SurveyUpdateResponseDto> closeSurvey(
-      @PathVariable("surveyId") Long surveyId
+      @PathVariable("surveyId") @NotNull Long surveyId
   ) {
     return responseService.getSuccessSingleResult(adminSurveyService.closeSurvey(surveyId));
   }

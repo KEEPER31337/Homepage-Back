@@ -1,4 +1,4 @@
-package keeper.project.homepage.user.dto.clerk;
+package keeper.project.homepage.user.dto.clerk.request;
 
 import java.time.LocalDateTime;
 import javax.validation.constraints.NotNull;
@@ -16,10 +16,12 @@ import org.springframework.lang.Nullable;
 @AllArgsConstructor
 public class SurveyResponseRequestDto {
 
+  @NotNull
   private Long memberId;
-  @NotNull(message = "응답 ID는 필수 입력입니다.")
+  @NotNull
   private Long replyId;
   @Nullable
   private String excuse;
+  @NotNull
   private LocalDateTime replyTime;
 }

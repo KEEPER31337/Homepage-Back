@@ -1,7 +1,6 @@
-package keeper.project.homepage.user.dto.clerk;
+package keeper.project.homepage.user.dto.clerk.response;
 
 import java.time.LocalDateTime;
-import javax.validation.constraints.NotNull;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
 import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
@@ -11,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 import org.springframework.lang.Nullable;
 
@@ -21,11 +21,15 @@ import org.springframework.lang.Nullable;
 @AllArgsConstructor
 public class SurveyModifyResponseDto {
 
+  @NonNull
   private Long surveyId;
+  @NonNull
   private Long memberId;
+  @NonNull
   private Long replyId;
   @Nullable
   private String excuse;
+  @NonNull
   private LocalDateTime replyTime;
 
   public static SurveyModifyResponseDto toDto(SurveyMemberReplyEntity surveyMemberReplyEntity,

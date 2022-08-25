@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.Setter;
 
 @Getter
@@ -13,10 +14,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeleteSurveyResponseDto {
+
+  @NonNull
   private Long surveyId;
+  @NonNull
   private String surveyName;
 
-  public static DeleteSurveyResponseDto toDto(SurveyEntity survey){
+  public static DeleteSurveyResponseDto toDto(SurveyEntity survey) {
     return DeleteSurveyResponseDto.builder()
         .surveyId(survey.getId())
         .surveyName(survey.getName())

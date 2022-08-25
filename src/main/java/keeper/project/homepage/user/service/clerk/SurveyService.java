@@ -15,10 +15,10 @@ import keeper.project.homepage.repository.clerk.SurveyMemberReplyRepository;
 import keeper.project.homepage.repository.clerk.SurveyReplyExcuseRepository;
 import keeper.project.homepage.repository.clerk.SurveyReplyRepository;
 import keeper.project.homepage.repository.clerk.SurveyRepository;
-import keeper.project.homepage.user.dto.clerk.SurveyInformationRequestDto;
-import keeper.project.homepage.user.dto.clerk.SurveyModifyResponseDto;
-import keeper.project.homepage.user.dto.clerk.SurveyResponseRequestDto;
-import keeper.project.homepage.user.dto.clerk.SurveyInformationDto;
+import keeper.project.homepage.user.dto.clerk.request.SurveyInformationRequestDto;
+import keeper.project.homepage.user.dto.clerk.response.SurveyModifyResponseDto;
+import keeper.project.homepage.user.dto.clerk.request.SurveyResponseRequestDto;
+import keeper.project.homepage.user.dto.clerk.response.SurveyInformationResponseDto;
 import keeper.project.homepage.user.service.member.MemberUtilService;
 import keeper.project.homepage.util.service.SurveyUtilService;
 import lombok.RequiredArgsConstructor;
@@ -139,7 +139,7 @@ public class SurveyService {
         .setRestExcuse(responseRequestDto.getExcuse());
   }
 
-  public SurveyInformationDto getSurveyInformation(SurveyInformationRequestDto requestDto) {
+  public SurveyInformationResponseDto getSurveyInformation(SurveyInformationRequestDto requestDto) {
     SurveyEntity survey = surveyRepository.findById(requestDto.getSurveyId()).orElseThrow(
         CustomSurveyNotFoundException::new);
     MemberEntity member = memberUtilService.getById(requestDto.getMemberId());
@@ -156,7 +156,7 @@ public class SurveyService {
       isResponded = false;
     }
 
-    return SurveyInformationDto.toDto(survey, reply, isResponded);
+    return SurveyInformationResponseDto.toDto(survey, reply, isResponded);
   }
 
   private Boolean isUserRespondedSurvey(SurveyEntity survey, MemberEntity member) {
