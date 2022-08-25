@@ -37,12 +37,9 @@ public class SurveyRespondentResponseDto {
         .build();
   }
 
-  private static String checkReplyHasExcuse(SurveyMemberReplyEntity entity){
+  private static String checkReplyHasExcuse(SurveyMemberReplyEntity entity) {
     String excuse = "";
-    if (entity.getSurveyReplyExcuseEntity() == null){
-      return excuse;
-    }
-    else{
+    if (entity.getSurveyReplyExcuseEntity() != null) {
       excuse = entity.getSurveyReplyExcuseEntity().getRestExcuse();
     }
     return excuse;
