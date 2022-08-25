@@ -1,0 +1,94 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+// 자동으로 생성된 snippet 설정하는 부분
+
+= KEEPER API 문서
+:icons: font
+// NOTE, TIP, WARNING, CAUTION, IMPORTANT 같은 경고구들 아이콘화 해줌
+:source-highlighter: highlight.js
+// source code 블럭에서 사용되는 highlighter 설정, 4개 정도 있던데 차이를 아직 잘 모르겠음.
+:toc: left
+// table of contents(toc) 왼쪽정렬하여 생성
+:toclevels: 1
+// default : 2 (==,  ===) 까지 toc에 보여줌.
+:sectlinks:
+// section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== *설문 조사 응답*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-response/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/survey-response/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-response/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/survey-response/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-response/response-fields.adoc[]
+
+== *설문 응답 수정*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-reply-modify/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/survey-reply-modify/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-reply-modify/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/survey-reply-modify/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-reply-modify/response-fields.adoc[]
+
+== *설문 정보 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-information/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-information/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/survey-information/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-information/response-fields.adoc[]
