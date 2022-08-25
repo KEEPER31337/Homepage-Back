@@ -55,7 +55,7 @@ public class AdminSurveyController {
     return responseService.getSuccessListResult(adminSurveyService.getRespondents(surveyId));
   }
 
-  @RequestMapping(value = "/{surveyId}", method = {RequestMethod.PUT, RequestMethod.PATCH})
+  @PatchMapping("/{surveyId}")
   public SingleResult<AdminSurveyResponseDto> modifySurvey(
       @PathVariable("surveyId") Long surveyId,
       @RequestBody @Valid AdminSurveyRequestDto adminSurveyRequestDto

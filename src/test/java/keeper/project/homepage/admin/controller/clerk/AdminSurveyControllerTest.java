@@ -170,7 +170,7 @@ public class AdminSurveyControllerTest extends SurveySpringTestHelper {
         .isVisible(isVisible)
         .build();
 
-    mockMvc.perform(put("/v1/admin/clerk/survey/{surveyId}", survey.getId())
+    mockMvc.perform(patch("/v1/admin/clerk/survey/{surveyId}", survey.getId())
             .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonString(adminSurveyRequestDto)))

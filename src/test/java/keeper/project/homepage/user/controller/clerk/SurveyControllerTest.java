@@ -2,6 +2,7 @@ package keeper.project.homepage.user.controller.clerk;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.put;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
@@ -102,7 +103,7 @@ public class SurveyControllerTest extends SurveySpringTestHelper {
         .replyTime(replyTime)
         .build();
 
-    mockMvc.perform(put("/v1/clerk/survey/{surveyId}", survey.getId())
+    mockMvc.perform(patch("/v1/clerk/survey/{surveyId}", survey.getId())
             .header("Authorization", userToken)
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonString(surveyResponseRequestDto)))
