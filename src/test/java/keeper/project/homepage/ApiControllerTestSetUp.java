@@ -10,9 +10,6 @@ import keeper.project.homepage.exception.ExceptionAdvice;
 import keeper.project.homepage.repository.about.StaticWriteContentRepository;
 import keeper.project.homepage.repository.about.StaticWriteSubtitleImageRepository;
 import keeper.project.homepage.repository.about.StaticWriteTitleRepository;
-import keeper.project.homepage.repository.clerk.SeminarAttendanceExcuseRepository;
-import keeper.project.homepage.repository.clerk.SeminarAttendanceRepository;
-import keeper.project.homepage.repository.clerk.SeminarRepository;
 import keeper.project.homepage.repository.library.BookBorrowRepository;
 import keeper.project.homepage.repository.attendance.AttendanceRepository;
 import keeper.project.homepage.repository.library.BookDepartmentRepository;
@@ -126,15 +123,6 @@ public abstract class ApiControllerTestSetUp {
   @Autowired
   protected StudyHasMemberRepository studyHasMemberRepository;
 
-  @Autowired
-  protected SeminarRepository seminarRepository;
-
-  @Autowired
-  protected SeminarAttendanceRepository seminarAttendanceRepository;
-
-  @Autowired
-  protected SeminarAttendanceExcuseRepository seminarAttendanceExcuseRepository;
-
   /********* Service Start ********/
   @Autowired
   protected SignUpService signUpService;
@@ -190,9 +178,6 @@ public abstract class ApiControllerTestSetUp {
 
   @Autowired
   protected JwtTokenProvider jwtTokenProvider;
-
-  protected ApiControllerTestSetUp() {
-  }
 
   @BeforeEach
   public void setUpAll(RestDocumentationContextProvider restDocumentation) throws Exception {
