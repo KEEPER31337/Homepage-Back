@@ -4,6 +4,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,14 +15,39 @@ import keeper.project.homepage.entity.clerk.SeminarAttendanceExcuseEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
 import keeper.project.homepage.entity.clerk.SeminarEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.repository.clerk.SeminarAttendanceExcuseRepository;
+import keeper.project.homepage.repository.clerk.SeminarAttendanceRepository;
+import keeper.project.homepage.repository.clerk.SeminarAttendanceStatusRepository;
+import keeper.project.homepage.repository.clerk.SeminarRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.restdocs.payload.FieldDescriptor;
 
-public class ClerkControllerTestHelper extends ApiControllerTestHelper {
+public class ClerkControllerTestHelper extends ApiControllerTestHelper{
+  @Autowired
+  protected SeminarRepository seminarRepository;
+
+  @Autowired
+  protected SeminarAttendanceRepository seminarAttendanceRepository;
+
+  @Autowired
+  protected SeminarAttendanceExcuseRepository seminarAttendanceExcuseRepository;
+
+  @Autowired
+  protected SeminarAttendanceStatusRepository seminarAttendanceStatusRepository;
 
   protected String asJsonString(final Object obj) {
     try {
       final ObjectMapper mapper = new ObjectMapper();
       return mapper.writeValueAsString(obj);
+    } catch (Exception e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  protected String asJsonDateString(final Object obj) {
+    try {
+      final ObjectMapper mapper = new ObjectMapper();
+      return mapper.registerModule(new JavaTimeModule()).writeValueAsString(obj);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
@@ -59,39 +85,6 @@ public class ClerkControllerTestHelper extends ApiControllerTestHelper {
     return commonFields;
   }
 
-
-
-  protected List<FieldDescriptor> generateSeminarDtoResponseFields(ResponseType type,
-      String success, String code, String msg, FieldDescriptor... addDescriptors) {
-    String prefix = type.getReponseFieldPrefix();
-    List<FieldDescriptor> commonFields = new ArrayList<>();
-    commonFields.addAll(generateCommonResponseFields(success, code, msg));
-    commonFields.addAll(Arrays.asList(
-        fieldWithPath(prefix + ".id").description("세미나 id"),
-        fieldWithPath(prefix + ".name").description("세미나 이름"),
-        fieldWithPath(prefix + ".openTime").description("세미나 open 시간")
-
-    ));
-    if (addDescriptors.length > 0) {
-      commonFields.addAll(Arrays.asList(addDescriptors));
-    }
-    return commonFields;
-  }
-  protected List<FieldDescriptor> generateSeminarAttendanceStatusResponseFields(ResponseType type,
-      String success, String code, String msg, FieldDescriptor... addDescriptors) {
-    String prefix = type.getReponseFieldPrefix();
-    List<FieldDescriptor> commonFields = new ArrayList<>();
-    commonFields.addAll(generateCommonResponseFields(success, code, msg));
-    commonFields.addAll(Arrays.asList(
-        fieldWithPath(prefix + ".id").description("세미나 출석 상태 id"),
-        fieldWithPath(prefix + ".seminarAttendanceStatusType").description("세미나 출석 상태 타입")
-    ));
-    if (addDescriptors.length > 0) {
-      commonFields.addAll(Arrays.asList(addDescriptors));
-    }
-    return commonFields;
-  }
-
   protected List<FieldDescriptor> generateClerkMemberJobTypeResponseFields(ResponseType type,
       String success, String code, String msg, FieldDescriptor... addDescriptors) {
     String prefix = type.getReponseFieldPrefix();
@@ -110,6 +103,38 @@ public class ClerkControllerTestHelper extends ApiControllerTestHelper {
         subsectionWithPath(prefix + ".type").description("member의 활동 상태"),
         fieldWithPath(prefix + ".type.id").description("member의 활동 상태의 id"),
         fieldWithPath(prefix + ".type.name").description("member의 활동 상태의 이름")
+    ));
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
+    }
+    return commonFields;
+  }
+
+  protected List<FieldDescriptor> generateSeminarDtoResponseFields(ResponseType type,
+      String success, String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(Arrays.asList(
+        fieldWithPath(prefix + ".id").description("세미나 id"),
+        fieldWithPath(prefix + ".name").description("세미나 이름"),
+        fieldWithPath(prefix + ".openTime").description("세미나 open 시간")
+
+    ));
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
+    }
+    return commonFields;
+  }
+
+  protected List<FieldDescriptor> generateSeminarAttendanceStatusResponseFields(ResponseType type,
+      String success, String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(Arrays.asList(
+        fieldWithPath(prefix + ".id").description("세미나 출석 상태 id"),
+        fieldWithPath(prefix + ".seminarAttendanceStatusType").description("세미나 출석 상태 타입")
     ));
     if (addDescriptors.length > 0) {
       commonFields.addAll(Arrays.asList(addDescriptors));

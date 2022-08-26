@@ -3,13 +3,14 @@ package keeper.project.homepage.admin.controller.clerk;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.서기;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.우수회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberTypeName.정회원;
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.ABSENCE;
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.ATTENDANCE;
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.LATENESS;
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.PERSONAL;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ABSENCE;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ATTENDANCE;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.LATENESS;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.PERSONAL;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -22,8 +23,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDateTime;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
+import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceExcuseEntity;
+import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
 import keeper.project.homepage.entity.clerk.SeminarEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.extern.slf4j.Slf4j;
@@ -50,10 +53,10 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
   @Test
   @DisplayName("[SUCCESS] 세미나 목록 불러오기")
   public void getSeminarList() throws Exception {
-    generateSeminar(LocalDateTime.now().minusWeeks(1L));
-    generateSeminar(LocalDateTime.now().plusWeeks(2L));
-    generateSeminar(LocalDateTime.now().minusWeeks(2L));
-    generateSeminar(LocalDateTime.now().plusWeeks(1L));
+    SeminarEntity seminar1 = generateSeminar(LocalDateTime.now().minusWeeks(1L));
+    SeminarEntity seminar2 = generateSeminar(LocalDateTime.now().plusWeeks(2L));
+    SeminarEntity seminar3 = generateSeminar(LocalDateTime.now().minusWeeks(2L));
+    SeminarEntity seminar4 = generateSeminar(LocalDateTime.now().plusWeeks(1L));
     mockMvc.perform(get("/v1/admin/clerk/seminars")
             .header("Authorization", clerkToken))
         .andDo(print())
@@ -61,13 +64,37 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.code").value(0))
         .andExpect(jsonPath("$.msg").value("성공하였습니다."))
-        .andExpect(jsonPath("$.list").isNotEmpty())
         .andDo(document("get-seminar-list",
             responseFields(
                 generateSeminarDtoResponseFields(ResponseType.LIST,
                     "성공: true +\n실패: false",
                     "성공 시 0을 반환",
                     "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
+            )));
+  }
+
+  @Test
+  @DisplayName("[SUCCESS] 세미나 생성하기")
+  public void createSeminar() throws Exception {
+    SeminarCreateRequestDto requestDto = SeminarCreateRequestDto.builder()
+        .openTime(LocalDateTime.now().plusWeeks(1L).withNano(0)).build();
+
+    mockMvc.perform(post("/v1/admin/clerk/seminars")
+            .header("Authorization", clerkToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonDateString(requestDto)))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").value("성공하였습니다."))
+        .andDo(document("create-seminar",
+            requestFields(fieldWithPath("openTime").description("생성할 세미나의 오픈 시간")),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("data.id").description("세미나 id")
             )));
   }
 
@@ -99,10 +126,14 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
     MemberEntity member2 = generateMember("최우창", 12.5F);
     MemberEntity member3 = generateMember("정현모", 9F);
     MemberEntity member4 = generateMember("손현경", 13F);
-    SeminarAttendanceEntity attendance1 = generateSeminarAttendance(member1, seminar, ATTENDANCE);
-    SeminarAttendanceEntity attendance2 = generateSeminarAttendance(member2, seminar, ABSENCE);
-    SeminarAttendanceEntity attendance3 = generateSeminarAttendance(member3, seminar, LATENESS);
-    SeminarAttendanceEntity personal = generateSeminarAttendance(member4, seminar, PERSONAL);
+    SeminarAttendanceEntity attendance1 = generateSeminarAttendance(member1, seminar,
+        seminarAttendanceStatusRepository.getById(ATTENDANCE.getId()));
+    SeminarAttendanceEntity attendance2 = generateSeminarAttendance(member2, seminar,
+        seminarAttendanceStatusRepository.getById(ABSENCE.getId()));
+    SeminarAttendanceEntity attendance3 = generateSeminarAttendance(member3, seminar,
+        seminarAttendanceStatusRepository.getById(LATENESS.getId()));
+    SeminarAttendanceEntity personal = generateSeminarAttendance(member4, seminar,
+        seminarAttendanceStatusRepository.getById(PERSONAL.getId()));
     SeminarAttendanceExcuseEntity seminarAttendanceExcuseEntity = generateSeminarAttendanceExcuse(
         personal);
     personal.setSeminarAttendanceExcuseEntity(seminarAttendanceExcuseEntity);
@@ -139,7 +170,9 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
   public void updateSeminarAttendances() throws Exception {
     SeminarEntity seminar = generateSeminar(LocalDateTime.now().plusWeeks(1));
     MemberEntity member = generateMember("이정학", 12.5F);
-    generateSeminarAttendance(member, seminar, ABSENCE);
+    SeminarAttendanceStatusEntity absence = seminarAttendanceStatusRepository.getById(
+        ABSENCE.getId());
+    generateSeminarAttendance(member, seminar, absence);
 
     SeminarAttendanceUpdateRequestDto requestDto = SeminarAttendanceUpdateRequestDto.builder()
         .seminarAttendanceStatusId(4L)

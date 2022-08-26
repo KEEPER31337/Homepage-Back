@@ -1,28 +1,37 @@
 package keeper.project.homepage.admin.service.clerk;
 
 import static keeper.project.homepage.admin.service.clerk.AdminSeminarService.ABSENCE_DEMERIT;
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.ABSENCE;
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.ATTENDANCE;
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.LATENESS;
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.PERSONAL;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ABSENCE;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ATTENDANCE;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.LATENESS;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.PERSONAL;
+import static keeper.project.homepage.entity.member.MemberTypeEntity.memberType.DORMANT_MEMBER;
+import static keeper.project.homepage.entity.member.MemberTypeEntity.memberType.REGULAR_MEMBER;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.persistence.EntityManager;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
+import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
+import keeper.project.homepage.admin.dto.clerk.response.SeminarCreateResponseDto;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
 import keeper.project.homepage.entity.clerk.SeminarEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.member.MemberTypeEntity;
 import keeper.project.homepage.exception.clerk.CustomSeminarAttendanceNotFoundException;
 import keeper.project.homepage.repository.clerk.SeminarAttendanceRepository;
+import keeper.project.homepage.repository.clerk.SeminarAttendanceStatusRepository;
 import keeper.project.homepage.repository.clerk.SeminarRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
-import org.assertj.core.api.Assertions;
+import keeper.project.homepage.repository.member.MemberTypeRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+
 @Transactional
 @SpringBootTest
 public class AdminSeminarServiceTest {
@@ -34,9 +43,13 @@ public class AdminSeminarServiceTest {
   @Autowired
   SeminarAttendanceRepository seminarAttendanceRepository;
   @Autowired
+  SeminarAttendanceStatusRepository seminarAttendanceStatusRepository;
+  @Autowired
   MemberRepository memberRepository;
   @Autowired
   SeminarRepository seminarRepository;
+  @Autowired
+  MemberTypeRepository memberTypeRepository;
 
   @Test
   @DisplayName("[SUCCESS] 개인사유 출석 수정")
@@ -44,7 +57,9 @@ public class AdminSeminarServiceTest {
     // given
     SeminarEntity seminar = seminarRepository.getById(1L);
     MemberEntity member = memberRepository.getById(1L);
-    generateSeminarAttendance(member, seminar, ABSENCE);
+    SeminarAttendanceStatusEntity absence = seminarAttendanceStatusRepository.getById(
+        ABSENCE.getId());
+    adminSeminarService.generateSeminarAttendance(member, seminar, absence);
     em.flush();
     em.clear();
     SeminarAttendanceUpdateRequestDto request = SeminarAttendanceUpdateRequestDto.builder()
@@ -58,8 +73,8 @@ public class AdminSeminarServiceTest {
         seminar, member).orElseThrow(CustomSeminarAttendanceNotFoundException::new);
 
     //then
-    Assertions.assertThat(find.getSeminarAttendanceStatusEntity()).isEqualTo(PERSONAL);
-    Assertions.assertThat(find.getSeminarAttendanceExcuseEntity().getAbsenceExcuse())
+    assertThat(find.getSeminarAttendanceStatusEntity().getType()).isEqualTo(PERSONAL.getType());
+    assertThat(find.getSeminarAttendanceExcuseEntity().getAbsenceExcuse())
         .isEqualTo("예비군 훈련");
   }
 
@@ -69,7 +84,10 @@ public class AdminSeminarServiceTest {
     // given
     SeminarEntity seminar = seminarRepository.getById(1L);
     MemberEntity member = memberRepository.getById(1L);
-    generateSeminarAttendance(member, seminar, ATTENDANCE);
+    SeminarAttendanceStatusEntity attendance = seminarAttendanceStatusRepository.getById(
+        ATTENDANCE.getId());
+
+    adminSeminarService.generateSeminarAttendance(member, seminar, attendance);
     Integer beforeDemerit = member.getDemerit();
     em.flush();
     em.clear();
@@ -84,8 +102,8 @@ public class AdminSeminarServiceTest {
     Integer afterDemerit = find.getMemberEntity().getDemerit();
 
     //then
-    Assertions.assertThat(find.getSeminarAttendanceStatusEntity()).isEqualTo(ABSENCE);
-    Assertions.assertThat(beforeDemerit + ABSENCE_DEMERIT).isEqualTo(afterDemerit);
+    assertThat(find.getSeminarAttendanceStatusEntity().getType()).isEqualTo(ABSENCE.getType());
+    assertThat(beforeDemerit + ABSENCE_DEMERIT).isEqualTo(afterDemerit);
   }
 
   @Test
@@ -94,7 +112,9 @@ public class AdminSeminarServiceTest {
     // given
     SeminarEntity seminar = seminarRepository.getById(1L);
     MemberEntity member = memberRepository.getById(1L);
-    generateSeminarAttendance(member, seminar, ABSENCE);
+    SeminarAttendanceStatusEntity absence = seminarAttendanceStatusRepository.getById(
+        ABSENCE.getId());
+    adminSeminarService.generateSeminarAttendance(member, seminar, absence);
     em.flush();
     em.clear();
     Integer beforeDemerit = memberRepository.getById(1L).getDemerit();
@@ -108,8 +128,8 @@ public class AdminSeminarServiceTest {
     Integer afterDemerit = find.getMemberEntity().getDemerit();
 
     //then
-    Assertions.assertThat(find.getSeminarAttendanceStatusEntity()).isEqualTo(ATTENDANCE);
-    Assertions.assertThat(beforeDemerit - ABSENCE_DEMERIT).isEqualTo(afterDemerit);
+    assertThat(find.getSeminarAttendanceStatusEntity().getType()).isEqualTo(ATTENDANCE.getType());
+    assertThat(beforeDemerit - ABSENCE_DEMERIT).isEqualTo(afterDemerit);
   }
 
   @Test
@@ -117,16 +137,22 @@ public class AdminSeminarServiceTest {
   void updateStatusToLatenessIfEverBeenLate() {
     // given
     SeminarEntity seminar1 = seminarRepository.getById(1L);
-    SeminarEntity seminar2 = generateSeminar(LocalDateTime.now());
+    SeminarEntity seminar2 = adminSeminarService.generateSeminar(LocalDateTime.now());
     MemberEntity member = memberRepository.getById(1L);
-    generateSeminarAttendance(member, seminar1, LATENESS);
-    generateSeminarAttendance(member, seminar2, ATTENDANCE);
+    SeminarAttendanceStatusEntity attendance = seminarAttendanceStatusRepository.getById(
+        ATTENDANCE.getId());
+    SeminarAttendanceStatusEntity lateness = seminarAttendanceStatusRepository.getById(
+        LATENESS.getId());
+
+    adminSeminarService.generateSeminarAttendance(member, seminar1, lateness);
+    adminSeminarService.generateSeminarAttendance(member, seminar2, attendance);
     em.flush();
     em.clear();
     Integer beforeDemerit = memberRepository.getById(1L).getDemerit();
     SeminarAttendanceUpdateRequestDto request = SeminarAttendanceUpdateRequestDto.builder()
         .seminarAttendanceStatusId(2L)
         .build();
+
     // when
     adminSeminarService.updateSeminarAttendanceStatus(seminar2.getId(), member.getId(), request);
     SeminarAttendanceEntity find = seminarAttendanceRepository.findBySeminarEntityAndMemberEntity(
@@ -134,28 +160,58 @@ public class AdminSeminarServiceTest {
     Integer afterDemerit = find.getMemberEntity().getDemerit();
 
     //then
-    Assertions.assertThat(find.getSeminarAttendanceStatusEntity()).isEqualTo(LATENESS);
-    Assertions.assertThat(beforeDemerit + ABSENCE_DEMERIT).isEqualTo(afterDemerit);
+    assertThat(find.getSeminarAttendanceStatusEntity().getType()).isEqualTo(LATENESS.getType());
+    assertThat(beforeDemerit + ABSENCE_DEMERIT).isEqualTo(afterDemerit);
   }
 
-  SeminarEntity generateSeminar(LocalDateTime openTime) {
-    return seminarRepository.save(SeminarEntity.builder()
-        .name(openTime + "세미나")
-        .openTime(openTime)
-        .build()
-    );
+  @Test
+  @DisplayName("[SUCCESS] 세미나 생성 테스트")
+  void seminarCreateTest() {
+    // given
+    MemberTypeEntity regularMember = memberTypeRepository.getById(REGULAR_MEMBER.getId());
+    MemberTypeEntity dormantMember = memberTypeRepository.getById(DORMANT_MEMBER.getId());
+
+    SeminarCreateRequestDto request = SeminarCreateRequestDto.builder()
+        .openTime(LocalDateTime.now().plusWeeks(1L).withNano(0)).build();
+    MemberEntity member1 = generateMember("이정학", 12.5F, dormantMember);
+    MemberEntity member2 = generateMember("최우창", 12.5F, regularMember);
+    MemberEntity member3 = generateMember("정현모", 8F, regularMember);
+    MemberEntity member4 = generateMember("손현경", 13F, regularMember);
+
+    // when
+    SeminarCreateResponseDto responseDto = adminSeminarService.createSeminar(request);
+    em.flush();
+    em.clear();
+
+    // then
+    SeminarEntity seminar = seminarRepository.getById(responseDto.getId());
+    List<SeminarAttendanceEntity> seminarAttendances = seminar.getSeminarAttendanceEntity();
+    List<Long> memberIds = seminarAttendances.stream()
+        .map(SeminarAttendanceEntity::getMemberEntity)
+        .map(MemberEntity::getId)
+        .toList();
+
+    assertThat(responseDto.getId()).isEqualTo(seminar.getId());
+    for (SeminarAttendanceEntity attendance : seminarAttendances) {
+      assertThat(attendance.getSeminarAttendanceStatusEntity().getType()).isEqualTo(
+          ATTENDANCE.getType());
+    }
+    assertThat(memberIds.size()).isEqualTo(3);
+    assertThat(memberIds).contains(member2.getId(), member3.getId(), member4.getId());
   }
 
-  SeminarAttendanceEntity generateSeminarAttendance(MemberEntity member,
-      SeminarEntity seminar, SeminarAttendanceStatusEntity seminarAttendanceStatus) {
-    return seminarAttendanceRepository.save(
-        SeminarAttendanceEntity.builder()
-            .memberEntity(member)
-            .seminarEntity(seminar)
-            .seminarAttendanceStatusEntity(seminarAttendanceStatus)
-            .seminarAttendTime(LocalDateTime.now().withNano(0))
-            .build()
-    );
+  MemberEntity generateMember(String name, Float generation, MemberTypeEntity type) {
+    final long epochTime = System.nanoTime();
+    return memberRepository.save(
+        MemberEntity.builder()
+            .loginId("abcd1234" + epochTime)
+            .emailAddress("test1234@keeper.co.kr" + epochTime)
+            .password("1234")
+            .studentId("1234" + epochTime)
+            .nickName("nick" + epochTime)
+            .realName(name)
+            .generation(generation)
+            .memberType(type)
+            .build());
   }
-
 }
