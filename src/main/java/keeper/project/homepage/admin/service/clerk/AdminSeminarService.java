@@ -69,8 +69,9 @@ public class AdminSeminarService {
       SeminarAttendanceUpdateRequestDto requestDto) {
     SeminarAttendanceEntity seminarAttendance = getSeminarAttendanceBySeminarIdAndMemberId(
         seminarId, memberId);
-    SeminarAttendanceStatusEntity status = seminarAttendanceStatusRepository.getById(
-        requestDto.getSeminarAttendanceStatusId());
+    SeminarAttendanceStatusEntity status = seminarAttendanceStatusRepository.findById(
+        requestDto.getSeminarAttendanceStatusId())
+        .orElseThrow(CustomSeminarAttendanceStatusNotFoundException::new);
     String absenceExcuse = requestDto.getAbsenceExcuse();
 
     processAttendance(seminarAttendance, status, absenceExcuse);
