@@ -28,7 +28,6 @@ public class SeminarEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @NotNull
   private String name;
 
   @Column(length = 10)

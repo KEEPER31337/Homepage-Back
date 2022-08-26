@@ -4,12 +4,16 @@ import static keeper.project.homepage.entity.clerk.SeminarAttendanceExcuseEntity
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.ABSENCE;
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.LATENESS;
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.PERSONAL;
+import static keeper.project.homepage.entity.member.MemberTypeEntity.REGULAR_MEMBER_ID;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
+import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceStatusResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceUpdateResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.SeminarCreateResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarResponseDto;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
@@ -17,10 +21,12 @@ import keeper.project.homepage.entity.clerk.SeminarEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.clerk.CustomAttendanceAbsenceExcuseIsNullException;
 import keeper.project.homepage.exception.clerk.CustomSeminarAttendanceNotFoundException;
+import keeper.project.homepage.exception.clerk.CustomSeminarAttendanceStatusNotFoundException;
 import keeper.project.homepage.exception.clerk.CustomSeminarNotFoundException;
 import keeper.project.homepage.repository.clerk.SeminarAttendanceRepository;
 import keeper.project.homepage.repository.clerk.SeminarAttendanceStatusRepository;
 import keeper.project.homepage.repository.clerk.SeminarRepository;
+import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.user.service.member.MemberUtilService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,11 +41,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class AdminSeminarService {
 
+  //TODO: 추후 상벌점 관리 구현되면 수정 예정
   static final Integer ABSENCE_DEMERIT = 3;
+
   private final SeminarRepository seminarRepository;
   private final SeminarAttendanceRepository seminarAttendanceRepository;
   private final SeminarAttendanceStatusRepository seminarAttendanceStatusRepository;
   private final MemberUtilService memberUtilService;
+  private final MemberRepository memberRepository;
 
   public List<SeminarResponseDto> getSeminars() {
     return seminarRepository.findAllByOrderByOpenTimeDesc()
@@ -52,6 +61,7 @@ public class AdminSeminarService {
     return seminarRepository.findAll(pageable).map(SeminarAttendanceResponseDto::toDto);
   }
 
+  // TODO: seminarId, memberId -> attendanceId로 변경
   @Transactional
   public SeminarAttendanceUpdateResponseDto updateSeminarAttendanceStatus(Long seminarId,
       Long memberId,
@@ -70,6 +80,7 @@ public class AdminSeminarService {
         .map(SeminarAttendanceStatusResponseDto::toDto).toList();
   }
 
+  // TODO: 벌점 log 기록하도록 수정, requestDto -> absenceExcuse 수정
   private void processAttendance(SeminarAttendanceEntity attendance,
       SeminarAttendanceUpdateRequestDto requestDto) {
     MemberEntity member = attendance.getMemberEntity();
@@ -126,6 +137,40 @@ public class AdminSeminarService {
     SeminarEntity seminar = seminarRepository.findById(seminarId).orElseThrow(
         CustomSeminarNotFoundException::new);
     return seminarAttendanceRepository.findBySeminarEntityAndMemberEntity(seminar, member)
-        .orElseThrow(CustomSeminarAttendanceNotFoundException::new);
+        .orElseThrow(CustomSeminarAttendanceNotFoundE ception::new);
+  }
+
+  @Transactional
+  public SeminarCreateResponseDto createSeminar(SeminarCreateRequestDto request) {
+    SeminarEntity seminar = generateSeminar(request.getOpenTime());
+    List<MemberEntity> allRegularMembers = memberRepository.findAllByMemberTypeOrderByGenerationAsc(
+        memberUtilService.getTypeById(REGULAR_MEMBER_ID));
+    SeminarAttendanceStatusEntity attendance = seminarAttendanceStatusRepository.findById(
+        ATTENDANCE.getId()).orElseThrow(CustomSeminarAttendanceStatusNotFoundException::new);
+
+    for (MemberEntity member : allRegularMembers) {
+      generateSeminarAttendance(member, seminar, attendance);
+    }
+
+    return SeminarCreateResponseDto.toDto(seminar);
+  }
+
+  SeminarEntity generateSeminar(LocalDateTime openTime) {
+    return seminarRepository.save(SeminarEntity.builder()
+        .name(null)
+        .openTime(openTime)
+        .build()
+    );
+  }
+
+  SeminarAttendanceEntity generateSeminarAttendance(MemberEntity member, SeminarEntity seminar, SeminarAttendanceStatusEntity status) {
+    return seminarAttendanceRepository.save(
+        SeminarAttendanceEntity.builder()
+            .memberEntity(member)
+            .seminarEntity(seminar)
+            .seminarAttendanceStatusEntity(status)
+            .seminarAttendTime(LocalDateTime.now().withNano(0))
+            .build()
+    );
   }
 }
