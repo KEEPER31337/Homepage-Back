@@ -36,12 +36,12 @@ public class AdminSeminarController {
   private final ResponseService responseService;
   private final AdminSeminarService seminarService;
 
-  @GetMapping()
+  @GetMapping
   ListResult<SeminarResponseDto> getSeminars() {
     return responseService.getSuccessListResult(seminarService.getSeminars());
   }
 
-  @PostMapping()
+  @PostMapping
   SingleResult<SeminarCreateResponseDto> createSeminar(@RequestBody @Valid SeminarCreateRequestDto request) {
     return responseService.getSuccessSingleResult(seminarService.createSeminar(request));
   }
