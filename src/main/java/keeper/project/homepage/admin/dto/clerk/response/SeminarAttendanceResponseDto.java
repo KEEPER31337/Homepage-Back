@@ -24,7 +24,7 @@ public class SeminarAttendanceResponseDto {
 
   List<SeminarAttendanceDto> sortedSeminarAttendances;
 
-  public static SeminarAttendanceResponseDto toDto(SeminarEntity seminar) {
+  public static SeminarAttendanceResponseDto from(SeminarEntity seminar) {
     return SeminarAttendanceResponseDto.builder()
         .seminarId(seminar.getId())
         .seminarName(seminar.getName())

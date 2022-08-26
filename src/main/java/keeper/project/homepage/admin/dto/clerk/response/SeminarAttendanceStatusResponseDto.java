@@ -19,7 +19,7 @@ public class SeminarAttendanceStatusResponseDto {
   @NonNull
   private String seminarAttendanceStatusType;
 
-  public static SeminarAttendanceStatusResponseDto toDto(
+  public static SeminarAttendanceStatusResponseDto from(
       SeminarAttendanceStatusEntity status) {
     return SeminarAttendanceStatusResponseDto.builder()
         .id(status.getId())

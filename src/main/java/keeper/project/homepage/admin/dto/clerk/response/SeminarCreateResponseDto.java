@@ -16,7 +16,7 @@ public class SeminarCreateResponseDto {
   @NonNull
   private Long id;
 
-  public static SeminarCreateResponseDto toDto(SeminarEntity seminarEntity) {
+  public static SeminarCreateResponseDto from(SeminarEntity seminarEntity) {
     return SeminarCreateResponseDto.builder()
         .id(seminarEntity.getId())
         .build();

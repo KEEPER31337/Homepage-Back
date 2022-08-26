@@ -54,12 +54,12 @@ public class AdminSeminarService {
   public List<SeminarResponseDto> getSeminars() {
     return seminarRepository.findAllByOrderByOpenTimeDesc()
         .stream()
-        .map(SeminarResponseDto::toDto)
+        .map(SeminarResponseDto::from)
         .toList();
   }
 
   public Page<SeminarAttendanceResponseDto> getSeminarAttendances(Pageable pageable) {
-    return seminarRepository.findAll(pageable).map(SeminarAttendanceResponseDto::toDto);
+    return seminarRepository.findAll(pageable).map(SeminarAttendanceResponseDto::from);
   }
 
   // TODO: seminarId, memberId -> attendanceId로 변경
@@ -76,13 +76,13 @@ public class AdminSeminarService {
 
     processAttendance(seminarAttendance, status, absenceExcuse);
 
-    return SeminarAttendanceUpdateResponseDto.toDto(seminarAttendance);
+    return SeminarAttendanceUpdateResponseDto.from(seminarAttendance);
   }
 
   public List<SeminarAttendanceStatusResponseDto> getSeminarAttendanceStatuses() {
     return seminarAttendanceStatusRepository.findAll()
         .stream()
-        .map(SeminarAttendanceStatusResponseDto::toDto).toList();
+        .map(SeminarAttendanceStatusResponseDto::from).toList();
   }
 
   // TODO: 벌점 log 기록하도록 수정, requestDto -> absenceExcuse 수정
@@ -142,7 +142,7 @@ public class AdminSeminarService {
       throw new CustomAttendanceAbsenceExcuseIsNullException();
     }
     attendance.setSeminarAttendanceExcuseEntity(
-        createSeminarAttendanceExcuse(attendance, absenceExcuse));
+        newInstance(attendance, absenceExcuse));
   }
 
   private SeminarAttendanceEntity getSeminarAttendanceBySeminarIdAndMemberId(Long seminarId,
@@ -167,7 +167,7 @@ public class AdminSeminarService {
       generateSeminarAttendance(member, seminar, attendance);
     }
 
-    return SeminarCreateResponseDto.toDto(seminar);
+    return SeminarCreateResponseDto.from(seminar);
   }
 
   SeminarEntity generateSeminar(LocalDateTime openTime) {

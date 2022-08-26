@@ -35,7 +35,7 @@ public class SeminarAttendanceExcuseEntity {
   @Column(length = 200)
   private String absenceExcuse;
 
-  public static SeminarAttendanceExcuseEntity createSeminarAttendanceExcuse(
+  public static SeminarAttendanceExcuseEntity newInstance(
       SeminarAttendanceEntity seminarAttendance, String absenceExcuses) {
     return SeminarAttendanceExcuseEntity.builder()
         .seminarAttendanceEntity(seminarAttendance)

@@ -23,7 +23,7 @@ public class SeminarResponseDto {
   @NonNull
   private LocalDateTime openTime;
 
-  public static SeminarResponseDto toDto(SeminarEntity seminarEntity) {
+  public static SeminarResponseDto from(SeminarEntity seminarEntity) {
     return SeminarResponseDto.builder()
         .id(seminarEntity.getId())
         .name(seminarEntity.getName())
