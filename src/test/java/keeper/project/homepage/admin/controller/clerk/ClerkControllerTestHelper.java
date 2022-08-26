@@ -119,7 +119,6 @@ public class ClerkControllerTestHelper extends ApiControllerTestHelper{
         fieldWithPath(prefix + ".id").description("세미나 id"),
         fieldWithPath(prefix + ".name").description("세미나 이름"),
         fieldWithPath(prefix + ".openTime").description("세미나 open 시간")
-
     ));
     if (addDescriptors.length > 0) {
       commonFields.addAll(Arrays.asList(addDescriptors));

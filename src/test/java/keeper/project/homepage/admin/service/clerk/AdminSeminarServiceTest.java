@@ -59,7 +59,7 @@ public class AdminSeminarServiceTest {
     MemberEntity member = memberRepository.getById(1L);
     SeminarAttendanceStatusEntity absence = seminarAttendanceStatusRepository.getById(
         ABSENCE.getId());
-    adminSeminarService.generateSeminarAttendance(member, seminar, absence);
+    SeminarAttendanceEntity attendanceEntity = adminSeminarService.generateSeminarAttendance(member, seminar, absence);
     em.flush();
     em.clear();
     SeminarAttendanceUpdateRequestDto request = SeminarAttendanceUpdateRequestDto.builder()
@@ -68,7 +68,7 @@ public class AdminSeminarServiceTest {
         .build();
 
     // when
-    adminSeminarService.updateSeminarAttendanceStatus(seminar.getId(), member.getId(), request);
+    adminSeminarService.updateSeminarAttendanceStatus(attendanceEntity.getId(), request);
     SeminarAttendanceEntity find = seminarAttendanceRepository.findBySeminarEntityAndMemberEntity(
         seminar, member).orElseThrow(CustomSeminarAttendanceNotFoundException::new);
 
@@ -87,7 +87,7 @@ public class AdminSeminarServiceTest {
     SeminarAttendanceStatusEntity attendance = seminarAttendanceStatusRepository.getById(
         ATTENDANCE.getId());
 
-    adminSeminarService.generateSeminarAttendance(member, seminar, attendance);
+    SeminarAttendanceEntity attendanceEntity = adminSeminarService.generateSeminarAttendance(member, seminar, attendance);
     Integer beforeDemerit = member.getDemerit();
     em.flush();
     em.clear();
@@ -96,7 +96,7 @@ public class AdminSeminarServiceTest {
         .build();
 
     // when
-    adminSeminarService.updateSeminarAttendanceStatus(seminar.getId(), member.getId(), request);
+    adminSeminarService.updateSeminarAttendanceStatus(attendanceEntity.getId(), request);
     SeminarAttendanceEntity find = seminarAttendanceRepository.findBySeminarEntityAndMemberEntity(
         seminar, member).orElseThrow(CustomSeminarAttendanceNotFoundException::new);
     Integer afterDemerit = find.getMemberEntity().getDemerit();
@@ -114,7 +114,7 @@ public class AdminSeminarServiceTest {
     MemberEntity member = memberRepository.getById(1L);
     SeminarAttendanceStatusEntity absence = seminarAttendanceStatusRepository.getById(
         ABSENCE.getId());
-    adminSeminarService.generateSeminarAttendance(member, seminar, absence);
+    SeminarAttendanceEntity attendanceEntity =adminSeminarService.generateSeminarAttendance(member, seminar, absence);
     em.flush();
     em.clear();
     Integer beforeDemerit = memberRepository.getById(1L).getDemerit();
@@ -122,7 +122,7 @@ public class AdminSeminarServiceTest {
         .seminarAttendanceStatusId(1L)
         .build();
     // when
-    adminSeminarService.updateSeminarAttendanceStatus(seminar.getId(), member.getId(), request);
+    adminSeminarService.updateSeminarAttendanceStatus(attendanceEntity.getId(), request);
     SeminarAttendanceEntity find = seminarAttendanceRepository.findBySeminarEntityAndMemberEntity(
         seminar, member).orElseThrow(CustomSeminarAttendanceNotFoundException::new);
     Integer afterDemerit = find.getMemberEntity().getDemerit();
@@ -145,7 +145,7 @@ public class AdminSeminarServiceTest {
         LATENESS.getId());
 
     adminSeminarService.generateSeminarAttendance(member, seminar1, lateness);
-    adminSeminarService.generateSeminarAttendance(member, seminar2, attendance);
+    SeminarAttendanceEntity seminar2AttendanceEntity = adminSeminarService.generateSeminarAttendance(member, seminar2, attendance);
     em.flush();
     em.clear();
     Integer beforeDemerit = memberRepository.getById(1L).getDemerit();
@@ -154,7 +154,7 @@ public class AdminSeminarServiceTest {
         .build();
 
     // when
-    adminSeminarService.updateSeminarAttendanceStatus(seminar2.getId(), member.getId(), request);
+    adminSeminarService.updateSeminarAttendanceStatus(seminar2AttendanceEntity.getId(), request);
     SeminarAttendanceEntity find = seminarAttendanceRepository.findBySeminarEntityAndMemberEntity(
         seminar2, member).orElseThrow(CustomSeminarAttendanceNotFoundException::new);
     Integer afterDemerit = find.getMemberEntity().getDemerit();
@@ -185,7 +185,7 @@ public class AdminSeminarServiceTest {
 
     // then
     SeminarEntity seminar = seminarRepository.getById(responseDto.getId());
-    List<SeminarAttendanceEntity> seminarAttendances = seminar.getSeminarAttendanceEntity();
+    List<SeminarAttendanceEntity> seminarAttendances = seminar.getSeminarAttendances();
     List<Long> memberIds = seminarAttendances.stream()
         .map(SeminarAttendanceEntity::getMemberEntity)
         .map(MemberEntity::getId)

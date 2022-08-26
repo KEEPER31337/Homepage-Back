@@ -1,10 +1,10 @@
 package keeper.project.homepage.admin.dto.clerk.request;
 
+import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 @Getter
 @Builder
@@ -12,7 +12,7 @@ import lombok.NonNull;
 @NoArgsConstructor
 public class SeminarAttendanceUpdateRequestDto {
 
-  @NonNull
+  @NotNull
   private Long seminarAttendanceStatusId;
 
   private String absenceExcuse;

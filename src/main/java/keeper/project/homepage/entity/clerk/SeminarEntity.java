@@ -42,6 +42,6 @@ public class SeminarEntity {
 
   @Builder.Default
   @OneToMany(mappedBy = "seminarEntity")
-  List<SeminarAttendanceEntity> seminarAttendanceEntity = new ArrayList<>();
+  List<SeminarAttendanceEntity> seminarAttendances = new ArrayList<>();
 
 }

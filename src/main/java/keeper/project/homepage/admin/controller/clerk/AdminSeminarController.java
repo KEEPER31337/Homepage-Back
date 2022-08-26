@@ -4,6 +4,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
+import keeper.project.homepage.admin.dto.clerk.response.AllSeminarAttendancesResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceStatusResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceUpdateResponseDto;
@@ -47,8 +48,14 @@ public class AdminSeminarController {
   }
 
   @GetMapping("/attendances")
-  PageResult<SeminarAttendanceResponseDto> getSeminarAttendances(Pageable pageable) {
-    return responseService.getSuccessPageResult(seminarService.getSeminarAttendances(pageable));
+  PageResult<AllSeminarAttendancesResponseDto> getAllSeminarAttendances(Pageable pageable) {
+    return responseService.getSuccessPageResult(seminarService.getAllSeminarAttendances(pageable));
+  }
+  @GetMapping("{seminarId}/attendances")
+  ListResult<SeminarAttendanceResponseDto> getSeminarAttendances(
+      @PathVariable @NotNull Long seminarId
+  ) {
+    return responseService.getSuccessListResult(seminarService.getSeminarAttendances(seminarId));
   }
 
   @GetMapping("/statuses")
@@ -56,12 +63,11 @@ public class AdminSeminarController {
     return responseService.getSuccessListResult(seminarService.getSeminarAttendanceStatuses());
   }
 
-  @PatchMapping("/{seminarId}/attendances/members/{memberId}")
+  @PatchMapping("/attendances/{attendanceId}")
   SingleResult<SeminarAttendanceUpdateResponseDto> updateSeminarAttendance(
-      @PathVariable @NotNull Long seminarId,
-      @PathVariable @NotNull Long memberId,
-      @RequestBody  @Valid SeminarAttendanceUpdateRequestDto seminarAttendanceRequest) {
+      @PathVariable @NotNull Long attendanceId,
+      @RequestBody  @Valid SeminarAttendanceUpdateRequestDto request) {
     return responseService.getSuccessSingleResult(
-        seminarService.updateSeminarAttendanceStatus(seminarId, memberId, seminarAttendanceRequest));
+        seminarService.updateSeminarAttendanceStatus(attendanceId, request));
   }
 }

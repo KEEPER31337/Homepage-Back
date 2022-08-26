@@ -124,7 +124,7 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
     SeminarEntity seminar = generateSeminar(LocalDateTime.now().plusWeeks(1));
     MemberEntity member1 = generateMember("이정학", 12.5F);
     MemberEntity member2 = generateMember("최우창", 12.5F);
-    MemberEntity member3 = generateMember("정현모", 9F);
+    MemberEntity member3 = generateMember("정현모", 8F);
     MemberEntity member4 = generateMember("손현경", 13F);
     SeminarAttendanceEntity attendance1 = generateSeminarAttendance(member1, seminar,
         seminarAttendanceStatusRepository.getById(ATTENDANCE.getId()));
@@ -138,10 +138,10 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
         personal);
     personal.setSeminarAttendanceExcuseEntity(seminarAttendanceExcuseEntity);
 
-    seminar.getSeminarAttendanceEntity().add(attendance1);
-    seminar.getSeminarAttendanceEntity().add(attendance2);
-    seminar.getSeminarAttendanceEntity().add(attendance3);
-    seminar.getSeminarAttendanceEntity().add(personal);
+    seminar.getSeminarAttendances().add(attendance1);
+    seminar.getSeminarAttendances().add(attendance2);
+    seminar.getSeminarAttendances().add(attendance3);
+    seminar.getSeminarAttendances().add(personal);
 
     mockMvc.perform(get("/v1/admin/clerk/seminars/attendances")
             .header("Authorization", clerkToken)

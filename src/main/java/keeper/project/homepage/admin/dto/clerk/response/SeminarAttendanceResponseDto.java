@@ -1,40 +1,28 @@
 package keeper.project.homepage.admin.dto.clerk.response;
 
-import java.util.Comparator;
-import java.util.List;
-import keeper.project.homepage.admin.dto.clerk.SeminarAttendanceDto;
-import keeper.project.homepage.entity.clerk.SeminarEntity;
+import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@Builder
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class SeminarAttendanceResponseDto {
 
   @NonNull
-  private Long seminarId;
+  private Long attendanceId;
 
   @NonNull
-  private String seminarName;
+  private String memberName;
 
-  List<SeminarAttendanceDto> sortedSeminarAttendances;
-
-  public static SeminarAttendanceResponseDto from(SeminarEntity seminar) {
+  public static SeminarAttendanceResponseDto from(SeminarAttendanceEntity seminarAttendance) {
     return SeminarAttendanceResponseDto.builder()
-        .seminarId(seminar.getId())
-        .seminarName(seminar.getName())
-        .sortedSeminarAttendances(
-            seminar.getSeminarAttendanceEntity().stream()
-                .map(SeminarAttendanceDto::toDto)
-                .sorted(Comparator.comparing(SeminarAttendanceDto::getGeneration)
-                    .thenComparing(SeminarAttendanceDto::getMemberName))
-                .toList()
-        )
+        .attendanceId(seminarAttendance.getId())
+        .memberName(seminarAttendance.getMemberEntity().getRealName())
         .build();
   }
 }

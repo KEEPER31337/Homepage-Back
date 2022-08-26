@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
+import keeper.project.homepage.admin.dto.clerk.response.AllSeminarAttendancesResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceStatusResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceUpdateResponseDto;
@@ -58,19 +59,17 @@ public class AdminSeminarService {
         .toList();
   }
 
-  public Page<SeminarAttendanceResponseDto> getSeminarAttendances(Pageable pageable) {
-    return seminarRepository.findAll(pageable).map(SeminarAttendanceResponseDto::from);
+  public Page<AllSeminarAttendancesResponseDto> getAllSeminarAttendances(Pageable pageable) {
+    return seminarRepository.findAll(pageable).map(AllSeminarAttendancesResponseDto::from);
   }
 
-  // TODO: seminarId, memberId -> attendanceId로 변경
   @Transactional
-  public SeminarAttendanceUpdateResponseDto updateSeminarAttendanceStatus(Long seminarId,
-      Long memberId,
+  public SeminarAttendanceUpdateResponseDto updateSeminarAttendanceStatus(Long attendanceId,
       SeminarAttendanceUpdateRequestDto requestDto) {
-    SeminarAttendanceEntity seminarAttendance = getSeminarAttendanceBySeminarIdAndMemberId(
-        seminarId, memberId);
+    SeminarAttendanceEntity seminarAttendance = seminarAttendanceRepository.findById(attendanceId)
+        .orElseThrow(CustomSeminarAttendanceNotFoundException::new);
     SeminarAttendanceStatusEntity status = seminarAttendanceStatusRepository.findById(
-        requestDto.getSeminarAttendanceStatusId())
+            requestDto.getSeminarAttendanceStatusId())
         .orElseThrow(CustomSeminarAttendanceStatusNotFoundException::new);
     String absenceExcuse = requestDto.getAbsenceExcuse();
 
@@ -85,7 +84,7 @@ public class AdminSeminarService {
         .map(SeminarAttendanceStatusResponseDto::from).toList();
   }
 
-  // TODO: 벌점 log 기록하도록 수정, requestDto -> absenceExcuse 수정
+  // TODO: 벌점 log 기록하도록 수정
   private void processAttendance(SeminarAttendanceEntity attendance,
       SeminarAttendanceStatusEntity afterStatusEntity, String absenceExcuse) {
     MemberEntity member = attendance.getMemberEntity();
@@ -145,22 +144,13 @@ public class AdminSeminarService {
         newInstance(attendance, absenceExcuse));
   }
 
-  private SeminarAttendanceEntity getSeminarAttendanceBySeminarIdAndMemberId(Long seminarId,
-      Long memberId) {
-    MemberEntity member = memberUtilService.getById(memberId);
-    SeminarEntity seminar = seminarRepository.findById(seminarId).orElseThrow(
-        CustomSeminarNotFoundException::new);
-    return seminarAttendanceRepository.findBySeminarEntityAndMemberEntity(seminar, member)
-        .orElseThrow(CustomSeminarAttendanceNotFoundException::new);
-  }
-
   @Transactional
   public SeminarCreateResponseDto createSeminar(SeminarCreateRequestDto request) {
     SeminarEntity seminar = generateSeminar(request.getOpenTime());
     List<MemberEntity> allRegularMembers = memberRepository.findAllByMemberTypeOrderByGenerationAsc(
         memberUtilService.getTypeById(REGULAR_MEMBER.getId()));
     SeminarAttendanceStatusEntity attendance = seminarAttendanceStatusRepository.findById(
-        ATTENDANCE.getId())
+            ATTENDANCE.getId())
         .orElseThrow(CustomSeminarAttendanceStatusNotFoundException::new);
 
     for (MemberEntity member : allRegularMembers) {
@@ -168,6 +158,16 @@ public class AdminSeminarService {
     }
 
     return SeminarCreateResponseDto.from(seminar);
+  }
+
+  public List<SeminarAttendanceResponseDto> getSeminarAttendances(Long seminarId) {
+    SeminarEntity seminar = seminarRepository.findById(seminarId)
+        .orElseThrow(CustomSeminarNotFoundException::new);
+
+    return seminar.getSeminarAttendances()
+        .stream()
+        .map(SeminarAttendanceResponseDto::from)
+        .toList();
   }
 
   SeminarEntity generateSeminar(LocalDateTime openTime) {
@@ -178,7 +178,8 @@ public class AdminSeminarService {
     );
   }
 
-  SeminarAttendanceEntity generateSeminarAttendance(MemberEntity member, SeminarEntity seminar, SeminarAttendanceStatusEntity status) {
+  SeminarAttendanceEntity generateSeminarAttendance(MemberEntity member, SeminarEntity seminar,
+      SeminarAttendanceStatusEntity status) {
     return seminarAttendanceRepository.save(
         SeminarAttendanceEntity.builder()
             .memberEntity(member)
@@ -188,4 +189,5 @@ public class AdminSeminarService {
             .build()
     );
   }
+
 }
