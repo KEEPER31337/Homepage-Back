@@ -1,10 +1,11 @@
 package keeper.project.homepage.admin.service.clerk;
 
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceExcuseEntity.*;
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.ABSENCE;
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.LATENESS;
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.PERSONAL;
-import static keeper.project.homepage.entity.member.MemberTypeEntity.REGULAR_MEMBER_ID;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ABSENCE;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ATTENDANCE;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.LATENESS;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.PERSONAL;
+import static keeper.project.homepage.entity.member.MemberTypeEntity.memberType.REGULAR_MEMBER;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -68,8 +69,11 @@ public class AdminSeminarService {
       SeminarAttendanceUpdateRequestDto requestDto) {
     SeminarAttendanceEntity seminarAttendance = getSeminarAttendanceBySeminarIdAndMemberId(
         seminarId, memberId);
+    SeminarAttendanceStatusEntity status = seminarAttendanceStatusRepository.getById(
+        requestDto.getSeminarAttendanceStatusId());
+    String absenceExcuse = requestDto.getAbsenceExcuse();
 
-    processAttendance(seminarAttendance, requestDto);
+    processAttendance(seminarAttendance, status, absenceExcuse);
 
     return SeminarAttendanceUpdateResponseDto.toDto(seminarAttendance);
   }
@@ -82,53 +86,62 @@ public class AdminSeminarService {
 
   // TODO: 벌점 log 기록하도록 수정, requestDto -> absenceExcuse 수정
   private void processAttendance(SeminarAttendanceEntity attendance,
-      SeminarAttendanceUpdateRequestDto requestDto) {
+      SeminarAttendanceStatusEntity afterStatusEntity, String absenceExcuse) {
     MemberEntity member = attendance.getMemberEntity();
-    SeminarAttendanceStatusEntity afterStatus = seminarAttendanceStatusRepository.getById(
-        requestDto.getSeminarAttendanceStatusId());
-    SeminarAttendanceStatusEntity beforeStatus = attendance.getSeminarAttendanceStatusEntity();
+    String beforeStatus = attendance.getSeminarAttendanceStatusEntity().getType();
+    String afterStatus = afterStatusEntity.getType();
 
-    if (beforeStatus.equals(afterStatus) && !afterStatus.equals(PERSONAL)) {
+    if (beforeStatus.equals(afterStatus) && !afterStatus.equals(PERSONAL.getType())) {
       return;
     }
-    if (beforeStatus.equals(ABSENCE)) {
+    if (beforeStatus.equals(ABSENCE.getType())) {
       member.changeDemerit(member.getDemerit() - ABSENCE_DEMERIT);
     }
-    if (afterStatus.equals(PERSONAL)) {
-      processPersonal(attendance, requestDto);
+    if (afterStatus.equals(PERSONAL.getType())) {
+      processPersonal(attendance, absenceExcuse);
     }
-    if (afterStatus.equals(LATENESS)) {
+    if (afterStatus.equals(LATENESS.getType())) {
       processLateness(member);
     }
-    if (afterStatus.equals(ABSENCE)) {
-      processAbsence(member);
+    if (afterStatus.equals(ABSENCE.getType())) {
+      processAbsence(member, beforeStatus);
     }
-    attendance.setSeminarAttendanceStatusEntity(afterStatus);
+    attendance.setSeminarAttendanceStatusEntity(afterStatusEntity);
   }
 
+  //TODO: 상벌점 구현 시 중복 로직 수정 필요
   private static void processLateness(MemberEntity member) {
-    long latenessCount = member.getSeminarAttendances().stream()
+    // 지각 2회는 결석 처리
+    if (getLatenessCount(member) % 2 == 1) {
+      member.changeDemerit(member.getDemerit() + ABSENCE_DEMERIT);
+    }
+  }
+
+  //TODO: 상벌점 구현 시 로직 수정 필요
+  private static void processAbsence(MemberEntity member,
+      String beforeStatus) {
+    // 이전 상태가 지각이고 짝수번 지각했으므로 결석 처리된 상태이므로 반환
+    if (beforeStatus.equals(LATENESS.getType()) && getLatenessCount(member) % 2 == 0) {
+      return;
+    }
+    member.changeDemerit(member.getDemerit() + ABSENCE_DEMERIT);
+  }
+
+  private static long getLatenessCount(MemberEntity member) {
+    return member.getSeminarAttendances().stream()
         .filter(seminarAttendance ->
             seminarAttendance.getSeminarAttendanceStatusEntity().getType()
                 .equals(LATENESS.getType())
         ).count();
-    // 지각 2회는 결석 처리
-    if (latenessCount % 2 == 1) {
-      processAbsence(member);
-    }
-  }
-
-  private static void processAbsence(MemberEntity member) {
-    member.changeDemerit(member.getDemerit() + ABSENCE_DEMERIT);
   }
 
   private static void processPersonal(SeminarAttendanceEntity attendance,
-      SeminarAttendanceUpdateRequestDto request) {
-    if (request.getAbsenceExcuse() == null) {
+      String absenceExcuse) {
+    if (absenceExcuse == null) {
       throw new CustomAttendanceAbsenceExcuseIsNullException();
     }
     attendance.setSeminarAttendanceExcuseEntity(
-        createSeminarAttendanceExcuse(attendance, request.getAbsenceExcuse()));
+        createSeminarAttendanceExcuse(attendance, absenceExcuse));
   }
 
   private SeminarAttendanceEntity getSeminarAttendanceBySeminarIdAndMemberId(Long seminarId,
@@ -137,16 +150,17 @@ public class AdminSeminarService {
     SeminarEntity seminar = seminarRepository.findById(seminarId).orElseThrow(
         CustomSeminarNotFoundException::new);
     return seminarAttendanceRepository.findBySeminarEntityAndMemberEntity(seminar, member)
-        .orElseThrow(CustomSeminarAttendanceNotFoundE ception::new);
+        .orElseThrow(CustomSeminarAttendanceNotFoundException::new);
   }
 
   @Transactional
   public SeminarCreateResponseDto createSeminar(SeminarCreateRequestDto request) {
     SeminarEntity seminar = generateSeminar(request.getOpenTime());
     List<MemberEntity> allRegularMembers = memberRepository.findAllByMemberTypeOrderByGenerationAsc(
-        memberUtilService.getTypeById(REGULAR_MEMBER_ID));
+        memberUtilService.getTypeById(REGULAR_MEMBER.getId()));
     SeminarAttendanceStatusEntity attendance = seminarAttendanceStatusRepository.findById(
-        ATTENDANCE.getId()).orElseThrow(CustomSeminarAttendanceStatusNotFoundException::new);
+        ATTENDANCE.getId())
+        .orElseThrow(CustomSeminarAttendanceStatusNotFoundException::new);
 
     for (MemberEntity member : allRegularMembers) {
       generateSeminarAttendance(member, seminar, attendance);
