@@ -1,9 +1,10 @@
 package keeper.project.homepage.repository.clerk;
 
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.ABSENCE;
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.ATTENDANCE;
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.LATENESS;
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.PERSONAL;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ABSENCE;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ATTENDANCE;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.LATENESS;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.PERSONAL;
 
 import java.util.List;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
@@ -22,7 +23,7 @@ public class SeminarAttendanceStatusRepositoryTest extends SeminarRepositoryTest
     List<SeminarAttendanceStatusEntity> seminarAttendanceStatusEntities = seminarAttendanceStatusRepository.findAll();
 
     // then
-    Assertions.assertThat(seminarAttendanceStatusEntities.size()).isEqualTo(4);
+    Assertions.assertThat(seminarAttendanceStatusEntities.size()).isEqualTo(seminarAttendanceStatus.values().length);
   }
 
 
@@ -32,10 +33,14 @@ public class SeminarAttendanceStatusRepositoryTest extends SeminarRepositoryTest
     // given
 
     // when
-    SeminarAttendanceStatusEntity attendance = seminarAttendanceStatusRepository.getById(1L);
-    SeminarAttendanceStatusEntity lateness = seminarAttendanceStatusRepository.getById(2L);
-    SeminarAttendanceStatusEntity absence = seminarAttendanceStatusRepository.getById(3L);
-    SeminarAttendanceStatusEntity personal = seminarAttendanceStatusRepository.getById(4L);
+    SeminarAttendanceStatusEntity attendance = seminarAttendanceStatusRepository.getById(
+        ATTENDANCE.getId());
+    SeminarAttendanceStatusEntity lateness = seminarAttendanceStatusRepository.getById(
+        LATENESS.getId());
+    SeminarAttendanceStatusEntity absence = seminarAttendanceStatusRepository.getById(
+        ABSENCE.getId());
+    SeminarAttendanceStatusEntity personal = seminarAttendanceStatusRepository.getById(
+        PERSONAL.getId());
 
     // then
     Assertions.assertThat(attendance.getType()).isEqualTo(ATTENDANCE.getType());

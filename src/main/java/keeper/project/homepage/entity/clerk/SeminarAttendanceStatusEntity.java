@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Entity
 @Getter
@@ -19,19 +20,22 @@ import lombok.NoArgsConstructor;
 @Table(name = "seminar_attendance_status")
 public class SeminarAttendanceStatusEntity {
 
-  public static final SeminarAttendanceStatusEntity ATTENDANCE = new SeminarAttendanceStatusEntity(
-      1L, "출석");
-  public static final SeminarAttendanceStatusEntity LATENESS = new SeminarAttendanceStatusEntity(
-      2L, "지각");
-  public static final SeminarAttendanceStatusEntity ABSENCE = new SeminarAttendanceStatusEntity(
-      3L, "결석");
-  public static final SeminarAttendanceStatusEntity PERSONAL = new SeminarAttendanceStatusEntity(
-      4L, "개인사정");
-
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @NotNull
   private String type;
+
+  @Getter
+  @RequiredArgsConstructor
+  public enum seminarAttendanceStatus {
+    ATTENDANCE(1L, "출석"),
+    LATENESS(2L, "지각"),
+    ABSENCE(3L, "결석"),
+    PERSONAL(4L, "개인사정");
+
+    private final Long id;
+    private final String type;
+  }
 }

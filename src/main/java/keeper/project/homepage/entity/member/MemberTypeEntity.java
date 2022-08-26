@@ -13,6 +13,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @Builder                    // builder를 사용할수 있게 합니다.
 @Entity                     // jpa entity임을 알립니다.
@@ -42,5 +43,17 @@ public class MemberTypeEntity implements Serializable {
     return getBadge() == null ?
         EnvironmentProperty.getThumbnailPath(ThumbType.Badge.getDefaultThumbnailId())
         : EnvironmentProperty.getThumbnailPath(getBadge().getId());
+  }
+  @Getter
+  @RequiredArgsConstructor
+  public enum memberType {
+    NON_MEMBER(1L, "비회원"),
+    REGULAR_MEMBER(2L, "정회원"),
+    DORMANT_MEMBER(3L, "휴면회원"),
+    GRADUATED_MEMBER(4L, "졸업"),
+    WITHDRAWAL_MEMBER(5L, "탈퇴");
+
+    private final Long id;
+    private final String name;
   }
 }
