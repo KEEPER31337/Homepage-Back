@@ -161,9 +161,10 @@ public class SurveyControllerTest extends SurveySpringTestHelper {
         true);
     generateSurveyMemberReply(survey, user, surveyReplyRepository.getById(1L));
 
-    mockMvc.perform(get("/v1/clerk/surveys/{surveyId}/{memberId}", survey.getId(), user.getId())
-            .header("Authorization", userToken)
-            .contentType(MediaType.APPLICATION_JSON))
+    mockMvc.perform(
+            get("/v1/clerk/surveys/{surveyId}/members/{memberId}", survey.getId(), user.getId())
+                .header("Authorization", userToken)
+                .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))

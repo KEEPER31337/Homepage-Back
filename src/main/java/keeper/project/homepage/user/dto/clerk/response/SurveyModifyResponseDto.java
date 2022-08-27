@@ -42,15 +42,4 @@ public class SurveyModifyResponseDto {
         .replyTime(surveyMemberReplyEntity.getReplyTime())
         .build();
   }
-
-  public static SurveyMemberReplyEntity toEntity(SurveyEntity survey, MemberEntity member,
-      SurveyReplyEntity reply, LocalDateTime replyTime, SurveyReplyExcuseEntity excuse) {
-    return SurveyMemberReplyEntity.builder()
-        .survey(survey)
-        .member(member)
-        .reply(reply)
-        .replyTime(replyTime)
-        .surveyReplyExcuseEntity(excuse)
-        .build();
-  }
 }

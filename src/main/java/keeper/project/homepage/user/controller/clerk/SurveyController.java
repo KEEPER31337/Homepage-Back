@@ -52,7 +52,7 @@ public class SurveyController {
     return responseService.getSuccessSingleResult(surveyService.getLatestSurveyId());
   }
 
-  @GetMapping("/{surveyId}/{memberId}")
+  @GetMapping("/{surveyId}/members/{memberId}")
   public SingleResult<SurveyInformationResponseDto> getSurveyInformation(
       @PathVariable("surveyId") @NotNull Long surveyId,
       @PathVariable("memberId") @NotNull Long memberId
