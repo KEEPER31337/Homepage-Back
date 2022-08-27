@@ -196,7 +196,7 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
                 parameterWithName("attendanceId").description("세미나 출석 id")),
             requestFields(
                 fieldWithPath("seminarAttendanceStatusId").description("세미나 id"),
-                fieldWithPath("absenceExcuse").description("개인사정 결석 사유")),
+                fieldWithPath("absenceExcuse").optional().description("개인사정 결석 사유")),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),

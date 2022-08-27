@@ -199,6 +199,10 @@ include::{snippets}/get-seminar-list/response-fields.adoc[]
 
 include::{snippets}/create-seminar/http-request.adoc[]
 
+==== Request Fields
+
+include::{snippets}/create-seminar/request-fields.adoc[]
+
 === 응답
 
 ==== Response
@@ -255,6 +259,10 @@ include::{snippets}/get-seminar-attendance-list/response-fields.adoc[]
 
 include::{snippets}/get-seminar-attendance/http-request.adoc[]
 
+==== Path Parameter
+
+include::{snippets}/get-seminar-attendance/path-parameters.adoc[]
+
 === 응답
 
 ==== Response
@@ -278,9 +286,9 @@ include::{snippets}/update-seminar-attendance/http-request.adoc[]
 
 include::{snippets}/update-seminar-attendance/path-parameters.adoc[]
 
-==== Request Body
+==== Request Fields
 
-include::{snippets}/update-seminar-attendance/request-body.adoc[]
+include::{snippets}/update-seminar-attendance/request-fields.adoc[]
 
 === 응답
 
