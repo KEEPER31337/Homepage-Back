@@ -32,7 +32,7 @@ public class SurveyInformationResponseDto {
   @Nullable
   private String reply;
 
-  public static SurveyInformationResponseDto toDto(SurveyEntity survey, String reply,
+  public static SurveyInformationResponseDto from(SurveyEntity survey, String reply,
       Boolean isResponded) {
     return SurveyInformationResponseDto.builder()
         .surveyId(survey.getId())

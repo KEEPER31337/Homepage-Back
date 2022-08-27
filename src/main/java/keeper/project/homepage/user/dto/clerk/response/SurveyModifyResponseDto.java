@@ -32,7 +32,7 @@ public class SurveyModifyResponseDto {
   @NonNull
   private LocalDateTime replyTime;
 
-  public static SurveyModifyResponseDto toDto(SurveyMemberReplyEntity surveyMemberReplyEntity,
+  public static SurveyModifyResponseDto from(SurveyMemberReplyEntity surveyMemberReplyEntity,
       String excuse) {
     return SurveyModifyResponseDto.builder()
         .surveyId(surveyMemberReplyEntity.getSurvey().getId())

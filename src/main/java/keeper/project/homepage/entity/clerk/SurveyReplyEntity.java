@@ -32,7 +32,7 @@ public class SurveyReplyEntity {
   @RequiredArgsConstructor
   public enum SurveyReply {
     ACTIVITY(1L, "활동"),
-    MILITARY_DORMANT(2L, "휴면(군대)"),
+    MILITARY_DORMANT(2L, "휴면(군휴학)"),
     OTHER_DORMANT(3L, "휴면(기타)"),
     GRADUATE(4L, "졸업"),
     LEAVE(5L, "탈퇴");

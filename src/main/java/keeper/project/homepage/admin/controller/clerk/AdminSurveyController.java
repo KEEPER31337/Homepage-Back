@@ -35,7 +35,7 @@ public class AdminSurveyController {
 
   private final AdminSurveyService adminSurveyService;
 
-  @PostMapping("")
+  @PostMapping
   public SingleResult<Long> createSurvey(
       @RequestBody @Valid AdminSurveyRequestDto adminSurveyRequestDto) {
     return responseService.getSuccessSingleResult(adminSurveyService.createSurvey(

@@ -2,8 +2,6 @@ package keeper.project.homepage.user.service.clerk;
 
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
 import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
@@ -89,7 +87,7 @@ public class SurveyService {
 
     modifyReplyAndExcuse(memberReply, reply, requestDto);
 
-    return SurveyModifyResponseDto.toDto(surveyMemberReplyRepository.save(memberReply),
+    return SurveyModifyResponseDto.from(surveyMemberReplyRepository.save(memberReply),
         requestDto.getExcuse());
   }
 
@@ -157,7 +155,7 @@ public class SurveyService {
       isResponded = false;
     }
 
-    return SurveyInformationResponseDto.toDto(survey, reply, isResponded);
+    return SurveyInformationResponseDto.from(survey, reply, isResponded);
   }
 
   private Boolean isUserRespondedSurvey(SurveyEntity survey, MemberEntity member) {

@@ -48,7 +48,6 @@ public class SurveyController {
         surveyService.modifyResponse(surveyId, responseRequestDto));
   }
 
-  @GetMapping("")
   public SingleResult<Long> getLatestSurvey() {
     return responseService.getSuccessSingleResult(surveyService.getLatestSurveyId());
   }
