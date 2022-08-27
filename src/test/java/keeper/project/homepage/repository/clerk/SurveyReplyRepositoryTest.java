@@ -1,10 +1,10 @@
 package keeper.project.homepage.repository.clerk;
 
-import static keeper.project.homepage.controller.clerk.SurveySpringTestHelper.Reply.ACTIVITY;
-import static keeper.project.homepage.controller.clerk.SurveySpringTestHelper.Reply.GRADUATE;
-import static keeper.project.homepage.controller.clerk.SurveySpringTestHelper.Reply.LEAVE;
-import static keeper.project.homepage.controller.clerk.SurveySpringTestHelper.Reply.MILITARY_DORMANT;
-import static keeper.project.homepage.controller.clerk.SurveySpringTestHelper.Reply.OTHER_DORMANT;
+import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.ACTIVITY;
+import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.GRADUATE;
+import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.LEAVE;
+import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.MILITARY_DORMANT;
+import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,26 +16,38 @@ import org.junit.jupiter.api.Test;
 public class SurveyReplyRepositoryTest extends SurveyRepositoryTestHelper {
 
   @Test
-  @DisplayName("응답 종류 조회 테스트")
-  void viewReplyTest() {
+  @DisplayName("응답 종류 테스트")
+  public void SurveyReplyTest() {
     //given
     // 1: "활동" 2: "휴면(군휴학)" 3: "휴면(기타)" 4: "졸업" 5: "탈퇴"
 
     //when
-    List<SurveyReplyEntity> surveyReplyEntities = new ArrayList<>();
-    surveyReplyEntities.add(surveyReplyRepository.findById(ACTIVITY.getReplyId()).get());
-    surveyReplyEntities.add(surveyReplyRepository.findById(MILITARY_DORMANT.getReplyId()).get());
-    surveyReplyEntities.add(surveyReplyRepository.findById(OTHER_DORMANT.getReplyId()).get());
-    surveyReplyEntities.add(surveyReplyRepository.findById(GRADUATE.getReplyId()).get());
-    surveyReplyEntities.add(surveyReplyRepository.findById(LEAVE.getReplyId()).get());
+    SurveyReplyEntity activity = surveyReplyRepository.getById(ACTIVITY.getId());
+    SurveyReplyEntity militaryDormant = surveyReplyRepository.getById(MILITARY_DORMANT.getId());
+    SurveyReplyEntity otherDormant = surveyReplyRepository.getById(OTHER_DORMANT.getId());
+    SurveyReplyEntity graduate = surveyReplyRepository.getById(GRADUATE.getId());
+    SurveyReplyEntity leave = surveyReplyRepository.getById(LEAVE.getId());
 
     //then
-    Assertions.assertThat(surveyReplyEntities.size()).isEqualTo(5);
-    Assertions.assertThat(surveyReplyEntities.get(0).getType()).isEqualTo("활동");
-    Assertions.assertThat(surveyReplyEntities.get(1).getType()).isEqualTo("휴면(군휴학)");
-    Assertions.assertThat(surveyReplyEntities.get(2).getType()).isEqualTo("휴면(기타)");
-    Assertions.assertThat(surveyReplyEntities.get(3).getType()).isEqualTo("졸업");
-    Assertions.assertThat(surveyReplyEntities.get(4).getType()).isEqualTo("탈퇴");
+    Assertions.assertThat(activity.getType()).isEqualTo(ACTIVITY.getType());
+    Assertions.assertThat(militaryDormant.getType()).isEqualTo(MILITARY_DORMANT.getType());
+    Assertions.assertThat(otherDormant.getType()).isEqualTo(OTHER_DORMANT.getType());
+    Assertions.assertThat(graduate.getType()).isEqualTo(GRADUATE.getType());
+    Assertions.assertThat(leave.getType()).isEqualTo(LEAVE.getType());
+
+  }
+
+  @Test
+  @DisplayName("응답 종류 개수 테스트")
+  public void NumberOfReplyTest() {
+    //given
+    // 1: "활동" 2: "휴면(군휴학)" 3: "휴면(기타)" 4: "졸업" 5: "탈퇴"
+
+    //when
+    List<SurveyReplyEntity> replyEntityList = surveyReplyRepository.findAll();
+
+    //then
+    Assertions.assertThat(replyEntityList.size()).isEqualTo(5);
 
   }
 }

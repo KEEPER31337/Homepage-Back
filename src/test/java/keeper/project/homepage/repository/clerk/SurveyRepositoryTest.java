@@ -1,7 +1,8 @@
 package keeper.project.homepage.repository.clerk;
 
-import static keeper.project.homepage.controller.clerk.SurveySpringTestHelper.Reply.ACTIVITY;
-import static keeper.project.homepage.controller.clerk.SurveySpringTestHelper.Reply.OTHER_DORMANT;
+
+import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.ACTIVITY;
+import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
 
 import java.time.LocalDateTime;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
@@ -21,7 +22,7 @@ public class SurveyRepositoryTest extends SurveyRepositoryTestHelper {
     //given
     SurveyEntity survey = surveyRepository.getById(1L);
     MemberEntity member = memberRepository.getById(1L);
-    SurveyReplyEntity reply = surveyReplyRepository.getById(ACTIVITY.getReplyId());
+    SurveyReplyEntity reply = surveyReplyRepository.getById(ACTIVITY.getId());
 
     generateSurveyMemberReply(survey, member, reply);
 
@@ -44,7 +45,7 @@ public class SurveyRepositoryTest extends SurveyRepositoryTestHelper {
     LocalDateTime closeTime = LocalDateTime.now().plusDays(5);
     SurveyEntity survey = generateSurvey(openTime, closeTime, true);
     MemberEntity member = memberRepository.getById(1L);
-    SurveyReplyEntity reply = surveyReplyRepository.getById(ACTIVITY.getReplyId());
+    SurveyReplyEntity reply = surveyReplyRepository.getById(ACTIVITY.getId());
 
     generateSurveyMemberReply(survey, member, reply);
 
@@ -67,7 +68,7 @@ public class SurveyRepositoryTest extends SurveyRepositoryTestHelper {
     //given
     SurveyEntity survey = surveyRepository.getById(1L);
     MemberEntity member = memberRepository.getById(1L);
-    SurveyReplyEntity reply = surveyReplyRepository.getById(OTHER_DORMANT.getReplyId()); // 휴면(기타)
+    SurveyReplyEntity reply = surveyReplyRepository.getById(OTHER_DORMANT.getId()); // 휴면(기타)
 
     SurveyMemberReplyEntity surveyMemberReplyEntity = generateSurveyMemberReply(survey, member,
         reply);

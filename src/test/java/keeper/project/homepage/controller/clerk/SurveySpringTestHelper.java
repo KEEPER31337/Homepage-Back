@@ -79,23 +79,4 @@ public class SurveySpringTestHelper extends ApiControllerTestHelper {
     return surveyReplyExcuseRepository.save(excuse);
 
   }
-
-  public enum Reply {
-    ACTIVITY(1L),
-    MILITARY_DORMANT(2L),
-    OTHER_DORMANT(3L),
-    GRADUATE(4L),
-    LEAVE(5L);
-
-    private Long replyId;
-
-    Reply(Long replyId) {
-      this.replyId = replyId;
-    }
-
-    public Long getReplyId() {
-      return this.replyId;
-    }
-  }
-
 }

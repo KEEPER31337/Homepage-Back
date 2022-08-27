@@ -1,7 +1,7 @@
 package keeper.project.homepage.admin.controller.clerk;
 
-import static keeper.project.homepage.controller.clerk.SurveySpringTestHelper.Reply.ACTIVITY;
-import static keeper.project.homepage.controller.clerk.SurveySpringTestHelper.Reply.OTHER_DORMANT;
+import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.ACTIVITY;
+import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -124,9 +124,9 @@ public class AdminSurveyControllerTest extends SurveySpringTestHelper {
   public void getRespondents() throws Exception {
     SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(2),
         true);
-    generateSurveyMemberReply(survey, admin, surveyReplyRepository.getById(ACTIVITY.getReplyId()));
+    generateSurveyMemberReply(survey, admin, surveyReplyRepository.getById(ACTIVITY.getId()));
     SurveyMemberReplyEntity surveyMemberReplyEntity = generateSurveyMemberReply(survey, user,
-        surveyReplyRepository.getById(OTHER_DORMANT.getReplyId()));
+        surveyReplyRepository.getById(OTHER_DORMANT.getId()));
     generateSurveyReplyExcuse(surveyMemberReplyEntity, "BOB");
 
     mockMvc.perform(get("/v1/admin/clerk/surveys/{surveyId}/respondents", survey.getId())
@@ -158,7 +158,7 @@ public class AdminSurveyControllerTest extends SurveySpringTestHelper {
   public void modifySurvey() throws Exception {
     SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(2),
         true);
-    generateSurveyMemberReply(survey, admin, surveyReplyRepository.getById(ACTIVITY.getReplyId()));
+    generateSurveyMemberReply(survey, admin, surveyReplyRepository.getById(ACTIVITY.getId()));
 
     String modifySurveyName = "2022년 2학기";
     LocalDateTime modifyOpenTime = LocalDateTime.now();

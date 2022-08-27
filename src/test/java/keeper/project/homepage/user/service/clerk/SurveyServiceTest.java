@@ -1,7 +1,7 @@
 package keeper.project.homepage.user.service.clerk;
 
-import static keeper.project.homepage.controller.clerk.SurveySpringTestHelper.Reply.GRADUATE;
-import static keeper.project.homepage.controller.clerk.SurveySpringTestHelper.Reply.OTHER_DORMANT;
+import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.GRADUATE;
+import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
@@ -40,7 +40,7 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
     //given
     SurveyEntity survey = surveyRepository.getById(1L);
     SurveyMemberReplyEntity surveyMemberReplyEntity = generateSurveyMemberReply(survey, user,
-        surveyReplyRepository.getById(GRADUATE.getReplyId()));
+        surveyReplyRepository.getById(GRADUATE.getId()));
 
     //when
     SurveyEntity findSurvey = surveyRepository.getById(survey.getId());
@@ -55,9 +55,9 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
     //given
     SurveyEntity survey = surveyRepository.getById(1L);
     SurveyMemberReplyEntity surveyMemberReplyEntity = generateSurveyMemberReply(survey, user,
-        surveyReplyRepository.getById(GRADUATE.getReplyId()));
+        surveyReplyRepository.getById(GRADUATE.getId()));
 
-    SurveyReplyEntity modifyResponse = surveyReplyRepository.getById(OTHER_DORMANT.getReplyId());
+    SurveyReplyEntity modifyResponse = surveyReplyRepository.getById(OTHER_DORMANT.getId());
     SurveyReplyExcuseEntity excuse = generateSurveyReplyExcuse(surveyMemberReplyEntity,
         "BOB로 인한 휴학");
 
@@ -69,7 +69,7 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
 
     //then
     assertThat(findSurvey.getRespondents()).contains(surveyMemberReplyEntity);
-    assertThat(surveyMemberReplyEntity.getReply().getId()).isEqualTo(OTHER_DORMANT.getReplyId());
+    assertThat(surveyMemberReplyEntity.getReply().getId()).isEqualTo(OTHER_DORMANT.getId());
     assertThat(surveyMemberReplyEntity.getSurveyReplyExcuseEntity().getRestExcuse()).isEqualTo(
         "BOB로 인한 휴학");
   }
@@ -82,7 +82,7 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
     LocalDateTime closeTime = LocalDateTime.now().plusDays(5);
     SurveyEntity survey = generateSurvey(openTime, closeTime, true);
     SurveyMemberReplyEntity surveyMemberReplyEntity = generateSurveyMemberReply(survey, user,
-        surveyReplyRepository.getById(GRADUATE.getReplyId()));
+        surveyReplyRepository.getById(GRADUATE.getId()));
 
     Boolean isResponded = false;
 
@@ -103,6 +103,6 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
     assertThat(findSurvey.getCloseTime()).isEqualTo(closeTime);
     assertThat(isResponded).isEqualTo(true);
     assertThat(survey.getIsVisible()).isEqualTo(true);
-    assertThat(findMemberReply.getReply().getId()).isEqualTo(GRADUATE.getReplyId());
+    assertThat(findMemberReply.getReply().getId()).isEqualTo(GRADUATE.getId());
   }
 }
