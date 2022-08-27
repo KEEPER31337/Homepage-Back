@@ -104,7 +104,8 @@ public class SurveyService {
         surveyUtilService.generateSurveyReplyExcuse(memberReply,
             requestDto.getExcuse());
       }
-    } else {
+    }
+    if (!isBeforeExcuseNull(beforeExcuse)) {
       if (isReplyOtherDormant(requestDto)) {
         memberReply.getSurveyReplyExcuseEntity()
             .modifyExcuse(requestDto.getExcuse());
@@ -121,12 +122,13 @@ public class SurveyService {
   private Boolean isReplyOtherDormant(SurveyResponseRequestDto requestDto) {
     return requestDto.getReplyId() == OTHER_DORMANT.getId();
   }
-  private void deleteBeforeExcuse(SurveyReplyExcuseEntity beforeExcuse){
+
+  private void deleteBeforeExcuse(SurveyReplyExcuseEntity beforeExcuse) {
     surveyReplyExcuseRepository.delete(beforeExcuse);
   }
 
   private void setExcuse(SurveyMemberReplyEntity memberReply,
-      SurveyResponseRequestDto responseRequestDto){
+      SurveyResponseRequestDto responseRequestDto) {
     memberReply.getSurveyReplyExcuseEntity()
         .modifyExcuse(responseRequestDto.getExcuse());
   }
@@ -146,8 +148,6 @@ public class SurveyService {
           .orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
       reply = surveyMemberReplyEntity.getReply()
           .getType();
-    } else {
-      isResponded = false;
     }
 
     return SurveyInformationResponseDto.from(survey, reply, isResponded);
