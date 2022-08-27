@@ -126,21 +126,21 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
     MemberEntity member2 = generateMember("최우창", 12.5F);
     MemberEntity member3 = generateMember("정현모", 8F);
     MemberEntity member4 = generateMember("손현경", 13F);
-    SeminarAttendanceEntity attendance1 = generateSeminarAttendance(member1, seminar,
+    SeminarAttendanceEntity attendance = generateSeminarAttendance(member1, seminar,
         seminarAttendanceStatusRepository.getById(ATTENDANCE.getId()));
-    SeminarAttendanceEntity attendance2 = generateSeminarAttendance(member2, seminar,
-        seminarAttendanceStatusRepository.getById(ABSENCE.getId()));
-    SeminarAttendanceEntity attendance3 = generateSeminarAttendance(member3, seminar,
+    SeminarAttendanceEntity lateness = generateSeminarAttendance(member3, seminar,
         seminarAttendanceStatusRepository.getById(LATENESS.getId()));
+    SeminarAttendanceEntity absence = generateSeminarAttendance(member2, seminar,
+        seminarAttendanceStatusRepository.getById(ABSENCE.getId()));
     SeminarAttendanceEntity personal = generateSeminarAttendance(member4, seminar,
         seminarAttendanceStatusRepository.getById(PERSONAL.getId()));
     SeminarAttendanceExcuseEntity seminarAttendanceExcuseEntity = generateSeminarAttendanceExcuse(
         personal);
     personal.setSeminarAttendanceExcuseEntity(seminarAttendanceExcuseEntity);
 
-    seminar.getSeminarAttendances().add(attendance1);
-    seminar.getSeminarAttendances().add(attendance2);
-    seminar.getSeminarAttendances().add(attendance3);
+    seminar.getSeminarAttendances().add(attendance);
+    seminar.getSeminarAttendances().add(lateness);
+    seminar.getSeminarAttendances().add(absence);
     seminar.getSeminarAttendances().add(personal);
 
     mockMvc.perform(get("/v1/admin/clerk/seminars/attendances")
@@ -172,7 +172,8 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
     MemberEntity member = generateMember("이정학", 12.5F);
     SeminarAttendanceStatusEntity absence = seminarAttendanceStatusRepository.getById(
         ABSENCE.getId());
-    generateSeminarAttendance(member, seminar, absence);
+    SeminarAttendanceEntity attendanceEntity = generateSeminarAttendance(member, seminar,
+        absence);
 
     SeminarAttendanceUpdateRequestDto requestDto = SeminarAttendanceUpdateRequestDto.builder()
         .seminarAttendanceStatusId(4L)
@@ -180,9 +181,8 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
         .build();
 
     mockMvc.perform(
-            patch("/v1/admin/clerk/seminars/{seminarId}/attendances/members/{memberId}",
-                seminar.getId(),
-                member.getId())
+            patch("/v1/admin/clerk/seminars/attendances/{attendanceId}",
+                attendanceEntity.getId())
                 .header("Authorization", clerkToken)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(requestDto)))
@@ -193,8 +193,7 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
         .andExpect(jsonPath("$.msg").value("성공하였습니다."))
         .andDo(document("update-seminar-attendance",
             pathParameters(
-                parameterWithName("seminarId").description("세미나 id"),
-                parameterWithName("memberId").description("출석을 수정할 회원 id")),
+                parameterWithName("attendanceId").description("세미나 출석 id")),
             requestFields(
                 fieldWithPath("seminarAttendanceStatusId").description("세미나 id"),
                 fieldWithPath("absenceExcuse").description("개인사정 결석 사유")),
@@ -206,4 +205,45 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
             )));
   }
 
+  @Test
+  @DisplayName("[SUCCESS] 세미나 출석 목록 조회")
+  public void getSeminarAttendances() throws Exception {
+    SeminarEntity seminar = generateSeminar(LocalDateTime.now().plusWeeks(1));
+    MemberEntity member1 = generateMember("이정학", 12.5F);
+    MemberEntity member2 = generateMember("최우창", 12.5F);
+    MemberEntity member3 = generateMember("정현모", 8F);
+
+    SeminarAttendanceEntity attendanceEntity1 = generateSeminarAttendance(member1, seminar,
+        seminarAttendanceStatusRepository.getById(ATTENDANCE.getId()));
+    SeminarAttendanceEntity attendanceEntity2 = generateSeminarAttendance(member2, seminar,
+        seminarAttendanceStatusRepository.getById(LATENESS.getId()));
+    SeminarAttendanceEntity attendanceEntity3 = generateSeminarAttendance(member3, seminar,
+        seminarAttendanceStatusRepository.getById(ABSENCE.getId()));
+
+    seminar.getSeminarAttendances().add(attendanceEntity1);
+    seminar.getSeminarAttendances().add(attendanceEntity2);
+    seminar.getSeminarAttendances().add(attendanceEntity3);
+
+    mockMvc.perform(
+            get("/v1/admin/clerk/seminars/{seminarId}/attendances",
+                seminar.getId())
+                .header("Authorization", clerkToken)
+                .contentType(MediaType.APPLICATION_JSON))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").value("성공하였습니다."))
+        .andExpect(jsonPath("$.list.size()").value(3))
+        .andDo(document("get-seminar-attendance",
+            pathParameters(
+                parameterWithName("seminarId").description("세미나 id")),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("list.[].attendanceId").description("세미나 출석 Id"),
+                fieldWithPath("list.[].memberName").description("해당 출석의 회원 이름")
+                )));
+  }
 }
