@@ -191,6 +191,24 @@ include::{snippets}/get-seminar-list/http-response.adoc[]
 
 include::{snippets}/get-seminar-list/response-fields.adoc[]
 
+== *세미나 생성* ==
+
+=== 요청
+
+==== Request
+
+include::{snippets}/create-seminar/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/create-seminar/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/create-seminar/response-fields.adoc[]
+
 
 == *세미나 출석 상태 목록 조회* ==
 
@@ -211,7 +229,7 @@ include::{snippets}/get-seminar-attendance-statuses/http-response.adoc[]
 include::{snippets}/get-seminar-attendance-statuses/response-fields.adoc[]
 
 
-== *세미나 출석 목록 조회* ==
+== *전체 세미나 출석 목록 조회* ==
 
 === 요청
 
@@ -228,6 +246,24 @@ include::{snippets}/get-seminar-attendance-list/http-response.adoc[]
 ==== Response Field
 
 include::{snippets}/get-seminar-attendance-list/response-fields.adoc[]
+
+== *특정 세미나 출석 목록 조회* ==
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-seminar-attendance/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-seminar-attendance/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/get-seminar-attendance/response-fields.adoc[]
 
 
 == *세미나 출석 수정* ==
