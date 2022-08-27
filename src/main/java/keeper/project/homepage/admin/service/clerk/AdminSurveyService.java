@@ -57,7 +57,8 @@ public class AdminSurveyService {
     SurveyEntity survey = surveyRepository.findById(surveyId)
         .orElseThrow(CustomSurveyNotFoundException::new);
 
-    survey.modifySurveyContents(requestDto);
+    survey.modifySurveyContents(requestDto.getSurveyName(), requestDto.getDescription(),
+        requestDto.getOpenTime(), requestDto.getCloseTime(), requestDto.getIsVisible());
 
     return AdminSurveyResponseDto.from(surveyRepository.save(survey));
 

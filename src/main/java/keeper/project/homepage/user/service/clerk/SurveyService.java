@@ -107,7 +107,7 @@ public class SurveyService {
     } else {
       if (isReplyOtherDormant(requestDto)) {
         memberReply.getSurveyReplyExcuseEntity()
-            .modifyExcuse(requestDto);
+            .modifyExcuse(requestDto.getExcuse());
       }
       deleteBeforeExcuse(beforeExcuse);
       setExcuse(memberReply, requestDto);
@@ -128,7 +128,7 @@ public class SurveyService {
   private void setExcuse(SurveyMemberReplyEntity memberReply,
       SurveyResponseRequestDto responseRequestDto){
     memberReply.getSurveyReplyExcuseEntity()
-        .modifyExcuse(responseRequestDto);
+        .modifyExcuse(responseRequestDto.getExcuse());
   }
 
   public SurveyInformationResponseDto getSurveyInformation(Long surveyId, Long memberId) {

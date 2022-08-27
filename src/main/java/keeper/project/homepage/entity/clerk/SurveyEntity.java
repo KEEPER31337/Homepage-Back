@@ -57,11 +57,12 @@ public class SurveyEntity {
     this.isVisible = false;
   }
 
-  public void modifySurveyContents(AdminSurveyRequestDto requestDto) {
-    this.name = requestDto.getSurveyName();
-    this.description = requestDto.getDescription();
-    this.openTime = requestDto.getOpenTime();
-    this.closeTime = requestDto.getCloseTime();
-    this.isVisible = requestDto.getIsVisible();
+  public void modifySurveyContents(String name, String description, LocalDateTime openTime,
+      LocalDateTime closeTime, Boolean isVisible) {
+    this.name = name;
+    this.description = description;
+    this.openTime = openTime;
+    this.closeTime = closeTime;
+    this.isVisible = isVisible;
   }
 }

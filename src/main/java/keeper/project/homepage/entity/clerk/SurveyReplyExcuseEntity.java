@@ -34,8 +34,8 @@ public class SurveyReplyExcuseEntity {
   @Column(nullable = false, length = 200)
   private String restExcuse;
 
-  public void modifyExcuse(SurveyResponseRequestDto responseRequestDto) {
-    this.restExcuse = responseRequestDto.getExcuse();
+  public void modifyExcuse(String restExcuse) {
+    this.restExcuse = restExcuse;
   }
 
 }
