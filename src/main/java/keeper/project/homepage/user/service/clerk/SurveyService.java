@@ -2,6 +2,8 @@ package keeper.project.homepage.user.service.clerk;
 
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
 
+import io.micrometer.core.instrument.util.StringEscapeUtils;
+import java.util.List;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
 import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
@@ -106,32 +108,25 @@ public class SurveyService {
       if (isReplyOtherDormant(requestDto)) {
         memberReply.getSurveyReplyExcuseEntity()
             .modifyExcuse(requestDto);
-      } else {
-        deleteBeforeExcuseAndSetExcuse(beforeExcuse, memberReply, requestDto);
       }
+      deleteBeforeExcuse(beforeExcuse);
+      setExcuse(memberReply, requestDto);
     }
   }
 
   private Boolean isBeforeExcuseNull(SurveyReplyExcuseEntity excuse) {
-    if (excuse == null) {
-      return true;
-    } else {
-      return false;
-    }
+    return excuse == null;
   }
 
   private Boolean isReplyOtherDormant(SurveyResponseRequestDto requestDto) {
-    if (requestDto.getReplyId() == OTHER_DORMANT.getId()) {
-      return true;
-    } else {
-      return false;
-    }
+    return requestDto.getReplyId() == OTHER_DORMANT.getId();
+  }
+  private void deleteBeforeExcuse(SurveyReplyExcuseEntity beforeExcuse){
+    surveyReplyExcuseRepository.delete(beforeExcuse);
   }
 
-  private void deleteBeforeExcuseAndSetExcuse(SurveyReplyExcuseEntity beforeExcuse,
-      SurveyMemberReplyEntity memberReply,
-      SurveyResponseRequestDto responseRequestDto) {
-    surveyReplyExcuseRepository.delete(beforeExcuse);
+  private void setExcuse(SurveyMemberReplyEntity memberReply,
+      SurveyResponseRequestDto responseRequestDto){
     memberReply.getSurveyReplyExcuseEntity()
         .modifyExcuse(responseRequestDto);
   }
@@ -159,15 +154,15 @@ public class SurveyService {
   }
 
   private Boolean isUserRespondedSurvey(SurveyEntity survey, MemberEntity member) {
-    if (survey.getRespondents()
+    return getSurveyRespondedMemberList(survey)
+        .contains(member);
+  }
+
+  private List<MemberEntity> getSurveyRespondedMemberList(SurveyEntity survey) {
+    return survey.getRespondents()
         .stream()
         .map(SurveyMemberReplyEntity::getMember)
-        .toList()
-        .contains(member)) {
-      return true;
-    } else {
-      return false;
-    }
+        .toList();
   }
 
   public Long getLatestSurveyId() {
