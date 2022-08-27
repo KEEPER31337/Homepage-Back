@@ -153,6 +153,7 @@ public class AdminSeminarService {
             ATTENDANCE.getId())
         .orElseThrow(CustomSeminarAttendanceStatusNotFoundException::new);
 
+    //TODO: "출석전" 타입이 추가되면 수정
     for (MemberEntity member : allRegularMembers) {
       generateSeminarAttendance(member, seminar, attendance);
     }
