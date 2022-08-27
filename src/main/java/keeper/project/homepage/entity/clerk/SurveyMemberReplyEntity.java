@@ -13,10 +13,12 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.user.dto.clerk.request.SurveyResponseRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -48,5 +50,14 @@ public class SurveyMemberReplyEntity {
 
   @Column(nullable = false)
   private LocalDateTime replyTime;
+
+  public void modifyReply(SurveyReplyEntity reply) {
+    this.reply = reply;
+    this.replyTime = LocalDateTime.now();
+  }
+
+  public void assignSurveyReplyExcuseEntity(SurveyReplyExcuseEntity excuse) {
+    this.surveyReplyExcuseEntity = excuse;
+  }
 
 }
