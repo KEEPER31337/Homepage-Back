@@ -1,0 +1,127 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+// 자동으로 생성된 snippet 설정하는 부분
+
+= KEEPER API 문서
+
+IMPORTANT: *회장, 부회장, 전산관리자만 접근 가능합니다.*
+
+:icons: font
+// NOTE, TIP, WARNING, CAUTION, IMPORTANT 같은 경고구들 아이콘화 해줌
+:source-highlighter: highlight.js
+// source code 블럭에서 사용되는 highlighter 설정, 4개 정도 있던데 차이를 아직 잘 모르겠음.
+:toc: left
+// table of contents(toc) 왼쪽정렬하여 생성
+:toclevels: 1
+// default : 2 (==,  ===) 까지 toc에 보여줌.
+:sectlinks:
+// section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
+
+== API 목록
+
+link:../admin.html[어드민 API 목록으로 돌아가기]
+
+== *수정 가능한 ROLE 목록 불러오기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-job-list/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-job-list/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/get-job-list/response-fields.adoc[]
+
+== *역할을 가진 모든 회원 목록 불러오기*
+
+NOTE: ROLE_회원, ROLE_출제자는 제외하고 불러옵니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-member-list-has-job/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-member-list-has-job/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/get-member-list-has-job/response-fields.adoc[]
+
+== *직책별 회원 목록 불러오기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-member-list-by-role/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/get-member-list-by-role/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-member-list-by-role/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/get-member-list-by-role/response-fields.adoc[]
+
+== *직책(ROLE) 등록*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/assign-job/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/assign-job/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/assign-job/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/assign-job/response-fields.adoc[]
+
+== *직책(ROLE) 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/delete-job/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/delete-job/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/delete-job/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/delete-job/response-fields.adoc[]

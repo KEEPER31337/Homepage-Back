@@ -218,4 +218,9 @@ public class MemberEntity implements Serializable {
         .msg("Success")
         .build();
   }
+
+  public void removeMemberJob(MemberJobEntity job) {
+    getMemberJobs().removeIf(entity -> entity.getMemberJobEntity().equals(job));
+    job.getMembers().removeIf(entity -> entity.getMemberEntity().equals(this));
+  }
 }

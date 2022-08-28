@@ -68,7 +68,7 @@ public class ClerkControllerTestHelper extends ApiControllerTestHelper{
     }
     return commonFields;
   }
-
+  
   protected List<FieldDescriptor> generateTypeDtoResponseFields(ResponseType type,
       String success, String code, String msg, FieldDescriptor... addDescriptors) {
     String prefix = type.getReponseFieldPrefix();
