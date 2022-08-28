@@ -7,13 +7,16 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Entity
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 @Table(name = "seminar_attendance_status")
 public class SeminarAttendanceStatusEntity {
 
@@ -23,4 +26,16 @@ public class SeminarAttendanceStatusEntity {
 
   @NotNull
   private String type;
+
+  @Getter
+  @RequiredArgsConstructor
+  public enum seminarAttendanceStatus {
+    ATTENDANCE(1L, "출석"),
+    LATENESS(2L, "지각"),
+    ABSENCE(3L, "결석"),
+    PERSONAL(4L, "개인사정");
+
+    private final Long id;
+    private final String type;
+  }
 }
