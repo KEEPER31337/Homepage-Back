@@ -26,6 +26,7 @@ import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.util.service.ThumbnailService;
 import keeper.project.homepage.util.image.preprocessing.ImageCenterCropping;
+import keeper.project.homepage.util.image.preprocessing.ImageNoChange;
 import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import keeper.project.homepage.user.service.posting.CommentService;
 import keeper.project.homepage.user.service.posting.PostingService;
@@ -173,6 +174,18 @@ public class PostingController {
 
     return responseService.getSuccessResult();
   }
+
+  @PostMapping(value="/newPostingImage", consumes = "multipart/form-data", produces = {
+    MediaType.APPLICATION_JSON_VALUE})
+    public CommonResult uploadPostingImage(
+      @RequestParam(value = "postingImage", required = false) MultipartFile postingImage,
+      Long postingId, HttpServletRequest httpServletRequest){
+  
+      ThumbnailEntity postingImageEntity = thumbnailService.save(ThumbType.PostThumbnail,
+        new ImageNoChange(), postingImage, getUserIP(httpServletRequest), postingId);
+
+      return responseService.getSuccessSingleResult(thumbnailService.getThumbnailFileId(postingImageEntity));
+    }  
 
   @GetMapping(value = "/delete/{fileId}")
   public CommonResult deleteFile(@PathVariable("fileId") Long fileId) {

@@ -2,16 +2,21 @@ package keeper.project.homepage.util.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import keeper.project.homepage.exception.file.CustomInvalidImageFileException;
 import keeper.project.homepage.util.image.ImageFormatChecking;
 import keeper.project.homepage.util.MultipartFileWrapper;
+import keeper.project.homepage.util.dto.ThumbnailFileIdDto;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
+import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
 import keeper.project.homepage.repository.ThumbnailRepository;
+import keeper.project.homepage.user.service.posting.PostingService;
 import keeper.project.homepage.util.image.preprocessing.ImagePreprocessing;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +31,7 @@ public class ThumbnailService {
 
   private final ImageFormatChecking imageFormatChecking;
   private final ThumbnailRepository thumbnailRepository;
+  private final PostingService postingService;
   private final FileService fileService;
 
   public enum ThumbType {
@@ -160,6 +166,35 @@ public class ThumbnailService {
             .path(type.getSaveDirPath() + File.separator + saveFile.getThumbnailFile().getName())
             .file(fileEntity)
             .build());
+  }
+
+//  TODO : 타입 분기 고려 / 현재는 overloading
+  @Transactional
+  public ThumbnailEntity save(ThumbType type, ImagePreprocessing imagePreprocessing,
+      MultipartFile multipartFile, String ipAddress, Long postingId) {
+
+    if (isNullMultipartFile(multipartFile)) {
+      return getDefaultThumbnailEntity(type);
+    }
+
+    FilePair saveFile = saveFilesInServer(type, imagePreprocessing, multipartFile);
+
+    FileEntity fileEntity = fileService.saveFileEntity(
+        saveFile.getOriginalFile(),
+        FileService.fileRelDirPath,
+        ipAddress,
+        multipartFile.getOriginalFilename(),
+        postingService.getPostingById(postingId));
+    
+    return thumbnailRepository.save(
+        ThumbnailEntity.builder()
+            .path(type.getSaveDirPath() + File.separator + saveFile.getThumbnailFile().getName())
+            .file(fileEntity)
+            .build());
+  }
+
+  public ThumbnailFileIdDto getThumbnailFileId(ThumbnailEntity thumbnailEntity){
+    return ThumbnailFileIdDto.from(thumbnailEntity);
   }
 
   private FilePair saveFilesInServer(ThumbType type, ImagePreprocessing imagePreprocessing,
