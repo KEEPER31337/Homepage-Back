@@ -490,6 +490,43 @@ public class PostingControllerTest extends ApiControllerTestHelper {
   }
 
   @Test
+  @DisplayName("게시글 내 이미지 업로드")
+  public void uploadPostingImage() throws Exception {
+    MockMultipartFile postingImage = new MockMultipartFile("postingImage", getFileName(createTestImage),
+        "image/jpg", new FileInputStream(userDirectory + File.separator + createTestImage));
+
+    ResultActions result = mockMvc.perform(
+        multipart("/v1/post/newPostingImage")
+            .file(postingImage)
+            .param("postingId", postingGeneralTest.getId().toString())
+            .header("Authorization", userToken)
+            .contentType(MediaType.MULTIPART_FORM_DATA)
+            .with(request -> {
+              request.setMethod("POST");
+              return request;
+            }));
+
+    result.andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(print())
+        .andDo(document("post-image-upload",
+            requestParameters(
+                parameterWithName("postingId").description("게시판 ID")
+            ),
+            requestParts(
+                partWithName("postingImage").description(
+                    "게시물 삽입 용 이미지 (form-data 에서 postingImage= parameter 부분)")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("msg").description(""),
+                fieldWithPath("code").description("성공 : 0, 실패 시 : -1"),
+                fieldWithPath("data.thumbnailId").description("게시글에 바로 표시할 이미지의 thumbnailId"),
+                fieldWithPath("data.fileId").description("이미지를 클릭하면 표시되는 원본 이미지 fileId")
+            )
+        ));
+  }
+
+  @Test
   @DisplayName("파일 삭제")
   public void deleteFile() throws Exception {
     ResultActions result = mockMvc.perform(
