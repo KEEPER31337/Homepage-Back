@@ -18,7 +18,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
-public class SurveyTestHelper {
+public class SurveyRepositoryTestHelper {
 
   @Autowired
   protected EntityManager em;
@@ -64,12 +64,14 @@ public class SurveyTestHelper {
 
   protected SurveyReplyExcuseEntity generateSurveyReplyExcuse(
       SurveyMemberReplyEntity surveyMemberReplyEntity, String because) {
-    return surveyReplyExcuseRepository.save(
-        SurveyReplyExcuseEntity.builder()
-            .surveyMemberReplyEntity(surveyMemberReplyEntity)
-            .restExcuse(because)
-            .build()
-    );
+    SurveyReplyExcuseEntity excuse = SurveyReplyExcuseEntity.builder()
+        .surveyMemberReplyEntity(surveyMemberReplyEntity)
+        .restExcuse(because)
+        .build();
+
+    surveyMemberReplyEntity.assignSurveyReplyExcuseEntity(excuse);
+
+    return surveyReplyExcuseRepository.save(excuse);
 
   }
 }
