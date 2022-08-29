@@ -46,6 +46,7 @@ public class SurveyMemberReplyEntity {
 
   @OneToOne(mappedBy = "surveyMemberReplyEntity")
   @PrimaryKeyJoinColumn
+  @Setter
   private SurveyReplyExcuseEntity surveyReplyExcuseEntity;
 
   @Column(nullable = false)
@@ -54,10 +55,6 @@ public class SurveyMemberReplyEntity {
   public void modifyReply(SurveyReplyEntity reply) {
     this.reply = reply;
     this.replyTime = LocalDateTime.now();
-  }
-
-  public void assignSurveyReplyExcuseEntity(SurveyReplyExcuseEntity excuse) {
-    this.surveyReplyExcuseEntity = excuse;
   }
 
 }

@@ -58,14 +58,14 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
     //given
     SurveyEntity survey = surveyRepository.getById(1L);
     SurveyMemberReplyEntity surveyMemberReplyEntity = generateSurveyMemberReply(survey, user,
-        surveyReplyRepository.getById(GRADUATE.getId()));
+        surveyReplyRepository.getById(ACTIVITY.getId()));
 
     SurveyReplyEntity modifyResponse = surveyReplyRepository.getById(OTHER_DORMANT.getId());
     SurveyReplyExcuseEntity excuse = generateSurveyReplyExcuse(surveyMemberReplyEntity,
         "BOB로 인한 휴학");
 
     surveyMemberReplyEntity.modifyReply(modifyResponse);
-    surveyMemberReplyEntity.assignSurveyReplyExcuseEntity(excuse);
+    surveyMemberReplyEntity.setSurveyReplyExcuseEntity(excuse);
 
     //when
     SurveyEntity findSurvey = surveyRepository.getById(survey.getId());
