@@ -70,7 +70,8 @@ public class MemberService {
         continue;
       }
       OtherMemberInfoResult otherMemberInfoResult = new OtherMemberInfoResult(memberEntity);
-      otherMemberInfoResult.setCheckFollow(memberUtilService.isMyFollowee(memberEntity), memberUtilService.isMyFollower(memberEntity));
+      otherMemberInfoResult.setCheckFollow(memberUtilService.isMyFollowee(memberEntity),
+          memberUtilService.isMyFollower(memberEntity));
       otherMemberInfoResultList.add(otherMemberInfoResult);
     }
 
@@ -83,7 +84,8 @@ public class MemberService {
     MemberEntity other = memberUtilService.getById(otherMemberId);
 
     OtherMemberInfoResult result = new OtherMemberInfoResult(other);
-    result.setCheckFollow(memberUtilService.isMyFollowee(other), memberUtilService.isMyFollower(other));
+    result.setCheckFollow(memberUtilService.isMyFollowee(other),
+        memberUtilService.isMyFollower(other));
     return result;
   }
 
@@ -297,4 +299,7 @@ public class MemberService {
         .build();
   }
 
+  public List<Float> getAllGenerations() {
+    return memberRepository.findDistinctGenerationOrderByGenerationDesc();
+  }
 }

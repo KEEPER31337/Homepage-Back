@@ -253,4 +253,10 @@ public class MemberController {
     MemberFollowDto followDto = memberService.getFollowerAndFolloweeNumber(id);
     return responseService.getSuccessSingleResult(followDto);
   }
+
+  @Secured("ROLE_회원")
+  @GetMapping("/generations")
+  public ListResult<Float> getAllGenerations() {
+    return responseService.getSuccessListResult(memberService.getAllGenerations());
+  }
 }
