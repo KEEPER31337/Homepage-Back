@@ -1,10 +1,12 @@
 package keeper.project.homepage.user.service.clerk;
 
+import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.ACTIVITY;
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.GRADUATE;
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.persistence.EntityManager;
 import keeper.project.homepage.controller.clerk.SurveySpringTestHelper;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
@@ -17,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -92,8 +95,8 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
 
     //when
     SurveyEntity findSurvey = surveyRepository.getById(survey.getId());
-    SurveyMemberReplyEntity findMemberReply = surveyMemberReplyRepository.findByMemberId(
-            user.getId())
+    SurveyMemberReplyEntity findMemberReply = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
+            findSurvey.getId(), user.getId())
         .orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
 
     //then
@@ -104,5 +107,61 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
     assertThat(isResponded).isEqualTo(true);
     assertThat(survey.getIsVisible()).isEqualTo(true);
     assertThat(findMemberReply.getReply().getId()).isEqualTo(GRADUATE.getId());
+  }
+
+  @Test
+  @DisplayName("가장 최근의 공개된 설문 조회 - 현재 진행중인")
+  public void getLatestVisibleSurveyId() throws Exception {
+    //given
+    SurveyEntity survey1 = generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().plusDays(2),
+        true);
+    SurveyEntity survey2 = generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().plusDays(2),
+        false);
+
+    //when
+    LocalDateTime now = LocalDateTime.now();
+    List<SurveyEntity> surveyList = surveyRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+
+    Long latestVisibleSurveyId = findVisibleSurveyId(surveyList, now);
+
+    //then
+    assertThat(latestVisibleSurveyId).isEqualTo(survey1.getId());
+  }
+
+  @Test
+  @DisplayName("가장 최근에 종료된 설문의 정보 조회")
+  public void getLatestClosedSurveyInformation() throws Exception {
+    //given
+    SurveyEntity survey1 = generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().minusDays(2),
+        true);
+    generateSurveyMemberReply(survey1, user, surveyReplyRepository.getById(ACTIVITY.getId()));
+    SurveyEntity survey2 = generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().plusDays(2),
+        true);
+    generateSurveyMemberReply(survey2, user, surveyReplyRepository.getById(GRADUATE.getId()));
+
+    //when
+    LocalDateTime now = LocalDateTime.now();
+    List<SurveyEntity> surveyList = surveyRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+
+    SurveyMemberReplyEntity surveyMemberReply = null;
+
+    for (SurveyEntity survey : surveyList) {
+      if (survey.getCloseTime().isBefore(now)) {
+        surveyMemberReply = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
+                survey.getId(), user.getId())
+            .orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
+        break;
+      }
+    }
+
+    //then
+    assertThat(surveyMemberReply.getSurvey().getId()).isEqualTo(survey1.getId());
+    assertThat(surveyMemberReply.getSurvey().getName()).isEqualTo(survey1.getName());
+    assertThat(surveyMemberReply.getReply().getId()).isEqualTo(ACTIVITY.getId());
+
   }
 }

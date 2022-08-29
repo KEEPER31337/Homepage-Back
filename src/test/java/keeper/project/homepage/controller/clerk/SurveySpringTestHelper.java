@@ -3,6 +3,7 @@ package keeper.project.homepage.controller.clerk;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDateTime;
+import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
@@ -78,5 +79,30 @@ public class SurveySpringTestHelper extends ApiControllerTestHelper {
 
     return surveyReplyExcuseRepository.save(excuse);
 
+  }
+
+  protected Long findVisibleSurveyId(List<SurveyEntity> surveyList, LocalDateTime now) {
+    Long visibleSurveyId = -1L;
+
+    for (SurveyEntity survey : surveyList) {
+      if (survey.getOpenTime().isBefore(now) && survey.getCloseTime().isAfter(now)
+          && survey.getIsVisible()) {
+        visibleSurveyId = survey.getId();
+        break;
+      }
+    }
+    return visibleSurveyId;
+  }
+
+  protected Long findInVisibleSurveyId(List<SurveyEntity> surveyList, LocalDateTime now) {
+    Long inVisibleSurveyId = -1L;
+
+    for (SurveyEntity survey : surveyList) {
+      if (!survey.getIsVisible()) {
+        inVisibleSurveyId = survey.getId();
+        break;
+      }
+    }
+    return inVisibleSurveyId;
   }
 }
