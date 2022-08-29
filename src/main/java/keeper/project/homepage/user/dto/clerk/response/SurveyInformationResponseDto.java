@@ -1,7 +1,10 @@
 package keeper.project.homepage.user.dto.clerk.response;
 
 import java.time.LocalDateTime;
+import javax.validation.constraints.NotNull;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
+import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
+import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,23 +28,47 @@ public class SurveyInformationResponseDto {
   private LocalDateTime openTime;
   @NonNull
   private LocalDateTime closeTime;
-  @NonNull
-  private Boolean isResponded;
+  @NotNull
+  private String description;
   @NonNull
   private Boolean isVisible;
+  @NonNull
+  private Boolean isResponded;
   @Nullable
-  private String reply;
+  private Long replyId;
+  @Nullable
+  private String excuse;
 
-  public static SurveyInformationResponseDto from(SurveyEntity survey, String reply,
+  public static SurveyInformationResponseDto from(SurveyEntity survey,
+      SurveyMemberReplyEntity surveyMemberReplyEntity,
       Boolean isResponded) {
     return SurveyInformationResponseDto.builder()
         .surveyId(survey.getId())
         .surveyName(survey.getName())
         .openTime(survey.getOpenTime())
         .closeTime(survey.getCloseTime())
+        .description(survey.getDescription())
         .isVisible(survey.getIsVisible())
         .isResponded(isResponded)
-        .reply(reply)
+        .replyId(checkReplyNull(surveyMemberReplyEntity))
+        .excuse(checkReplyHasExcuse(surveyMemberReplyEntity))
         .build();
+  }
+
+  private static Long checkReplyNull(SurveyMemberReplyEntity surveyMemberReplyEntity) {
+    Long replyId = null;
+    if (surveyMemberReplyEntity != null) {
+      replyId = surveyMemberReplyEntity.getReply().getId();
+    }
+    return replyId;
+  }
+
+  private static String checkReplyHasExcuse(SurveyMemberReplyEntity surveyMemberReplyEntity) {
+    String excuse = null;
+    if ((surveyMemberReplyEntity != null)
+        && surveyMemberReplyEntity.getSurveyReplyExcuseEntity() != null) {
+      excuse = surveyMemberReplyEntity.getSurveyReplyExcuseEntity().getRestExcuse();
+    }
+    return excuse;
   }
 }

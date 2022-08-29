@@ -162,9 +162,11 @@ public class SurveyControllerTest extends SurveySpringTestHelper {
                 fieldWithPath("data.surveyName").description("조회한 설문 이름"),
                 fieldWithPath("data.openTime").description("조회한 설문의 시작 시간"),
                 fieldWithPath("data.closeTime").description("조회한 설문의 마감 시간"),
-                fieldWithPath("data.isResponded").description("설문 응답 여부"),
+                fieldWithPath("data.description").description("조회한 설문의 설명"),
                 fieldWithPath("data.isVisible").description("설문 공개 여부"),
-                fieldWithPath("data.reply").description("설문에 응답한 응답")
+                fieldWithPath("data.isResponded").description("설문 응답 여부"),
+                fieldWithPath("data.replyId").description("설문에 응답한 응답 ID"),
+                fieldWithPath("data.excuse").description("응답이 휴면(기타)일 경우 사유")
             )));
   }
 

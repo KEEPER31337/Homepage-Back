@@ -3,6 +3,7 @@ package keeper.project.homepage.admin.service.clerk;
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.ACTIVITY;
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.GRADUATE;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -179,6 +180,7 @@ public class AdminSurveyServiceTest extends SurveySpringTestHelper {
     assertThat(findSurvey.getName()).isEqualTo(survey.getName());
     assertThat(findSurvey.getOpenTime()).isEqualTo(openTime);
     assertThat(findSurvey.getCloseTime()).isEqualTo(closeTime);
+    assertThat(findSurvey.getDescription()).isEqualTo(survey.getDescription());
     assertThat(isResponded).isEqualTo(true);
     assertThat(survey.getIsVisible()).isEqualTo(true);
     assertThat(findMemberReply.getReply().getId()).isEqualTo(GRADUATE.getId());

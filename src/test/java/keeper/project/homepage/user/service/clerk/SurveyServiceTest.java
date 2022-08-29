@@ -104,6 +104,7 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
     assertThat(findSurvey.getName()).isEqualTo(survey.getName());
     assertThat(findSurvey.getOpenTime()).isEqualTo(openTime);
     assertThat(findSurvey.getCloseTime()).isEqualTo(closeTime);
+    assertThat(findSurvey.getDescription()).isEqualTo(survey.getDescription());
     assertThat(isResponded).isEqualTo(true);
     assertThat(survey.getIsVisible()).isEqualTo(true);
     assertThat(findMemberReply.getReply().getId()).isEqualTo(GRADUATE.getId());

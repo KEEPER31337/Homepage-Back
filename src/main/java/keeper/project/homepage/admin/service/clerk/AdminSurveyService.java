@@ -11,6 +11,7 @@ import keeper.project.homepage.admin.dto.clerk.response.SurveyRespondentResponse
 import keeper.project.homepage.admin.dto.clerk.response.SurveyUpdateResponseDto;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
+import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.clerk.CustomSurveyMemberReplyNotFoundException;
 import keeper.project.homepage.exception.clerk.CustomSurveyNotFoundException;
@@ -93,18 +94,15 @@ public class AdminSurveyService {
     MemberEntity member = memberUtilService.getById(memberId);
 
     Boolean isResponded = false;
-    String reply = null;
-
+    SurveyMemberReplyEntity surveyMemberReplyEntity = null;
     if (isUserRespondedSurvey(survey, member)) {
       isResponded = true;
-      SurveyMemberReplyEntity surveyMemberReplyEntity = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
+      surveyMemberReplyEntity = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
               surveyId, memberId)
           .orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
-      reply = surveyMemberReplyEntity.getReply()
-          .getType();
     }
 
-    return SurveyInformationResponseDto.from(survey, reply, isResponded);
+    return SurveyInformationResponseDto.from(survey, surveyMemberReplyEntity, isResponded);
   }
 
   private Boolean isUserRespondedSurvey(SurveyEntity survey, MemberEntity member) {

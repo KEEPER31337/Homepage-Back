@@ -144,18 +144,15 @@ public class SurveyService {
     MemberEntity member = memberUtilService.getById(memberId);
 
     Boolean isResponded = false;
-    String reply = null;
-
+    SurveyMemberReplyEntity surveyMemberReplyEntity = null;
     if (isUserRespondedSurvey(survey, member)) {
       isResponded = true;
-      SurveyMemberReplyEntity surveyMemberReplyEntity = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
+      surveyMemberReplyEntity = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
               surveyId, memberId)
           .orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
-      reply = surveyMemberReplyEntity.getReply()
-          .getType();
     }
 
-    return SurveyInformationResponseDto.from(survey, reply, isResponded);
+    return SurveyInformationResponseDto.from(survey, surveyMemberReplyEntity, isResponded);
   }
 
   private Boolean isUserRespondedSurvey(SurveyEntity survey, MemberEntity member) {
