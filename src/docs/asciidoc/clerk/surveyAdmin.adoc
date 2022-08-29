@@ -187,3 +187,98 @@ include::{snippets}/survey-respondents/response-body.adoc[]
 
 include::{snippets}/survey-respondents/response-fields.adoc[]
 
+== *설문 정보 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-admin-information/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/survey-admin-information/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-admin-information/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/survey-admin-information/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-admin-information/response-fields.adoc[]
+
+== *공개 상태의 설문 조회(가장 최근)*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-admin-visible-latest/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-admin-visible-latest/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/survey-admin-visible-latest/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-admin-visible-latest/response-fields.adoc[]
+
+== *비공개 상태의 설문 조회(가장 최근)*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-inVisible-latest/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-inVisible-latest/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/survey-inVisible-latest/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-inVisible-latest/response-fields.adoc[]
+
+== *종료된 설문 정보 조회(가장 최근)*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-admin-closed-latest/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/survey-admin-closed-latest/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-admin-closed-latest/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/survey-admin-closed-latest/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-admin-closed-latest/response-fields.adoc[]

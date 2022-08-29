@@ -87,28 +87,6 @@ include::{snippets}/survey-response-modify/response-body.adoc[]
 
 include::{snippets}/survey-response-modify/response-fields.adoc[]
 
-== *최근 설문 조회*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/survey-latest/http-request.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/survey-latest/http-response.adoc[]
-
-==== Response Body
-
-include::{snippets}/survey-latest/response-body.adoc[]
-
-==== Response Field
-
-include::{snippets}/survey-latest/response-fields.adoc[]
-
 == *설문 정보 조회*
 
 === 요청
@@ -134,3 +112,51 @@ include::{snippets}/survey-information/response-body.adoc[]
 ==== Response Field
 
 include::{snippets}/survey-information/response-fields.adoc[]
+
+== *공개 상태의 설문 조회(가장 최근)*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-visible-latest/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-visible-latest/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/survey-visible-latest/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-visible-latest/response-fields.adoc[]
+
+== *종료된 설문 정보 조회(가장 최근)*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-closed-latest/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/survey-closed-latest/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-closed-latest/http-response.adoc[]
+
+==== Response Body
+
+include::{snippets}/survey-closed-latest/response-body.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-closed-latest/response-fields.adoc[]
