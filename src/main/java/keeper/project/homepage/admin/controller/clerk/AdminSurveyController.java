@@ -4,6 +4,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import keeper.project.homepage.admin.dto.clerk.request.AdminSurveyRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.AdminSurveyResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.ClosedSurveyInformationResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.DeleteSurveyResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SurveyRespondentResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SurveyUpdateResponseDto;
@@ -11,6 +12,7 @@ import keeper.project.homepage.admin.service.clerk.AdminSurveyService;
 import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.service.ResponseService;
+import keeper.project.homepage.user.dto.clerk.response.SurveyInformationResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
@@ -21,7 +23,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -77,5 +78,32 @@ public class AdminSurveyController {
       @PathVariable("surveyId") @NotNull Long surveyId
   ) {
     return responseService.getSuccessSingleResult(adminSurveyService.closeSurvey(surveyId));
+  }
+
+  @GetMapping("/{surveyId}/members/{memberId}")
+  public SingleResult<SurveyInformationResponseDto> getSurveyInformation(
+      @PathVariable("surveyId") @NotNull Long surveyId,
+      @PathVariable("memberId") @NotNull Long memberId
+  ) {
+    return responseService.getSuccessSingleResult(
+        adminSurveyService.getSurveyInformation(surveyId, memberId));
+  }
+
+  @GetMapping("/visible")
+  public SingleResult<Long> getLatestVisibleSurveyId() {
+    return responseService.getSuccessSingleResult(adminSurveyService.getLatestVisibleSurveyId());
+  }
+
+  @GetMapping("/closed/members/{memberId}")
+  public SingleResult<ClosedSurveyInformationResponseDto> getLatestClosedSurveyInformation(
+      @PathVariable("memberId") @NotNull Long memberId
+  ) {
+    return responseService.getSuccessSingleResult(
+        adminSurveyService.getLatestClosedSurveyInformation(memberId));
+  }
+
+  @GetMapping("/inVisible")
+  public SingleResult<Long> getLatestInVisibleSurveyId() {
+    return responseService.getSuccessSingleResult(adminSurveyService.getLatestInVisibleSurveyId());
   }
 }
