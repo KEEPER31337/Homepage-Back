@@ -206,3 +206,6 @@ include::{snippets}/update-seminar-attendance/http-response.adoc[]
 ==== Response Field
 
 include::{snippets}/update-seminar-attendance/response-fields.adoc[]
+
+== *상벌점*
+link:clerk/clerkAdminMerit.html[API 문서 보기]
