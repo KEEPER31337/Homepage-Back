@@ -127,15 +127,13 @@ include::{snippets}/survey-visible-latest/http-request.adoc[]
 
 include::{snippets}/survey-visible-latest/http-response.adoc[]
 
-==== Response Body
-
-include::{snippets}/survey-visible-latest/response-body.adoc[]
-
 ==== Response Field
 
 include::{snippets}/survey-visible-latest/response-fields.adoc[]
 
 == *종료된 설문 정보 조회(가장 최근)*
+
+NOTE: 요청을 보낸 회원의 JWT를 기반으로 해당 설문에서 회원의 응답 정보를 전달합니다.
 
 === 요청
 
@@ -143,19 +141,11 @@ include::{snippets}/survey-visible-latest/response-fields.adoc[]
 
 include::{snippets}/survey-closed-latest/http-request.adoc[]
 
-==== Path Parameter
-
-include::{snippets}/survey-closed-latest/path-parameters.adoc[]
-
 === 응답
 
 ==== Response
 
 include::{snippets}/survey-closed-latest/http-response.adoc[]
-
-==== Response Body
-
-include::{snippets}/survey-closed-latest/response-body.adoc[]
 
 ==== Response Field
 
