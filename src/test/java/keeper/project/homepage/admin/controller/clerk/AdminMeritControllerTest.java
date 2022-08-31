@@ -235,6 +235,11 @@ public class AdminMeritControllerTest extends ClerkControllerTestHelper {
         .andExpect(jsonPath("$.code").value(0))
         .andExpect(jsonPath("$.msg").value("성공하였습니다."))
         .andDo(document("create-merit-type",
+            requestFields(
+                fieldWithPath("merit").description("추가할 상벌점 점수"),
+                fieldWithPath("isMerit").description("상점이면 1 벌점이면 0"),
+                fieldWithPath("detail").description("추가할 상벌점 사유")
+            ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
