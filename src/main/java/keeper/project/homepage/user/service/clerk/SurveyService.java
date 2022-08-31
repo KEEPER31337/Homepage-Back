@@ -5,6 +5,7 @@ import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply
 import io.micrometer.core.instrument.util.StringEscapeUtils;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import keeper.project.homepage.admin.dto.clerk.response.ClosedSurveyInformationResponseDto;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
@@ -41,6 +42,8 @@ public class SurveyService {
   private final SurveyReplyExcuseRepository surveyReplyExcuseRepository;
   private final SurveyUtilService surveyUtilService;
   private final MemberUtilService memberUtilService;
+
+  static final SurveyEntity NO_SURVEY = SurveyEntity.builder().id(-1L).build();
 
   @Transactional
   public Long responseSurvey(Long surveyId, SurveyResponseRequestDto requestDto) {
@@ -169,22 +172,11 @@ public class SurveyService {
 
   public Long getLatestVisibleSurveyId() {
     LocalDateTime now = LocalDateTime.now();
-    List<SurveyEntity> surveyList = surveyRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+    SurveyEntity survey = surveyRepository.findTop1ByOpenTimeBeforeAndCloseTimeAfterAndIsVisibleTrueOrderByCloseTimeDesc(
+            now, now)
+        .orElse(NO_SURVEY);
 
-    return findVisibleSurveyId(surveyList, now);
-  }
-
-  private Long findVisibleSurveyId(List<SurveyEntity> surveyList, LocalDateTime now) {
-    Long visibleSurveyId = -1L;
-
-    for (SurveyEntity survey : surveyList) {
-      if (survey.getOpenTime().isBefore(now) && survey.getCloseTime().isAfter(now)
-          && survey.getIsVisible()) {
-        visibleSurveyId = survey.getId();
-        break;
-      }
-    }
-    return visibleSurveyId;
+    return survey.getId();
   }
 
   public ClosedSurveyInformationResponseDto getLatestClosedSurveyInformation(Long memberId) {
