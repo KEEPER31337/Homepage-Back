@@ -3,6 +3,7 @@ package keeper.project.homepage.user.service.clerk;
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.ACTIVITY;
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.GRADUATE;
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
+import static keeper.project.homepage.user.service.clerk.SurveyService.NO_SURVEY;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
@@ -27,6 +28,9 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
 
   @Autowired
   private EntityManager em;
+
+  @Autowired
+  private SurveyService surveyService;
 
   private MemberEntity user;
   private MemberEntity admin;
@@ -112,23 +116,41 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
 
   @Test
   @DisplayName("가장 최근의 공개된 설문 조회 - 현재 진행중인")
-  public void getLatestVisibleSurveyId() throws Exception {
+  public void getLatestVisibleSurveyId() {
     //given
-    SurveyEntity survey1 = generateSurvey(LocalDateTime.now().minusDays(4),
+    generateSurvey(LocalDateTime.now().minusDays(4),
         LocalDateTime.now().plusDays(2),
         true);
-    SurveyEntity survey2 = generateSurvey(LocalDateTime.now().minusDays(4),
-        LocalDateTime.now().plusDays(2),
+    SurveyEntity expectSurvey = generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().plusDays(3),
+        true);
+    generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().plusDays(3),
         false);
 
     //when
-    LocalDateTime now = LocalDateTime.now();
-    List<SurveyEntity> surveyList = surveyRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-
-    Long latestVisibleSurveyId = findVisibleSurveyId(surveyList, now);
+    Long resultId = surveyService.getLatestVisibleSurveyId();
 
     //then
-    assertThat(latestVisibleSurveyId).isEqualTo(survey1.getId());
+    assertThat(resultId).isEqualTo(expectSurvey.getId());
+  }
+
+  @Test
+  @DisplayName("가장 최근의 공개된 설문 조회 - 현재 진행중인 설문 없음")
+  public void getLatestVisibleSurveyId_noOngoingSurveys() {
+    //given
+    generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().minusDays(1),
+        true);
+    generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().plusDays(3),
+        false);
+
+    //when
+    Long resultId = surveyService.getLatestVisibleSurveyId();
+
+    //then
+    assertThat(resultId).isEqualTo(NO_SURVEY.getId());
   }
 
   @Test
