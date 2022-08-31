@@ -20,7 +20,7 @@ public interface SurveyRepository extends JpaRepository<SurveyEntity, Long> {
       LocalDateTime currTime2);
 
   /**
-   * 현재 진행중 + 공개 된 설문 중 마감 시간이 가장 늦은 설문 하나만 가져옵니다
+   * 종료 + 공개 된 설문 중 마감 시간이 가장 늦은 설문 하나만 가져옵니다
    *
    * @param currTime 현재 시각을 넣으면 됩니다.
    * @return 위 조건에 해당하는 결과를 반환합니다.

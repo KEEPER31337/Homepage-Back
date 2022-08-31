@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.admin.dto.clerk.response.ClosedSurveyInformationResponseDto;
+import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
 import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
@@ -42,6 +43,7 @@ public class SurveyService {
   private final SurveyReplyExcuseRepository surveyReplyExcuseRepository;
   private final SurveyUtilService surveyUtilService;
   private final MemberUtilService memberUtilService;
+  private final AuthService authService;
 
   static final SurveyEntity NO_SURVEY = SurveyEntity.builder().id(-1L).build();
 
@@ -179,19 +181,19 @@ public class SurveyService {
     return survey.getId();
   }
 
-  public ClosedSurveyInformationResponseDto getLatestClosedSurveyInformation(Long memberId) {
+  public ClosedSurveyInformationResponseDto getLatestClosedSurveyInformation() {
     LocalDateTime now = LocalDateTime.now();
-    List<SurveyEntity> surveyList = surveyRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-    MemberEntity member = memberUtilService.getById(memberId);
+    SurveyEntity latestClosedSurvey = surveyRepository
+        .findTop1ByCloseTimeBeforeAndIsVisibleTrueOrderByCloseTimeDesc(now)
+        .orElse(NO_SURVEY);
+    Long reqMemberId = authService.getMemberIdByJWT();
 
-    for (SurveyEntity survey : surveyList) {
-      if (survey.getCloseTime().isBefore(now)) {
-        SurveyMemberReplyEntity surveyMemberReply = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
-            survey.getId(), memberId).orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
-        return ClosedSurveyInformationResponseDto.from(survey, surveyMemberReply);
-      }
+    Optional<SurveyMemberReplyEntity> surveyMemberReply = surveyMemberReplyRepository
+        .findBySurveyIdAndMemberId(latestClosedSurvey.getId(), reqMemberId);
+    if (surveyMemberReply.isEmpty()) {
+      return ClosedSurveyInformationResponseDto.notFound();
     }
-    return ClosedSurveyInformationResponseDto.notFound();
+    return ClosedSurveyInformationResponseDto.from(latestClosedSurvey, surveyMemberReply.get());
   }
 
 }

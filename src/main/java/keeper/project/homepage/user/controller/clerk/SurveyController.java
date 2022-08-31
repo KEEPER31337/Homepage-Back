@@ -58,17 +58,15 @@ public class SurveyController {
         surveyService.getSurveyInformation(surveyId, memberId));
   }
 
-  @GetMapping("/visible")
+  @GetMapping("/visible/ongoing")
   public SingleResult<Long> getLatestVisibleSurveyId() {
     return responseService.getSuccessSingleResult(surveyService.getLatestVisibleSurveyId());
   }
 
-  @GetMapping("/closed/members/{memberId}")
-  public SingleResult<ClosedSurveyInformationResponseDto> getLatestClosedSurveyInformation(
-      @PathVariable("memberId") @NotNull Long memberId
-  ) {
+  @GetMapping("/visible/closed")
+  public SingleResult<ClosedSurveyInformationResponseDto> getLatestClosedSurveyInformation() {
     return responseService.getSuccessSingleResult(
-        surveyService.getLatestClosedSurveyInformation(memberId));
+        surveyService.getLatestClosedSurveyInformation());
   }
 
 }
