@@ -15,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -29,15 +30,15 @@ public class SeminarEntity {
   private Long id;
 
   private String name;
-
+  @Setter
   @Column(length = 10)
   private String attendanceCode;
 
   @NotNull
   private LocalDateTime openTime;
-
+  @Setter
   private LocalDateTime attendanceCloseTime;
-
+  @Setter
   private LocalDateTime latenessCloseTime;
 
   @Builder.Default

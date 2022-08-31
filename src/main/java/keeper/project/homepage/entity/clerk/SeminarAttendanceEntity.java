@@ -51,6 +51,7 @@ public class SeminarAttendanceEntity {
   @PrimaryKeyJoinColumn
   private SeminarAttendanceExcuseEntity seminarAttendanceExcuseEntity;
 
+  @Setter
   @NotNull
   @Column(name = "attend_time")
   private LocalDateTime seminarAttendTime;
