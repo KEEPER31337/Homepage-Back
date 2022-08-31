@@ -9,6 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.EntityManager;
+import keeper.project.homepage.admin.dto.clerk.response.ClosedSurveyInformationResponseDto;
 import keeper.project.homepage.controller.clerk.SurveySpringTestHelper;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
@@ -21,6 +22,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -154,37 +159,91 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
   }
 
   @Test
-  @DisplayName("가장 최근에 종료된 설문의 정보 조회")
-  public void getLatestClosedSurveyInformation() throws Exception {
+  @DisplayName("가장 최근에 종료된 설문의 정보와 요청자의 응답 여부 조회")
+  public void getLatestClosedSurveyInformation() {
     //given
-    SurveyEntity survey1 = generateSurvey(LocalDateTime.now().minusDays(4),
-        LocalDateTime.now().minusDays(2),
-        true);
-    generateSurveyMemberReply(survey1, user, surveyReplyRepository.getById(ACTIVITY.getId()));
-    SurveyEntity survey2 = generateSurvey(LocalDateTime.now().minusDays(4),
-        LocalDateTime.now().plusDays(2),
-        true);
-    generateSurveyMemberReply(survey2, user, surveyReplyRepository.getById(GRADUATE.getId()));
+    setAuthentication(user);
+
+    SurveyEntity expectSurvey = generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().minusDays(2), true);
+    SurveyMemberReplyEntity expectReply = generateSurveyMemberReply(expectSurvey, user,
+        surveyReplyRepository.getById(ACTIVITY.getId()));
+    SurveyEntity unExpectedSurvey = generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().plusDays(2), true);
+    generateSurveyMemberReply(unExpectedSurvey, user,
+        surveyReplyRepository.getById(GRADUATE.getId()));
+    SurveyEntity unExpectedSurvey2 = generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().minusDays(2), false);
+    generateSurveyMemberReply(unExpectedSurvey2, user,
+        surveyReplyRepository.getById(GRADUATE.getId()));
 
     //when
-    LocalDateTime now = LocalDateTime.now();
-    List<SurveyEntity> surveyList = surveyRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-
-    SurveyMemberReplyEntity surveyMemberReply = null;
-
-    for (SurveyEntity survey : surveyList) {
-      if (survey.getCloseTime().isBefore(now)) {
-        surveyMemberReply = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
-                survey.getId(), user.getId())
-            .orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
-        break;
-      }
-    }
+    ClosedSurveyInformationResponseDto result = surveyService.getLatestClosedSurveyInformation();
 
     //then
-    assertThat(surveyMemberReply.getSurvey().getId()).isEqualTo(survey1.getId());
-    assertThat(surveyMemberReply.getSurvey().getName()).isEqualTo(survey1.getName());
-    assertThat(surveyMemberReply.getReply().getId()).isEqualTo(ACTIVITY.getId());
+    assertThat(expectReply.getSurvey().getId()).isEqualTo(result.getSurveyId());
+    assertThat(expectReply.getSurvey().getName()).isEqualTo(result.getSurveyName());
+    assertThat(expectReply.getReply().getId()).isEqualTo(result.getReplyId());
+  }
 
+  @Test
+  @DisplayName("가장 최근에 종료된 설문의 정보와 요청자의 응답 여부 조회 - 응답 하지 않음")
+  public void getLatestClosedSurveyInformation_wrongMember() {
+    //given
+    setAuthentication(user);
+
+    generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().minusDays(2), true);
+
+    //when
+    ClosedSurveyInformationResponseDto result = surveyService.getLatestClosedSurveyInformation();
+
+    //then
+    assertThat(ClosedSurveyInformationResponseDto.notFound().getSurveyId())
+        .isEqualTo(result.getSurveyId());
+    assertThat(ClosedSurveyInformationResponseDto.notFound().getSurveyName())
+        .isEqualTo(result.getSurveyName());
+    assertThat(ClosedSurveyInformationResponseDto.notFound().getReplyId())
+        .isEqualTo(result.getReplyId());
+  }
+
+
+  @Test
+  @DisplayName("가장 최근에 종료된 설문의 정보와 요청자의 응답 여부 조회 - 최근에 종료된 설문이 없음")
+  public void getLatestClosedSurveyInformation_notFoundLatestClosedSurvey() {
+    //given
+    setAuthentication(user);
+
+    SurveyEntity ongoingSurvey = generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().plusDays(2), true);
+    generateSurveyMemberReply(ongoingSurvey, user,
+        surveyReplyRepository.getById(ACTIVITY.getId()));
+    SurveyEntity notStartedSurvey = generateSurvey(LocalDateTime.now().plusDays(1),
+        LocalDateTime.now().plusDays(2), true);
+    generateSurveyMemberReply(notStartedSurvey, user,
+        surveyReplyRepository.getById(GRADUATE.getId()));
+    SurveyEntity invisibleSurvey = generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().minusDays(2), false);
+    generateSurveyMemberReply(invisibleSurvey, user,
+        surveyReplyRepository.getById(GRADUATE.getId()));
+
+    //when
+    ClosedSurveyInformationResponseDto result = surveyService.getLatestClosedSurveyInformation();
+
+    //then
+    assertThat(ClosedSurveyInformationResponseDto.notFound().getSurveyId())
+        .isEqualTo(result.getSurveyId());
+    assertThat(ClosedSurveyInformationResponseDto.notFound().getSurveyName())
+        .isEqualTo(result.getSurveyName());
+    assertThat(ClosedSurveyInformationResponseDto.notFound().getReplyId())
+        .isEqualTo(result.getReplyId());
+  }
+
+
+  private void setAuthentication(MemberEntity reqMember) {
+    SecurityContext context = SecurityContextHolder.getContext();
+    context.setAuthentication(
+        new UsernamePasswordAuthenticationToken(reqMember.getId(), reqMember.getPassword(),
+            List.of(new SimpleGrantedAuthority("ROLE_회원"))));
   }
 }

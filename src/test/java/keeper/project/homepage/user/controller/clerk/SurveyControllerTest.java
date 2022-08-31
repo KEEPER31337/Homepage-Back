@@ -179,7 +179,7 @@ public class SurveyControllerTest extends SurveySpringTestHelper {
         true);
 
     mockMvc.perform(
-            get("/v1/clerk/surveys/visible")
+            get("/v1/clerk/surveys/visible/ongoing")
                 .header("Authorization", userToken)
                 .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
@@ -206,7 +206,7 @@ public class SurveyControllerTest extends SurveySpringTestHelper {
     generateSurveyMemberReply(survey2, user, surveyReplyRepository.getById(ACTIVITY.getId()));
 
     mockMvc.perform(
-            get("/v1/clerk/surveys/closed/members/{memberId}", user.getId())
+            get("/v1/clerk/surveys/visible/closed")
                 .header("Authorization", userToken)
                 .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
@@ -214,9 +214,6 @@ public class SurveyControllerTest extends SurveySpringTestHelper {
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.code").value(0))
         .andDo(document("survey-closed-latest",
-            pathParameters(
-                parameterWithName("memberId").description("조회하는 멤버 ID")
-            ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
