@@ -2,14 +2,16 @@ package keeper.project.homepage.repository.member;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
+import keeper.project.homepage.entity.member.MemberJobEntity;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 public class MemberRepositoryTest extends MemberRepositoryTestHelper {
@@ -38,7 +40,6 @@ public class MemberRepositoryTest extends MemberRepositoryTestHelper {
 
   @Test
   @DisplayName("유저 비밀번호 변경")
-  @Transactional
   public void memberPasswordChange() {
     //given
     MemberEntity member = generateMember();
@@ -51,5 +52,50 @@ public class MemberRepositoryTest extends MemberRepositoryTestHelper {
 
     // then
     assertThat(newHashPassword).isEqualTo(saveMember.getPassword());
+  }
+
+  @Test
+  @DisplayName("[SUCCESS] 회원 역할 삭제")
+  public void removeMemberJob() {
+    //given
+    MemberEntity member = generateMember();
+    MemberJobEntity jobToBeDeleted = memberJobRepository.getById(1L);
+    MemberJobEntity jobToBeRemained = memberJobRepository.getById(2L);
+    assignJob(member, jobToBeDeleted);
+    assignJob(member, jobToBeRemained);
+
+    // when
+    member.removeMemberJob(jobToBeDeleted);
+    em.clear();
+    em.flush();
+
+    // then
+    List<MemberJobEntity> resultMemberJobs = member.getMemberJobs().stream()
+        .map(MemberHasMemberJobEntity::getMemberJobEntity)
+        .toList();
+    assertThat(resultMemberJobs).doesNotContain(jobToBeDeleted);
+    assertThat(resultMemberJobs).contains(jobToBeRemained);
+  }
+
+  @Test
+  @DisplayName("[FAIL] 회원 역할 삭제 - 회원이 가지고 있지 않은 역할")
+  public void removeMemberJob_memberDoesntHaveJob() {
+    //given
+    MemberEntity member = generateMember();
+    MemberJobEntity jobMemberDoesntHave = memberJobRepository.getById(1L);
+    MemberJobEntity jobMemberHas = memberJobRepository.getById(2L);
+    assignJob(member, jobMemberHas);
+
+    // when
+    member.removeMemberJob(jobMemberDoesntHave);
+    em.clear();
+    em.flush();
+
+    // then
+    List<MemberJobEntity> resultMemberJobs = member.getMemberJobs().stream()
+        .map(MemberHasMemberJobEntity::getMemberJobEntity)
+        .toList();
+    assertThat(resultMemberJobs).doesNotContain(jobMemberDoesntHave);
+    assertThat(resultMemberJobs).contains(jobMemberHas);
   }
 }
