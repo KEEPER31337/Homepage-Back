@@ -20,6 +20,8 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
 
   List<MemberEntity> findAllByMemberTypeOrderByGenerationAsc(MemberTypeEntity memberType);
 
+  List<MemberEntity> findByRealNameContaining(String keyword);
+
   boolean existsByLoginId(String loginId);
 
   boolean existsByEmailAddress(String emailAddress);
