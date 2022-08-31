@@ -1,5 +1,6 @@
 package keeper.project.homepage.repository.clerk;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import keeper.project.homepage.entity.clerk.MeritLogEntity;
 import keeper.project.homepage.entity.clerk.MeritTypeEntity;
@@ -21,7 +22,7 @@ public class MeritLogRepositoryTest extends MeritRepositoryTestHelper {
         .awarder(awarder)
         .giver(giver)
         .meritType(type)
-        .time(LocalDateTime.now().withNano(0))
+        .time(LocalDate.now())
         .build();
 
     MeritLogEntity save = meritLogRepository.save(meritLog);
