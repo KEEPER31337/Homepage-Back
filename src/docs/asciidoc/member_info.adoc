@@ -248,3 +248,20 @@ include::{snippets}/member-multi/response-body.adoc[]
 ==== Response Fields
 
 include::{snippets}/member-multi/response-fields.adoc[]
+
+
+== *모든 회원 기수 목록 가져오기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-all-generations/http-request.adoc[]
+
+==== Response
+
+include::{snippets}/get-all-generations/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/get-all-generations/response-fields.adoc[]
