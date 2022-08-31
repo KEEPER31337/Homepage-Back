@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
+import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendancesRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.AllSeminarAttendancesResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceStatusResponseDto;
@@ -59,8 +60,11 @@ public class AdminSeminarService {
         .toList();
   }
 
-  public Page<AllSeminarAttendancesResponseDto> getAllSeminarAttendances(Pageable pageable) {
-    return seminarRepository.findAll(pageable).map(AllSeminarAttendancesResponseDto::from);
+  public Page<AllSeminarAttendancesResponseDto> getAllSeminarAttendances(Pageable pageable,
+      SeminarAttendancesRequestDto requestDto) {
+    return seminarRepository.findAllByOpenTimeBetweenOrderByOpenTimeDesc(pageable,
+            requestDto.getSeasonStartDate(), requestDto.getSeasonEndDate())
+        .map(AllSeminarAttendancesResponseDto::from);
   }
 
   @Transactional

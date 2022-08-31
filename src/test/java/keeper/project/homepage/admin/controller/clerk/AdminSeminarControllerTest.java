@@ -21,8 +21,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
+import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendancesRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceExcuseEntity;
@@ -119,8 +121,12 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
   }
 
   @Test
-  @DisplayName("[SUCCESS] 모든 세미나의 출석 목록 불러오기")
+  @DisplayName("[SUCCESS] 기간별 세미나 출석 목록 불러오기")
   public void getAllSeminarAttendances() throws Exception {
+    SeminarAttendancesRequestDto seminarAttendancesRequestDto = SeminarAttendancesRequestDto.builder()
+        .seasonStartDate(LocalDateTime.now())
+        .seasonEndDate(LocalDateTime.now().plusWeeks(2))
+        .build();
     SeminarEntity seminar = generateSeminar(LocalDateTime.now().plusWeeks(1));
     MemberEntity member1 = generateMember("이정학", 12.5F);
     MemberEntity member2 = generateMember("최우창", 12.5F);
@@ -146,7 +152,9 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
     mockMvc.perform(get("/v1/admin/clerk/seminars/attendances")
             .header("Authorization", clerkToken)
             .param("page", "0")
-            .param("size", "10"))
+            .param("size", "10")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonDateString(seminarAttendancesRequestDto)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -156,6 +164,10 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
             requestParameters(
                 parameterWithName("page").optional().description("페이지 번호(default = 0)"),
                 parameterWithName("size").optional().description("한 페이지당 출력 수(default = 10)")
+            ),
+            requestFields(
+                fieldWithPath("seasonStartDate").description("학기 시작 날짜(시간 포함)"),
+                fieldWithPath("seasonEndDate").description("학기 종료 날짜(시간 포함)")
             ),
             responseFields(
                 generateSeminarAttendanceResponseFields(ResponseType.PAGE,

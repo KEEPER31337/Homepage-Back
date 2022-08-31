@@ -22,7 +22,8 @@ import keeper.project.homepage.repository.clerk.SeminarRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.restdocs.payload.FieldDescriptor;
 
-public class ClerkControllerTestHelper extends ApiControllerTestHelper{
+public class ClerkControllerTestHelper extends ApiControllerTestHelper {
+
   @Autowired
   protected SeminarRepository seminarRepository;
 
@@ -68,7 +69,7 @@ public class ClerkControllerTestHelper extends ApiControllerTestHelper{
     }
     return commonFields;
   }
-  
+
   protected List<FieldDescriptor> generateTypeDtoResponseFields(ResponseType type,
       String success, String code, String msg, FieldDescriptor... addDescriptors) {
     String prefix = type.getReponseFieldPrefix();
@@ -153,7 +154,8 @@ public class ClerkControllerTestHelper extends ApiControllerTestHelper{
         fieldWithPath(prefix + ".sortedSeminarAttendances").description("세미나 출석 정보"),
         fieldWithPath(prefix + ".sortedSeminarAttendances.[].generation").description("회원 기수"),
         fieldWithPath(prefix + ".sortedSeminarAttendances.[].memberName").description("회원 이름"),
-        fieldWithPath(prefix + ".sortedSeminarAttendances.[].seminarAttendanceStatusType").description(
+        fieldWithPath(
+            prefix + ".sortedSeminarAttendances.[].seminarAttendanceStatusType").description(
             "출석 상태"),
         fieldWithPath(prefix + ".sortedSeminarAttendances.[].absenceExcuse").optional().description(
             "결석사유")
@@ -187,7 +189,6 @@ public class ClerkControllerTestHelper extends ApiControllerTestHelper{
 
   SeminarAttendanceEntity generateSeminarAttendance(MemberEntity member,
       SeminarEntity seminar, SeminarAttendanceStatusEntity seminarAttendanceStatus) {
-    System.out.println("seminarAttendanceStatus = " + seminarAttendanceStatus.getType());
     return seminarAttendanceRepository.save(
         SeminarAttendanceEntity.builder()
             .memberEntity(member)

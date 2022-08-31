@@ -4,6 +4,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
+import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendancesRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.AllSeminarAttendancesResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceStatusResponseDto;
@@ -48,8 +49,9 @@ public class AdminSeminarController {
   }
 
   @GetMapping("/attendances")
-  PageResult<AllSeminarAttendancesResponseDto> getAllSeminarAttendances(Pageable pageable) {
-    return responseService.getSuccessPageResult(seminarService.getAllSeminarAttendances(pageable));
+  PageResult<AllSeminarAttendancesResponseDto> getAllSeminarAttendances(Pageable pageable,
+      @RequestBody @Valid SeminarAttendancesRequestDto requestDto) {
+    return responseService.getSuccessPageResult(seminarService.getAllSeminarAttendances(pageable, requestDto));
   }
   @GetMapping("{seminarId}/attendances")
   ListResult<SeminarAttendanceResponseDto> getSeminarAttendances(
