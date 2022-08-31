@@ -17,7 +17,7 @@ public class MeritLogRepositoryTest extends MeritRepositoryTestHelper {
     // given
     MemberEntity awarder = generateMember();
     MemberEntity giver = generateMember();
-    MeritTypeEntity type = meritTypeRepository.findById(1L).orElseThrow();
+    MeritTypeEntity type = generateMeritType(3, true, "각종대외발표");
     MeritLogEntity meritLog = MeritLogEntity.builder()
         .awarder(awarder)
         .giver(giver)
@@ -37,5 +37,9 @@ public class MeritLogRepositoryTest extends MeritRepositoryTestHelper {
     Assertions.assertThat(find.getGiver().getId()).isEqualTo(save.getGiver().getId());
     Assertions.assertThat(find.getMeritType().getId()).isEqualTo(save.getMeritType().getId());
     Assertions.assertThat(find.getTime()).isEqualTo(save.getTime());
+  }
+
+  private MeritTypeEntity generateMeritType(Integer merit, Boolean isMerit, String detail) {
+    return meritTypeRepository.save(MeritTypeEntity.newInstance(merit, isMerit, detail));
   }
 }
