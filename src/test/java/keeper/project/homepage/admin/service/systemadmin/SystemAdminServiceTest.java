@@ -1,6 +1,8 @@
 package keeper.project.homepage.admin.service.systemadmin;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
@@ -16,6 +18,7 @@ import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
+import keeper.project.homepage.exception.clerk.CustomClerkInaccessibleJobException;
 import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
 import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.user.service.member.MemberUtilService;
@@ -152,6 +155,25 @@ class SystemAdminServiceTest {
   }
 
   @Test
+  @DisplayName("[EXCEPTION] 등록할 수 없는 역할 추가")
+  void assignJob_inAccessibleJob() {
+    // given
+    MemberEntity member = generateMemberEntity();
+    MemberJobEntity job = inAccessibleJobs.get(0);
+
+    // mocking
+    given(memberUtilService.getById(member.getId())).willReturn(member);
+    given(memberUtilService.getJobById(job.getId())).willReturn(job);
+
+    // when
+    Throwable result = catchThrowable(
+        () -> systemAdminService.assignJob(member.getId(), job.getId()));
+
+    // then
+    assertThat(result).isInstanceOf(CustomClerkInaccessibleJobException.class);
+  }
+
+  @Test
   @DisplayName("[SUCCESS] 역할 삭제")
   void deleteJob() {
     // given
@@ -172,6 +194,28 @@ class SystemAdminServiceTest {
     assertThat(JobResponseDto.toDto(jobToBeDeleted)).isNotIn(result.getHasJobs());
     assertThat(JobResponseDto.toDto(jobToBeRemained)).isIn(result.getHasJobs());
     assertThat(TypeResponseDto.toDto(member.getMemberType())).isEqualTo(result.getType());
+  }
+
+  @Test
+  @DisplayName("[EXCEPTION] 삭제할 수 없는 역할 삭제")
+  void deleteJob_inAccessibleJob() {
+    // given
+    MemberJobEntity inAccessibleJob = inAccessibleJobs.get(0);
+    MemberJobEntity accessibleJob1 = accessibleJobs.get(0);
+    MemberJobEntity accessibleJob2 = accessibleJobs.get(1);
+    MemberEntity member = generateMemberEntity(inAccessibleJob, accessibleJob1, accessibleJob2);
+
+    // mocking
+    given(memberUtilService.getById(member.getId())).willReturn(member);
+    given(memberUtilService.getJobById(inAccessibleJob.getId())).willReturn(inAccessibleJob);
+
+    // when
+    Throwable result = catchThrowable(
+        () -> systemAdminService.deleteJob(member.getId(),
+            inAccessibleJob.getId()));
+
+    // then
+    assertThat(result).isInstanceOf(CustomClerkInaccessibleJobException.class);
   }
 
   private static MemberEntity generateMemberEntity(MemberJobEntity... memberJobEntities) {
