@@ -171,4 +171,9 @@ public class AdminMemberService {
     return result;
   }
 
+  public List<Long> getMemberIdsByRealName(String keyword) {
+    List<MemberEntity> members = memberRepository.findByRealNameContaining(keyword);
+    return members.stream().map(MemberEntity::getId).toList();
+  }
+
 }
