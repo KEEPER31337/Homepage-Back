@@ -63,11 +63,20 @@ public class AdminMeritService {
         .orElseThrow(CustomMeritTypeNotFoundException::new);
     MeritLogEntity meritLog = getMeritLogEntity(requestDto.getDate(), meritType, awarder, giver);
 
+    updateMeritByMeritType(awarder, meritType);
     MeritLogEntity save = meritLogRepository.save(meritLog);
 
     return MeritLogCreateResponseDto.builder()
         .meritLogId(save.getId())
         .build();
+  }
+
+  protected static void updateMeritByMeritType(MemberEntity awarder, MeritTypeEntity meritType) {
+    if (meritType.getIsMerit()) {
+      awarder.changeMerit(awarder.getMerit() + meritType.getMerit());
+    } else {
+      awarder.changeDemerit(awarder.getDemerit() + meritType.getMerit());
+    }
   }
 
   private static MeritLogEntity getMeritLogEntity(LocalDate date,
