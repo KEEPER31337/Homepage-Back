@@ -51,7 +51,7 @@ public class AdminMeritService {
         .collect(Collectors.groupingBy(MeritLogEntity::getAwarder));
     return meritLogMap.entrySet()
         .stream()
-        .map(entry -> MemberTotalMeritLogsResponseDto.from(entry.getKey(), entry.getValue()))
+        .map(entry -> MemberTotalMeritLogsResponseDto.of(entry.getKey(), entry.getValue()))
         .toList();
   }
 

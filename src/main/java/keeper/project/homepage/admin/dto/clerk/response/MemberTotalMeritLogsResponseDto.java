@@ -30,7 +30,7 @@ public class MemberTotalMeritLogsResponseDto {
   @NonNull
   private List<String> details;
 
-  public static MemberTotalMeritLogsResponseDto from(MemberEntity member, List<MeritLogEntity> meritLogs) {
+  public static MemberTotalMeritLogsResponseDto of(MemberEntity member, List<MeritLogEntity> meritLogs) {
     return MemberTotalMeritLogsResponseDto.builder()
         .memberId(member.getId())
         .totalMerit(
