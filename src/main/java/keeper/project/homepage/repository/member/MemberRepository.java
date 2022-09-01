@@ -21,6 +21,8 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
 
   List<MemberEntity> findAllByMemberTypeOrderByGenerationAsc(MemberTypeEntity memberType);
 
+  List<MemberEntity> findByRealNameContaining(String keyword);
+
   @Query("SELECT DISTINCT generation FROM MemberEntity WHERE generation IS NOT NULL ORDER BY generation DESC")
   List<Float> findDistinctGenerationOrderByGenerationDesc();
 

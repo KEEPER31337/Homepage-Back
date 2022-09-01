@@ -2,6 +2,7 @@ package keeper.project.homepage.admin.controller.member;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
@@ -76,4 +77,41 @@ public class AdminMemberControllerTest extends ApiControllerTestHelper {
         .andExpect(jsonPath("$.msg").value("접근이 거부되었습니다."));
   }
 
+  @Test
+  @DisplayName("[SUCCESS] 이름 키워드로 회원 아이디 조회")
+  public void getMemberIdsByRealName() throws Exception {
+    generateMemberByRealName("이정학");
+    generateMemberByRealName("김정학");
+    generateMemberByRealName("박정학");
+    mockMvc.perform(get("/v1/admin/members/ids")
+            .header("Authorization", adminToken)
+            .param("keyword", "정학"))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").value("성공하였습니다."))
+        .andExpect(jsonPath("$.list.size()").value(3))
+        .andDo(document("get-memberId-list-by-realName",
+            requestParameters(parameterWithName("keyword").description("검색할 이름 키워드")),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("list").description("검색한 회원 id 목록")
+            )));
+  }
+
+  private MemberEntity generateMemberByRealName(String name) {
+    final long epochTime = System.nanoTime();
+    return memberRepository.save(
+        MemberEntity.builder()
+            .loginId("abcd1234" + epochTime)
+            .emailAddress("test1234@keeper.co.kr" + epochTime)
+            .password("1234")
+            .studentId("1234" + epochTime)
+            .nickName("nick" + epochTime)
+            .realName(name)
+            .build());
+  }
 }

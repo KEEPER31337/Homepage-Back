@@ -1,6 +1,6 @@
 package keeper.project.homepage.entity.clerk;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -8,7 +8,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.AllArgsConstructor;
@@ -36,7 +35,7 @@ public class MeritLogEntity {
   @JoinColumn(name = "giver_id")
   private MemberEntity giver;
 
-  private LocalDateTime time;
+  private LocalDate time;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "merit_type_id")
