@@ -162,14 +162,11 @@ public class AdminMeritControllerTest extends ClerkControllerTestHelper {
     MemberEntity awarder = generateMember("이정학", 12.5F);
     MeritTypeEntity publicAnnouncement = generateMeritType(2, true, "각종대외발표");
     LocalDate now = LocalDate.now();
-    LocalDate nextYear = now.plusYears(1);
-    LocalDate lastYear = now.minusYears(1);
-    LocalDate yearBeforeLast = lastYear.minusYears(1);
+    LocalDate oldest = now.minusYears(5);
+    int latestYear = now.getYear();
+    int oldestYear = oldest.getYear();
 
-    generateMeritLog(awarder, giver, publicAnnouncement, now);
-    generateMeritLog(awarder, giver, publicAnnouncement, nextYear);
-    generateMeritLog(awarder, giver, publicAnnouncement, lastYear);
-    generateMeritLog(awarder, giver, publicAnnouncement, yearBeforeLast);
+    generateMeritLog(awarder, giver, publicAnnouncement, oldest);
 
     mockMvc.perform(get("/v1/admin/clerk/merits/years")
             .header("Authorization", clerkToken))
@@ -178,6 +175,7 @@ public class AdminMeritControllerTest extends ClerkControllerTestHelper {
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.code").value(0))
         .andExpect(jsonPath("$.msg").value("성공하였습니다."))
+        .andExpect(jsonPath("$.list.size()").value(latestYear - oldestYear + 1))
         .andDo(document("get-merits-year-list",
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import keeper.project.homepage.admin.dto.clerk.request.MeritLogCreateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.MeritTypeCreateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.MemberTotalMeritLogsResponseDto;
@@ -14,6 +15,7 @@ import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.entity.clerk.MeritLogEntity;
 import keeper.project.homepage.entity.clerk.MeritTypeEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.exception.clerk.CustomMeritLogNotFoundException;
 import keeper.project.homepage.exception.clerk.CustomMeritTypeNotFoundException;
 import keeper.project.homepage.repository.clerk.MeritLogRepository;
 import keeper.project.homepage.repository.clerk.MeritTypeRepository;
@@ -90,7 +92,11 @@ public class AdminMeritService {
   }
 
   public List<Integer> getYears() {
-    return meritLogRepository.findYears();
+    MeritLogEntity meritLog = meritLogRepository.findFirstByOrderByTime()
+        .orElseThrow(CustomMeritLogNotFoundException::new);
+    return IntStream.range(meritLog.getTime().getYear(), LocalDate.now().getYear() + 1)
+        .boxed()
+        .toList();
   }
 
   @Transactional
