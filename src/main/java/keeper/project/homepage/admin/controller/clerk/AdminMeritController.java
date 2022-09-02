@@ -1,11 +1,11 @@
 package keeper.project.homepage.admin.controller.clerk;
 
 import javax.validation.Valid;
-import keeper.project.homepage.admin.dto.clerk.request.MeritLogCreateRequestDto;
+import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.MeritTypeCreateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.MemberTotalMeritLogsResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.MeritLogByYearResponseDto;
-import keeper.project.homepage.admin.dto.clerk.response.MeritLogCreateResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.MeritAddResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.MeritTypeResponseDto;
 import keeper.project.homepage.admin.service.clerk.AdminMeritService;
 import keeper.project.homepage.common.dto.result.ListResult;
@@ -45,9 +45,9 @@ public class AdminMeritController {
   }
 
   @PostMapping
-  public SingleResult<MeritLogCreateResponseDto> createMeritLog(
-      @RequestBody @Valid MeritLogCreateRequestDto requestDto) {
-    return responseService.getSuccessSingleResult(adminMeritService.createMeritLog(requestDto));
+  public SingleResult<MeritAddResponseDto> addMerit(
+      @RequestBody @Valid MeritAddRequestDto requestDto) {
+    return responseService.getSuccessSingleResult(adminMeritService.addMerit(requestDto));
   }
 
   @GetMapping("/years")

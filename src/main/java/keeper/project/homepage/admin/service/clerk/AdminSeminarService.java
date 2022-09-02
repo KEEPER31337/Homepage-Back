@@ -2,13 +2,15 @@ package keeper.project.homepage.admin.service.clerk;
 
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceExcuseEntity.*;
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ABSENCE;
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ATTENDANCE;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.BEFORE_ATTENDANCE;
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.LATENESS;
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.PERSONAL;
 import static keeper.project.homepage.entity.member.MemberTypeEntity.memberType.REGULAR_MEMBER;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendancesRequestDto;
@@ -18,14 +20,18 @@ import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceStatusR
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceUpdateResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarCreateResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarResponseDto;
+import keeper.project.homepage.entity.clerk.MeritTypeEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
 import keeper.project.homepage.entity.clerk.SeminarEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.clerk.CustomAttendanceAbsenceExcuseIsNullException;
+import keeper.project.homepage.exception.clerk.CustomMeritTypeNotFoundException;
 import keeper.project.homepage.exception.clerk.CustomSeminarAttendanceNotFoundException;
 import keeper.project.homepage.exception.clerk.CustomSeminarAttendanceStatusNotFoundException;
 import keeper.project.homepage.exception.clerk.CustomSeminarNotFoundException;
+import keeper.project.homepage.repository.clerk.MeritLogRepository;
+import keeper.project.homepage.repository.clerk.MeritTypeRepository;
 import keeper.project.homepage.repository.clerk.SeminarAttendanceRepository;
 import keeper.project.homepage.repository.clerk.SeminarAttendanceStatusRepository;
 import keeper.project.homepage.repository.clerk.SeminarRepository;
@@ -52,6 +58,8 @@ public class AdminSeminarService {
   private final SeminarAttendanceStatusRepository seminarAttendanceStatusRepository;
   private final MemberUtilService memberUtilService;
   private final MemberRepository memberRepository;
+  private final MeritTypeRepository meritTypeRepository;
+  private final AdminMeritService meritService;
 
   public List<SeminarResponseDto> getSeminars() {
     return seminarRepository.findAllByOrderByOpenTimeDesc()
@@ -88,47 +96,60 @@ public class AdminSeminarService {
         .map(SeminarAttendanceStatusResponseDto::from).toList();
   }
 
-  // TODO: 벌점 log 기록하도록 수정
   private void processAttendance(SeminarAttendanceEntity attendance,
       SeminarAttendanceStatusEntity afterStatusEntity, String absenceExcuse) {
     MemberEntity member = attendance.getMemberEntity();
     String beforeStatus = attendance.getSeminarAttendanceStatusEntity().getType();
     String afterStatus = afterStatusEntity.getType();
+    LocalDate attendDate = attendance.getSeminarAttendTime().toLocalDate();
 
     if (beforeStatus.equals(afterStatus) && !afterStatus.equals(PERSONAL.getType())) {
       return;
     }
-    if (beforeStatus.equals(ABSENCE.getType())) {
-      member.changeDemerit(member.getDemerit() - ABSENCE_DEMERIT);
+    // 이전 출석에 결석 처리를 했으면 해당 결석 처리 내역 삭제
+    if (beforeStatus.equals(ABSENCE.getType()) || (beforeStatus.equals(LATENESS.getType()) &&
+        getLatenessCount(member) % 2 == 0)) {
+      deleteBeforeAbsence(attendance, member);
     }
     if (afterStatus.equals(PERSONAL.getType())) {
       processPersonal(attendance, absenceExcuse);
     }
     if (afterStatus.equals(LATENESS.getType())) {
-      processLateness(member);
+      processLateness(member, beforeStatus, attendDate);
     }
     if (afterStatus.equals(ABSENCE.getType())) {
-      processAbsence(member, beforeStatus);
+      processAbsence(member, beforeStatus, attendDate);
     }
     attendance.setSeminarAttendanceStatusEntity(afterStatusEntity);
   }
 
-  //TODO: 상벌점 구현 시 중복 로직 수정 필요
-  private static void processLateness(MemberEntity member) {
+  private void deleteBeforeAbsence(SeminarAttendanceEntity attendance, MemberEntity member) {
+    LocalDate attendDate = attendance.getSeminarAttendTime().toLocalDate();
+    meritService.deleteAbsenceLog(member, attendDate);
+  }
+
+  private void processLateness(MemberEntity member, String beforeStatus, LocalDate attendDate) {
     // 지각 2회는 결석 처리
     if (getLatenessCount(member) % 2 == 1) {
-      member.changeDemerit(member.getDemerit() + ABSENCE_DEMERIT);
+      processAbsence(member, beforeStatus, attendDate);
     }
   }
 
-  //TODO: 상벌점 구현 시 로직 수정 필요
-  private static void processAbsence(MemberEntity member,
-      String beforeStatus) {
-    // 이전 상태가 지각이고 짝수번 지각했으므로 결석 처리된 상태이므로 반환
-    if (beforeStatus.equals(LATENESS.getType()) && getLatenessCount(member) % 2 == 0) {
-      return;
-    }
-    member.changeDemerit(member.getDemerit() + ABSENCE_DEMERIT);
+  private void processAbsence(MemberEntity member, String beforeStatus, LocalDate attendDate) {
+    MeritTypeEntity absence = meritTypeRepository.findByDetail(ABSENCE.getType())
+        .orElseThrow(CustomMeritTypeNotFoundException::new);
+    MeritAddRequestDto meritLogCreateRequestDto = generateMeritAddRequestDto(
+        member, absence, attendDate);
+    meritService.addMerit(meritLogCreateRequestDto);
+  }
+
+  private static MeritAddRequestDto generateMeritAddRequestDto(MemberEntity member,
+      MeritTypeEntity type, LocalDate date) {
+    return MeritAddRequestDto.builder()
+        .date(date)
+        .memberId(member.getId())
+        .meritTypeId(type.getId())
+        .build();
   }
 
   private static long getLatenessCount(MemberEntity member) {
@@ -153,13 +174,12 @@ public class AdminSeminarService {
     SeminarEntity seminar = generateSeminar(request.getOpenTime());
     List<MemberEntity> allRegularMembers = memberRepository.findAllByMemberTypeOrderByGenerationAsc(
         memberUtilService.getTypeById(REGULAR_MEMBER.getId()));
-    SeminarAttendanceStatusEntity attendance = seminarAttendanceStatusRepository.findById(
-            ATTENDANCE.getId())
+    SeminarAttendanceStatusEntity beforeAttendance = seminarAttendanceStatusRepository.findById(
+            BEFORE_ATTENDANCE.getId())
         .orElseThrow(CustomSeminarAttendanceStatusNotFoundException::new);
 
-    //TODO: "출석전" 타입이 추가되면 수정
     for (MemberEntity member : allRegularMembers) {
-      generateSeminarAttendance(member, seminar, attendance);
+      generateSeminarAttendance(member, seminar, beforeAttendance);
     }
 
     return SeminarCreateResponseDto.from(seminar);
@@ -195,4 +215,10 @@ public class AdminSeminarService {
     );
   }
 
+  public Long deleteSeminar(Long seminarId) {
+    SeminarEntity find = seminarRepository.findById(seminarId)
+        .orElseThrow(CustomSeminarNotFoundException::new);
+    seminarRepository.delete(find);
+    return find.getId();
+  }
 }

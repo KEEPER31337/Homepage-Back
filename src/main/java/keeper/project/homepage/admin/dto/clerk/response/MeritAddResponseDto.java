@@ -10,7 +10,7 @@ import lombok.NonNull;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class MeritLogCreateResponseDto {
+public class MeritAddResponseDto {
 
   @NonNull
   private Long meritLogId;
