@@ -1,6 +1,7 @@
 package keeper.project.homepage.entity.clerk;
 
 import java.time.LocalDateTime;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -42,9 +43,10 @@ public class SurveyMemberReplyEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "reply_id", nullable = false)
+  @Setter
   private SurveyReplyEntity reply;
 
-  @OneToOne(mappedBy = "surveyMemberReplyEntity")
+  @OneToOne(mappedBy = "surveyMemberReplyEntity", cascade = CascadeType.ALL)
   @PrimaryKeyJoinColumn
   @Setter
   private SurveyReplyExcuseEntity surveyReplyExcuseEntity;
@@ -52,10 +54,5 @@ public class SurveyMemberReplyEntity {
   @Column(nullable = false)
   @Setter
   private LocalDateTime replyTime;
-
-  public void modifyReply(SurveyReplyEntity reply) {
-    this.reply = reply;
-    this.replyTime = LocalDateTime.now();
-  }
 
 }

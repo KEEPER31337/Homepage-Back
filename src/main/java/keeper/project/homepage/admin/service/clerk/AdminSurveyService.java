@@ -58,7 +58,7 @@ public class AdminSurveyService {
   }
 
   public List<SurveyRespondentResponseDto> getRespondents(Long surveyId) {
-    List<SurveyMemberReplyEntity> respondents = surveyUtilService.getSurveyMemberReplyEntityById(
+    List<SurveyMemberReplyEntity> respondents = surveyUtilService.getSurveyMemberReplyEntityBySurveyId(
         surveyId);
     return respondents.stream()
         .map(SurveyRespondentResponseDto::from)

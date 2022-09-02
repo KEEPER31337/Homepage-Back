@@ -11,6 +11,7 @@ import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
 import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
 import keeper.project.homepage.entity.clerk.SurveyReplyExcuseEntity;
+import keeper.project.homepage.entity.clerk.SurveyReplyExcuseEntity.SurveyReplyExcuseEntityBuilder;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.clerk.CustomSurveyInVisibleException;
 import keeper.project.homepage.exception.clerk.CustomSurveyMemberReplyNotFoundException;
@@ -48,35 +49,33 @@ public class SurveyService {
     SurveyEntity survey = surveyUtilService.getSurveyById(surveyId);
     validateVisibleSurvey(survey);
     MemberEntity member = authService.getMemberEntityWithJWT();
-    SurveyReplyEntity reply = surveyUtilService.getReplyById(
-        requestDto.getReplyId());
 
-    SurveyMemberReplyEntity memberReply = surveyUtilService.generateSurveyMemberReplyEntity(survey,
-        member, reply);
-
-    saveSurveyMemberReply(survey, memberReply);
-    saveSurveyReplyExcuse(reply, memberReply, requestDto);
-
-    return surveyMemberReplyRepository.getById(memberReply.getId()).getId();
+    return surveyMemberReplyRepository.save(generateMemberReplyEntity(survey, member, requestDto))
+        .getId();
   }
 
-  private void saveSurveyMemberReply(SurveyEntity survey,
-      SurveyMemberReplyEntity memberReply) {
-    memberReply.setReplyTime(LocalDateTime.now());
-    surveyMemberReplyRepository.save(memberReply);
+  private SurveyMemberReplyEntity generateMemberReplyEntity(SurveyEntity survey,
+      MemberEntity member, SurveyResponseRequestDto requestDto) {
+    SurveyMemberReplyEntity memberReply = SurveyMemberReplyEntity.builder()
+        .member(member)
+        .survey(survey)
+        .reply(surveyReplyRepository.getById(requestDto.getReplyId()))
+        .replyTime(LocalDateTime.now())
+        .build();
+
     survey.getRespondents().add(memberReply);
-  }
 
-  private void saveSurveyReplyExcuse(SurveyReplyEntity reply,
-      SurveyMemberReplyEntity memberReply,
-      SurveyResponseRequestDto requestDto) {
-    if (reply.getId().equals(OTHER_DORMANT.getId())) {
-      SurveyReplyExcuseEntity excuse = SurveyReplyExcuseEntity.builder()
-          .surveyMemberReplyEntity(memberReply)
-          .restExcuse(requestDto.getExcuse())
-          .build();
-      surveyReplyExcuseRepository.save(excuse);
+    if (requestDto.getReplyId().equals(OTHER_DORMANT.getId())) {
+      SurveyReplyExcuseEntity surveyReplyExcuseEntity = SurveyReplyExcuseEntity.newInstance(
+          memberReply,
+          requestDto.getExcuse());
+
+      memberReply.setSurveyReplyExcuseEntity(surveyReplyExcuseEntity);
+      surveyReplyExcuseEntity.setSurveyMemberReplyEntity(memberReply);
+      surveyReplyExcuseRepository.save(surveyReplyExcuseEntity);
     }
+
+    return memberReply;
   }
 
   private void validateVisibleSurvey(SurveyEntity survey) {
@@ -88,55 +87,44 @@ public class SurveyService {
   public SurveyModifyResponseDto modifyResponse(Long surveyId,
       SurveyResponseRequestDto requestDto) {
     MemberEntity member = authService.getMemberEntityWithJWT();
+
     SurveyMemberReplyEntity memberReply = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
             surveyId, member.getId())
         .orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
-    SurveyReplyEntity reply = surveyReplyRepository.getById(requestDto.getReplyId());
 
-    modifyReplyAndExcuse(memberReply, reply, requestDto);
+    SurveyReplyEntity modifyReplyType = surveyReplyRepository.getById(requestDto.getReplyId());
+    SurveyReplyEntity beforeReply = memberReply.getReply();
+    modifyReply(memberReply, requestDto, beforeReply, modifyReplyType);
 
     return SurveyModifyResponseDto.from(surveyMemberReplyRepository.save(memberReply),
         requestDto.getExcuse());
   }
 
-  private void modifyReplyAndExcuse(SurveyMemberReplyEntity memberReply, SurveyReplyEntity reply,
-      SurveyResponseRequestDto requestDto) {
-    memberReply.modifyReply(reply);
+  private void modifyReply(SurveyMemberReplyEntity memberReply, SurveyResponseRequestDto requestDto,
+      SurveyReplyEntity beforeReply, SurveyReplyEntity modifyReplyType) {
+    memberReply.setReply(modifyReplyType); // 응답 갱신
+    memberReply.setReplyTime(LocalDateTime.now());
 
-    SurveyReplyExcuseEntity beforeExcuse = memberReply.getSurveyReplyExcuseEntity();
-
-    if (isBeforeExcuseNull(beforeExcuse)) {
-      if (isReplyOtherDormant(requestDto)) {
-        surveyUtilService.generateSurveyReplyExcuse(memberReply,
-            requestDto.getExcuse());
+    if (beforeReply.getId().equals(OTHER_DORMANT.getId())) {
+      SurveyReplyExcuseEntity excuseEntity = memberReply.getSurveyReplyExcuseEntity();
+      // 기타에서 기타로 수정
+      if (memberReply.getReply().getId().equals(OTHER_DORMANT.getId())) {
+        memberReply.getSurveyReplyExcuseEntity().setRestExcuse(requestDto.getExcuse());
+        return;
       }
+      // 기타에서 활동 등으로 수정
+      memberReply.setSurveyReplyExcuseEntity(null);
     }
-    if (!isBeforeExcuseNull(beforeExcuse)) {
-      if (isReplyOtherDormant(requestDto)) {
-        memberReply.getSurveyReplyExcuseEntity()
-            .modifyExcuse(requestDto.getExcuse());
-      }
-      deleteBeforeExcuse(beforeExcuse);
-      setExcuse(memberReply, requestDto);
+    // 활동 등에서 기타로 수정
+    if (memberReply.getReply().getId().equals(OTHER_DORMANT.getId())) {
+      SurveyReplyExcuseEntity surveyReplyExcuseEntity = SurveyReplyExcuseEntity.newInstance(
+          memberReply,
+          requestDto.getExcuse());
+
+      memberReply.setSurveyReplyExcuseEntity(surveyReplyExcuseEntity);
+      surveyReplyExcuseEntity.setSurveyMemberReplyEntity(memberReply);
+      surveyReplyExcuseRepository.save(surveyReplyExcuseEntity);
     }
-  }
-
-  private Boolean isBeforeExcuseNull(SurveyReplyExcuseEntity excuse) {
-    return excuse == null;
-  }
-
-  private Boolean isReplyOtherDormant(SurveyResponseRequestDto requestDto) {
-    return requestDto.getReplyId().equals(OTHER_DORMANT.getId());
-  }
-
-  private void deleteBeforeExcuse(SurveyReplyExcuseEntity beforeExcuse) {
-    surveyReplyExcuseRepository.delete(beforeExcuse);
-  }
-
-  private void setExcuse(SurveyMemberReplyEntity memberReply,
-      SurveyResponseRequestDto responseRequestDto) {
-    memberReply.getSurveyReplyExcuseEntity()
-        .modifyExcuse(responseRequestDto.getExcuse());
   }
 
   public SurveyInformationResponseDto getSurveyInformation(Long surveyId) {

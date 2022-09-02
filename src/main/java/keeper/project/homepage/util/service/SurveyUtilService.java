@@ -1,12 +1,8 @@
 package keeper.project.homepage.util.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
-import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
-import keeper.project.homepage.entity.clerk.SurveyReplyExcuseEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.clerk.CustomSurveyMemberReplyNotFoundException;
 import keeper.project.homepage.exception.clerk.CustomSurveyNotFoundException;
 import keeper.project.homepage.repository.clerk.SurveyMemberReplyRepository;
@@ -35,42 +31,15 @@ public class SurveyUtilService {
         .orElseThrow(CustomSurveyNotFoundException::new);
   }
 
-  public SurveyReplyEntity getReplyById(Long replyId) {
-    return surveyReplyRepository.getById(replyId);
-  }
-
   public void checkVirtualSurvey(Long surveyId) {
     if (VIRTUAL_SURVEY_ID.equals(surveyId)) {
       throw new CustomSurveyNotFoundException();
     }
   }
 
-  public SurveyReplyExcuseEntity generateSurveyReplyExcuse(
-      SurveyMemberReplyEntity surveyMemberReplyEntity, String because) {
-    SurveyReplyExcuseEntity excuse = SurveyReplyExcuseEntity.builder()
-        .surveyMemberReplyEntity(surveyMemberReplyEntity)
-        .restExcuse(because)
-        .build();
-
-    surveyMemberReplyEntity.setSurveyReplyExcuseEntity(excuse);
-
-    return surveyReplyExcuseRepository.save(excuse);
-
-  }
-
-  public List<SurveyMemberReplyEntity> getSurveyMemberReplyEntityById(Long surveyId) {
+  public List<SurveyMemberReplyEntity> getSurveyMemberReplyEntityBySurveyId(Long surveyId) {
     return surveyMemberReplyRepository.findAllBySurveyId(surveyId)
         .orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
-  }
-
-  public SurveyMemberReplyEntity generateSurveyMemberReplyEntity(SurveyEntity survey,
-      MemberEntity member, SurveyReplyEntity reply) {
-    return SurveyMemberReplyEntity.builder()
-        .survey(survey)
-        .member(member)
-        .reply(reply)
-        .replyTime(LocalDateTime.now())
-        .build();
   }
 
 }
