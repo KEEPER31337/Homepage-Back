@@ -5,18 +5,15 @@ import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.awt.print.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.EntityManager;
-import keeper.project.homepage.admin.dto.clerk.response.ClosedSurveyInformationResponseDto;
-import keeper.project.homepage.admin.dto.clerk.response.SurveyListResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.SurveyResponseDto;
 import keeper.project.homepage.controller.clerk.SurveySpringTestHelper;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.clerk.CustomSurveyMemberReplyNotFoundException;
-import keeper.project.homepage.user.service.clerk.SurveyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -214,7 +211,7 @@ public class AdminSurveyServiceTest extends SurveySpringTestHelper {
     }
 
     //when
-    Page<SurveyListResponseDto> surveyList = adminSurveyService.getSurveyList(pageable);
+    Page<SurveyResponseDto> surveyList = adminSurveyService.getSurveyList(pageable);
 
     //then
     assertThat(surveyList.getTotalElements()).isEqualTo(7);

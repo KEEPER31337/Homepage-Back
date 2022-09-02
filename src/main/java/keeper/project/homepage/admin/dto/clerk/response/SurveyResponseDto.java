@@ -13,7 +13,7 @@ import lombok.NonNull;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SurveyListResponseDto {
+public class SurveyResponseDto {
 
   @NonNull
   private Long surveyId;
@@ -23,13 +23,13 @@ public class SurveyListResponseDto {
   private LocalDateTime openTime;
   @NonNull
   private LocalDateTime closeTime;
-  @NotNull
+  @NonNull
   private String description;
   @NonNull
   private Boolean isVisible;
 
-  public static SurveyListResponseDto from(SurveyEntity survey) {
-    return SurveyListResponseDto.builder()
+  public static SurveyResponseDto from(SurveyEntity survey) {
+    return SurveyResponseDto.builder()
         .surveyId(survey.getId())
         .surveyName(survey.getName())
         .openTime(survey.getOpenTime())

@@ -28,6 +28,8 @@ public class SurveyUtilService {
   private final SurveyMemberReplyRepository surveyMemberReplyRepository;
   private final SurveyReplyExcuseRepository surveyReplyExcuseRepository;
 
+  public static final SurveyEntity NO_SURVEY = SurveyEntity.builder().id(-1L).build();
+
   public SurveyEntity getSurveyById(Long surveyId) {
     return surveyRepository.findById(surveyId)
         .orElseThrow(CustomSurveyNotFoundException::new);

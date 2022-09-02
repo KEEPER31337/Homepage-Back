@@ -6,7 +6,7 @@ import keeper.project.homepage.admin.dto.clerk.request.AdminSurveyRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.AdminSurveyResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.ClosedSurveyInformationResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.DeleteSurveyResponseDto;
-import keeper.project.homepage.admin.dto.clerk.response.SurveyListResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.SurveyResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SurveyRespondentResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SurveyUpdateResponseDto;
 import keeper.project.homepage.admin.service.clerk.AdminSurveyService;
@@ -104,8 +104,8 @@ public class AdminSurveyController {
         adminSurveyService.getLatestClosedSurveyInformation());
   }
 
-  @GetMapping("/list")
-  public PageResult<SurveyListResponseDto> getSurveys(
+  @GetMapping
+  public PageResult<SurveyResponseDto> getSurveys(
       @PageableDefault(sort = "id", direction = Direction.DESC) Pageable pageable
   ) {
     return responseService.getSuccessPageResult(

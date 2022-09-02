@@ -1,6 +1,7 @@
 package keeper.project.homepage.user.service.clerk;
 
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
+import static keeper.project.homepage.util.service.SurveyUtilService.NO_SURVEY;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -41,8 +42,6 @@ public class SurveyService {
   private final SurveyUtilService surveyUtilService;
   private final MemberUtilService memberUtilService;
   private final AuthService authService;
-
-  public static final SurveyEntity NO_SURVEY = SurveyEntity.builder().id(-1L).build();
 
   @Transactional
   public Long responseSurvey(Long surveyId, SurveyResponseRequestDto requestDto) {

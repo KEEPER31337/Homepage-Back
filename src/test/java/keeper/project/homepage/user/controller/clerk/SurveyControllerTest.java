@@ -114,14 +114,10 @@ public class SurveyControllerTest extends SurveySpringTestHelper {
                 fieldWithPath("excuse").description("휴면(기타) 응답일 경우 사유")
             ),
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("성공 시 0을 반환"),
-                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("data.surveyId").description("수정에 성공한 설문 ID"),
-                fieldWithPath("data.memberId").description("응답자 멤버 ID"),
-                fieldWithPath("data.replyId").description("수정에 성공한 설문 응답"),
-                fieldWithPath("data.excuse").description("휴면(기타)응답일 경우 사유"),
-                fieldWithPath("data.replyTime").description("설문 응답 시간")
+                generateSurveyResponseModifyDtoResponseFields(ResponseType.SINGLE,
+                    "성공: true +\n실패: false",
+                    "성공 시 0을 반환",
+                    "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
             )));
   }
 
@@ -145,18 +141,10 @@ public class SurveyControllerTest extends SurveySpringTestHelper {
                 parameterWithName("surveyId").description("조회하는 설문 ID")
             ),
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("성공 시 0을 반환"),
-                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("data.surveyId").description("조회한 설문 ID"),
-                fieldWithPath("data.surveyName").description("조회한 설문 이름"),
-                fieldWithPath("data.openTime").description("조회한 설문의 시작 시간"),
-                fieldWithPath("data.closeTime").description("조회한 설문의 마감 시간"),
-                fieldWithPath("data.description").description("조회한 설문의 설명"),
-                fieldWithPath("data.isVisible").description("설문 공개 여부"),
-                fieldWithPath("data.isResponded").description("설문 응답 여부"),
-                fieldWithPath("data.replyId").description("설문에 응답한 응답 ID"),
-                fieldWithPath("data.excuse").description("응답이 휴면(기타)일 경우 사유")
+                generateSurveyInformationDtoResponseFields(ResponseType.SINGLE,
+                    "성공: true +\n실패: false",
+                    "성공 시 0을 반환",
+                    "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
             )));
   }
 
@@ -205,12 +193,10 @@ public class SurveyControllerTest extends SurveySpringTestHelper {
         .andExpect(jsonPath("$.code").value(0))
         .andDo(document("survey-closed-latest",
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("성공 시 0을 반환"),
-                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("data.surveyId").description("가장 최근에 종료된 설문 ID"),
-                fieldWithPath("data.surveyName").description("가장 최근에 종료된 설문 이름"),
-                fieldWithPath("data.replyId").description("가장 최근에 종료된 설문에 응답한 응답")
+                generateCloseSurveyInformationDtoResponseFields(ResponseType.SINGLE,
+                    "성공: true +\n실패: false",
+                    "성공 시 0을 반환",
+                    "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
             )));
   }
 }

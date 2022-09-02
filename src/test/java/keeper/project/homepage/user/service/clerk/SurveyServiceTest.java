@@ -3,7 +3,6 @@ package keeper.project.homepage.user.service.clerk;
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.ACTIVITY;
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.GRADUATE;
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
-import static keeper.project.homepage.user.service.clerk.SurveyService.NO_SURVEY;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
