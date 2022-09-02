@@ -1,6 +1,7 @@
 package keeper.project.homepage.admin.controller.clerk;
 
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.ACTIVITY;
+import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.GRADUATE;
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
@@ -278,7 +279,7 @@ public class AdminSurveyControllerTest extends SurveySpringTestHelper {
     generateSurveyMemberReply(survey, admin, surveyReplyRepository.getById(ACTIVITY.getId()));
 
     mockMvc.perform(
-            get("/v1/admin/clerk/surveys/{surveyId}/members/{memberId}", survey.getId(), admin.getId())
+            get("/v1/admin/clerk/surveys/information/{surveyId}", survey.getId())
                 .header("Authorization", adminToken)
                 .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
@@ -287,8 +288,7 @@ public class AdminSurveyControllerTest extends SurveySpringTestHelper {
         .andExpect(jsonPath("$.code").value(0))
         .andDo(document("survey-admin-information",
             pathParameters(
-                parameterWithName("surveyId").description("조회하는 설문 ID"),
-                parameterWithName("memberId").description("조회하는 멤버 ID")
+                parameterWithName("surveyId").description("조회하는 설문 ID")
             ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
@@ -309,13 +309,13 @@ public class AdminSurveyControllerTest extends SurveySpringTestHelper {
   @Test
   @DisplayName("[SUCCESS] 공개 상태의 설문 조회(가장 최근) - 현재 진행중인")
   public void getLatestVisibleSurveyId() throws Exception {
-    SurveyEntity survey1 = surveyRepository.getById(1L);
+    SurveyEntity survey1 = surveyRepository.getById(ACTIVITY.getId());
     SurveyEntity survey2 = generateSurvey(LocalDateTime.now().minusDays(2),
         LocalDateTime.now().plusDays(2),
         true);
 
     mockMvc.perform(
-            get("/v1/admin/clerk/surveys/visible")
+            get("/v1/admin/clerk/surveys/visible/ongoing")
                 .header("Authorization", adminToken)
                 .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
@@ -335,14 +335,14 @@ public class AdminSurveyControllerTest extends SurveySpringTestHelper {
   @Test
   @DisplayName("[SUCCESS] 종료된 설문 정보 조회(가장 최근)")
   public void getLatestClosedSurveyInformation() throws Exception {
-    SurveyEntity survey1 = surveyRepository.getById(1L);
+    SurveyEntity survey1 = surveyRepository.getById(ACTIVITY.getId());
     SurveyEntity survey2 = generateSurvey(LocalDateTime.now().minusDays(4),
         LocalDateTime.now().minusDays(2),
         true);
     generateSurveyMemberReply(survey2, admin, surveyReplyRepository.getById(ACTIVITY.getId()));
 
     mockMvc.perform(
-            get("/v1/admin/clerk/surveys/closed/members/{memberId}", admin.getId())
+            get("/v1/admin/clerk/surveys/visible/closed")
                 .header("Authorization", adminToken)
                 .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
@@ -350,9 +350,6 @@ public class AdminSurveyControllerTest extends SurveySpringTestHelper {
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.code").value(0))
         .andDo(document("survey-admin-closed-latest",
-            pathParameters(
-                parameterWithName("memberId").description("조회하는 멤버 ID")
-            ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
@@ -364,27 +361,54 @@ public class AdminSurveyControllerTest extends SurveySpringTestHelper {
   }
 
   @Test
-  @DisplayName("[SUCCESS] 비공개 상태의 설문 조회(가장 최근)")
-  public void getLatestInVisibleSurveyId() throws Exception {
-    SurveyEntity survey1 = surveyRepository.getById(1L);
-    SurveyEntity survey2 = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(2),
-        false);
+  @DisplayName("[SUCCESS] 설문 목록 조회")
+  public void getSurveyList() throws Exception {
+    Boolean isVisible = true;
+    for (int i = 0; i< 7; i++){
+      SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(2),
+          isVisible);
+      generateSurveyMemberReply(survey, admin, surveyReplyRepository.getById(ACTIVITY.getId()));
+      isVisible = !isVisible;
+    }
+
+    String page = "0";
+    String size = "10";
 
     mockMvc.perform(
-            get("/v1/admin/clerk/surveys/inVisible")
+            get("/v1/admin/clerk/surveys/list")
                 .header("Authorization", adminToken)
-                .contentType(MediaType.APPLICATION_JSON))
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("page", page)
+                .param("size", size))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.code").value(0))
-        .andExpect(jsonPath("$.data").isNumber())
-        .andDo(document("survey-inVisible-latest",
+        .andDo(document("survey-list",
+            pathParameters(
+                parameterWithName("page").description("설문 목록의 페이지 번호(default = 0)").optional(),
+                parameterWithName("size").description("설문 목록 한 페이지의 개수(default = 10)").optional()
+            ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("data").description("조회한 설문 ID")
+                fieldWithPath("page.content[].surveyId").description("조회한 설문 ID"),
+                fieldWithPath("page.content[].surveyName").description("조회한 설문 이름"),
+                fieldWithPath("page.content[].openTime").description("조회한 설문의 시작 시간"),
+                fieldWithPath("page.content[].closeTime").description("조회한 설문의 마감 시간"),
+                fieldWithPath("page.content[].description").description("조회한 설문의 설명"),
+                fieldWithPath("page.content[].isVisible").description("설문 공개 여부"),
+                fieldWithPath("page.empty").description("페이지가 비었는 지 여부"),
+                fieldWithPath("page.first").description("첫 페이지 인지"),
+                fieldWithPath("page.last").description("마지막 페이지 인지"),
+                fieldWithPath("page.number").description("요소를 가져 온 페이지 번호 (0부터 시작)"),
+                fieldWithPath("page.numberOfElements").description("요소 개수"),
+                subsectionWithPath("page.pageable").description("해당 페이지에 대한 DB 정보"),
+                fieldWithPath("page.size").description("요청한 페이지 크기"),
+                subsectionWithPath("page.sort").description("정렬에 대한 정보"),
+                fieldWithPath("page.totalElements").description("총 요소 개수"),
+                fieldWithPath("page.totalPages").description("총 페이지")
             )));
   }
 

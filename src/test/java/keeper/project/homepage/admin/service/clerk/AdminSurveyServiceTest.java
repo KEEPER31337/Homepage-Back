@@ -5,20 +5,29 @@ import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.awt.print.Pageable;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.EntityManager;
 import keeper.project.homepage.admin.dto.clerk.response.ClosedSurveyInformationResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.SurveyListResponseDto;
 import keeper.project.homepage.controller.clerk.SurveySpringTestHelper;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.clerk.CustomSurveyMemberReplyNotFoundException;
+import keeper.project.homepage.user.service.clerk.SurveyService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -26,6 +35,9 @@ public class AdminSurveyServiceTest extends SurveySpringTestHelper {
 
   @Autowired
   private EntityManager em;
+
+  @Autowired
+  private AdminSurveyService adminSurveyService;
   private MemberEntity user;
   private MemberEntity admin;
 
@@ -187,79 +199,32 @@ public class AdminSurveyServiceTest extends SurveySpringTestHelper {
   }
 
   @Test
-  @DisplayName("가장 최근의 공개된 설문 조회 - 현재 진행중인")
-  public void getLatestVisibleSurveyId() throws Exception {
+  @DisplayName("설문 목록 조회")
+  public void getSurveyList() throws Exception {
     //given
-    SurveyEntity survey1 = generateSurvey(LocalDateTime.now().minusDays(4),
-        LocalDateTime.now().plusDays(2),
-        true);
-    SurveyEntity survey2 = generateSurvey(LocalDateTime.now().minusDays(4),
-        LocalDateTime.now().plusDays(2),
-        false);
+    setAuthentication(admin);
+    PageRequest pageable =  PageRequest.of(0, 5, Sort.by("id").descending());
 
-    //when
-    LocalDateTime now = LocalDateTime.now();
-    List<SurveyEntity> surveyList = surveyRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-
-    Long latestVisibleSurveyId = findVisibleSurveyId(surveyList, now);
-
-    //then
-    assertThat(latestVisibleSurveyId).isEqualTo(survey1.getId());
-  }
-
-  @Test
-  @DisplayName("가장 최근에 종료된 설문의 정보 조회")
-  public void getLatestClosedSurveyInformation() throws Exception {
-    //given
-    SurveyEntity survey1 = generateSurvey(LocalDateTime.now().minusDays(4),
-        LocalDateTime.now().minusDays(2),
-        true);
-    generateSurveyMemberReply(survey1, admin, surveyReplyRepository.getById(ACTIVITY.getId()));
-    SurveyEntity survey2 = generateSurvey(LocalDateTime.now().minusDays(4),
-        LocalDateTime.now().plusDays(2),
-        true);
-    generateSurveyMemberReply(survey2, admin, surveyReplyRepository.getById(GRADUATE.getId()));
-
-    //when
-    LocalDateTime now = LocalDateTime.now();
-    List<SurveyEntity> surveyList = surveyRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-
-    SurveyMemberReplyEntity surveyMemberReply = null;
-
-    for (SurveyEntity survey : surveyList) {
-      if (survey.getCloseTime().isBefore(now)) {
-        surveyMemberReply = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
-                survey.getId(), admin.getId())
-            .orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
-        break;
-      }
+    Boolean isVisible = true;
+    for (int i = 0; i< 7; i++){
+      SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(2),
+          isVisible);
+      generateSurveyMemberReply(survey, admin, surveyReplyRepository.getById(ACTIVITY.getId()));
+      isVisible = !isVisible;
     }
 
-    //then
-    assertThat(surveyMemberReply.getSurvey().getId()).isEqualTo(survey1.getId());
-    assertThat(surveyMemberReply.getSurvey().getName()).isEqualTo(survey1.getName());
-    assertThat(surveyMemberReply.getReply().getId()).isEqualTo(ACTIVITY.getId());
+    //when
+    Page<SurveyListResponseDto> surveyList = adminSurveyService.getSurveyList(pageable);
 
+    //then
+    assertThat(surveyList.getTotalElements()).isEqualTo(7);
+    assertThat(surveyList.getNumberOfElements()).isEqualTo(5);
   }
 
-  @Test
-  @DisplayName("가장 최근의 비공개 상태의 설문 조회")
-  public void getLatestInVisibleSurveyId() throws Exception {
-    //given
-    SurveyEntity survey1 = generateSurvey(LocalDateTime.now().minusDays(4),
-        LocalDateTime.now().plusDays(2),
-        false);
-    SurveyEntity survey2 = generateSurvey(LocalDateTime.now().minusDays(4),
-        LocalDateTime.now().plusDays(2),
-        true);
-
-    //when
-    LocalDateTime now = LocalDateTime.now();
-    List<SurveyEntity> surveyList = surveyRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-
-    Long latestInVisibleSurveyId = findInVisibleSurveyId(surveyList, now);
-
-    //then
-    assertThat(latestInVisibleSurveyId).isEqualTo(survey1.getId());
+  private void setAuthentication(MemberEntity reqMember) {
+    SecurityContext context = SecurityContextHolder.getContext();
+    context.setAuthentication(
+        new UsernamePasswordAuthenticationToken(reqMember.getId(), reqMember.getPassword(),
+            List.of(new SimpleGrantedAuthority("ROLE_회장"))));
   }
 }

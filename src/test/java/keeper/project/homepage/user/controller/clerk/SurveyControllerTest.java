@@ -52,10 +52,8 @@ public class SurveyControllerTest extends SurveySpringTestHelper {
         true);
 
     SurveyResponseRequestDto surveyResponseRequestDto = SurveyResponseRequestDto.builder()
-        .memberId(user.getId())
         .replyId(OTHER_DORMANT.getId())
         .excuse("BOB 교육으로 인한 휴학")
-        .replyTime(LocalDateTime.now())
         .build();
 
     mockMvc.perform(post("/v1/clerk/surveys/{surveyId}", survey.getId())
@@ -73,10 +71,8 @@ public class SurveyControllerTest extends SurveySpringTestHelper {
                 parameterWithName("surveyId").description("응답할 설문의 ID")
             ),
             requestFields(
-                fieldWithPath("memberId").description("응답하는 멤버의 ID"),
                 fieldWithPath("replyId").description("응답 ID"),
-                fieldWithPath("excuse").description("응답이 휴면(기타)일 경우 사유"),
-                fieldWithPath("replyTime").description("응답한 시간")
+                fieldWithPath("excuse").description("응답이 휴면(기타)일 경우 사유")
             ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
@@ -95,13 +91,10 @@ public class SurveyControllerTest extends SurveySpringTestHelper {
 
     Long modifyReplyId = OTHER_DORMANT.getId();
     String excuse = "BOB 교육으로 인한 휴학";
-    LocalDateTime replyTime = LocalDateTime.now();
 
     SurveyResponseRequestDto surveyResponseRequestDto = SurveyResponseRequestDto.builder()
-        .memberId(user.getId())
         .replyId(modifyReplyId)
         .excuse(excuse)
-        .replyTime(replyTime)
         .build();
 
     mockMvc.perform(patch("/v1/clerk/surveys/{surveyId}", survey.getId())
@@ -117,10 +110,8 @@ public class SurveyControllerTest extends SurveySpringTestHelper {
                 parameterWithName("surveyId").description("응답을 수정할 설문의 Id")
             ),
             requestFields(
-                fieldWithPath("memberId").description("응답하는 멤버의 ID"),
                 fieldWithPath("replyId").description("수정할 응답"),
-                fieldWithPath("excuse").description("휴면(기타) 응답일 경우 사유"),
-                fieldWithPath("replyTime").description("응답 시간")
+                fieldWithPath("excuse").description("휴면(기타) 응답일 경우 사유")
             ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
@@ -142,7 +133,7 @@ public class SurveyControllerTest extends SurveySpringTestHelper {
     generateSurveyMemberReply(survey, user, surveyReplyRepository.getById(ACTIVITY.getId()));
 
     mockMvc.perform(
-            get("/v1/clerk/surveys/{surveyId}/members/{memberId}", survey.getId(), user.getId())
+            get("/v1/clerk/surveys/information/{surveyId}", survey.getId())
                 .header("Authorization", userToken)
                 .contentType(MediaType.APPLICATION_JSON))
         .andDo(print())
@@ -151,8 +142,7 @@ public class SurveyControllerTest extends SurveySpringTestHelper {
         .andExpect(jsonPath("$.code").value(0))
         .andDo(document("survey-information",
             pathParameters(
-                parameterWithName("surveyId").description("조회하는 설문 ID"),
-                parameterWithName("memberId").description("조회하는 멤버 ID")
+                parameterWithName("surveyId").description("조회하는 설문 ID")
             ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),

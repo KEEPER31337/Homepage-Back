@@ -30,8 +30,8 @@ public class SurveySpringTestHelper extends ApiControllerTestHelper {
 
   protected String asJsonString(final Object obj) {
     try {
-      final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
-      return mapper.writeValueAsString(obj);
+      final ObjectMapper mapper = new ObjectMapper();
+      return mapper.registerModule(new JavaTimeModule()).writeValueAsString(obj);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
