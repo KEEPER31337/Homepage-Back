@@ -59,8 +59,6 @@ public class AdminMeritControllerTest extends ClerkControllerTestHelper {
     requestDtoList.add(getMeritAddRequestDto(absence, awarder2));
     requestDtoList.add(getMeritAddRequestDto(publicAnnouncement, awarder2));
 
-
-
     mockMvc.perform(post("/v1/admin/clerk/merits")
             .header("Authorization", clerkToken)
             .contentType(MediaType.APPLICATION_JSON)
@@ -83,6 +81,32 @@ public class AdminMeritControllerTest extends ClerkControllerTestHelper {
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("list.[].meritLogId").description("추가한 상벌점 내역 id")
             ))
+        );
+  }
+
+  @Test
+  @DisplayName("상벌점 내역 삭제하기")
+  void deleteMeritTest() throws Exception{
+    MemberEntity giver = clerk;
+    MemberEntity awarder = generateMember("이정학", 12.5F);
+    MeritTypeEntity publicAnnouncement = generateMeritType(2, true, "각종대외발표");
+    MeritLogEntity meritLog = generateMeritLog(awarder, giver, publicAnnouncement, LocalDate.now());
+
+    mockMvc.perform(delete("/v1/admin/clerk/merits/{meritLogId}", meritLog.getId())
+            .header("Authorization", clerkToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").value("성공하였습니다."))
+        .andExpect(jsonPath("$.data").value(meritLog.getId()))
+        .andDo(document("delete-merit",
+            pathParameters(parameterWithName("meritLogId").description("삭제할 상벌점 내역 id")),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("data").description("삭제한 상벌점 내역 id")))
         );
   }
 
