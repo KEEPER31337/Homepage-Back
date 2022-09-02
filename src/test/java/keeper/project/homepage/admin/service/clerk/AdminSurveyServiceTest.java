@@ -2,18 +2,22 @@ package keeper.project.homepage.admin.service.clerk;
 
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.ACTIVITY;
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.GRADUATE;
+import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.EntityManager;
+import keeper.project.homepage.admin.dto.clerk.request.AdminSurveyRequestDto;
+import keeper.project.homepage.admin.dto.clerk.response.SurveyRespondentResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SurveyResponseDto;
 import keeper.project.homepage.controller.clerk.SurveySpringTestHelper;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.clerk.CustomSurveyMemberReplyNotFoundException;
+import keeper.project.homepage.user.dto.clerk.response.SurveyInformationResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,48 +52,36 @@ public class AdminSurveyServiceTest extends SurveySpringTestHelper {
   @DisplayName("설문 조사 개설")
   public void createSurvey() throws Exception {
     //given
-    SurveyEntity survey = surveyRepository.save(
-        SurveyEntity.builder()
-            .name("2022년 2학기 활동인원 조사")
-            .description("활동인원 조사입니다.")
-            .openTime(LocalDateTime.now())
-            .closeTime(LocalDateTime.now().plusDays(5))
-            .isVisible(true)
-            .build()
-    );
+    AdminSurveyRequestDto requestDto = AdminSurveyRequestDto.builder()
+        .surveyName("2022년 2학기 활동인원 조사")
+        .openTime(LocalDateTime.now())
+        .closeTime(LocalDateTime.now().plusDays(5))
+        .description("활동인원 조사입니다.")
+        .isVisible(true)
+        .build();
 
     //when
-    SurveyEntity findSurvey = surveyRepository.getById(survey.getId());
+    adminSurveyService.createSurvey(requestDto);
+    List<SurveyEntity> all = surveyRepository.findAll();
 
     //then
-    assertThat(findSurvey.getId()).isEqualTo(survey.getId());
+    assertThat(all.size()).isEqualTo(2); // virtual data 포함
   }
 
   @Test
   @DisplayName("설문 삭제 - 응답자도 삭제")
   public void deleteSurvey() throws Exception {
     //given
-    SurveyEntity survey = surveyRepository.save(
-        SurveyEntity.builder()
-            .name("2022년 2학기 활동인원 조사")
-            .description("활동인원 조사입니다.")
-            .openTime(LocalDateTime.now())
-            .closeTime(LocalDateTime.now().plusDays(5))
-            .isVisible(true)
-            .build()
-    );
+    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
+        true);
     generateSurveyMemberReply(survey, user, surveyReplyRepository.getById(ACTIVITY.getId()));
 
     //when
-    surveyRepository.delete(survey);
-
-    em.flush();
-    em.clear();
-
-    //then
+    adminSurveyService.deleteSurvey(survey.getId());
     List<SurveyEntity> surveys = surveyRepository.findAll();
     List<SurveyMemberReplyEntity> respondents = surveyMemberReplyRepository.findAll();
 
+    //then
     assertThat(surveys.size()).isEqualTo(1); // virtual value
     assertThat(respondents.size()).isEqualTo(0);
   }
@@ -98,18 +90,11 @@ public class AdminSurveyServiceTest extends SurveySpringTestHelper {
   @DisplayName("설문 공개")
   public void openSurvey() throws Exception {
     //given
-    SurveyEntity survey = surveyRepository.save(
-        SurveyEntity.builder()
-            .name("2022년 2학기 활동인원 조사")
-            .description("활동인원 조사입니다.")
-            .openTime(LocalDateTime.now())
-            .closeTime(LocalDateTime.now().plusDays(5))
-            .isVisible(false)
-            .build()
-    );
+    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
+        false);
 
     //when
-    survey.openSurvey();
+    adminSurveyService.openSurvey(survey.getId());
     SurveyEntity findSurvey = surveyRepository.getById(survey.getId());
 
     //then
@@ -120,18 +105,11 @@ public class AdminSurveyServiceTest extends SurveySpringTestHelper {
   @DisplayName("설문 비공개")
   public void closeSurvey() throws Exception {
     //given
-    SurveyEntity survey = surveyRepository.save(
-        SurveyEntity.builder()
-            .name("2022년 2학기 활동인원 조사")
-            .description("활동인원 조사입니다.")
-            .openTime(LocalDateTime.now())
-            .closeTime(LocalDateTime.now().plusDays(5))
-            .isVisible(true)
-            .build()
-    );
+    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
+        true);
 
     //when
-    survey.closeSurvey();
+    adminSurveyService.closeSurvey(survey.getId());
     SurveyEntity findSurvey = surveyRepository.getById(survey.getId());
 
     //then
@@ -142,21 +120,14 @@ public class AdminSurveyServiceTest extends SurveySpringTestHelper {
   @DisplayName("설문 응답자 조회")
   public void getSurveyRespondents() throws Exception {
     //given
-    SurveyEntity survey = surveyRepository.save(
-        SurveyEntity.builder()
-            .name("2022년 2학기 활동인원 조사")
-            .description("활동인원 조사입니다.")
-            .openTime(LocalDateTime.now())
-            .closeTime(LocalDateTime.now().plusDays(5))
-            .isVisible(true)
-            .build()
-    );
+    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
+        true);
     generateSurveyMemberReply(survey, user, surveyReplyRepository.getById(GRADUATE.getId()));
     generateSurveyMemberReply(survey, admin, surveyReplyRepository.getById(ACTIVITY.getId()));
 
     //when
-    SurveyEntity findSurvey = surveyRepository.getById(survey.getId());
-    List<SurveyMemberReplyEntity> respondents = findSurvey.getRespondents();
+    List<SurveyRespondentResponseDto> respondents = adminSurveyService.getRespondents(
+        survey.getId());
 
     //then
     assertThat(respondents.size()).isEqualTo(2);
@@ -166,33 +137,62 @@ public class AdminSurveyServiceTest extends SurveySpringTestHelper {
   @DisplayName("설문 정보 조회")
   public void getSurveyInformation() throws Exception {
     //given
-    LocalDateTime openTime = LocalDateTime.now();
-    LocalDateTime closeTime = LocalDateTime.now().plusDays(5);
-    SurveyEntity survey = generateSurvey(openTime, closeTime, true);
-    SurveyMemberReplyEntity surveyMemberReplyEntity = generateSurveyMemberReply(survey, admin,
-        surveyReplyRepository.getById(GRADUATE.getId()));
-
-    Boolean isResponded = false;
-
-    if (survey.getRespondents().contains(surveyMemberReplyEntity)) {
-      isResponded = true;
-    }
+    setAuthentication(admin);
+    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
+        true);
+    generateSurveyMemberReply(survey, admin, surveyReplyRepository.getById(ACTIVITY.getId()));
 
     //when
-    SurveyEntity findSurvey = surveyRepository.getById(survey.getId());
-    SurveyMemberReplyEntity findMemberReply = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
-            findSurvey.getId(), admin.getId())
-        .orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
+    SurveyInformationResponseDto responseDto = adminSurveyService.getSurveyInformation(
+        survey.getId());
+    SurveyMemberReplyEntity surveyMemberReplyEntity = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
+        survey.getId(), admin.getId()).orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
 
     //then
-    assertThat(findSurvey.getId()).isEqualTo(survey.getId());
-    assertThat(findSurvey.getName()).isEqualTo(survey.getName());
-    assertThat(findSurvey.getOpenTime()).isEqualTo(openTime);
-    assertThat(findSurvey.getCloseTime()).isEqualTo(closeTime);
-    assertThat(findSurvey.getDescription()).isEqualTo(survey.getDescription());
-    assertThat(isResponded).isEqualTo(true);
-    assertThat(survey.getIsVisible()).isEqualTo(true);
-    assertThat(findMemberReply.getReply().getId()).isEqualTo(GRADUATE.getId());
+    assertThat(responseDto.getSurveyId()).isEqualTo(survey.getId());
+    assertThat(responseDto.getIsResponded()).isEqualTo(true);
+    assertThat(responseDto.getReplyId()).isEqualTo(ACTIVITY.getId());
+  }
+
+  @Test
+  @DisplayName("설문 정보 조회 - 응답을 안 했을 경우")
+  public void getSurveyInformation_noReply() throws Exception {
+    //given
+    setAuthentication(admin);
+    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
+        true);
+
+    //when
+    SurveyInformationResponseDto responseDto = adminSurveyService.getSurveyInformation(
+        survey.getId());
+
+    //then
+    assertThat(responseDto.getSurveyId()).isEqualTo(survey.getId());
+    assertThat(responseDto.getIsResponded()).isEqualTo(false);
+  }
+
+  @Test
+  @DisplayName("설문 정보 조회 - 휴면(기타) 응답")
+  public void getSurveyInformation_withExcuse() throws Exception {
+    //given
+    setAuthentication(admin);
+    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
+        true);
+    SurveyMemberReplyEntity surveyMemberReplyEntity = generateSurveyMemberReply(survey, admin,
+        surveyReplyRepository.getById(OTHER_DORMANT.getId()));
+    generateSurveyReplyExcuse(surveyMemberReplyEntity, "BOB로 인한 휴학");
+
+    //when
+    SurveyInformationResponseDto responseDto = adminSurveyService.getSurveyInformation(
+        survey.getId());
+    SurveyMemberReplyEntity surveyMemberReply = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
+        survey.getId(), admin.getId()).orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
+
+    //then
+    assertThat(responseDto.getSurveyId()).isEqualTo(survey.getId());
+    assertThat(responseDto.getIsResponded()).isEqualTo(true);
+    assertThat(responseDto.getReplyId()).isEqualTo(OTHER_DORMANT.getId());
+    assertThat(responseDto.getExcuse()).isEqualTo("BOB로 인한 휴학");
   }
 
   @Test

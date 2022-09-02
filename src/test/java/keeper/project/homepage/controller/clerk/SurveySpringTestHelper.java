@@ -84,6 +84,7 @@ public class SurveySpringTestHelper extends ApiControllerTestHelper {
         .build();
 
     surveyMemberReplyEntity.setSurveyReplyExcuseEntity(excuse);
+    excuse.setSurveyMemberReplyEntity(surveyMemberReplyEntity);
 
     return surveyReplyExcuseRepository.save(excuse);
 
