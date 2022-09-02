@@ -67,6 +67,28 @@ include::{snippets}/delete-merit/http-response.adoc[]
 
 include::{snippets}/delete-merit/response-fields.adoc[]
 
+== *상벌점 내역 수정* ==
+
+=== 요청
+
+==== Request
+
+include::{snippets}/update-merit-log/http-request.adoc[]
+
+==== Request Fields
+
+include::{snippets}/update-merit-log/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/update-merit-log/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/update-merit-log/response-fields.adoc[]
+
 == *회원별 상벌점 누계 조회* ==
 
 === 요청
