@@ -3,9 +3,11 @@ package keeper.project.homepage.admin.controller.clerk;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.서기;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.우수회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberTypeName.정회원;
+import static org.assertj.core.api.Assertions.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
@@ -21,12 +23,14 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
+import keeper.project.homepage.admin.dto.clerk.request.MeritLogUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.MeritTypeCreateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.MeritAddResponseDto;
 import keeper.project.homepage.entity.clerk.MeritLogEntity;
 import keeper.project.homepage.entity.clerk.MeritTypeEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -85,7 +89,7 @@ public class AdminMeritControllerTest extends ClerkControllerTestHelper {
   }
 
   @Test
-  @DisplayName("상벌점 내역 삭제하기")
+  @DisplayName("[SUCCESS] 상벌점 내역 삭제")
   void deleteMeritTest() throws Exception{
     MemberEntity giver = clerk;
     MemberEntity awarder = generateMember("이정학", 12.5F);
@@ -108,6 +112,49 @@ public class AdminMeritControllerTest extends ClerkControllerTestHelper {
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("data").description("삭제한 상벌점 내역 id")))
         );
+  }
+
+  @Test
+  @DisplayName("[SUCCESS] 상벌점 내역 수정")
+  void updateMerit() throws Exception{
+    MemberEntity giver = clerk;
+    MemberEntity awarder = generateMember("이정학", 12.5F);
+    MeritTypeEntity publicAnnouncement = generateMeritType(2, true, "각종대외발표");
+    awarder.changeMerit(2);
+    MeritTypeEntity bestTechDoc = generateMeritType(3, true, "우수기술문서작성");
+    MeritLogEntity meritLog = generateMeritLog(awarder, giver, publicAnnouncement, LocalDate.now());
+
+    MeritLogUpdateRequestDto requestDto = MeritLogUpdateRequestDto.builder()
+        .meritLogId(meritLog.getId())
+        .meritTypeId(bestTechDoc.getId())
+        .date(LocalDate.now())
+        .build();
+
+    mockMvc.perform(patch("/v1/admin/clerk/merits")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonDateString(requestDto))
+            .header("Authorization", clerkToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").value("성공하였습니다."))
+        .andExpect(jsonPath("$.data").value(meritLog.getId()))
+        .andDo(document("update-merit-log",
+            requestFields(
+                fieldWithPath("meritLogId").description("수정할 상벌점 내역 id"),
+                fieldWithPath("meritTypeId").description("수정할 상벌점 타입"),
+                fieldWithPath("date").description("수정할 날짜")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("data").description("수정한 상벌점 내역 id")))
+        );
+
+    assertThat(meritLog.getMeritType().getId()).isEqualTo(bestTechDoc.getId());
+    assertThat(awarder.getMerit()).isEqualTo(bestTechDoc.getMerit());
   }
 
   @Test
@@ -179,7 +226,8 @@ public class AdminMeritControllerTest extends ClerkControllerTestHelper {
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("list.[].memberId").description("회원 id"),
+                fieldWithPath("list.[].meritLogId").description("상벌점 내역 id"),
+                fieldWithPath("list.[].awarderRealName").description("상벌점 수상자 이름"),
                 fieldWithPath("list.[].date").description("상벌점 수여 날짜"),
                 fieldWithPath("list.[].isMerit").description("상점이면 1, 벌점이면 0"),
                 fieldWithPath("list.[].merit").description("상벌점 점수"),
@@ -313,7 +361,7 @@ public class AdminMeritControllerTest extends ClerkControllerTestHelper {
         .awarder(awarder)
         .giver(giver)
         .meritType(type)
-        .time(date)
+        .date(date)
         .build());
   }
 
