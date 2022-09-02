@@ -1,15 +1,16 @@
 package keeper.project.homepage.admin.service.clerk;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import keeper.project.homepage.admin.dto.clerk.request.MeritLogCreateRequestDto;
+import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.MeritTypeCreateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.MemberTotalMeritLogsResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.MeritLogByYearResponseDto;
-import keeper.project.homepage.admin.dto.clerk.response.MeritLogCreateResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.MeritAddResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.MeritTypeResponseDto;
 import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.entity.clerk.MeritLogEntity;
@@ -58,19 +59,23 @@ public class AdminMeritService {
   }
 
   @Transactional
-  public MeritLogCreateResponseDto createMeritLog(MeritLogCreateRequestDto requestDto) {
+  public List<MeritAddResponseDto> addMeritLogs(List<MeritAddRequestDto> requestDtoList) {
     MemberEntity giver = authService.getMemberEntityWithJWT();
-    MemberEntity awarder = memberUtilService.getById(requestDto.getMemberId());
-    MeritTypeEntity meritType = meritTypeRepository.findById(requestDto.getMeritTypeId())
-        .orElseThrow(CustomMeritTypeNotFoundException::new);
-    MeritLogEntity meritLog = getMeritLogEntity(requestDto.getDate(), meritType, awarder, giver);
+    List<MeritAddResponseDto> responseDtoList = new ArrayList<>();
 
-    updateMeritByMeritType(awarder, meritType);
-    MeritLogEntity save = meritLogRepository.save(meritLog);
+    for (MeritAddRequestDto requestDto : requestDtoList) {
+      MemberEntity awarder = memberUtilService.getById(requestDto.getMemberId());
+      MeritTypeEntity meritType = meritTypeRepository.findById(requestDto.getMeritTypeId())
+          .orElseThrow(CustomMeritTypeNotFoundException::new);
+      MeritLogEntity meritLog = getMeritLogEntity(requestDto.getDate(), meritType, awarder, giver);
 
-    return MeritLogCreateResponseDto.builder()
-        .meritLogId(save.getId())
-        .build();
+      updateMeritByMeritType(awarder, meritType);
+      MeritLogEntity save = meritLogRepository.save(meritLog);
+      responseDtoList.add(MeritAddResponseDto.builder()
+          .meritLogId(save.getId())
+          .build());
+    }
+    return responseDtoList;
   }
 
   protected static void updateMeritByMeritType(MemberEntity awarder, MeritTypeEntity meritType) {

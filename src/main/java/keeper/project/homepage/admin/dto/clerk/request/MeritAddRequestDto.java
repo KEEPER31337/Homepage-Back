@@ -14,7 +14,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class MeritLogCreateRequestDto {
+public class MeritAddRequestDto {
 
   @NotNull
   @JsonFormat(pattern = "yyyy-MM-dd")

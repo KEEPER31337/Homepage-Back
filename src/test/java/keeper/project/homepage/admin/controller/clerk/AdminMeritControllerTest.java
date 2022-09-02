@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
-import keeper.project.homepage.admin.dto.clerk.request.MeritLogCreateRequestDto;
+import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.MeritTypeCreateRequestDto;
 import keeper.project.homepage.entity.clerk.MeritLogEntity;
 import keeper.project.homepage.entity.clerk.MeritTypeEntity;
@@ -48,7 +48,7 @@ public class AdminMeritControllerTest extends ClerkControllerTestHelper {
   public void createMeritLog() throws Exception {
     MeritTypeEntity publicAnnouncement = generateMeritType(2, true, "각종대외발표");
     MemberEntity awarder = generateMember("이정학", 12.5F);
-    MeritLogCreateRequestDto meritLogCreateRequestDto = MeritLogCreateRequestDto.builder()
+    MeritAddRequestDto meritLogCreateRequestDto = MeritAddRequestDto.builder()
         .date(LocalDate.now())
         .memberId(awarder.getId())
         .meritTypeId(publicAnnouncement.getId())
