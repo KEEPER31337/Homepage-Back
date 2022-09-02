@@ -3,6 +3,7 @@ package keeper.project.homepage.admin.controller.clerk;
 import java.util.List;
 import javax.validation.Valid;
 import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
+import keeper.project.homepage.admin.dto.clerk.request.MeritLogUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.MeritTypeCreateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.MemberTotalMeritLogsResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.MeritLogByYearResponseDto;
@@ -17,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,9 +48,15 @@ public class AdminMeritController {
   }
 
   @PostMapping
-  public ListResult<MeritAddResponseDto> createMeritLog(
+  public ListResult<MeritAddResponseDto> addMeritLogs(
       @RequestBody @Valid List<MeritAddRequestDto> requestDtoList) {
     return responseService.getSuccessListResult(adminMeritService.addMeritLogs(requestDtoList));
+  }
+
+  @PatchMapping
+  public SingleResult<Long> updateMeritLog(
+      @RequestBody @Valid MeritLogUpdateRequestDto requestDto) {
+    return responseService.getSuccessSingleResult(adminMeritService.updateMeritLog(requestDto));
   }
 
   @DeleteMapping("/{meritLogId}")

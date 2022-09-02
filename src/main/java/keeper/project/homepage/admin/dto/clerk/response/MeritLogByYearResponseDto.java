@@ -39,7 +39,7 @@ public class MeritLogByYearResponseDto {
     return MeritLogByYearResponseDto.builder()
         .meritLogId(meritLog.getId())
         .awarderRealName(meritLog.getAwarder().getRealName())
-        .date(meritLog.getTime())
+        .date(meritLog.getDate())
         .isMerit(meritLog.getMeritType().getIsMerit())
         .merit(meritLog.getMeritType().getMerit())
         .detail(meritLog.getMeritType().getDetail())

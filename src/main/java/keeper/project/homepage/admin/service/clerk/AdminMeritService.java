@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
+import keeper.project.homepage.admin.dto.clerk.request.MeritLogUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.MeritTypeCreateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.MemberTotalMeritLogsResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.MeritLogByYearResponseDto;
@@ -69,7 +70,7 @@ public class AdminMeritService {
           .orElseThrow(CustomMeritTypeNotFoundException::new);
       MeritLogEntity meritLog = getMeritLogEntity(requestDto.getDate(), meritType, awarder, giver);
 
-      updateMeritByMeritType(awarder, meritType);
+      addMeritByMeritType(awarder, meritType);
       MeritLogEntity save = meritLogRepository.save(meritLog);
       responseDtoList.add(MeritAddResponseDto.builder()
           .meritLogId(save.getId())
@@ -78,7 +79,7 @@ public class AdminMeritService {
     return responseDtoList;
   }
 
-  protected static void updateMeritByMeritType(MemberEntity awarder, MeritTypeEntity meritType) {
+  protected static void addMeritByMeritType(MemberEntity awarder, MeritTypeEntity meritType) {
     if (meritType.getIsMerit()) {
       awarder.changeMerit(awarder.getMerit() + meritType.getMerit());
     } else {
@@ -92,14 +93,14 @@ public class AdminMeritService {
         .awarder(awarder)
         .giver(giver)
         .meritType(meritType)
-        .time(date)
+        .date(date)
         .build();
   }
 
   public List<Integer> getYears() {
-    MeritLogEntity meritLog = meritLogRepository.findFirstByOrderByTime()
+    MeritLogEntity meritLog = meritLogRepository.findFirstByOrderByDate()
         .orElseThrow(CustomMeritLogNotFoundException::new);
-    return IntStream.range(meritLog.getTime().getYear(), LocalDate.now().getYear() + 1)
+    return IntStream.range(meritLog.getDate().getYear(), LocalDate.now().getYear() + 1)
         .boxed()
         .toList();
   }
@@ -132,6 +133,22 @@ public class AdminMeritService {
 
     deleteMeritByMeritType(meritLog.getAwarder(), meritLog.getMeritType());
     meritLogRepository.delete(meritLog);
+
+    return meritLog.getId();
+  }
+
+  @Transactional
+  public Long updateMeritLog(MeritLogUpdateRequestDto requestDto) {
+    MeritLogEntity meritLog = meritLogRepository.findById(requestDto.getMeritLogId())
+        .orElseThrow(CustomMeritLogNotFoundException::new);
+    MeritTypeEntity findMeritType = meritTypeRepository.findById(requestDto.getMeritTypeId())
+        .orElseThrow(CustomMeritTypeNotFoundException::new);
+
+    deleteMeritByMeritType(meritLog.getAwarder(), meritLog.getMeritType());
+    addMeritByMeritType(meritLog.getAwarder(), findMeritType);
+
+    meritLog.changeMeritType(findMeritType);
+    meritLog.changeDate(requestDto.getDate());
 
     return meritLog.getId();
   }

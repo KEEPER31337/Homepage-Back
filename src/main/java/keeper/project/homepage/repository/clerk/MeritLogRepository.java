@@ -9,8 +9,8 @@ import org.springframework.data.repository.query.Param;
 
 public interface MeritLogRepository extends JpaRepository<MeritLogEntity, Long> {
 
-  @Query("SELECT m FROM MeritLogEntity m WHERE YEAR(m.time) = :year")
+  @Query("SELECT m FROM MeritLogEntity m WHERE YEAR(m.date) = :year")
   List<MeritLogEntity> findAllByYear(@Param("year") Integer year);
 
-  Optional<MeritLogEntity> findFirstByOrderByTime();
+  Optional<MeritLogEntity> findFirstByOrderByDate();
 }
