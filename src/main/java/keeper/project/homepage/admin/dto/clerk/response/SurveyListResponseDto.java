@@ -14,6 +14,7 @@ import lombok.NonNull;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SurveyListResponseDto {
+
   @NonNull
   private Long surveyId;
   @NonNull
@@ -27,7 +28,7 @@ public class SurveyListResponseDto {
   @NonNull
   private Boolean isVisible;
 
-  public static SurveyListResponseDto from(SurveyEntity survey){
+  public static SurveyListResponseDto from(SurveyEntity survey) {
     return SurveyListResponseDto.builder()
         .surveyId(survey.getId())
         .surveyName(survey.getName())

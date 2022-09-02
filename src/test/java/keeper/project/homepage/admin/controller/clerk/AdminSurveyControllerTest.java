@@ -364,7 +364,7 @@ public class AdminSurveyControllerTest extends SurveySpringTestHelper {
   @DisplayName("[SUCCESS] 설문 목록 조회")
   public void getSurveyList() throws Exception {
     Boolean isVisible = true;
-    for (int i = 0; i< 7; i++){
+    for (int i = 0; i < 7; i++) {
       SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(2),
           isVisible);
       generateSurveyMemberReply(survey, admin, surveyReplyRepository.getById(ACTIVITY.getId()));

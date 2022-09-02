@@ -16,6 +16,7 @@ import org.springframework.lang.Nullable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ClosedSurveyInformationResponseDto {
+
   @NonNull
   private Long surveyId;
   @Nullable
@@ -23,7 +24,8 @@ public class ClosedSurveyInformationResponseDto {
   @Nullable
   private Long replyId;
 
-  public static ClosedSurveyInformationResponseDto of(SurveyEntity survey, SurveyMemberReplyEntity surveyMemberReply){
+  public static ClosedSurveyInformationResponseDto of(SurveyEntity survey,
+      SurveyMemberReplyEntity surveyMemberReply) {
     return ClosedSurveyInformationResponseDto.builder()
         .surveyId(survey.getId())
         .surveyName(survey.getName())
@@ -31,7 +33,7 @@ public class ClosedSurveyInformationResponseDto {
         .build();
   }
 
-  public static ClosedSurveyInformationResponseDto notFound(){
+  public static ClosedSurveyInformationResponseDto notFound() {
     return ClosedSurveyInformationResponseDto.builder()
         .surveyId(-1L)
         .surveyName(null)

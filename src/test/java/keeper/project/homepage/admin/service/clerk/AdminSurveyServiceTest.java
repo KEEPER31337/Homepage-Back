@@ -203,10 +203,10 @@ public class AdminSurveyServiceTest extends SurveySpringTestHelper {
   public void getSurveyList() throws Exception {
     //given
     setAuthentication(admin);
-    PageRequest pageable =  PageRequest.of(0, 5, Sort.by("id").descending());
+    PageRequest pageable = PageRequest.of(0, 5, Sort.by("id").descending());
 
     Boolean isVisible = true;
-    for (int i = 0; i< 7; i++){
+    for (int i = 0; i < 7; i++) {
       SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(2),
           isVisible);
       generateSurveyMemberReply(survey, admin, surveyReplyRepository.getById(ACTIVITY.getId()));

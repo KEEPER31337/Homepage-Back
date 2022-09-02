@@ -15,6 +15,7 @@ import org.springframework.lang.Nullable;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SurveyResponseRequestDto {
+
   @NotNull
   private Long replyId;
   @Nullable
