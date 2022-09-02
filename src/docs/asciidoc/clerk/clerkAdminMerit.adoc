@@ -28,21 +28,21 @@ link:../admin.html[어드민 API 목록으로 돌아가기]
 
 ==== Request
 
-include::{snippets}/create-merit-log/http-request.adoc[]
+include::{snippets}/add-merit-log-list/http-request.adoc[]
 
 ==== Request Fields
 
-include::{snippets}/create-merit-log/request-fields.adoc[]
+include::{snippets}/add-merit-log-list/request-fields.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/create-merit-log/http-response.adoc[]
+include::{snippets}/add-merit-log-list/http-response.adoc[]
 
 ==== Response Field
 
-include::{snippets}/create-merit-log/response-fields.adoc[]
+include::{snippets}/add-merit-log-list/response-fields.adoc[]
 
 == *회원별 상벌점 누계 조회* ==
 
