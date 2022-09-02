@@ -697,4 +697,18 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     }
     return commonFields;
   }
+
+  public List<FieldDescriptor> generateGetGenerationListResponseFields(ResponseType type,
+      String success, String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(List.of(
+        fieldWithPath(prefix).description("기수 정보가 중복 없이 오름차순으로 넘겨집니다.")
+    ));
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
+    }
+    return commonFields;
+  }
 }

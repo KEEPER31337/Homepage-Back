@@ -2,6 +2,7 @@ package keeper.project.homepage.repository.clerk;
 
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ABSENCE;
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ATTENDANCE;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.BEFORE_ATTENDANCE;
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.LATENESS;
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus;
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.PERSONAL;
@@ -41,11 +42,15 @@ public class SeminarAttendanceStatusRepositoryTest extends SeminarRepositoryTest
         ABSENCE.getId());
     SeminarAttendanceStatusEntity personal = seminarAttendanceStatusRepository.getById(
         PERSONAL.getId());
+    SeminarAttendanceStatusEntity beforeAttendance = seminarAttendanceStatusRepository.getById(
+        BEFORE_ATTENDANCE.getId());
 
     // then
     Assertions.assertThat(attendance.getType()).isEqualTo(ATTENDANCE.getType());
     Assertions.assertThat(lateness.getType()).isEqualTo(LATENESS.getType());
     Assertions.assertThat(absence.getType()).isEqualTo(ABSENCE.getType());
     Assertions.assertThat(personal.getType()).isEqualTo(PERSONAL.getType());
+    Assertions.assertThat(beforeAttendance.getType()).isEqualTo(BEFORE_ATTENDANCE.getType());
+
   }
 }

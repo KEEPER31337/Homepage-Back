@@ -34,9 +34,7 @@ public class SeminarAttendanceStatusEntity {
     LATENESS(2L, "지각"),
     ABSENCE(3L, "결석"),
     PERSONAL(4L, "개인사정"),
-
     BEFORE_ATTENDANCE(5L, "출석 전");
-
     private final Long id;
     private final String type;
   }

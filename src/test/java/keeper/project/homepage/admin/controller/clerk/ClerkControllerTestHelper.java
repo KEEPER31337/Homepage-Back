@@ -15,6 +15,8 @@ import keeper.project.homepage.entity.clerk.SeminarAttendanceExcuseEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
 import keeper.project.homepage.entity.clerk.SeminarEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.repository.clerk.MeritLogRepository;
+import keeper.project.homepage.repository.clerk.MeritTypeRepository;
 import keeper.project.homepage.repository.clerk.SeminarAttendanceExcuseRepository;
 import keeper.project.homepage.repository.clerk.SeminarAttendanceRepository;
 import keeper.project.homepage.repository.clerk.SeminarAttendanceStatusRepository;
@@ -34,6 +36,12 @@ public class ClerkControllerTestHelper extends ApiControllerTestHelper{
 
   @Autowired
   protected SeminarAttendanceStatusRepository seminarAttendanceStatusRepository;
+
+  @Autowired
+  protected MeritTypeRepository meritTypeRepository;
+
+  @Autowired
+  MeritLogRepository meritLogRepository;
 
   protected String asJsonString(final Object obj) {
     try {

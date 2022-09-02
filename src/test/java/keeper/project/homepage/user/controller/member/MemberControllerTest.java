@@ -222,4 +222,44 @@ public class MemberControllerTest extends ApiControllerTestHelper {
         .andExpect(jsonPath("$.list[0].id").value(-999))
         .andExpect(jsonPath("$.list[0].msg").value("Fail: Not Exist Member"));
   }
+
+  @Test
+  @DisplayName("[SUCCESS] 회원 기수 목록 가져오기")
+  public void getAllGenerations() throws Exception {
+    generateMemberByGeneration(3.5f);
+    generateMemberByGeneration(5f);
+    generateMemberByGeneration(8f);
+    generateMemberByGeneration(8f);
+    mockMvc.perform(get("/v1/members/generations")
+            .header("Authorization", userToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").value("성공하였습니다."))
+        .andExpect(jsonPath("$.list.size()").value(4))
+        .andExpect(jsonPath("$.list[0]").value(getMemberGeneration()))
+        .andExpect(jsonPath("$.list[1]").value(8f))
+        .andExpect(jsonPath("$.list[2]").value(5f))
+        .andExpect(jsonPath("$.list[3]").value(3.5f))
+        .andDo(document("get-all-generations",
+            responseFields(
+                generateGetGenerationListResponseFields(ResponseType.LIST,
+                    "성공: true +\n실패: false",
+                    "성공 시 0을 반환",
+                    "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
+            )));
+  }
+
+  private MemberEntity generateMemberByGeneration(Float generation) {
+    final String epochTime = Long.toHexString(System.nanoTime()).substring(0, 10);
+    return memberRepository.save(MemberEntity.builder()
+        .loginId("LoginId" + epochTime)
+        .password(passwordEncoder.encode(memberPassword))
+        .nickName("nickName" + epochTime)
+        .realName("RealName" + epochTime)
+        .emailAddress("member" + epochTime + "@k33p3r.com")
+        .generation(generation)
+        .build());
+  }
 }

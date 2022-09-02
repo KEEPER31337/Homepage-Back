@@ -120,7 +120,7 @@ public class SurveyService {
   }
 
   private Boolean isReplyOtherDormant(SurveyResponseRequestDto requestDto) {
-    return requestDto.getReplyId() == OTHER_DORMANT.getId();
+    return requestDto.getReplyId().equals(OTHER_DORMANT.getId());
   }
 
   private void deleteBeforeExcuse(SurveyReplyExcuseEntity beforeExcuse) {
