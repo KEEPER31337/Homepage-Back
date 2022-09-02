@@ -51,6 +51,11 @@ public class AdminMeritController {
     return responseService.getSuccessListResult(adminMeritService.addMeritLogs(requestDtoList));
   }
 
+  @DeleteMapping("/{meritLogId}")
+  public SingleResult<Long> deleteMerit(@PathVariable Long meritLogId) {
+    return responseService.getSuccessSingleResult(adminMeritService.deleteMerit(meritLogId));
+  }
+
   @GetMapping("/years")
   public ListResult<Integer> getYears() {
     return responseService.getSuccessListResult(adminMeritService.getYears());

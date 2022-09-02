@@ -124,4 +124,23 @@ public class AdminMeritService {
         .map(MeritTypeResponseDto::from)
         .toList();
   }
+
+  @Transactional
+  public Long deleteMerit(Long meritLogId) {
+    MeritLogEntity meritLog = meritLogRepository.findById(meritLogId)
+        .orElseThrow(CustomMeritLogNotFoundException::new);
+
+    deleteMeritByMeritType(meritLog.getAwarder(), meritLog.getMeritType());
+    meritLogRepository.delete(meritLog);
+
+    return meritLog.getId();
+  }
+
+  void deleteMeritByMeritType(MemberEntity awarder, MeritTypeEntity meritType) {
+    if (meritType.getIsMerit()) {
+      awarder.changeMerit(awarder.getMerit() - meritType.getMerit());
+    } else {
+      awarder.changeDemerit(awarder.getDemerit() - meritType.getMerit());
+    }
+  }
 }
