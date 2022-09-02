@@ -8,6 +8,7 @@ import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.LATENESS;
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.PERSONAL;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -21,7 +22,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendancesRequestDto;
@@ -97,6 +97,29 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("data.id").description("세미나 id")
+            )));
+  }
+
+  @Test
+  @DisplayName("[SUCCESS] 세미나 삭제하기")
+  public void deleteSeminar() throws Exception {
+    SeminarEntity seminar = generateSeminar(LocalDateTime.now().withNano(0));
+
+    mockMvc.perform(delete("/v1/admin/clerk/seminars/{seminarId}", seminar.getId())
+            .header("Authorization", clerkToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").value("성공하였습니다."))
+        .andExpect(jsonPath("$.data").value(seminar.getId()))
+        .andDo(document("delete-seminar",
+            pathParameters(parameterWithName("seminarId").description("삭제할 세미나의 id")),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("data").description("삭제한 세미나 id")
             )));
   }
 
@@ -182,10 +205,10 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
   public void updateSeminarAttendances() throws Exception {
     SeminarEntity seminar = generateSeminar(LocalDateTime.now().plusWeeks(1));
     MemberEntity member = generateMember("이정학", 12.5F);
-    SeminarAttendanceStatusEntity absence = seminarAttendanceStatusRepository.getById(
-        ABSENCE.getId());
+    SeminarAttendanceStatusEntity attendance = seminarAttendanceStatusRepository.getById(
+        ATTENDANCE.getId());
     SeminarAttendanceEntity attendanceEntity = generateSeminarAttendance(member, seminar,
-        absence);
+        attendance);
 
     SeminarAttendanceUpdateRequestDto requestDto = SeminarAttendanceUpdateRequestDto.builder()
         .seminarAttendanceStatusId(4L)
