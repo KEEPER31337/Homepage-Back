@@ -18,8 +18,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.MeritTypeCreateRequestDto;
+import keeper.project.homepage.admin.dto.clerk.response.MeritAddResponseDto;
 import keeper.project.homepage.entity.clerk.MeritLogEntity;
 import keeper.project.homepage.entity.clerk.MeritTypeEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -47,33 +50,38 @@ public class AdminMeritControllerTest extends ClerkControllerTestHelper {
   @DisplayName("[SUCCESS] 상벌점 내역 추가")
   public void createMeritLog() throws Exception {
     MeritTypeEntity publicAnnouncement = generateMeritType(2, true, "각종대외발표");
-    MemberEntity awarder = generateMember("이정학", 12.5F);
-    MeritAddRequestDto meritLogCreateRequestDto = MeritAddRequestDto.builder()
-        .date(LocalDate.now())
-        .memberId(awarder.getId())
-        .meritTypeId(publicAnnouncement.getId())
-        .build();
+    MeritTypeEntity absence = generateMeritType(3, false, "결석");
+
+    MemberEntity awarder1 = generateMember("이정학", 12.5F);
+    MemberEntity awarder2 = generateMember("정현모", 8F);
+    List<MeritAddRequestDto> requestDtoList = new ArrayList<>();
+    requestDtoList.add(getMeritAddRequestDto(publicAnnouncement, awarder1));
+    requestDtoList.add(getMeritAddRequestDto(absence, awarder2));
+    requestDtoList.add(getMeritAddRequestDto(publicAnnouncement, awarder2));
+
+
+
     mockMvc.perform(post("/v1/admin/clerk/merits")
             .header("Authorization", clerkToken)
             .contentType(MediaType.APPLICATION_JSON)
-            .content(asJsonDateString(meritLogCreateRequestDto))
+            .content(asJsonDateString(requestDtoList))
         )
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.code").value(0))
         .andExpect(jsonPath("$.msg").value("성공하였습니다."))
-        .andDo(document("create-merit-log",
+        .andDo(document("add-merit-log-list",
             requestFields(
-                fieldWithPath("date").description("상벌점 내역 추가 날짜"),
-                fieldWithPath("memberId").description("상벌점 수여자 id"),
-                fieldWithPath("meritTypeId").description("상벌점 종류")
+                fieldWithPath("[].date").description("상벌점 내역 추가 날짜"),
+                fieldWithPath("[].memberId").description("상벌점 수여자 id"),
+                fieldWithPath("[].meritTypeId").description("상벌점 종류")
             ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("data.meritLogId").description("추가한 상벌점 내역 id")
+                fieldWithPath("list.[].meritLogId").description("추가한 상벌점 내역 id")
             ))
         );
   }
@@ -283,5 +291,14 @@ public class AdminMeritControllerTest extends ClerkControllerTestHelper {
         .meritType(type)
         .time(date)
         .build());
+  }
+
+  private static MeritAddRequestDto getMeritAddRequestDto(MeritTypeEntity publicAnnouncement,
+      MemberEntity awarder) {
+    return MeritAddRequestDto.builder()
+        .date(LocalDate.now())
+        .memberId(awarder.getId())
+        .meritTypeId(publicAnnouncement.getId())
+        .build();
   }
 }
