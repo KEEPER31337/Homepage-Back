@@ -1,17 +1,21 @@
 package keeper.project.homepage.admin.service.clerk;
 
+import static keeper.project.homepage.user.service.clerk.SurveyService.NO_SURVEY;
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import keeper.project.homepage.admin.dto.clerk.request.AdminSurveyRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.AdminSurveyResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.ClosedSurveyInformationResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.DeleteSurveyResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.SurveyListResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SurveyRespondentResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SurveyUpdateResponseDto;
+import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
-import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.clerk.CustomSurveyMemberReplyNotFoundException;
 import keeper.project.homepage.exception.clerk.CustomSurveyNotFoundException;
@@ -22,6 +26,9 @@ import keeper.project.homepage.user.service.member.MemberUtilService;
 import keeper.project.homepage.util.service.SurveyUtilService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +44,8 @@ public class AdminSurveyService {
   private final SurveyUtilService surveyUtilService;
 
   private final MemberUtilService memberUtilService;
+  private final AuthService authService;
+
 
   @Transactional
   public Long createSurvey(AdminSurveyRequestDto requestDto) {
@@ -88,87 +97,58 @@ public class AdminSurveyService {
     return SurveyUpdateResponseDto.from(survey);
   }
 
-  public SurveyInformationResponseDto getSurveyInformation(Long surveyId, Long memberId) {
+  public SurveyInformationResponseDto getSurveyInformation(Long surveyId) {
     SurveyEntity survey = surveyRepository.findById(surveyId)
         .orElseThrow(CustomSurveyNotFoundException::new);
-    MemberEntity member = memberUtilService.getById(memberId);
+    Long reqMemberId = authService.getMemberIdByJWT();
+    MemberEntity member = memberUtilService.getById(reqMemberId);
 
     Boolean isResponded = false;
     SurveyMemberReplyEntity surveyMemberReplyEntity = null;
     if (isUserRespondedSurvey(survey, member)) {
       isResponded = true;
       surveyMemberReplyEntity = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
-              surveyId, memberId)
+              surveyId, reqMemberId)
           .orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
     }
 
-    return SurveyInformationResponseDto.from(survey, surveyMemberReplyEntity, isResponded);
+    return SurveyInformationResponseDto.of(survey, surveyMemberReplyEntity, isResponded);
   }
 
   private Boolean isUserRespondedSurvey(SurveyEntity survey, MemberEntity member) {
-    return getSurveyRespondedMemberList(survey)
-        .contains(member);
-  }
-
-  private List<MemberEntity> getSurveyRespondedMemberList(SurveyEntity survey) {
     return survey.getRespondents()
         .stream()
         .map(SurveyMemberReplyEntity::getMember)
-        .toList();
+        .toList()
+        .contains(member);
   }
 
   public Long getLatestVisibleSurveyId() {
     LocalDateTime now = LocalDateTime.now();
-    List<SurveyEntity> surveyList = surveyRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+    SurveyEntity survey = surveyRepository.findTop1ByOpenTimeBeforeAndCloseTimeAfterAndIsVisibleTrueOrderByCloseTimeDesc(
+            now, now)
+        .orElse(NO_SURVEY);
 
-    return findVisibleSurveyId(surveyList, now);
+    return survey.getId();
   }
 
-  private Long findVisibleSurveyId(List<SurveyEntity> surveyList, LocalDateTime now) {
-    Long visibleSurveyId = -1L;
-
-    for (SurveyEntity survey : surveyList) {
-      if (survey.getOpenTime().isBefore(now) && survey.getCloseTime().isAfter(now)
-          && survey.getIsVisible()) {
-        visibleSurveyId = survey.getId();
-        break;
-      }
-    }
-    return visibleSurveyId;
-  }
-
-
-  public ClosedSurveyInformationResponseDto getLatestClosedSurveyInformation(Long memberId) {
+  public ClosedSurveyInformationResponseDto getLatestClosedSurveyInformation() {
     LocalDateTime now = LocalDateTime.now();
-    List<SurveyEntity> surveyList = surveyRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+    SurveyEntity latestClosedSurvey = surveyRepository
+        .findTop1ByCloseTimeBeforeAndIsVisibleTrueOrderByCloseTimeDesc(now)
+        .orElse(NO_SURVEY);
+    Long reqMemberId = authService.getMemberIdByJWT();
 
-    for (SurveyEntity survey : surveyList) {
-      if (survey.getCloseTime().isBefore(now)) {
-        SurveyMemberReplyEntity surveyMemberReply = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
-                survey.getId(),memberId)
-            .orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
-        return ClosedSurveyInformationResponseDto.from(survey, surveyMemberReply);
-      }
+    Optional<SurveyMemberReplyEntity> surveyMemberReply = surveyMemberReplyRepository
+        .findBySurveyIdAndMemberId(latestClosedSurvey.getId(), reqMemberId);
+    if (surveyMemberReply.isEmpty()) {
+      return ClosedSurveyInformationResponseDto.notFound();
     }
-    return ClosedSurveyInformationResponseDto.notFound();
+    return ClosedSurveyInformationResponseDto.of(latestClosedSurvey, surveyMemberReply.get());
   }
 
-  public Long getLatestInVisibleSurveyId() {
-    LocalDateTime now = LocalDateTime.now();
-    List<SurveyEntity> surveyList = surveyRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-
-    return findInVisibleSurveyId(surveyList, now);
-  }
-
-  private Long findInVisibleSurveyId(List<SurveyEntity> surveyList, LocalDateTime now) {
-    Long inVisibleSurveyId = -1L;
-
-    for (SurveyEntity survey : surveyList) {
-      if (!survey.getIsVisible()) {
-        inVisibleSurveyId = survey.getId();
-        break;
-      }
-    }
-    return inVisibleSurveyId;
+  public Page<SurveyListResponseDto> getSurveyList(Pageable pageable){
+    return surveyRepository.findAllByIdIsNot(
+        SurveyUtilService.VIRTUAL_SURVEY_ID, pageable).map(SurveyListResponseDto::from);
   }
 }

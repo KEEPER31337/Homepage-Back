@@ -1,6 +1,5 @@
 package keeper.project.homepage.admin.dto.clerk.response;
 
-import javax.validation.constraints.NotNull;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
 import lombok.AllArgsConstructor;
@@ -24,7 +23,7 @@ public class ClosedSurveyInformationResponseDto {
   @Nullable
   private Long replyId;
 
-  public static ClosedSurveyInformationResponseDto from(SurveyEntity survey, SurveyMemberReplyEntity surveyMemberReply){
+  public static ClosedSurveyInformationResponseDto of(SurveyEntity survey, SurveyMemberReplyEntity surveyMemberReply){
     return ClosedSurveyInformationResponseDto.builder()
         .surveyId(survey.getId())
         .surveyName(survey.getName())

@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import javax.validation.constraints.NotNull;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
-import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,7 +38,7 @@ public class SurveyInformationResponseDto {
   @Nullable
   private String excuse;
 
-  public static SurveyInformationResponseDto from(SurveyEntity survey,
+  public static SurveyInformationResponseDto of(SurveyEntity survey,
       SurveyMemberReplyEntity surveyMemberReplyEntity,
       Boolean isResponded) {
     return SurveyInformationResponseDto.builder()

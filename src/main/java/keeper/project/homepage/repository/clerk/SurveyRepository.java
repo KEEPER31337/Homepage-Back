@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
+import keeper.project.homepage.entity.election.ElectionEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface SurveyRepository extends JpaRepository<SurveyEntity, Long> {
@@ -27,5 +30,7 @@ public interface SurveyRepository extends JpaRepository<SurveyEntity, Long> {
    */
   Optional<SurveyEntity> findTop1ByCloseTimeBeforeAndIsVisibleTrueOrderByCloseTimeDesc(
       LocalDateTime currTime);
+
+  Page<SurveyEntity> findAllByIdIsNot(Long surveyId, Pageable pageable);
 
 }

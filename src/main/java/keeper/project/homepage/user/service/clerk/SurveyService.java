@@ -2,9 +2,7 @@ package keeper.project.homepage.user.service.clerk;
 
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
 
-import io.micrometer.core.instrument.util.StringEscapeUtils;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import keeper.project.homepage.admin.dto.clerk.response.ClosedSurveyInformationResponseDto;
 import keeper.project.homepage.common.service.util.AuthService;
@@ -27,7 +25,6 @@ import keeper.project.homepage.user.service.member.MemberUtilService;
 import keeper.project.homepage.util.service.SurveyUtilService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,14 +42,13 @@ public class SurveyService {
   private final MemberUtilService memberUtilService;
   private final AuthService authService;
 
-  static final SurveyEntity NO_SURVEY = SurveyEntity.builder().id(-1L).build();
+  public static final SurveyEntity NO_SURVEY = SurveyEntity.builder().id(-1L).build();
 
   @Transactional
   public Long responseSurvey(Long surveyId, SurveyResponseRequestDto requestDto) {
     SurveyEntity survey = surveyUtilService.getSurveyById(surveyId);
     validateVisibleSurvey(survey);
-
-    MemberEntity member = memberUtilService.getById(requestDto.getMemberId());
+    MemberEntity member = authService.getMemberEntityWithJWT();
     SurveyReplyEntity reply = surveyUtilService.getReplyById(
         requestDto.getReplyId());
 
@@ -67,6 +63,7 @@ public class SurveyService {
 
   private void saveSurveyMemberReply(SurveyEntity survey,
       SurveyMemberReplyEntity memberReply) {
+    memberReply.setReplyTime(LocalDateTime.now());
     surveyMemberReplyRepository.save(memberReply);
     survey.getRespondents().add(memberReply);
   }
@@ -74,7 +71,7 @@ public class SurveyService {
   private void saveSurveyReplyExcuse(SurveyReplyEntity reply,
       SurveyMemberReplyEntity memberReply,
       SurveyResponseRequestDto requestDto) {
-    if (reply.getId() == OTHER_DORMANT.getId()) {
+    if (reply.getId().equals(OTHER_DORMANT.getId())) {
       SurveyReplyExcuseEntity excuse = SurveyReplyExcuseEntity.builder()
           .surveyMemberReplyEntity(memberReply)
           .restExcuse(requestDto.getExcuse())
@@ -91,7 +88,7 @@ public class SurveyService {
 
   public SurveyModifyResponseDto modifyResponse(Long surveyId,
       SurveyResponseRequestDto requestDto) {
-    MemberEntity member = memberUtilService.getById(requestDto.getMemberId());
+    MemberEntity member = authService.getMemberEntityWithJWT();
     SurveyMemberReplyEntity memberReply = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
             surveyId, member.getId())
         .orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
@@ -143,33 +140,30 @@ public class SurveyService {
         .modifyExcuse(responseRequestDto.getExcuse());
   }
 
-  public SurveyInformationResponseDto getSurveyInformation(Long surveyId, Long memberId) {
+  public SurveyInformationResponseDto getSurveyInformation(Long surveyId) {
     SurveyEntity survey = surveyRepository.findById(surveyId)
         .orElseThrow(CustomSurveyNotFoundException::new);
-    MemberEntity member = memberUtilService.getById(memberId);
+    Long reqMemberId = authService.getMemberIdByJWT();
+    MemberEntity member = memberUtilService.getById(reqMemberId);
 
     Boolean isResponded = false;
     SurveyMemberReplyEntity surveyMemberReplyEntity = null;
     if (isUserRespondedSurvey(survey, member)) {
       isResponded = true;
       surveyMemberReplyEntity = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
-              surveyId, memberId)
+              surveyId, reqMemberId)
           .orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
     }
 
-    return SurveyInformationResponseDto.from(survey, surveyMemberReplyEntity, isResponded);
+    return SurveyInformationResponseDto.of(survey, surveyMemberReplyEntity, isResponded);
   }
 
   private Boolean isUserRespondedSurvey(SurveyEntity survey, MemberEntity member) {
-    return getSurveyRespondedMemberList(survey)
-        .contains(member);
-  }
-
-  private List<MemberEntity> getSurveyRespondedMemberList(SurveyEntity survey) {
     return survey.getRespondents()
         .stream()
         .map(SurveyMemberReplyEntity::getMember)
-        .toList();
+        .toList()
+        .contains(member);
   }
 
   public Long getLatestVisibleSurveyId() {
@@ -193,7 +187,7 @@ public class SurveyService {
     if (surveyMemberReply.isEmpty()) {
       return ClosedSurveyInformationResponseDto.notFound();
     }
-    return ClosedSurveyInformationResponseDto.from(latestClosedSurvey, surveyMemberReply.get());
+    return ClosedSurveyInformationResponseDto.of(latestClosedSurvey, surveyMemberReply.get());
   }
 
 }

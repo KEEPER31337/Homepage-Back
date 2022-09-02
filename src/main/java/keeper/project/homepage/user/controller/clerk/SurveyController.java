@@ -49,13 +49,12 @@ public class SurveyController {
         surveyService.modifyResponse(surveyId, responseRequestDto));
   }
 
-  @GetMapping("/{surveyId}/members/{memberId}")
+  @GetMapping("/information/{surveyId}")
   public SingleResult<SurveyInformationResponseDto> getSurveyInformation(
-      @PathVariable("surveyId") @NotNull Long surveyId,
-      @PathVariable("memberId") @NotNull Long memberId
+      @PathVariable("surveyId") @NotNull Long surveyId
   ) {
     return responseService.getSuccessSingleResult(
-        surveyService.getSurveyInformation(surveyId, memberId));
+        surveyService.getSurveyInformation(surveyId));
   }
 
   @GetMapping("/visible/ongoing")

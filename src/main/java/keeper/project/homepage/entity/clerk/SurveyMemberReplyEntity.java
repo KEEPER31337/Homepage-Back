@@ -50,6 +50,7 @@ public class SurveyMemberReplyEntity {
   private SurveyReplyExcuseEntity surveyReplyExcuseEntity;
 
   @Column(nullable = false)
+  @Setter
   private LocalDateTime replyTime;
 
   public void modifyReply(SurveyReplyEntity reply) {

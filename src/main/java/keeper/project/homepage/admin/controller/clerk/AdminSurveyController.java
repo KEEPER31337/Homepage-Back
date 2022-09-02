@@ -6,15 +6,20 @@ import keeper.project.homepage.admin.dto.clerk.request.AdminSurveyRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.AdminSurveyResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.ClosedSurveyInformationResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.DeleteSurveyResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.SurveyListResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SurveyRespondentResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SurveyUpdateResponseDto;
 import keeper.project.homepage.admin.service.clerk.AdminSurveyService;
 import keeper.project.homepage.common.dto.result.ListResult;
+import keeper.project.homepage.common.dto.result.PageResult;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.user.dto.clerk.response.SurveyInformationResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -80,30 +85,30 @@ public class AdminSurveyController {
     return responseService.getSuccessSingleResult(adminSurveyService.closeSurvey(surveyId));
   }
 
-  @GetMapping("/{surveyId}/members/{memberId}")
+  @GetMapping("/information/{surveyId}")
   public SingleResult<SurveyInformationResponseDto> getSurveyInformation(
-      @PathVariable("surveyId") @NotNull Long surveyId,
-      @PathVariable("memberId") @NotNull Long memberId
+      @PathVariable("surveyId") @NotNull Long surveyId
   ) {
     return responseService.getSuccessSingleResult(
-        adminSurveyService.getSurveyInformation(surveyId, memberId));
+        adminSurveyService.getSurveyInformation(surveyId));
   }
 
-  @GetMapping("/visible")
+  @GetMapping("/visible/ongoing")
   public SingleResult<Long> getLatestVisibleSurveyId() {
     return responseService.getSuccessSingleResult(adminSurveyService.getLatestVisibleSurveyId());
   }
 
-  @GetMapping("/closed/members/{memberId}")
-  public SingleResult<ClosedSurveyInformationResponseDto> getLatestClosedSurveyInformation(
-      @PathVariable("memberId") @NotNull Long memberId
-  ) {
+  @GetMapping("/visible/closed")
+  public SingleResult<ClosedSurveyInformationResponseDto> getLatestClosedSurveyInformation() {
     return responseService.getSuccessSingleResult(
-        adminSurveyService.getLatestClosedSurveyInformation(memberId));
+        adminSurveyService.getLatestClosedSurveyInformation());
   }
 
-  @GetMapping("/inVisible")
-  public SingleResult<Long> getLatestInVisibleSurveyId() {
-    return responseService.getSuccessSingleResult(adminSurveyService.getLatestInVisibleSurveyId());
+  @GetMapping("/list")
+  public PageResult<SurveyListResponseDto> getSurveys(
+      @PageableDefault(sort = "id", direction = Direction.DESC) Pageable pageable
+  ) {
+    return responseService.getSuccessPageResult(
+        adminSurveyService.getSurveyList(pageable));
   }
 }
