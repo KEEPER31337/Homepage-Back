@@ -189,7 +189,9 @@ public class ClerkControllerTestHelper extends ApiControllerTestHelper {
 
   SeminarEntity generateSeminar(LocalDateTime openTime) {
     return seminarRepository.save(SeminarEntity.builder()
-        .name(openTime + "세미나")
+        .name(openTime.toLocalDate()
+            .toString()
+            .replaceAll("-", ""))
         .openTime(openTime)
         .build()
     );

@@ -26,11 +26,11 @@ import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
 import keeper.project.homepage.entity.clerk.SeminarEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.clerk.CustomAttendanceAbsenceExcuseIsNullException;
+import keeper.project.homepage.exception.clerk.CustomDuplicateSeminarException;
 import keeper.project.homepage.exception.clerk.CustomMeritTypeNotFoundException;
 import keeper.project.homepage.exception.clerk.CustomSeminarAttendanceNotFoundException;
 import keeper.project.homepage.exception.clerk.CustomSeminarAttendanceStatusNotFoundException;
 import keeper.project.homepage.exception.clerk.CustomSeminarNotFoundException;
-import keeper.project.homepage.repository.clerk.MeritLogRepository;
 import keeper.project.homepage.repository.clerk.MeritTypeRepository;
 import keeper.project.homepage.repository.clerk.SeminarAttendanceRepository;
 import keeper.project.homepage.repository.clerk.SeminarAttendanceStatusRepository;
@@ -50,7 +50,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class AdminSeminarService {
 
-  //TODO: 추후 상벌점 관리 구현되면 수정 예정
   static final Integer ABSENCE_DEMERIT = 3;
 
   private final SeminarRepository seminarRepository;
@@ -115,10 +114,10 @@ public class AdminSeminarService {
       processPersonal(attendance, absenceExcuse);
     }
     if (afterStatus.equals(LATENESS.getType())) {
-      processLateness(member, beforeStatus, attendDate);
+      processLateness(member, attendDate);
     }
     if (afterStatus.equals(ABSENCE.getType())) {
-      processAbsence(member, beforeStatus, attendDate);
+      processAbsence(member, attendDate);
     }
     attendance.setSeminarAttendanceStatusEntity(afterStatusEntity);
   }
@@ -128,14 +127,14 @@ public class AdminSeminarService {
     meritService.deleteAbsenceLog(member, attendDate);
   }
 
-  private void processLateness(MemberEntity member, String beforeStatus, LocalDate attendDate) {
+  private void processLateness(MemberEntity member, LocalDate attendDate) {
     // 지각 2회는 결석 처리
     if (getLatenessCount(member) % 2 == 1) {
-      processAbsence(member, beforeStatus, attendDate);
+      processAbsence(member, attendDate);
     }
   }
 
-  private void processAbsence(MemberEntity member, String beforeStatus, LocalDate attendDate) {
+  private void processAbsence(MemberEntity member, LocalDate attendDate) {
     MeritTypeEntity absence = meritTypeRepository.findByDetail(ABSENCE.getType())
         .orElseThrow(CustomMeritTypeNotFoundException::new);
     MeritAddRequestDto meritLogCreateRequestDto = generateMeritAddRequestDto(
@@ -171,6 +170,7 @@ public class AdminSeminarService {
 
   @Transactional
   public SeminarCreateResponseDto createSeminar(SeminarCreateRequestDto request) {
+    checkDuplicateSeminar(request.getOpenTime());
     SeminarEntity seminar = generateSeminar(request.getOpenTime());
     List<MemberEntity> allRegularMembers = memberRepository.findAllByMemberTypeOrderByGenerationAsc(
         memberUtilService.getTypeById(REGULAR_MEMBER.getId()));
@@ -185,6 +185,15 @@ public class AdminSeminarService {
     return SeminarCreateResponseDto.from(seminar);
   }
 
+  private void checkDuplicateSeminar(LocalDateTime openTime) {
+    String seminarName = openTime.toLocalDate()
+        .toString()
+        .replaceAll("-", "");
+    if (seminarRepository.existsByName(seminarName)) {
+      throw new CustomDuplicateSeminarException();
+    }
+  }
+
   public List<SeminarAttendanceResponseDto> getSeminarAttendances(Long seminarId) {
     SeminarEntity seminar = seminarRepository.findById(seminarId)
         .orElseThrow(CustomSeminarNotFoundException::new);
@@ -197,7 +206,6 @@ public class AdminSeminarService {
 
   SeminarEntity generateSeminar(LocalDateTime openTime) {
     return seminarRepository.save(SeminarEntity.builder()
-        .name(null)
         .openTime(openTime)
         .build()
     );
