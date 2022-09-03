@@ -163,30 +163,6 @@ include::{snippets}/survey-respondents/http-response.adoc[]
 
 include::{snippets}/survey-respondents/response-fields.adoc[]
 
-== *설문 정보 조회*
-
-NOTE: 요청을 보낸 회원의 JWT를 기반으로 해당 설문에서 회원의 응답 정보를 전달합니다.
-
-=== 요청
-
-==== Request
-
-include::{snippets}/survey-admin-information/http-request.adoc[]
-
-==== Path Parameter
-
-include::{snippets}/survey-admin-information/path-parameters.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/survey-admin-information/http-response.adoc[]
-
-==== Response Field
-
-include::{snippets}/survey-admin-information/response-fields.adoc[]
-
 == *설문 목록 가져오기*
 
 === 요청
@@ -204,41 +180,3 @@ include::{snippets}/survey-list/http-response.adoc[]
 ==== Response Field
 
 include::{snippets}/survey-list/response-fields.adoc[]
-
-== *공개 상태의 설문 조회(가장 최근)*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/survey-admin-visible-latest/http-request.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/survey-admin-visible-latest/http-response.adoc[]
-
-==== Response Field
-
-include::{snippets}/survey-admin-visible-latest/response-fields.adoc[]
-
-== *종료된 설문 정보 조회(가장 최근)*
-
-NOTE: 요청을 보낸 회원의 JWT를 기반으로 해당 설문에서 회원의 응답 정보를 전달합니다.
-
-=== 요청
-
-==== Request
-
-include::{snippets}/survey-admin-closed-latest/http-request.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/survey-admin-closed-latest/http-response.adoc[]
-
-==== Response Field
-
-include::{snippets}/survey-admin-closed-latest/response-fields.adoc[]
