@@ -13,7 +13,6 @@ import keeper.project.homepage.admin.dto.clerk.request.MeritLogUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.MeritTypeCreateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.MemberTotalMeritLogsResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.MeritLogByYearResponseDto;
-import keeper.project.homepage.admin.dto.clerk.response.MeritAddResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.MeritTypeResponseDto;
 import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.entity.clerk.MeritLogEntity;
@@ -61,14 +60,12 @@ public class AdminMeritService {
         .map(entry -> MemberTotalMeritLogsResponseDto.of(entry.getKey(), entry.getValue()))
         .toList();
   }
-  public List<MeritAddResponseDto> addMeritsWithLogs(List<MeritAddRequestDto> requestDtoList) {
-    List<MeritAddResponseDto> responseDtoList = new ArrayList<>();
+  public List<Long> addMeritsWithLogs(List<MeritAddRequestDto> requestDtoList) {
+    List<Long> responses = new ArrayList<>();
     for (MeritAddRequestDto requestDto : requestDtoList) {
-      responseDtoList.add(MeritAddResponseDto.builder()
-          .meritLogId(addMeritWithLog(requestDto).getId())
-          .build());
+      responses.add(addMeritWithLog(requestDto).getId());
     }
-    return responseDtoList;
+    return responses;
   }
 
   @Transactional
@@ -143,7 +140,7 @@ public class AdminMeritService {
   }
 
   @Transactional
-  public Long updateMeritLog(MeritLogUpdateRequestDto requestDto) {
+  public Long updateMeritWithLog(MeritLogUpdateRequestDto requestDto) {
     MeritLogEntity meritLog = meritLogRepository.findById(requestDto.getMeritLogId())
         .orElseThrow(CustomMeritLogNotFoundException::new);
     MeritTypeEntity findMeritType = meritTypeRepository.findById(requestDto.getMeritTypeId())

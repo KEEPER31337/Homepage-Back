@@ -7,7 +7,6 @@ import keeper.project.homepage.admin.dto.clerk.request.MeritLogUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.MeritTypeCreateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.MemberTotalMeritLogsResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.MeritLogByYearResponseDto;
-import keeper.project.homepage.admin.dto.clerk.response.MeritAddResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.MeritTypeResponseDto;
 import keeper.project.homepage.admin.service.clerk.AdminMeritService;
 import keeper.project.homepage.common.dto.result.ListResult;
@@ -48,7 +47,7 @@ public class AdminMeritController {
   }
 
   @PostMapping
-  public ListResult<MeritAddResponseDto> addMeritsWithLogs(
+  public ListResult<Long> addMeritsWithLogs(
       @RequestBody @Valid List<MeritAddRequestDto> requestDtoList) {
     return responseService.getSuccessListResult(adminMeritService.addMeritsWithLogs(requestDtoList));
   }
@@ -56,7 +55,7 @@ public class AdminMeritController {
   @PatchMapping
   public SingleResult<Long> updateMeritLog(
       @RequestBody @Valid MeritLogUpdateRequestDto requestDto) {
-    return responseService.getSuccessSingleResult(adminMeritService.updateMeritLog(requestDto));
+    return responseService.getSuccessSingleResult(adminMeritService.updateMeritWithLog(requestDto));
   }
 
   @DeleteMapping("/{meritLogId}")
