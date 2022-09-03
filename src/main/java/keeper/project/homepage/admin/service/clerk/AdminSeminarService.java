@@ -13,8 +13,8 @@ import java.util.List;
 import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
-import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendancesRequestDto;
-import keeper.project.homepage.admin.dto.clerk.response.SeminarWithAttendancesByPeriodResponseDto;
+import keeper.project.homepage.admin.dto.clerk.request.SeminarWithAttendancesRequestByPeriodDto;
+import keeper.project.homepage.admin.dto.clerk.response.SeminarWithAttendancesResponseByPeriodDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceStatusResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceUpdateResponseDto;
@@ -67,11 +67,11 @@ public class AdminSeminarService {
         .toList();
   }
 
-  public Page<SeminarWithAttendancesByPeriodResponseDto> getAllSeminarAttendances(Pageable pageable,
-      SeminarAttendancesRequestDto requestDto) {
+  public Page<SeminarWithAttendancesResponseByPeriodDto> getAllSeminarAttendances(Pageable pageable,
+      SeminarWithAttendancesRequestByPeriodDto requestDto) {
     return seminarRepository.findAllByOpenTimeBetweenOrderByOpenTimeDesc(pageable,
             requestDto.getSeasonStartDate(), requestDto.getSeasonEndDate())
-        .map(SeminarWithAttendancesByPeriodResponseDto::from);
+        .map(SeminarWithAttendancesResponseByPeriodDto::from);
   }
 
   @Transactional
@@ -139,7 +139,7 @@ public class AdminSeminarService {
         .orElseThrow(CustomMeritTypeNotFoundException::new);
     MeritAddRequestDto meritLogCreateRequestDto = generateMeritAddRequestDto(
         member, absence, attendDate);
-    meritService.addMerit(meritLogCreateRequestDto);
+    meritService.addMeritWithLog(meritLogCreateRequestDto);
   }
 
   private static MeritAddRequestDto generateMeritAddRequestDto(MemberEntity member,

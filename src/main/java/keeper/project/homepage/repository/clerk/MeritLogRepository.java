@@ -17,9 +17,7 @@ public interface MeritLogRepository extends JpaRepository<MeritLogEntity, Long> 
   List<MeritLogEntity> findAllByYear(@Param("year") Integer year);
 
   Optional<MeritLogEntity> findFirstByOrderByDate();
-
   // 결석일 때만 사용해야 함
   List<MeritLogEntity> findByAwarderAndMeritTypeAndDate(MemberEntity awarder, MeritTypeEntity meritType,
       LocalDate date);
-
 }

@@ -4,8 +4,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
-import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendancesRequestDto;
-import keeper.project.homepage.admin.dto.clerk.response.SeminarWithAttendancesByPeriodResponseDto;
+import keeper.project.homepage.admin.dto.clerk.request.SeminarWithAttendancesRequestByPeriodDto;
+import keeper.project.homepage.admin.dto.clerk.response.SeminarWithAttendancesResponseByPeriodDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceStatusResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceUpdateResponseDto;
@@ -55,8 +55,8 @@ public class AdminSeminarController {
   }
 
   @GetMapping("/attendances")
-  PageResult<SeminarWithAttendancesByPeriodResponseDto> getAllSeminarAttendances(Pageable pageable,
-      @RequestBody @Valid SeminarAttendancesRequestDto requestDto) {
+  PageResult<SeminarWithAttendancesResponseByPeriodDto> getAllSeminarAttendances(Pageable pageable,
+      @RequestBody @Valid SeminarWithAttendancesRequestByPeriodDto requestDto) {
     return responseService.getSuccessPageResult(seminarService.getAllSeminarAttendances(pageable, requestDto));
   }
   @GetMapping("{seminarId}/attendances")

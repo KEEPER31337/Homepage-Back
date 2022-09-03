@@ -22,27 +22,72 @@ IMPORTANT: *회장, 부회장, 서기만 접근 가능합니다.*
 
 link:../admin.html[어드민 API 목록으로 돌아가기]
 
+
 == *상벌점 내역 추가* ==
 
 === 요청
 
 ==== Request
 
-include::{snippets}/create-merit-log/http-request.adoc[]
+include::{snippets}/add-merit-log-list/http-request.adoc[]
 
 ==== Request Fields
 
-include::{snippets}/create-merit-log/request-fields.adoc[]
+include::{snippets}/add-merit-log-list/request-fields.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/create-merit-log/http-response.adoc[]
+include::{snippets}/add-merit-log-list/http-response.adoc[]
 
 ==== Response Field
 
-include::{snippets}/create-merit-log/response-fields.adoc[]
+include::{snippets}/add-merit-log-list/response-fields.adoc[]
+
+== *상벌점 내역 삭제* ==
+
+=== 요청
+
+==== Request
+
+include::{snippets}/delete-merit/http-request.adoc[]
+
+==== Path Parameters
+
+include::{snippets}/delete-merit/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/delete-merit/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/delete-merit/response-fields.adoc[]
+
+== *상벌점 내역 수정* ==
+
+=== 요청
+
+==== Request
+
+include::{snippets}/update-merit-log/http-request.adoc[]
+
+==== Request Fields
+
+include::{snippets}/update-merit-log/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/update-merit-log/http-response.adoc[]
+
+==== Response Fields
+
+include::{snippets}/update-merit-log/response-fields.adoc[]
 
 == *회원별 상벌점 누계 조회* ==
 
@@ -70,9 +115,9 @@ include::{snippets}/get-merit-log-total/response-fields.adoc[]
 
 include::{snippets}/get-merit-log-by-year/http-request.adoc[]
 
-==== Path Parameter
+==== Request Fields
 
-include::{snippets}/get-merit-log-by-year/request-parameters.adoc[]
+include::{snippets}/get-merit-log-by-year/request-fields.adoc[]
 
 === 응답
 
@@ -142,15 +187,17 @@ include::{snippets}/create-merit-type/http-response.adoc[]
 
 include::{snippets}/create-merit-type/response-fields.adoc[]
 
+== *상벌점 타입 삭제* ==
+
 === 요청
 
 ==== Request
 
 include::{snippets}/delete-merit-type/http-request.adoc[]
 
-==== Path Parameter
+==== Path Parameters
 
-include::{snippets}/get-merit-log-by-year/path-parameters.adoc[]
+include::{snippets}/delete-merit-type/path-parameters.adoc[]
 
 === 응답
 
@@ -158,6 +205,6 @@ include::{snippets}/get-merit-log-by-year/path-parameters.adoc[]
 
 include::{snippets}/delete-merit-type/http-response.adoc[]
 
-==== Response Field
+==== Response Fields
 
 include::{snippets}/delete-merit-type/response-fields.adoc[]

@@ -24,8 +24,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDateTime;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
-import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendancesRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
+import keeper.project.homepage.admin.dto.clerk.request.SeminarWithAttendancesRequestByPeriodDto;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceExcuseEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
@@ -147,7 +147,7 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
   @Test
   @DisplayName("[SUCCESS] 기간별 세미나 출석 목록 불러오기")
   public void getAllSeminarAttendances() throws Exception {
-    SeminarAttendancesRequestDto seminarAttendancesRequestDto = SeminarAttendancesRequestDto.builder()
+    SeminarWithAttendancesRequestByPeriodDto requestDto = SeminarWithAttendancesRequestByPeriodDto.builder()
         .seasonStartDate(LocalDateTime.now())
         .seasonEndDate(LocalDateTime.now().plusWeeks(2))
         .build();
@@ -178,7 +178,7 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
             .param("page", "0")
             .param("size", "10")
             .contentType(MediaType.APPLICATION_JSON)
-            .content(asJsonDateString(seminarAttendancesRequestDto)))
+            .content(asJsonDateString(requestDto)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))

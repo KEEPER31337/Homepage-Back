@@ -43,4 +43,11 @@ public class MeritLogEntity {
   @JoinColumn(name = "merit_type_id")
   private MeritTypeEntity meritType;
 
+  public void changeMeritType(MeritTypeEntity meritType) {
+    this.meritType = meritType;
+  }
+
+  public void changeDate(LocalDate date) {
+    this.date = date;
+  }
 }
