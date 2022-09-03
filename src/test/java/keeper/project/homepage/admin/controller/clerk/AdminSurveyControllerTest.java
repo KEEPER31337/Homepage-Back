@@ -1,6 +1,7 @@
 package keeper.project.homepage.admin.controller.clerk;
 
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.ACTIVITY;
+import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.GRADUATE;
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
@@ -23,6 +24,7 @@ import keeper.project.homepage.admin.dto.clerk.request.AdminSurveyRequestDto;
 import keeper.project.homepage.controller.clerk.SurveySpringTestHelper;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
+import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -141,15 +143,10 @@ public class AdminSurveyControllerTest extends SurveySpringTestHelper {
                 parameterWithName("surveyId").description("응답자를 조회하고자 하는 설문 ID")
             ),
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("성공 시 0을 반환"),
-                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("list[].memberId").description("응답자 멤버 ID"),
-                fieldWithPath("list[].realName").description("응답자 실제 이름"),
-                fieldWithPath("list[].thumbnailPath").description("응답자 썸네일 경로"),
-                fieldWithPath("list[].generation").description("응답자 기수"),
-                fieldWithPath("list[].reply").description("응답자의 응답"),
-                fieldWithPath("list[].excuse").description("응답이 휴면(기타)일 경우 사유")
+                generateSurveyRespondentDtoResponseFields(ResponseType.LIST,
+                    "성공: true +\n실패: false",
+                    "성공 시 0을 반환",
+                    "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
             )));
   }
 
@@ -194,16 +191,10 @@ public class AdminSurveyControllerTest extends SurveySpringTestHelper {
                 fieldWithPath("isVisible").description("설문 공개 여부")
             ),
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("성공 시 0을 반환"),
-                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("data.surveyId").description("수정에 성공한 설문 ID"),
-                fieldWithPath("data.surveyName").description("수정에 성공한 설문 이름"),
-                fieldWithPath("data.description").description("수정에 성공한 설문 설명"),
-                fieldWithPath("data.openTime").description("수정에 성공한 설문 시작 시간"),
-                fieldWithPath("data.closeTime").description("수정에 성공한 설문 마감 시간"),
-                fieldWithPath("data.isVisible").description("수정에 성공한 설문 공개 여부"),
-                subsectionWithPath("data.respondents").description("설문에 응답한 응답자 정보")
+                generateSurveyModifyDtoResponseFields(ResponseType.SINGLE,
+                    "성공: true +\n실패: false",
+                    "성공 시 0을 반환",
+                    "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
             )));
   }
 
@@ -229,12 +220,10 @@ public class AdminSurveyControllerTest extends SurveySpringTestHelper {
                 parameterWithName("surveyId").description("공개하고자 하는 설문의 ID")
             ),
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("성공 시 0을 반환"),
-                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("data.surveyId").description("공개한 설문의 ID"),
-                fieldWithPath("data.surveyName").description("공개한 설문의 이름"),
-                fieldWithPath("data.isVisible").description("공개 여부")
+                generateSurveyUpdateDtoFields(ResponseType.SINGLE,
+                    "성공: true +\n실패: false",
+                    "성공 시 0을 반환",
+                    "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
             )));
   }
 
@@ -260,12 +249,47 @@ public class AdminSurveyControllerTest extends SurveySpringTestHelper {
                 parameterWithName("surveyId").description("비공개하고자 하는 설문의 ID")
             ),
             responseFields(
-                fieldWithPath("success").description("성공: true +\n실패: false"),
-                fieldWithPath("code").description("성공 시 0을 반환"),
-                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("data.surveyId").description("비공개한 설문의 ID"),
-                fieldWithPath("data.surveyName").description("비공개한 설문의 이름"),
-                fieldWithPath("data.isVisible").description("공개 여부")
+                generateSurveyUpdateDtoFields(ResponseType.SINGLE,
+                    "성공: true +\n실패: false",
+                    "성공 시 0을 반환",
+                    "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
+            )));
+  }
+
+  @Test
+  @DisplayName("[SUCCESS] 설문 목록 조회")
+  public void getSurveyList() throws Exception {
+    Boolean isVisible = true;
+    for (int i = 0; i < 7; i++) {
+      SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(2),
+          isVisible);
+      generateSurveyMemberReply(survey, admin, surveyReplyRepository.getById(ACTIVITY.getId()));
+      isVisible = !isVisible;
+    }
+
+    String page = "0";
+    String size = "10";
+
+    mockMvc.perform(
+            get("/v1/admin/clerk/surveys")
+                .header("Authorization", adminToken)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("page", page)
+                .param("size", size))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andDo(document("survey-list",
+            pathParameters(
+                parameterWithName("page").description("설문 목록의 페이지 번호(default = 0)").optional(),
+                parameterWithName("size").description("설문 목록 한 페이지의 개수(default = 10)").optional()
+            ),
+            responseFields(
+                generateSurveyDtoResponseFields(ResponseType.PAGE,
+                    "성공: true +\n실패: false",
+                    "성공 시 0을 반환",
+                    "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
             )));
   }
 

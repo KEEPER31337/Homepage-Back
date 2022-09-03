@@ -48,9 +48,9 @@ public class AdminMeritController {
   }
 
   @PostMapping
-  public ListResult<MeritAddResponseDto> addMeritLogs(
+  public ListResult<MeritAddResponseDto> addMeritsWithLogs(
       @RequestBody @Valid List<MeritAddRequestDto> requestDtoList) {
-    return responseService.getSuccessListResult(adminMeritService.addMeritLogs(requestDtoList));
+    return responseService.getSuccessListResult(adminMeritService.addMeritsWithLogs(requestDtoList));
   }
 
   @PatchMapping
@@ -60,8 +60,8 @@ public class AdminMeritController {
   }
 
   @DeleteMapping("/{meritLogId}")
-  public SingleResult<Long> deleteMerit(@PathVariable Long meritLogId) {
-    return responseService.getSuccessSingleResult(adminMeritService.deleteMerit(meritLogId));
+  public SingleResult<Long> deleteMeritWith(@PathVariable Long meritLogId) {
+    return responseService.getSuccessSingleResult(adminMeritService.deleteMeritWithLog(meritLogId));
   }
 
   @GetMapping("/years")

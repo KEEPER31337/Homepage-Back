@@ -25,12 +25,10 @@ import java.util.List;
 import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.MeritLogUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.MeritTypeCreateRequestDto;
-import keeper.project.homepage.admin.dto.clerk.response.MeritAddResponseDto;
 import keeper.project.homepage.entity.clerk.MeritLogEntity;
 import keeper.project.homepage.entity.clerk.MeritTypeEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -226,7 +224,6 @@ public class AdminMeritControllerTest extends ClerkControllerTestHelper {
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("list.[].meritLogId").description("상벌점 내역 id"),
                 fieldWithPath("list.[].awarderRealName").description("상벌점 수상자 이름"),
                 fieldWithPath("list.[].date").description("상벌점 수여 날짜"),
                 fieldWithPath("list.[].isMerit").description("상점이면 1, 벌점이면 0"),

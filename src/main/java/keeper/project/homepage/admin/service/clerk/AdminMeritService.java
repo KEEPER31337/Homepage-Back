@@ -1,5 +1,7 @@
 package keeper.project.homepage.admin.service.clerk;
 
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ABSENCE;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,7 @@ import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.entity.clerk.MeritLogEntity;
 import keeper.project.homepage.entity.clerk.MeritTypeEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.exception.clerk.CustomDuplicateAbsenceLogException;
 import keeper.project.homepage.exception.clerk.CustomMeritLogNotFoundException;
 import keeper.project.homepage.exception.clerk.CustomMeritTypeNotFoundException;
 import keeper.project.homepage.repository.clerk.MeritLogRepository;
@@ -58,26 +61,27 @@ public class AdminMeritService {
         .map(entry -> MemberTotalMeritLogsResponseDto.of(entry.getKey(), entry.getValue()))
         .toList();
   }
-
-  @Transactional
-  public List<MeritAddResponseDto> addMeritLogs(List<MeritAddRequestDto> requestDtoList) {
-    MemberEntity giver = authService.getMemberEntityWithJWT();
+  public List<MeritAddResponseDto> addMeritsWithLogs(List<MeritAddRequestDto> requestDtoList) {
     List<MeritAddResponseDto> responseDtoList = new ArrayList<>();
-
     for (MeritAddRequestDto requestDto : requestDtoList) {
-      MemberEntity awarder = memberUtilService.getById(requestDto.getMemberId());
-      MeritTypeEntity meritType = meritTypeRepository.findById(requestDto.getMeritTypeId())
-          .orElseThrow(CustomMeritTypeNotFoundException::new);
-      MeritLogEntity meritLog = getMeritLogEntity(requestDto.getDate(), meritType, awarder, giver);
-
-      addMeritByMeritType(awarder, meritType);
-      MeritLogEntity save = meritLogRepository.save(meritLog);
       responseDtoList.add(MeritAddResponseDto.builder()
-          .meritLogId(save.getId())
+          .meritLogId(addMeritWithLog(requestDto).getId())
           .build());
     }
     return responseDtoList;
   }
+
+  @Transactional
+  public MeritLogEntity addMeritWithLog(MeritAddRequestDto requestDto) {
+    MemberEntity giver = authService.getMemberEntityWithJWT();
+    MemberEntity awarder = memberUtilService.getById(requestDto.getMemberId());
+    MeritTypeEntity meritType = meritTypeRepository.findById(requestDto.getMeritTypeId())
+        .orElseThrow(CustomMeritTypeNotFoundException::new);
+    MeritLogEntity meritLog = getMeritLog(requestDto.getDate(), meritType, awarder, giver);
+    addMeritByMeritType(awarder, meritType);
+    return meritLogRepository.save(meritLog);
+  }
+
 
   protected static void addMeritByMeritType(MemberEntity awarder, MeritTypeEntity meritType) {
     if (meritType.getIsMerit()) {
@@ -87,12 +91,13 @@ public class AdminMeritService {
     }
   }
 
-  private static MeritLogEntity getMeritLogEntity(LocalDate date,
+  private static MeritLogEntity getMeritLog(LocalDate date,
       MeritTypeEntity meritType, MemberEntity awarder, MemberEntity giver) {
     return MeritLogEntity.builder()
         .awarder(awarder)
         .giver(giver)
         .meritType(meritType)
+        .date(date)
         .date(date)
         .build();
   }
@@ -127,7 +132,7 @@ public class AdminMeritService {
   }
 
   @Transactional
-  public Long deleteMerit(Long meritLogId) {
+  public Long deleteMeritWithLog(Long meritLogId) {
     MeritLogEntity meritLog = meritLogRepository.findById(meritLogId)
         .orElseThrow(CustomMeritLogNotFoundException::new);
 
@@ -151,6 +156,21 @@ public class AdminMeritService {
     meritLog.changeDate(requestDto.getDate());
 
     return meritLog.getId();
+  }
+
+  void deleteAbsenceLog(MemberEntity awarder, LocalDate date) {
+    MeritTypeEntity absence = meritTypeRepository.findByDetail(ABSENCE.getType())
+        .orElseThrow(CustomMeritTypeNotFoundException::new);
+    List<MeritLogEntity> absenceLog = meritLogRepository.findByAwarderAndMeritTypeAndDate(
+        awarder, absence, date);
+    if (absenceLog.isEmpty()) {
+      throw new CustomMeritLogNotFoundException();
+    }
+    if (absenceLog.size() > 1) {
+      throw new CustomDuplicateAbsenceLogException();
+    }
+    meritLogRepository.delete(absenceLog.get(0));
+    deleteMeritByMeritType(awarder, absence);
   }
 
   void deleteMeritByMeritType(MemberEntity awarder, MeritTypeEntity meritType) {

@@ -115,9 +115,9 @@ include::{snippets}/get-merit-log-total/response-fields.adoc[]
 
 include::{snippets}/get-merit-log-by-year/http-request.adoc[]
 
-==== Path Parameter
+==== Request Fields
 
-include::{snippets}/get-merit-log-by-year/request-parameters.adoc[]
+include::{snippets}/get-merit-log-by-year/request-fields.adoc[]
 
 === 응답
 
@@ -187,15 +187,17 @@ include::{snippets}/create-merit-type/http-response.adoc[]
 
 include::{snippets}/create-merit-type/response-fields.adoc[]
 
+== *상벌점 타입 삭제* ==
+
 === 요청
 
 ==== Request
 
 include::{snippets}/delete-merit-type/http-request.adoc[]
 
-==== Path Parameter
+==== Path Parameters
 
-include::{snippets}/get-merit-log-by-year/path-parameters.adoc[]
+include::{snippets}/delete-merit-type/path-parameters.adoc[]
 
 === 응답
 
@@ -203,6 +205,6 @@ include::{snippets}/get-merit-log-by-year/path-parameters.adoc[]
 
 include::{snippets}/delete-merit-type/http-response.adoc[]
 
-==== Response Field
+==== Response Fields
 
 include::{snippets}/delete-merit-type/response-fields.adoc[]
