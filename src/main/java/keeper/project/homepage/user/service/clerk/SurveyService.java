@@ -69,8 +69,7 @@ public class SurveyService {
           memberReply,
           requestDto.getExcuse());
 
-      memberReply.setSurveyMemberReply(surveyReplyExcuseEntity);
-      surveyReplyExcuseRepository.save(surveyReplyExcuseEntity);
+      memberReply.setMemberReplyExcuse(surveyReplyExcuseEntity);
     }
 
     return memberReply;
@@ -118,8 +117,7 @@ public class SurveyService {
           memberReply,
           requestDto.getExcuse());
 
-      memberReply.setSurveyMemberReply(surveyReplyExcuseEntity);
-      surveyReplyExcuseRepository.save(surveyReplyExcuseEntity);
+      memberReply.setMemberReplyExcuse(surveyReplyExcuseEntity);
     }
   }
 
