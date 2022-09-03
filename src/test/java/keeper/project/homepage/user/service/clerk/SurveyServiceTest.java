@@ -1,22 +1,30 @@
 package keeper.project.homepage.user.service.clerk;
 
+import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.ACTIVITY;
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.GRADUATE;
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.persistence.EntityManager;
+import keeper.project.homepage.user.dto.clerk.response.ClosedSurveyInformationResponseDto;
 import keeper.project.homepage.controller.clerk.SurveySpringTestHelper;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
-import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
-import keeper.project.homepage.entity.clerk.SurveyReplyExcuseEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.clerk.CustomSurveyMemberReplyNotFoundException;
+import keeper.project.homepage.user.dto.clerk.request.SurveyResponseRequestDto;
+import keeper.project.homepage.user.dto.clerk.response.SurveyInformationResponseDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
@@ -25,8 +33,14 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
   @Autowired
   private EntityManager em;
 
+  @Autowired
+  private SurveyService surveyService;
+
   private MemberEntity user;
   private MemberEntity admin;
+
+  private static final String REPLY_EXCUSE_1 = "BOB로 인한 휴학";
+  private static final String REPLY_EXCUSE_2 = "개인사정";
 
   @BeforeEach
   public void setUp() throws Exception {
@@ -38,71 +52,341 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
   @DisplayName("설문 응답")
   public void responseSurvey() throws Exception {
     //given
-    SurveyEntity survey = surveyRepository.getById(1L);
-    SurveyMemberReplyEntity surveyMemberReplyEntity = generateSurveyMemberReply(survey, user,
-        surveyReplyRepository.getById(GRADUATE.getId()));
+    setAuthentication(user);
+    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
+        true);
+
+    SurveyResponseRequestDto requestDto = SurveyResponseRequestDto.builder()
+        .replyId(ACTIVITY.getId())
+        .excuse(null)
+        .build();
 
     //when
-    SurveyEntity findSurvey = surveyRepository.getById(survey.getId());
+    surveyService.responseSurvey(survey.getId(), requestDto);
+    SurveyMemberReplyEntity surveyMemberReplyEntity = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
+        survey.getId(), user.getId()).orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
 
     //then
-    assertThat(findSurvey.getRespondents()).contains(surveyMemberReplyEntity);
+    assertThat(surveyMemberReplyEntity.getReply().getId()).isEqualTo(ACTIVITY.getId());
   }
 
   @Test
-  @DisplayName("설문 응답 수정")
-  public void modifyResponse() throws Exception {
+  @DisplayName("설문 응답 - 휴면(기타) 응답")
+  public void responseSurvey_withOther() throws Exception {
     //given
-    SurveyEntity survey = surveyRepository.getById(1L);
-    SurveyMemberReplyEntity surveyMemberReplyEntity = generateSurveyMemberReply(survey, user,
-        surveyReplyRepository.getById(GRADUATE.getId()));
+    setAuthentication(user);
+    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
+        true);
 
-    SurveyReplyEntity modifyResponse = surveyReplyRepository.getById(OTHER_DORMANT.getId());
-    SurveyReplyExcuseEntity excuse = generateSurveyReplyExcuse(surveyMemberReplyEntity,
-        "BOB로 인한 휴학");
-
-    surveyMemberReplyEntity.modifyReply(modifyResponse);
-    surveyMemberReplyEntity.assignSurveyReplyExcuseEntity(excuse);
+    SurveyResponseRequestDto requestDto = SurveyResponseRequestDto.builder()
+        .replyId(OTHER_DORMANT.getId())
+        .excuse(REPLY_EXCUSE_1)
+        .build();
 
     //when
-    SurveyEntity findSurvey = surveyRepository.getById(survey.getId());
+    surveyService.responseSurvey(survey.getId(), requestDto);
+    SurveyMemberReplyEntity surveyMemberReplyEntity = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
+        survey.getId(), user.getId()).orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
 
     //then
-    assertThat(findSurvey.getRespondents()).contains(surveyMemberReplyEntity);
     assertThat(surveyMemberReplyEntity.getReply().getId()).isEqualTo(OTHER_DORMANT.getId());
     assertThat(surveyMemberReplyEntity.getSurveyReplyExcuseEntity().getRestExcuse()).isEqualTo(
-        "BOB로 인한 휴학");
+        REPLY_EXCUSE_1);
+  }
+
+  @Test
+  @DisplayName("설문 응답 수정 - 기타 X -> 기타 X")
+  public void modifyResponse_noOtherTo_noOther() throws Exception {
+    //given
+    setAuthentication(user);
+    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
+        true);
+    generateSurveyMemberReply(survey, user, surveyReplyRepository.getById(ACTIVITY.getId()));
+
+    SurveyResponseRequestDto requestDto = SurveyResponseRequestDto.builder()
+        .replyId(GRADUATE.getId())
+        .excuse(null)
+        .build();
+
+    //when
+    surveyService.modifyResponse(survey.getId(), requestDto);
+    SurveyMemberReplyEntity surveyMemberReplyEntity = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
+        survey.getId(), user.getId()).orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
+
+    //then
+    assertThat(surveyMemberReplyEntity.getReply().getId()).isEqualTo(
+        surveyReplyRepository.getById(GRADUATE.getId()).getId());
+    assertThat(surveyMemberReplyEntity.getSurveyReplyExcuseEntity()).isNull();
+  }
+
+  @Test
+  @DisplayName("설문 응답 수정 - 기타 X -> 기타")
+  public void modifyResponse_noOtherTo_Other() throws Exception {
+    //given
+    setAuthentication(user);
+    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
+        true);
+    generateSurveyMemberReply(survey, user, surveyReplyRepository.getById(ACTIVITY.getId()));
+
+    SurveyResponseRequestDto requestDto = SurveyResponseRequestDto.builder()
+        .replyId(OTHER_DORMANT.getId())
+        .excuse(REPLY_EXCUSE_1)
+        .build();
+
+    //when
+    surveyService.modifyResponse(survey.getId(), requestDto);
+    SurveyMemberReplyEntity surveyMemberReplyEntity = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
+        survey.getId(), user.getId()).orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
+
+    //then
+    assertThat(surveyMemberReplyEntity.getReply().getId()).isEqualTo(
+        surveyReplyRepository.getById(OTHER_DORMANT.getId()).getId());
+    assertThat(surveyMemberReplyEntity.getSurveyReplyExcuseEntity().getRestExcuse()).isEqualTo(
+        requestDto.getExcuse());
+  }
+
+  @Test
+  @DisplayName("설문 응답 수정 - 기타 -> 기타X")
+  public void modifyResponse_OtherTo_noOther() throws Exception {
+    //given
+    setAuthentication(user);
+    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
+        true);
+    SurveyMemberReplyEntity surveyMemberReplyEntity1 = generateSurveyMemberReply(survey, user,
+        surveyReplyRepository.getById(OTHER_DORMANT.getId()));
+    generateSurveyReplyExcuse(surveyMemberReplyEntity1, REPLY_EXCUSE_2);
+
+    SurveyResponseRequestDto requestDto = SurveyResponseRequestDto.builder()
+        .replyId(ACTIVITY.getId())
+        .excuse(null)
+        .build();
+
+    //when
+    surveyService.modifyResponse(survey.getId(), requestDto);
+    SurveyMemberReplyEntity surveyMemberReplyEntity2 = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
+        survey.getId(), user.getId()).orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
+
+    //then
+    assertThat(surveyMemberReplyEntity2.getReply().getId()).isEqualTo(
+        surveyReplyRepository.getById(ACTIVITY.getId()).getId());
+    assertThat(surveyMemberReplyEntity2.getSurveyReplyExcuseEntity()).isNull();
+  }
+
+  @Test
+  @DisplayName("설문 응답 수정 - 기타 -> 기타")
+  public void modifyResponse_OtherTo_Other() throws Exception {
+    //given
+    setAuthentication(user);
+    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
+        true);
+    SurveyMemberReplyEntity surveyMemberReplyEntity1 = generateSurveyMemberReply(survey, user,
+        surveyReplyRepository.getById(OTHER_DORMANT.getId()));
+    generateSurveyReplyExcuse(surveyMemberReplyEntity1, REPLY_EXCUSE_2);
+
+    SurveyResponseRequestDto requestDto = SurveyResponseRequestDto.builder()
+        .replyId(OTHER_DORMANT.getId())
+        .excuse(REPLY_EXCUSE_1)
+        .build();
+
+    //when
+    surveyService.modifyResponse(survey.getId(), requestDto);
+    SurveyMemberReplyEntity surveyMemberReplyEntity2 = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
+        survey.getId(), user.getId()).orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
+
+    //then
+    assertThat(surveyMemberReplyEntity2.getReply().getId()).isEqualTo(
+        surveyReplyRepository.getById(OTHER_DORMANT.getId()).getId());
+    assertThat(surveyMemberReplyEntity2.getSurveyReplyExcuseEntity().getRestExcuse()).isEqualTo(
+        requestDto.getExcuse());
   }
 
   @Test
   @DisplayName("설문 정보 조회")
   public void getSurveyInformation() throws Exception {
     //given
-    LocalDateTime openTime = LocalDateTime.now();
-    LocalDateTime closeTime = LocalDateTime.now().plusDays(5);
-    SurveyEntity survey = generateSurvey(openTime, closeTime, true);
-    SurveyMemberReplyEntity surveyMemberReplyEntity = generateSurveyMemberReply(survey, user,
-        surveyReplyRepository.getById(GRADUATE.getId()));
-
-    Boolean isResponded = false;
-
-    if (survey.getRespondents().contains(surveyMemberReplyEntity)) {
-      isResponded = true;
-    }
+    setAuthentication(user);
+    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
+        true);
+    generateSurveyMemberReply(survey, user, surveyReplyRepository.getById(ACTIVITY.getId()));
 
     //when
-    SurveyEntity findSurvey = surveyRepository.getById(survey.getId());
-    SurveyMemberReplyEntity findMemberReply = surveyMemberReplyRepository.findByMemberId(
-            user.getId())
-        .orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
+    SurveyInformationResponseDto responseDto = surveyService.getSurveyInformation(
+        survey.getId());
+    SurveyMemberReplyEntity surveyMemberReplyEntity = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
+        survey.getId(), user.getId()).orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
 
     //then
-    assertThat(findSurvey.getId()).isEqualTo(survey.getId());
-    assertThat(findSurvey.getName()).isEqualTo(survey.getName());
-    assertThat(findSurvey.getOpenTime()).isEqualTo(openTime);
-    assertThat(findSurvey.getCloseTime()).isEqualTo(closeTime);
-    assertThat(isResponded).isEqualTo(true);
-    assertThat(survey.getIsVisible()).isEqualTo(true);
-    assertThat(findMemberReply.getReply().getId()).isEqualTo(GRADUATE.getId());
+    assertThat(responseDto.getSurveyId()).isEqualTo(survey.getId());
+    assertThat(responseDto.getIsResponded()).isEqualTo(true);
+    assertThat(responseDto.getReplyId()).isEqualTo(ACTIVITY.getId());
+  }
+
+  @Test
+  @DisplayName("설문 정보 조회 - 응답을 안 했을 경우")
+  public void getSurveyInformation_noReply() throws Exception {
+    //given
+    setAuthentication(user);
+    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
+        true);
+
+    //when
+    SurveyInformationResponseDto responseDto = surveyService.getSurveyInformation(
+        survey.getId());
+
+    //then
+    assertThat(responseDto.getSurveyId()).isEqualTo(survey.getId());
+    assertThat(responseDto.getIsResponded()).isEqualTo(false);
+  }
+
+  @Test
+  @DisplayName("설문 정보 조회 - 휴면(기타) 응답")
+  public void getSurveyInformation_withExcuse() throws Exception {
+    //given
+    setAuthentication(user);
+    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
+        true);
+    SurveyMemberReplyEntity surveyMemberReplyEntity = generateSurveyMemberReply(survey, user,
+        surveyReplyRepository.getById(OTHER_DORMANT.getId()));
+    generateSurveyReplyExcuse(surveyMemberReplyEntity, REPLY_EXCUSE_1);
+
+    //when
+    SurveyInformationResponseDto responseDto = surveyService.getSurveyInformation(
+        survey.getId());
+    SurveyMemberReplyEntity surveyMemberReply = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
+        survey.getId(), user.getId()).orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
+
+    //then
+    assertThat(responseDto.getSurveyId()).isEqualTo(survey.getId());
+    assertThat(responseDto.getIsResponded()).isEqualTo(true);
+    assertThat(responseDto.getReplyId()).isEqualTo(OTHER_DORMANT.getId());
+    assertThat(responseDto.getExcuse()).isEqualTo(REPLY_EXCUSE_1);
+  }
+
+  @Test
+  @DisplayName("가장 최근의 공개된 설문 조회 - 현재 진행중인")
+  public void getLatestVisibleSurveyId() {
+    //given
+    generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().plusDays(2),
+        true);
+    SurveyEntity expectSurvey = generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().plusDays(3),
+        true);
+    generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().plusDays(3),
+        false);
+
+    //when
+    Long resultId = surveyService.getLatestVisibleSurveyId();
+
+    //then
+    assertThat(resultId).isEqualTo(expectSurvey.getId());
+  }
+
+  @Test
+  @DisplayName("가장 최근의 공개된 설문 조회 - 현재 진행중인 설문 없음")
+  public void getLatestVisibleSurveyId_noOngoingSurveys() {
+    //given
+    generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().minusDays(1),
+        true);
+    generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().plusDays(3),
+        false);
+
+    //when
+    Long resultId = surveyService.getLatestVisibleSurveyId();
+
+    //then
+    assertThat(resultId).isEqualTo(NO_SURVEY.getId());
+  }
+
+  @Test
+  @DisplayName("가장 최근에 종료된 설문의 정보와 요청자의 응답 여부 조회")
+  public void getLatestClosedSurveyInformation() {
+    //given
+    setAuthentication(user);
+
+    SurveyEntity expectSurvey = generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().minusDays(2), true);
+    SurveyMemberReplyEntity expectReply = generateSurveyMemberReply(expectSurvey, user,
+        surveyReplyRepository.getById(ACTIVITY.getId()));
+    SurveyEntity unExpectedSurvey = generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().plusDays(2), true);
+    generateSurveyMemberReply(unExpectedSurvey, user,
+        surveyReplyRepository.getById(GRADUATE.getId()));
+    SurveyEntity unExpectedSurvey2 = generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().minusDays(2), false);
+    generateSurveyMemberReply(unExpectedSurvey2, user,
+        surveyReplyRepository.getById(GRADUATE.getId()));
+
+    //when
+    ClosedSurveyInformationResponseDto result = surveyService.getLatestClosedSurveyInformation();
+
+    //then
+    assertThat(expectReply.getSurvey().getId()).isEqualTo(result.getSurveyId());
+    assertThat(expectReply.getSurvey().getName()).isEqualTo(result.getSurveyName());
+    assertThat(expectReply.getReply().getId()).isEqualTo(result.getReplyId());
+  }
+
+  @Test
+  @DisplayName("가장 최근에 종료된 설문의 정보와 요청자의 응답 여부 조회 - 응답 하지 않음")
+  public void getLatestClosedSurveyInformation_wrongMember() {
+    //given
+    setAuthentication(user);
+
+    generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().minusDays(2), true);
+
+    //when
+    ClosedSurveyInformationResponseDto result = surveyService.getLatestClosedSurveyInformation();
+
+    //then
+    assertThat(ClosedSurveyInformationResponseDto.notFound().getSurveyId())
+        .isEqualTo(result.getSurveyId());
+    assertThat(ClosedSurveyInformationResponseDto.notFound().getSurveyName())
+        .isEqualTo(result.getSurveyName());
+    assertThat(ClosedSurveyInformationResponseDto.notFound().getReplyId())
+        .isEqualTo(result.getReplyId());
+  }
+
+
+  @Test
+  @DisplayName("가장 최근에 종료된 설문의 정보와 요청자의 응답 여부 조회 - 최근에 종료된 설문이 없음")
+  public void getLatestClosedSurveyInformation_notFoundLatestClosedSurvey() {
+    //given
+    setAuthentication(user);
+
+    SurveyEntity ongoingSurvey = generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().plusDays(2), true);
+    generateSurveyMemberReply(ongoingSurvey, user,
+        surveyReplyRepository.getById(ACTIVITY.getId()));
+    SurveyEntity notStartedSurvey = generateSurvey(LocalDateTime.now().plusDays(1),
+        LocalDateTime.now().plusDays(2), true);
+    generateSurveyMemberReply(notStartedSurvey, user,
+        surveyReplyRepository.getById(GRADUATE.getId()));
+    SurveyEntity invisibleSurvey = generateSurvey(LocalDateTime.now().minusDays(4),
+        LocalDateTime.now().minusDays(2), false);
+    generateSurveyMemberReply(invisibleSurvey, user,
+        surveyReplyRepository.getById(GRADUATE.getId()));
+
+    //when
+    ClosedSurveyInformationResponseDto result = surveyService.getLatestClosedSurveyInformation();
+
+    //then
+    assertThat(ClosedSurveyInformationResponseDto.notFound().getSurveyId())
+        .isEqualTo(result.getSurveyId());
+    assertThat(ClosedSurveyInformationResponseDto.notFound().getSurveyName())
+        .isEqualTo(result.getSurveyName());
+    assertThat(ClosedSurveyInformationResponseDto.notFound().getReplyId())
+        .isEqualTo(result.getReplyId());
+  }
+
+
+  private void setAuthentication(MemberEntity reqMember) {
+    SecurityContext context = SecurityContextHolder.getContext();
+    context.setAuthentication(
+        new UsernamePasswordAuthenticationToken(reqMember.getId(), reqMember.getPassword(),
+            List.of(new SimpleGrantedAuthority("ROLE_회원"))));
   }
 }

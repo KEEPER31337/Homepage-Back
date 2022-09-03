@@ -29,6 +29,7 @@ public class SeminarEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
+  // null 이면 db 에서 trigger 로 이름이 자동 생성 됩니다.
   private String name;
   @Setter
   @Column(length = 10)

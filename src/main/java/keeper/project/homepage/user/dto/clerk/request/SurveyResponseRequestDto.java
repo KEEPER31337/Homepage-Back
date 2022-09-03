@@ -17,11 +17,7 @@ import org.springframework.lang.Nullable;
 public class SurveyResponseRequestDto {
 
   @NotNull
-  private Long memberId;
-  @NotNull
   private Long replyId;
   @Nullable
   private String excuse;
-  @NotNull
-  private LocalDateTime replyTime;
 }

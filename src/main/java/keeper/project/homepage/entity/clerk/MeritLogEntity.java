@@ -1,6 +1,7 @@
 package keeper.project.homepage.entity.clerk;
 
 import java.time.LocalDate;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -35,10 +36,18 @@ public class MeritLogEntity {
   @JoinColumn(name = "giver_id")
   private MemberEntity giver;
 
-  private LocalDate time;
+  @Column(name = "time")
+  private LocalDate date;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "merit_type_id")
   private MeritTypeEntity meritType;
 
+  public void changeMeritType(MeritTypeEntity meritType) {
+    this.meritType = meritType;
+  }
+
+  public void changeDate(LocalDate date) {
+    this.date = date;
+  }
 }

@@ -41,10 +41,6 @@ include::{snippets}/survey-create/request-fields.adoc[]
 
 include::{snippets}/survey-create/http-response.adoc[]
 
-==== Response Body
-
-include::{snippets}/survey-create/response-body.adoc[]
-
 ==== Response Field
 
 include::{snippets}/survey-create/response-fields.adoc[]
@@ -75,10 +71,6 @@ include::{snippets}/survey-modify/request-fields.adoc[]
 
 include::{snippets}/survey-modify/http-response.adoc[]
 
-==== Response Body
-
-include::{snippets}/survey-modify/response-body.adoc[]
-
 ==== Response Field
 
 include::{snippets}/survey-modify/response-fields.adoc[]
@@ -100,10 +92,6 @@ include::{snippets}/survey-delete/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/survey-delete/http-response.adoc[]
-
-==== Response Body
-
-include::{snippets}/survey-delete/response-body.adoc[]
 
 ==== Response Field
 
@@ -127,10 +115,6 @@ include::{snippets}/survey-open/path-parameters.adoc[]
 
 include::{snippets}/survey-open/http-response.adoc[]
 
-==== Response Body
-
-include::{snippets}/survey-open/response-body.adoc[]
-
 ==== Response Field
 
 include::{snippets}/survey-open/response-fields.adoc[]
@@ -152,10 +136,6 @@ include::{snippets}/survey-close/path-parameters.adoc[]
 ==== Response
 
 include::{snippets}/survey-close/http-response.adoc[]
-
-==== Response Body
-
-include::{snippets}/survey-close/response-body.adoc[]
 
 ==== Response Field
 
@@ -179,11 +159,24 @@ include::{snippets}/survey-respondents/path-parameters.adoc[]
 
 include::{snippets}/survey-respondents/http-response.adoc[]
 
-==== Response Body
-
-include::{snippets}/survey-respondents/response-body.adoc[]
-
 ==== Response Field
 
 include::{snippets}/survey-respondents/response-fields.adoc[]
 
+== *설문 목록 가져오기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-list/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-list/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-list/response-fields.adoc[]

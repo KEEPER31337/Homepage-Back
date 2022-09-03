@@ -1,11 +1,12 @@
 package keeper.project.homepage.admin.controller.clerk;
 
+import java.util.List;
 import javax.validation.Valid;
-import keeper.project.homepage.admin.dto.clerk.request.MeritLogCreateRequestDto;
+import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
+import keeper.project.homepage.admin.dto.clerk.request.MeritLogUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.MeritTypeCreateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.MemberTotalMeritLogsResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.MeritLogByYearResponseDto;
-import keeper.project.homepage.admin.dto.clerk.response.MeritLogCreateResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.MeritTypeResponseDto;
 import keeper.project.homepage.admin.service.clerk.AdminMeritService;
 import keeper.project.homepage.common.dto.result.ListResult;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,9 +47,20 @@ public class AdminMeritController {
   }
 
   @PostMapping
-  public SingleResult<MeritLogCreateResponseDto> createMeritLog(
-      @RequestBody @Valid MeritLogCreateRequestDto requestDto) {
-    return responseService.getSuccessSingleResult(adminMeritService.createMeritLog(requestDto));
+  public ListResult<Long> addMeritsWithLogs(
+      @RequestBody @Valid List<MeritAddRequestDto> requestDtoList) {
+    return responseService.getSuccessListResult(adminMeritService.addMeritsWithLogs(requestDtoList));
+  }
+
+  @PatchMapping
+  public SingleResult<Long> updateMeritLog(
+      @RequestBody @Valid MeritLogUpdateRequestDto requestDto) {
+    return responseService.getSuccessSingleResult(adminMeritService.updateMeritWithLog(requestDto));
+  }
+
+  @DeleteMapping("/{meritLogId}")
+  public SingleResult<Long> deleteMeritWith(@PathVariable Long meritLogId) {
+    return responseService.getSuccessSingleResult(adminMeritService.deleteMeritWithLog(meritLogId));
   }
 
   @GetMapping("/years")

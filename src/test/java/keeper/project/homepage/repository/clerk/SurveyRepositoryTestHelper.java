@@ -69,7 +69,7 @@ public class SurveyRepositoryTestHelper {
         .restExcuse(because)
         .build();
 
-    surveyMemberReplyEntity.assignSurveyReplyExcuseEntity(excuse);
+    surveyMemberReplyEntity.setSurveyReplyExcuseEntity(excuse);
 
     return surveyReplyExcuseRepository.save(excuse);
 
