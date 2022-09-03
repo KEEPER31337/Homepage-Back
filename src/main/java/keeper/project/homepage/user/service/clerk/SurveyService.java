@@ -81,6 +81,7 @@ public class SurveyService {
     }
   }
 
+  @Transactional
   public SurveyModifyResponseDto modifyResponse(Long surveyId,
       SurveyResponseRequestDto requestDto) {
     MemberEntity member = authService.getMemberEntityWithJWT();
