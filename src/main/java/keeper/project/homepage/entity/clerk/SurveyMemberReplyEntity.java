@@ -14,7 +14,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.user.dto.clerk.request.SurveyResponseRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -54,5 +53,10 @@ public class SurveyMemberReplyEntity {
   @Column(nullable = false)
   @Setter
   private LocalDateTime replyTime;
+
+  public void setSurveyMemberReply(SurveyReplyExcuseEntity surveyReplyExcuseEntity) {
+    this.setSurveyReplyExcuseEntity(surveyReplyExcuseEntity);
+    surveyReplyExcuseEntity.setSurveyMemberReplyEntity(this);
+  }
 
 }

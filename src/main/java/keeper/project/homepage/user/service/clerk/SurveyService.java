@@ -69,8 +69,7 @@ public class SurveyService {
           memberReply,
           requestDto.getExcuse());
 
-      memberReply.setSurveyReplyExcuseEntity(surveyReplyExcuseEntity);
-      surveyReplyExcuseEntity.setSurveyMemberReplyEntity(memberReply);
+      memberReply.setSurveyMemberReply(surveyReplyExcuseEntity);
       surveyReplyExcuseRepository.save(surveyReplyExcuseEntity);
     }
 
@@ -106,7 +105,7 @@ public class SurveyService {
 
     if (beforeReply.getId().equals(OTHER_DORMANT.getId())) {
       // 기타에서 기타로 수정
-      if (memberReply.getReply().getId().equals(OTHER_DORMANT.getId())) {
+      if (modifyReplyType.getId().equals(OTHER_DORMANT.getId())) {
         memberReply.getSurveyReplyExcuseEntity().setRestExcuse(requestDto.getExcuse());
         return;
       }
@@ -114,13 +113,12 @@ public class SurveyService {
       memberReply.setSurveyReplyExcuseEntity(null);
     }
     // 활동 등에서 기타로 수정
-    if (memberReply.getReply().getId().equals(OTHER_DORMANT.getId())) {
+    if (modifyReplyType.getId().equals(OTHER_DORMANT.getId())) {
       SurveyReplyExcuseEntity surveyReplyExcuseEntity = SurveyReplyExcuseEntity.newInstance(
           memberReply,
           requestDto.getExcuse());
 
-      memberReply.setSurveyReplyExcuseEntity(surveyReplyExcuseEntity);
-      surveyReplyExcuseEntity.setSurveyMemberReplyEntity(memberReply);
+      memberReply.setSurveyMemberReply(surveyReplyExcuseEntity);
       surveyReplyExcuseRepository.save(surveyReplyExcuseEntity);
     }
   }
