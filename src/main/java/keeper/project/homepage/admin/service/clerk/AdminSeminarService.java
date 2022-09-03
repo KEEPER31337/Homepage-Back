@@ -14,7 +14,7 @@ import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendancesRequestDto;
-import keeper.project.homepage.admin.dto.clerk.response.AllSeminarAttendancesResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.SeminarWithAttendancesByPeriodResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceStatusResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceUpdateResponseDto;
@@ -67,11 +67,11 @@ public class AdminSeminarService {
         .toList();
   }
 
-  public Page<AllSeminarAttendancesResponseDto> getAllSeminarAttendances(Pageable pageable,
+  public Page<SeminarWithAttendancesByPeriodResponseDto> getAllSeminarAttendances(Pageable pageable,
       SeminarAttendancesRequestDto requestDto) {
     return seminarRepository.findAllByOpenTimeBetweenOrderByOpenTimeDesc(pageable,
             requestDto.getSeasonStartDate(), requestDto.getSeasonEndDate())
-        .map(AllSeminarAttendancesResponseDto::from);
+        .map(SeminarWithAttendancesByPeriodResponseDto::from);
   }
 
   @Transactional
