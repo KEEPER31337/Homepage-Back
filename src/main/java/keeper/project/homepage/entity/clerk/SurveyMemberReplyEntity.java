@@ -54,7 +54,7 @@ public class SurveyMemberReplyEntity {
   @Setter
   private LocalDateTime replyTime;
 
-  public void setSurveyMemberReply(SurveyReplyExcuseEntity surveyReplyExcuseEntity) {
+  public void setMemberReplyExcuse(SurveyReplyExcuseEntity surveyReplyExcuseEntity) {
     this.setSurveyReplyExcuseEntity(surveyReplyExcuseEntity);
     surveyReplyExcuseEntity.setSurveyMemberReplyEntity(this);
   }
