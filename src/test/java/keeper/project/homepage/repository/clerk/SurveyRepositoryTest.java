@@ -5,6 +5,7 @@ import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
 import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
@@ -88,4 +89,47 @@ public class SurveyRepositoryTest extends SurveyRepositoryTestHelper {
         .isEqualTo(find.getSurveyReplyExcuseEntity().getRestExcuse());
   }
 
+
+  @Test
+  @DisplayName("현재 진행중인 설문이 있을 때 마감 시간이 가장 늦은 설문 하나만 가져오기")
+  public void findTop1ByOpenTimeAfterAndCloseTimeBeforeAndIsVisibleTrue() {
+    //given
+    LocalDateTime openTime = LocalDateTime.now().minusDays(5);
+    LocalDateTime closeTime = LocalDateTime.now().plusDays(5);
+    generateSurvey(openTime.plusDays(2), closeTime.minusDays(2), true);
+    generateSurvey(openTime.plusDays(1), closeTime.minusDays(1), true);
+    SurveyEntity expectSurvey = generateSurvey(openTime, closeTime, true);
+
+    em.flush();
+    em.clear();
+
+    //when
+    LocalDateTime now = LocalDateTime.now();
+    SurveyEntity loadedSurvey = surveyRepository
+        .findTop1ByOpenTimeBeforeAndCloseTimeAfterAndIsVisibleTrueOrderByCloseTimeDesc(now, now)
+        .get();
+
+    //then
+    Assertions.assertThat(loadedSurvey.getId()).isEqualTo(expectSurvey.getId());
+  }
+
+  @Test
+  @DisplayName("현재 진행중인 설문이 있을 때 마감 시간이 가장 늦은 설문 하나만 가져오기 - 진행중인 설문 없음")
+  public void findTop1ByOpenTimeAfterAndCloseTimeBeforeAndIsVisibleTrue_noSurvey() {
+    //given
+    LocalDateTime openTime = LocalDateTime.now().minusDays(5);
+    LocalDateTime closeTime = LocalDateTime.now().minusDays(5);
+    generateSurvey(openTime, closeTime, true);
+
+    em.flush();
+    em.clear();
+
+    //when
+    LocalDateTime now = LocalDateTime.now();
+    Optional<SurveyEntity> loadedSurvey = surveyRepository
+        .findTop1ByOpenTimeBeforeAndCloseTimeAfterAndIsVisibleTrueOrderByCloseTimeDesc(now, now);
+
+    //then
+    Assertions.assertThat(loadedSurvey).isEmpty();
+  }
 }

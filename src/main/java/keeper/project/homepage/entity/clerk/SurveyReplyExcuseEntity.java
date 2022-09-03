@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.lang.Nullable;
 
 @Entity
 @Getter
@@ -29,13 +30,20 @@ public class SurveyReplyExcuseEntity {
   @OneToOne
   @MapsId
   @JoinColumn(name = "survey_member_reply_id")
+  @Setter
   private SurveyMemberReplyEntity surveyMemberReplyEntity;
 
   @Column(nullable = false, length = 200)
+  @Setter
+  @Nullable
   private String restExcuse;
 
-  public void modifyExcuse(String restExcuse) {
-    this.restExcuse = restExcuse;
+  public static SurveyReplyExcuseEntity newInstance(
+      SurveyMemberReplyEntity surveyMemberReply, String restExcuse) {
+    return SurveyReplyExcuseEntity.builder()
+        .surveyMemberReplyEntity(surveyMemberReply)
+        .restExcuse(restExcuse)
+        .build();
   }
 
 }

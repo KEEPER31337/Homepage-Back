@@ -2,6 +2,7 @@ package keeper.project.homepage.user.controller.clerk;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import keeper.project.homepage.user.dto.clerk.response.ClosedSurveyInformationResponseDto;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.user.dto.clerk.response.SurveyModifyResponseDto;
@@ -48,17 +49,23 @@ public class SurveyController {
         surveyService.modifyResponse(surveyId, responseRequestDto));
   }
 
-  @GetMapping
-  public SingleResult<Long> getLatestSurvey() {
-    return responseService.getSuccessSingleResult(surveyService.getLatestSurveyId());
-  }
-
-  @GetMapping("/{surveyId}/members/{memberId}")
+  @GetMapping("/information/{surveyId}")
   public SingleResult<SurveyInformationResponseDto> getSurveyInformation(
-      @PathVariable("surveyId") @NotNull Long surveyId,
-      @PathVariable("memberId") @NotNull Long memberId
+      @PathVariable("surveyId") @NotNull Long surveyId
   ) {
     return responseService.getSuccessSingleResult(
-        surveyService.getSurveyInformation(surveyId, memberId));
+        surveyService.getSurveyInformation(surveyId));
   }
+
+  @GetMapping("/visible/ongoing")
+  public SingleResult<Long> getLatestVisibleSurveyId() {
+    return responseService.getSuccessSingleResult(surveyService.getLatestVisibleSurveyId());
+  }
+
+  @GetMapping("/visible/closed")
+  public SingleResult<ClosedSurveyInformationResponseDto> getLatestClosedSurveyInformation() {
+    return responseService.getSuccessSingleResult(
+        surveyService.getLatestClosedSurveyInformation());
+  }
+
 }

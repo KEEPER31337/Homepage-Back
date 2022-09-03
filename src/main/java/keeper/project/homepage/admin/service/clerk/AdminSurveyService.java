@@ -1,20 +1,33 @@
 package keeper.project.homepage.admin.service.clerk;
 
+import static keeper.project.homepage.util.service.SurveyUtilService.NO_SURVEY;
+
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import keeper.project.homepage.admin.dto.clerk.request.AdminSurveyRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.AdminSurveyResponseDto;
+import keeper.project.homepage.user.dto.clerk.response.ClosedSurveyInformationResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.DeleteSurveyResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.SurveyResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SurveyRespondentResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SurveyUpdateResponseDto;
+import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
+import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.exception.clerk.CustomSurveyMemberReplyNotFoundException;
 import keeper.project.homepage.exception.clerk.CustomSurveyNotFoundException;
 import keeper.project.homepage.repository.clerk.SurveyMemberReplyRepository;
 import keeper.project.homepage.repository.clerk.SurveyRepository;
+import keeper.project.homepage.user.dto.clerk.response.SurveyInformationResponseDto;
+import keeper.project.homepage.user.service.member.MemberUtilService;
 import keeper.project.homepage.util.service.SurveyUtilService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +40,9 @@ public class AdminSurveyService {
   private final SurveyRepository surveyRepository;
   private final SurveyMemberReplyRepository surveyMemberReplyRepository;
   private final SurveyUtilService surveyUtilService;
+
+  private final MemberUtilService memberUtilService;
+  private final AuthService authService;
 
   @Transactional
   public Long createSurvey(AdminSurveyRequestDto requestDto) {
@@ -42,7 +58,7 @@ public class AdminSurveyService {
   }
 
   public List<SurveyRespondentResponseDto> getRespondents(Long surveyId) {
-    List<SurveyMemberReplyEntity> respondents = surveyUtilService.getSurveyMemberReplyEntityById(
+    List<SurveyMemberReplyEntity> respondents = surveyUtilService.getSurveyMemberReplyEntityBySurveyId(
         surveyId);
     return respondents.stream()
         .map(SurveyRespondentResponseDto::from)
@@ -78,4 +94,8 @@ public class AdminSurveyService {
     return SurveyUpdateResponseDto.from(survey);
   }
 
+  public Page<SurveyResponseDto> getSurveyList(Pageable pageable) {
+    return surveyRepository.findAllByIdIsNot(
+        SurveyUtilService.VIRTUAL_SURVEY_ID, pageable).map(SurveyResponseDto::from);
+  }
 }

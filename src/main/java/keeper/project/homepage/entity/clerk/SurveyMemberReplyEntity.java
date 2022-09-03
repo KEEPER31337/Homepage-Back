@@ -1,6 +1,7 @@
 package keeper.project.homepage.entity.clerk;
 
 import java.time.LocalDateTime;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,7 +14,6 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.user.dto.clerk.request.SurveyResponseRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,22 +42,21 @@ public class SurveyMemberReplyEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "reply_id", nullable = false)
+  @Setter
   private SurveyReplyEntity reply;
 
-  @OneToOne(mappedBy = "surveyMemberReplyEntity")
+  @OneToOne(mappedBy = "surveyMemberReplyEntity", cascade = CascadeType.ALL)
   @PrimaryKeyJoinColumn
+  @Setter
   private SurveyReplyExcuseEntity surveyReplyExcuseEntity;
 
   @Column(nullable = false)
+  @Setter
   private LocalDateTime replyTime;
 
-  public void modifyReply(SurveyReplyEntity reply) {
-    this.reply = reply;
-    this.replyTime = LocalDateTime.now();
-  }
-
-  public void assignSurveyReplyExcuseEntity(SurveyReplyExcuseEntity excuse) {
-    this.surveyReplyExcuseEntity = excuse;
+  public void setMemberReplyExcuse(SurveyReplyExcuseEntity surveyReplyExcuseEntity) {
+    this.setSurveyReplyExcuseEntity(surveyReplyExcuseEntity);
+    surveyReplyExcuseEntity.setSurveyMemberReplyEntity(this);
   }
 
 }
