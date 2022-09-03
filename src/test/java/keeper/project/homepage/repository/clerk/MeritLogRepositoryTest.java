@@ -22,7 +22,7 @@ public class MeritLogRepositoryTest extends MeritRepositoryTestHelper {
         .awarder(awarder)
         .giver(giver)
         .meritType(type)
-        .time(LocalDate.now())
+        .date(LocalDate.now())
         .build();
 
     MeritLogEntity save = meritLogRepository.save(meritLog);
@@ -36,7 +36,7 @@ public class MeritLogRepositoryTest extends MeritRepositoryTestHelper {
     Assertions.assertThat(find.getAwarder().getId()).isEqualTo(save.getAwarder().getId());
     Assertions.assertThat(find.getGiver().getId()).isEqualTo(save.getGiver().getId());
     Assertions.assertThat(find.getMeritType().getId()).isEqualTo(save.getMeritType().getId());
-    Assertions.assertThat(find.getTime()).isEqualTo(save.getTime());
+    Assertions.assertThat(find.getDate()).isEqualTo(save.getDate());
   }
 
   private MeritTypeEntity generateMeritType(Integer merit, Boolean isMerit, String detail) {

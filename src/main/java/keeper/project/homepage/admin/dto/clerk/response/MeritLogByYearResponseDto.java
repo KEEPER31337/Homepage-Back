@@ -35,7 +35,7 @@ public class MeritLogByYearResponseDto {
   public static MeritLogByYearResponseDto from(MeritLogEntity meritLog) {
     return MeritLogByYearResponseDto.builder()
         .memberId(meritLog.getAwarder().getId())
-        .date(meritLog.getTime())
+        .date(meritLog.getDate())
         .isMerit(meritLog.getMeritType().getIsMerit())
         .merit(meritLog.getMeritType().getMerit())
         .detail(meritLog.getMeritType().getDetail())

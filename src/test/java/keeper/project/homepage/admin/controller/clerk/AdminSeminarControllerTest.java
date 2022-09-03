@@ -8,6 +8,7 @@ import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.LATENESS;
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.PERSONAL;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.patch;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -23,6 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDateTime;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
+import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendancesRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceExcuseEntity;
@@ -53,10 +55,11 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
   @Test
   @DisplayName("[SUCCESS] 세미나 목록 불러오기")
   public void getSeminarList() throws Exception {
-    SeminarEntity seminar1 = generateSeminar(LocalDateTime.now().minusWeeks(1L));
-    SeminarEntity seminar2 = generateSeminar(LocalDateTime.now().plusWeeks(2L));
-    SeminarEntity seminar3 = generateSeminar(LocalDateTime.now().minusWeeks(2L));
-    SeminarEntity seminar4 = generateSeminar(LocalDateTime.now().plusWeeks(1L));
+    generateSeminar(LocalDateTime.now().minusWeeks(1L));
+    generateSeminar(LocalDateTime.now().plusWeeks(2L));
+    generateSeminar(LocalDateTime.now().minusWeeks(2L));
+    generateSeminar(LocalDateTime.now().plusWeeks(1L));
+
     mockMvc.perform(get("/v1/admin/clerk/seminars")
             .header("Authorization", clerkToken))
         .andDo(print())
@@ -99,6 +102,29 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
   }
 
   @Test
+  @DisplayName("[SUCCESS] 세미나 삭제하기")
+  public void deleteSeminar() throws Exception {
+    SeminarEntity seminar = generateSeminar(LocalDateTime.now().withNano(0));
+
+    mockMvc.perform(delete("/v1/admin/clerk/seminars/{seminarId}", seminar.getId())
+            .header("Authorization", clerkToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.msg").value("성공하였습니다."))
+        .andExpect(jsonPath("$.data").value(seminar.getId()))
+        .andDo(document("delete-seminar",
+            pathParameters(parameterWithName("seminarId").description("삭제할 세미나의 id")),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("data").description("삭제한 세미나 id")
+            )));
+  }
+
+  @Test
   @DisplayName("[SUCCESS] 세미나 출석 상태 목록 불러오기")
   public void getSeminarAttendanceStatuses() throws Exception {
     mockMvc.perform(get("/v1/admin/clerk/seminars/statuses")
@@ -119,8 +145,12 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
   }
 
   @Test
-  @DisplayName("[SUCCESS] 모든 세미나의 출석 목록 불러오기")
+  @DisplayName("[SUCCESS] 기간별 세미나 출석 목록 불러오기")
   public void getAllSeminarAttendances() throws Exception {
+    SeminarAttendancesRequestDto seminarAttendancesRequestDto = SeminarAttendancesRequestDto.builder()
+        .seasonStartDate(LocalDateTime.now())
+        .seasonEndDate(LocalDateTime.now().plusWeeks(2))
+        .build();
     SeminarEntity seminar = generateSeminar(LocalDateTime.now().plusWeeks(1));
     MemberEntity member1 = generateMember("이정학", 12.5F);
     MemberEntity member2 = generateMember("최우창", 12.5F);
@@ -146,7 +176,9 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
     mockMvc.perform(get("/v1/admin/clerk/seminars/attendances")
             .header("Authorization", clerkToken)
             .param("page", "0")
-            .param("size", "10"))
+            .param("size", "10")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonDateString(seminarAttendancesRequestDto)))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -156,6 +188,10 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
             requestParameters(
                 parameterWithName("page").optional().description("페이지 번호(default = 0)"),
                 parameterWithName("size").optional().description("한 페이지당 출력 수(default = 10)")
+            ),
+            requestFields(
+                fieldWithPath("seasonStartDate").description("학기 시작 날짜(시간 포함)"),
+                fieldWithPath("seasonEndDate").description("학기 종료 날짜(시간 포함)")
             ),
             responseFields(
                 generateSeminarAttendanceResponseFields(ResponseType.PAGE,
@@ -170,10 +206,10 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
   public void updateSeminarAttendances() throws Exception {
     SeminarEntity seminar = generateSeminar(LocalDateTime.now().plusWeeks(1));
     MemberEntity member = generateMember("이정학", 12.5F);
-    SeminarAttendanceStatusEntity absence = seminarAttendanceStatusRepository.getById(
-        ABSENCE.getId());
+    SeminarAttendanceStatusEntity attendance = seminarAttendanceStatusRepository.getById(
+        ATTENDANCE.getId());
     SeminarAttendanceEntity attendanceEntity = generateSeminarAttendance(member, seminar,
-        absence);
+        attendance);
 
     SeminarAttendanceUpdateRequestDto requestDto = SeminarAttendanceUpdateRequestDto.builder()
         .seminarAttendanceStatusId(4L)
@@ -244,6 +280,6 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("list.[].attendanceId").description("세미나 출석 Id"),
                 fieldWithPath("list.[].memberName").description("해당 출석의 회원 이름")
-                )));
+            )));
   }
 }

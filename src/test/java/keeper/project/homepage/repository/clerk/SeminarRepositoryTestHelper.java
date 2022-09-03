@@ -36,7 +36,6 @@ public class SeminarRepositoryTestHelper {
 
   SeminarEntity generateSeminar(LocalDateTime openTime) {
     return seminarRepository.save(SeminarEntity.builder()
-        .name(openTime + "세미나")
         .openTime(openTime)
         .build()
     );

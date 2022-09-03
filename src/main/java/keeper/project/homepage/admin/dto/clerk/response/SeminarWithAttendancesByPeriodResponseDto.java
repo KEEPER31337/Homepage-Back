@@ -14,7 +14,7 @@ import lombok.NonNull;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AllSeminarAttendancesResponseDto {
+public class SeminarWithAttendancesByPeriodResponseDto {
 
   @NonNull
   private Long seminarId;
@@ -24,8 +24,8 @@ public class AllSeminarAttendancesResponseDto {
 
   List<SeminarAttendanceDto> sortedSeminarAttendances;
 
-  public static AllSeminarAttendancesResponseDto from(SeminarEntity seminar) {
-    return AllSeminarAttendancesResponseDto.builder()
+  public static SeminarWithAttendancesByPeriodResponseDto from(SeminarEntity seminar) {
+    return SeminarWithAttendancesByPeriodResponseDto.builder()
         .seminarId(seminar.getId())
         .seminarName(seminar.getName())
         .sortedSeminarAttendances(

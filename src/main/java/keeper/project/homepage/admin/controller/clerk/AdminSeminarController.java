@@ -4,7 +4,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
-import keeper.project.homepage.admin.dto.clerk.response.AllSeminarAttendancesResponseDto;
+import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendancesRequestDto;
+import keeper.project.homepage.admin.dto.clerk.response.SeminarWithAttendancesByPeriodResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceStatusResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceUpdateResponseDto;
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,9 +49,15 @@ public class AdminSeminarController {
     return responseService.getSuccessSingleResult(seminarService.createSeminar(request));
   }
 
+  @DeleteMapping("/{seminarId}")
+  SingleResult<Long> deleteSeminar(@PathVariable Long seminarId) {
+    return responseService.getSuccessSingleResult(seminarService.deleteSeminar(seminarId));
+  }
+
   @GetMapping("/attendances")
-  PageResult<AllSeminarAttendancesResponseDto> getAllSeminarAttendances(Pageable pageable) {
-    return responseService.getSuccessPageResult(seminarService.getAllSeminarAttendances(pageable));
+  PageResult<SeminarWithAttendancesByPeriodResponseDto> getAllSeminarAttendances(Pageable pageable,
+      @RequestBody @Valid SeminarAttendancesRequestDto requestDto) {
+    return responseService.getSuccessPageResult(seminarService.getAllSeminarAttendances(pageable, requestDto));
   }
   @GetMapping("{seminarId}/attendances")
   ListResult<SeminarAttendanceResponseDto> getSeminarAttendances(
