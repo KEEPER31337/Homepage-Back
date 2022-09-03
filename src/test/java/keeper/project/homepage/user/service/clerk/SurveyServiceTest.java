@@ -39,6 +39,9 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
   private MemberEntity user;
   private MemberEntity admin;
 
+  private static final String REPLY_EXCUSE_1 = "BOB로 인한 휴학";
+  private static final String REPLY_EXCUSE_2 = "개인사정";
+
   @BeforeEach
   public void setUp() throws Exception {
     user = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
@@ -77,7 +80,7 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
 
     SurveyResponseRequestDto requestDto = SurveyResponseRequestDto.builder()
         .replyId(OTHER_DORMANT.getId())
-        .excuse("BOB로 인한 휴학")
+        .excuse(REPLY_EXCUSE_1)
         .build();
 
     //when
@@ -88,7 +91,7 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
     //then
     assertThat(surveyMemberReplyEntity.getReply().getId()).isEqualTo(OTHER_DORMANT.getId());
     assertThat(surveyMemberReplyEntity.getSurveyReplyExcuseEntity().getRestExcuse()).isEqualTo(
-        "BOB로 인한 휴학");
+        REPLY_EXCUSE_1);
   }
 
   @Test
@@ -127,7 +130,7 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
 
     SurveyResponseRequestDto requestDto = SurveyResponseRequestDto.builder()
         .replyId(OTHER_DORMANT.getId())
-        .excuse("BOB로 인한 휴학")
+        .excuse(REPLY_EXCUSE_1)
         .build();
 
     //when
@@ -151,7 +154,7 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
         true);
     SurveyMemberReplyEntity surveyMemberReplyEntity1 = generateSurveyMemberReply(survey, user,
         surveyReplyRepository.getById(OTHER_DORMANT.getId()));
-    generateSurveyReplyExcuse(surveyMemberReplyEntity1, "개인 사정");
+    generateSurveyReplyExcuse(surveyMemberReplyEntity1, REPLY_EXCUSE_2);
 
     SurveyResponseRequestDto requestDto = SurveyResponseRequestDto.builder()
         .replyId(ACTIVITY.getId())
@@ -178,11 +181,11 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
         true);
     SurveyMemberReplyEntity surveyMemberReplyEntity1 = generateSurveyMemberReply(survey, user,
         surveyReplyRepository.getById(OTHER_DORMANT.getId()));
-    generateSurveyReplyExcuse(surveyMemberReplyEntity1, "개인 사정");
+    generateSurveyReplyExcuse(surveyMemberReplyEntity1, REPLY_EXCUSE_2);
 
     SurveyResponseRequestDto requestDto = SurveyResponseRequestDto.builder()
         .replyId(OTHER_DORMANT.getId())
-        .excuse("BOB로 인한 휴학")
+        .excuse(REPLY_EXCUSE_1)
         .build();
 
     //when
@@ -244,7 +247,7 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
         true);
     SurveyMemberReplyEntity surveyMemberReplyEntity = generateSurveyMemberReply(survey, user,
         surveyReplyRepository.getById(OTHER_DORMANT.getId()));
-    generateSurveyReplyExcuse(surveyMemberReplyEntity, "BOB로 인한 휴학");
+    generateSurveyReplyExcuse(surveyMemberReplyEntity, REPLY_EXCUSE_1);
 
     //when
     SurveyInformationResponseDto responseDto = surveyService.getSurveyInformation(
@@ -256,7 +259,7 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
     assertThat(responseDto.getSurveyId()).isEqualTo(survey.getId());
     assertThat(responseDto.getIsResponded()).isEqualTo(true);
     assertThat(responseDto.getReplyId()).isEqualTo(OTHER_DORMANT.getId());
-    assertThat(responseDto.getExcuse()).isEqualTo("BOB로 인한 휴학");
+    assertThat(responseDto.getExcuse()).isEqualTo(REPLY_EXCUSE_1);
   }
 
   @Test

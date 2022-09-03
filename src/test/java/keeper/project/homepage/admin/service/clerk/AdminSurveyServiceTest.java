@@ -42,6 +42,9 @@ public class AdminSurveyServiceTest extends SurveySpringTestHelper {
   private MemberEntity user;
   private MemberEntity admin;
 
+  private static final String SURVEY_NAME = "2022년 2학기 활동인원 조사";
+  private static final String SURVEY_DESCRIPTION = "활동인원 조사입니다.";
+
   @BeforeEach
   public void setUp() throws Exception {
     user = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원, MemberRankName.일반회원);
@@ -55,10 +58,10 @@ public class AdminSurveyServiceTest extends SurveySpringTestHelper {
     LocalDateTime openTime = LocalDateTime.now();
     LocalDateTime closeTime = LocalDateTime.now().plusDays(5);
     AdminSurveyRequestDto requestDto = AdminSurveyRequestDto.builder()
-        .surveyName("2022년 2학기 활동인원 조사")
+        .surveyName(SURVEY_NAME)
         .openTime(openTime)
         .closeTime(closeTime)
-        .description("활동인원 조사입니다.")
+        .description(SURVEY_DESCRIPTION)
         .isVisible(true)
         .build();
 
@@ -68,10 +71,10 @@ public class AdminSurveyServiceTest extends SurveySpringTestHelper {
 
     //then
     assertThat(all.size()).isEqualTo(2); // virtual data 포함
-    assertThat(all.get(1).getName()).isEqualTo("2022년 2학기 활동인원 조사");
+    assertThat(all.get(1).getName()).isEqualTo(SURVEY_NAME);
     assertThat(all.get(1).getOpenTime()).isEqualTo(openTime);
     assertThat(all.get(1).getCloseTime()).isEqualTo(closeTime);
-    assertThat(all.get(1).getDescription()).isEqualTo("활동인원 조사입니다.");
+    assertThat(all.get(1).getDescription()).isEqualTo(SURVEY_DESCRIPTION);
     assertThat(all.get(1).getIsVisible()).isEqualTo(true);
   }
 
