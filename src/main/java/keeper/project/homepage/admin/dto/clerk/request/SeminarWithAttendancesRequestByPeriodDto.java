@@ -1,7 +1,6 @@
 package keeper.project.homepage.admin.dto.clerk.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -13,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SeminarAttendancesRequestDto {
+public class SeminarWithAttendancesRequestByPeriodDto {
   @NotNull
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
   LocalDateTime seasonStartDate;

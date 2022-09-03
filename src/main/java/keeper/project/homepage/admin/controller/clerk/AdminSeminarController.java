@@ -5,7 +5,7 @@ import javax.validation.constraints.NotNull;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendancesRequestDto;
-import keeper.project.homepage.admin.dto.clerk.response.AllSeminarAttendancesResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.SeminarWithAttendancesByPeriodResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceStatusResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceUpdateResponseDto;
@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -56,7 +55,7 @@ public class AdminSeminarController {
   }
 
   @GetMapping("/attendances")
-  PageResult<AllSeminarAttendancesResponseDto> getAllSeminarAttendances(Pageable pageable,
+  PageResult<SeminarWithAttendancesByPeriodResponseDto> getAllSeminarAttendances(Pageable pageable,
       @RequestBody @Valid SeminarAttendancesRequestDto requestDto) {
     return responseService.getSuccessPageResult(seminarService.getAllSeminarAttendances(pageable, requestDto));
   }
