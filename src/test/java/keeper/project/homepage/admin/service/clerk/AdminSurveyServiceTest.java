@@ -52,10 +52,12 @@ public class AdminSurveyServiceTest extends SurveySpringTestHelper {
   @DisplayName("설문 조사 개설")
   public void createSurvey() throws Exception {
     //given
+    LocalDateTime openTime = LocalDateTime.now();
+    LocalDateTime closeTime = LocalDateTime.now().plusDays(5);
     AdminSurveyRequestDto requestDto = AdminSurveyRequestDto.builder()
         .surveyName("2022년 2학기 활동인원 조사")
-        .openTime(LocalDateTime.now())
-        .closeTime(LocalDateTime.now().plusDays(5))
+        .openTime(openTime)
+        .closeTime(closeTime)
         .description("활동인원 조사입니다.")
         .isVisible(true)
         .build();
@@ -66,6 +68,11 @@ public class AdminSurveyServiceTest extends SurveySpringTestHelper {
 
     //then
     assertThat(all.size()).isEqualTo(2); // virtual data 포함
+    assertThat(all.get(1).getName()).isEqualTo("2022년 2학기 활동인원 조사");
+    assertThat(all.get(1).getOpenTime()).isEqualTo(openTime);
+    assertThat(all.get(1).getCloseTime()).isEqualTo(closeTime);
+    assertThat(all.get(1).getDescription()).isEqualTo("활동인원 조사입니다.");
+    assertThat(all.get(1).getIsVisible()).isEqualTo(true);
   }
 
   @Test
