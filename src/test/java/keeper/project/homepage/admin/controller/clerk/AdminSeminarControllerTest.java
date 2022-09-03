@@ -55,10 +55,11 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
   @Test
   @DisplayName("[SUCCESS] 세미나 목록 불러오기")
   public void getSeminarList() throws Exception {
-    SeminarEntity seminar1 = generateSeminar(LocalDateTime.now().minusWeeks(1L));
-    SeminarEntity seminar2 = generateSeminar(LocalDateTime.now().plusWeeks(2L));
-    SeminarEntity seminar3 = generateSeminar(LocalDateTime.now().minusWeeks(2L));
-    SeminarEntity seminar4 = generateSeminar(LocalDateTime.now().plusWeeks(1L));
+    generateSeminar(LocalDateTime.now().minusWeeks(1L));
+    generateSeminar(LocalDateTime.now().plusWeeks(2L));
+    generateSeminar(LocalDateTime.now().minusWeeks(2L));
+    generateSeminar(LocalDateTime.now().plusWeeks(1L));
+
     mockMvc.perform(get("/v1/admin/clerk/seminars")
             .header("Authorization", clerkToken))
         .andDo(print())
@@ -279,6 +280,6 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("list.[].attendanceId").description("세미나 출석 Id"),
                 fieldWithPath("list.[].memberName").description("해당 출석의 회원 이름")
-                )));
+            )));
   }
 }

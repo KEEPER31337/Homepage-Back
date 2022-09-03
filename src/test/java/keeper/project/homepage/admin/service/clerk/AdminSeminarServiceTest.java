@@ -24,6 +24,7 @@ import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
 import keeper.project.homepage.entity.clerk.SeminarEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
+import keeper.project.homepage.exception.clerk.CustomDuplicateSeminarException;
 import keeper.project.homepage.exception.clerk.CustomMeritTypeNotFoundException;
 import keeper.project.homepage.exception.clerk.CustomSeminarAttendanceNotFoundException;
 import keeper.project.homepage.repository.clerk.MeritLogRepository;
@@ -33,6 +34,7 @@ import keeper.project.homepage.repository.clerk.SeminarAttendanceStatusRepositor
 import keeper.project.homepage.repository.clerk.SeminarRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.member.MemberTypeRepository;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -117,6 +119,22 @@ public class AdminSeminarServiceTest {
   }
 
   @Test
+  @DisplayName("[FAIL] 중복된 날짜(이름) 세미나 생성")
+  void createDuplicateSeminarTest() {
+    seminarRepository.save(SeminarEntity.builder()
+        .openTime(LocalDateTime.now())
+        .build());
+    SeminarCreateRequestDto request = SeminarCreateRequestDto.builder()
+        .openTime(LocalDateTime.now())
+        .build();
+    em.flush();
+    em.clear();
+
+    Assertions.assertThrows(CustomDuplicateSeminarException.class,
+        () -> adminSeminarService.createSeminar(request));
+  }
+
+  @Test
   @DisplayName("[SUCCESS] 개인사유 출석 수정")
   void updateSeminarAttendanceTest() {
     // given
@@ -124,7 +142,8 @@ public class AdminSeminarServiceTest {
     MemberEntity member = memberRepository.getById(1L);
     SeminarAttendanceStatusEntity attendance = seminarAttendanceStatusRepository.getById(
         ATTENDANCE.getId());
-    SeminarAttendanceEntity seminarAttendance = adminSeminarService.generateSeminarAttendance(member,
+    SeminarAttendanceEntity seminarAttendance = adminSeminarService.generateSeminarAttendance(
+        member,
         seminar, attendance);
 
     em.flush();
@@ -154,7 +173,8 @@ public class AdminSeminarServiceTest {
     MemberEntity member = memberRepository.getById(1L);
     SeminarAttendanceStatusEntity attendance = seminarAttendanceStatusRepository.getById(
         ATTENDANCE.getId());
-    SeminarAttendanceEntity seminarAttendance = adminSeminarService.generateSeminarAttendance(member,
+    SeminarAttendanceEntity seminarAttendance = adminSeminarService.generateSeminarAttendance(
+        member,
         seminar, attendance);
     Integer beforeDemerit = member.getDemerit();
     SeminarAttendanceUpdateRequestDto request = SeminarAttendanceUpdateRequestDto.builder()
@@ -192,7 +212,8 @@ public class AdminSeminarServiceTest {
     MemberEntity member = memberRepository.getById(1L);
     SeminarAttendanceStatusEntity absence = seminarAttendanceStatusRepository.getById(
         ABSENCE.getId());
-    SeminarAttendanceEntity seminarAttendance = adminSeminarService.generateSeminarAttendance(member,
+    SeminarAttendanceEntity seminarAttendance = adminSeminarService.generateSeminarAttendance(
+        member,
         seminar, absence);
     MeritTypeEntity meritTypeOfAbsence = meritTypeRepository.findByDetail(ABSENCE.getType())
         .orElseThrow(CustomMeritTypeNotFoundException::new);
@@ -230,7 +251,8 @@ public class AdminSeminarServiceTest {
     SeminarAttendanceStatusEntity absence = seminarAttendanceStatusRepository.getById(
         ABSENCE.getId());
     adminSeminarService.generateSeminarAttendance(member, seminar1, lateness);
-    SeminarAttendanceEntity seminar2Attendance = adminSeminarService.generateSeminarAttendance(member,
+    SeminarAttendanceEntity seminar2Attendance = adminSeminarService.generateSeminarAttendance(
+        member,
         seminar2, absence);
     MeritTypeEntity meritTypeOfAbsence = meritTypeRepository.findByDetail(ABSENCE.getType())
         .orElseThrow(CustomMeritTypeNotFoundException::new);
@@ -322,7 +344,8 @@ public class AdminSeminarServiceTest {
 
     // when
     adminSeminarService.updateSeminarAttendanceStatus(seminarAttendanceEntity.getId(), request);
-    SeminarAttendanceEntity find = seminarAttendanceRepository.findById(seminarAttendanceEntity.getId())
+    SeminarAttendanceEntity find = seminarAttendanceRepository.findById(
+            seminarAttendanceEntity.getId())
         .orElseThrow(CustomSeminarAttendanceNotFoundException::new);
     Integer afterDemerit = find.getMemberEntity().getDemerit();
     MeritLogEntity afterMeritLog = getMeritLog(member, meritTypeOfAbsence);
