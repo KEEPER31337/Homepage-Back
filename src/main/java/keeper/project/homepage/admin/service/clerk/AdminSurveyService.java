@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import keeper.project.homepage.admin.dto.clerk.request.AdminSurveyRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.AdminSurveyResponseDto;
-import keeper.project.homepage.admin.dto.clerk.response.ClosedSurveyInformationResponseDto;
+import keeper.project.homepage.user.dto.clerk.response.ClosedSurveyInformationResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.DeleteSurveyResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SurveyResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SurveyRespondentResponseDto;
@@ -94,57 +94,7 @@ public class AdminSurveyService {
     return SurveyUpdateResponseDto.from(survey);
   }
 
-  public SurveyInformationResponseDto getSurveyInformation(Long surveyId) {
-    SurveyEntity survey = surveyRepository.findById(surveyId)
-        .orElseThrow(CustomSurveyNotFoundException::new);
-    Long reqMemberId = authService.getMemberIdByJWT();
-    MemberEntity member = authService.getMemberEntityWithJWT();
-
-    Boolean isResponded = false;
-    SurveyMemberReplyEntity surveyMemberReplyEntity = null;
-    if (isUserRespondedSurvey(survey, member)) {
-      isResponded = true;
-      surveyMemberReplyEntity = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
-              surveyId, reqMemberId)
-          .orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
-    }
-
-    return SurveyInformationResponseDto.of(survey, surveyMemberReplyEntity, isResponded);
-  }
-
-  private Boolean isUserRespondedSurvey(SurveyEntity survey, MemberEntity member) {
-    return survey.getRespondents()
-        .stream()
-        .map(SurveyMemberReplyEntity::getMember)
-        .toList()
-        .contains(member);
-  }
-
-  public Long getLatestVisibleSurveyId() {
-    LocalDateTime now = LocalDateTime.now();
-    SurveyEntity survey = surveyRepository.findTop1ByOpenTimeBeforeAndCloseTimeAfterAndIsVisibleTrueOrderByCloseTimeDesc(
-            now, now)
-        .orElse(NO_SURVEY);
-
-    return survey.getId();
-  }
-
-  public ClosedSurveyInformationResponseDto getLatestClosedSurveyInformation() {
-    LocalDateTime now = LocalDateTime.now();
-    SurveyEntity latestClosedSurvey = surveyRepository
-        .findTop1ByCloseTimeBeforeAndIsVisibleTrueOrderByCloseTimeDesc(now)
-        .orElse(NO_SURVEY);
-    Long reqMemberId = authService.getMemberIdByJWT();
-
-    Optional<SurveyMemberReplyEntity> surveyMemberReply = surveyMemberReplyRepository
-        .findBySurveyIdAndMemberId(latestClosedSurvey.getId(), reqMemberId);
-    if (surveyMemberReply.isEmpty()) {
-      return ClosedSurveyInformationResponseDto.notFound();
-    }
-    return ClosedSurveyInformationResponseDto.of(latestClosedSurvey, surveyMemberReply.get());
-  }
-
-  public Page<SurveyResponseDto> getSurveyList(Pageable pageable){
+  public Page<SurveyResponseDto> getSurveyList(Pageable pageable) {
     return surveyRepository.findAllByIdIsNot(
         SurveyUtilService.VIRTUAL_SURVEY_ID, pageable).map(SurveyResponseDto::from);
   }

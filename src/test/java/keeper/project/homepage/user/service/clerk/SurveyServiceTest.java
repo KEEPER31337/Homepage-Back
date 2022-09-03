@@ -9,12 +9,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.EntityManager;
-import keeper.project.homepage.admin.dto.clerk.response.ClosedSurveyInformationResponseDto;
+import keeper.project.homepage.user.dto.clerk.response.ClosedSurveyInformationResponseDto;
 import keeper.project.homepage.controller.clerk.SurveySpringTestHelper;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
-import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
-import keeper.project.homepage.entity.clerk.SurveyReplyExcuseEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.clerk.CustomSurveyMemberReplyNotFoundException;
 import keeper.project.homepage.user.dto.clerk.request.SurveyResponseRequestDto;
@@ -23,7 +21,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
@@ -198,6 +195,68 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
         surveyReplyRepository.getById(OTHER_DORMANT.getId()).getId());
     assertThat(surveyMemberReplyEntity2.getSurveyReplyExcuseEntity().getRestExcuse()).isEqualTo(
         requestDto.getExcuse());
+  }
+
+  @Test
+  @DisplayName("설문 정보 조회")
+  public void getSurveyInformation() throws Exception {
+    //given
+    setAuthentication(user);
+    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
+        true);
+    generateSurveyMemberReply(survey, user, surveyReplyRepository.getById(ACTIVITY.getId()));
+
+    //when
+    SurveyInformationResponseDto responseDto = surveyService.getSurveyInformation(
+        survey.getId());
+    SurveyMemberReplyEntity surveyMemberReplyEntity = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
+        survey.getId(), user.getId()).orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
+
+    //then
+    assertThat(responseDto.getSurveyId()).isEqualTo(survey.getId());
+    assertThat(responseDto.getIsResponded()).isEqualTo(true);
+    assertThat(responseDto.getReplyId()).isEqualTo(ACTIVITY.getId());
+  }
+
+  @Test
+  @DisplayName("설문 정보 조회 - 응답을 안 했을 경우")
+  public void getSurveyInformation_noReply() throws Exception {
+    //given
+    setAuthentication(user);
+    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
+        true);
+
+    //when
+    SurveyInformationResponseDto responseDto = surveyService.getSurveyInformation(
+        survey.getId());
+
+    //then
+    assertThat(responseDto.getSurveyId()).isEqualTo(survey.getId());
+    assertThat(responseDto.getIsResponded()).isEqualTo(false);
+  }
+
+  @Test
+  @DisplayName("설문 정보 조회 - 휴면(기타) 응답")
+  public void getSurveyInformation_withExcuse() throws Exception {
+    //given
+    setAuthentication(user);
+    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
+        true);
+    SurveyMemberReplyEntity surveyMemberReplyEntity = generateSurveyMemberReply(survey, user,
+        surveyReplyRepository.getById(OTHER_DORMANT.getId()));
+    generateSurveyReplyExcuse(surveyMemberReplyEntity, "BOB로 인한 휴학");
+
+    //when
+    SurveyInformationResponseDto responseDto = surveyService.getSurveyInformation(
+        survey.getId());
+    SurveyMemberReplyEntity surveyMemberReply = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
+        survey.getId(), user.getId()).orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
+
+    //then
+    assertThat(responseDto.getSurveyId()).isEqualTo(survey.getId());
+    assertThat(responseDto.getIsResponded()).isEqualTo(true);
+    assertThat(responseDto.getReplyId()).isEqualTo(OTHER_DORMANT.getId());
+    assertThat(responseDto.getExcuse()).isEqualTo("BOB로 인한 휴학");
   }
 
   @Test

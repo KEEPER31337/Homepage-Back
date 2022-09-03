@@ -134,68 +134,6 @@ public class AdminSurveyServiceTest extends SurveySpringTestHelper {
   }
 
   @Test
-  @DisplayName("설문 정보 조회")
-  public void getSurveyInformation() throws Exception {
-    //given
-    setAuthentication(admin);
-    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
-        true);
-    generateSurveyMemberReply(survey, admin, surveyReplyRepository.getById(ACTIVITY.getId()));
-
-    //when
-    SurveyInformationResponseDto responseDto = adminSurveyService.getSurveyInformation(
-        survey.getId());
-    SurveyMemberReplyEntity surveyMemberReplyEntity = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
-        survey.getId(), admin.getId()).orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
-
-    //then
-    assertThat(responseDto.getSurveyId()).isEqualTo(survey.getId());
-    assertThat(responseDto.getIsResponded()).isEqualTo(true);
-    assertThat(responseDto.getReplyId()).isEqualTo(ACTIVITY.getId());
-  }
-
-  @Test
-  @DisplayName("설문 정보 조회 - 응답을 안 했을 경우")
-  public void getSurveyInformation_noReply() throws Exception {
-    //given
-    setAuthentication(admin);
-    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
-        true);
-
-    //when
-    SurveyInformationResponseDto responseDto = adminSurveyService.getSurveyInformation(
-        survey.getId());
-
-    //then
-    assertThat(responseDto.getSurveyId()).isEqualTo(survey.getId());
-    assertThat(responseDto.getIsResponded()).isEqualTo(false);
-  }
-
-  @Test
-  @DisplayName("설문 정보 조회 - 휴면(기타) 응답")
-  public void getSurveyInformation_withExcuse() throws Exception {
-    //given
-    setAuthentication(admin);
-    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
-        true);
-    SurveyMemberReplyEntity surveyMemberReplyEntity = generateSurveyMemberReply(survey, admin,
-        surveyReplyRepository.getById(OTHER_DORMANT.getId()));
-    generateSurveyReplyExcuse(surveyMemberReplyEntity, "BOB로 인한 휴학");
-
-    //when
-    SurveyInformationResponseDto responseDto = adminSurveyService.getSurveyInformation(
-        survey.getId());
-    SurveyMemberReplyEntity surveyMemberReply = surveyMemberReplyRepository.findBySurveyIdAndMemberId(
-        survey.getId(), admin.getId()).orElseThrow(CustomSurveyMemberReplyNotFoundException::new);
-
-    //then
-    assertThat(responseDto.getSurveyId()).isEqualTo(survey.getId());
-    assertThat(responseDto.getIsResponded()).isEqualTo(true);
-    assertThat(responseDto.getReplyId()).isEqualTo(OTHER_DORMANT.getId());
-    assertThat(responseDto.getExcuse()).isEqualTo("BOB로 인한 휴학");
-  }
-
-  @Test
   @DisplayName("설문 목록 조회")
   public void getSurveyList() throws Exception {
     //given

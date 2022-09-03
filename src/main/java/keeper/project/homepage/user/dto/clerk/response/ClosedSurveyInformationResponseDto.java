@@ -1,4 +1,4 @@
-package keeper.project.homepage.admin.dto.clerk.response;
+package keeper.project.homepage.user.dto.clerk.response;
 
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;

@@ -4,7 +4,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import keeper.project.homepage.admin.dto.clerk.request.AdminSurveyRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.AdminSurveyResponseDto;
-import keeper.project.homepage.admin.dto.clerk.response.ClosedSurveyInformationResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.DeleteSurveyResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SurveyResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SurveyRespondentResponseDto;
@@ -14,7 +13,6 @@ import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.common.dto.result.PageResult;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.service.ResponseService;
-import keeper.project.homepage.user.dto.clerk.response.SurveyInformationResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -83,25 +81,6 @@ public class AdminSurveyController {
       @PathVariable("surveyId") @NotNull Long surveyId
   ) {
     return responseService.getSuccessSingleResult(adminSurveyService.closeSurvey(surveyId));
-  }
-
-  @GetMapping("/information/{surveyId}")
-  public SingleResult<SurveyInformationResponseDto> getSurveyInformation(
-      @PathVariable("surveyId") @NotNull Long surveyId
-  ) {
-    return responseService.getSuccessSingleResult(
-        adminSurveyService.getSurveyInformation(surveyId));
-  }
-
-  @GetMapping("/visible/ongoing")
-  public SingleResult<Long> getLatestVisibleSurveyId() {
-    return responseService.getSuccessSingleResult(adminSurveyService.getLatestVisibleSurveyId());
-  }
-
-  @GetMapping("/visible/closed")
-  public SingleResult<ClosedSurveyInformationResponseDto> getLatestClosedSurveyInformation() {
-    return responseService.getSuccessSingleResult(
-        adminSurveyService.getLatestClosedSurveyInformation());
   }
 
   @GetMapping

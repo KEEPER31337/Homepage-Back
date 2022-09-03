@@ -2,7 +2,7 @@ package keeper.project.homepage.user.controller.clerk;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import keeper.project.homepage.admin.dto.clerk.response.ClosedSurveyInformationResponseDto;
+import keeper.project.homepage.user.dto.clerk.response.ClosedSurveyInformationResponseDto;
 import keeper.project.homepage.common.dto.result.SingleResult;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.user.dto.clerk.response.SurveyModifyResponseDto;

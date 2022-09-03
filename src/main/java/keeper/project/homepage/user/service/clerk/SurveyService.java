@@ -5,13 +5,12 @@ import static keeper.project.homepage.util.service.SurveyUtilService.NO_SURVEY;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import keeper.project.homepage.admin.dto.clerk.response.ClosedSurveyInformationResponseDto;
+import keeper.project.homepage.user.dto.clerk.response.ClosedSurveyInformationResponseDto;
 import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
 import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
 import keeper.project.homepage.entity.clerk.SurveyReplyExcuseEntity;
-import keeper.project.homepage.entity.clerk.SurveyReplyExcuseEntity.SurveyReplyExcuseEntityBuilder;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.clerk.CustomSurveyInVisibleException;
 import keeper.project.homepage.exception.clerk.CustomSurveyMemberReplyNotFoundException;
@@ -106,7 +105,6 @@ public class SurveyService {
     memberReply.setReplyTime(LocalDateTime.now());
 
     if (beforeReply.getId().equals(OTHER_DORMANT.getId())) {
-      SurveyReplyExcuseEntity excuseEntity = memberReply.getSurveyReplyExcuseEntity();
       // 기타에서 기타로 수정
       if (memberReply.getReply().getId().equals(OTHER_DORMANT.getId())) {
         memberReply.getSurveyReplyExcuseEntity().setRestExcuse(requestDto.getExcuse());
