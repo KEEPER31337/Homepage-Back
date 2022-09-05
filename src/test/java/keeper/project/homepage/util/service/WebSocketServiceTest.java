@@ -60,8 +60,8 @@ public class WebSocketServiceTest {
 
     ElectionVoteStatus status = ElectionVoteStatus.createStatus(10, 5, true);
 
-    // TODO:
-    // webSocketService.sendVoteStatusMessage(WEBSOCKET_TOPIC, status);
+    //TODO: Repeatable Test Code
+    //webSocketService.sendVoteStatusMessage(WEBSOCKET_TOPIC, status);
     session.send(WEBSOCKET_TOPIC, status);
 
     ElectionVoteStatus result = blockingQueue.poll(2, SECONDS);
