@@ -1,4 +1,4 @@
-package keeper.project.homepage.user.dto.clerk.request;
+package keeper.project.homepage.admin.dto.clerk.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
@@ -10,16 +10,17 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class AttendanceCheckRequestDto {
+public class AttendanceStartRequestDto {
 
   @NotNull
   private Long seminarId;
 
   @NotNull
-  private String attendanceCode;
+  @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+  private LocalDateTime attendanceCloseTime;
 
   @NotNull
   @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-  private LocalDateTime attendanceTime;
+  private LocalDateTime latenessCloseTime;
 
 }

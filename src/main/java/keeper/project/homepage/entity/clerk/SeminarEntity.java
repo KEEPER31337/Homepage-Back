@@ -10,12 +10,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import keeper.project.homepage.admin.dto.clerk.request.AttendanceStartRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
@@ -29,21 +28,32 @@ public class SeminarEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  // null 이면 db 에서 trigger 로 이름이 자동 생성 됩니다.
+  /**
+   * null이면 DB에서 TRIGGER로 이름이 자동 생성
+   * 형식은 생성 날짜의 yyyyMMdd 패턴
+   * ex) 20220901
+   */
+  @Column(length = 100)
   private String name;
-  @Setter
+
+  @Column(nullable = false)
+  private LocalDateTime openTime;
+
+  private LocalDateTime attendanceCloseTime;
+
+  private LocalDateTime latenessCloseTime;
+
   @Column(length = 10)
   private String attendanceCode;
-
-  @NotNull
-  private LocalDateTime openTime;
-  @Setter
-  private LocalDateTime attendanceCloseTime;
-  @Setter
-  private LocalDateTime latenessCloseTime;
 
   @Builder.Default
   @OneToMany(mappedBy = "seminarEntity")
   List<SeminarAttendanceEntity> seminarAttendances = new ArrayList<>();
+
+  public void startAttendance(AttendanceStartRequestDto request, String code) {
+    attendanceCloseTime = request.getAttendanceCloseTime();
+    latenessCloseTime = request.getLatenessCloseTime();
+    attendanceCode = code;
+  }
 
 }
