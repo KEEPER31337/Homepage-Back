@@ -33,6 +33,8 @@ public class SurveySpringTestHelper extends ApiControllerTestHelper {
 
   protected static final SurveyEntity NO_SURVEY = SurveyEntity.builder().id(-1L).build();
 
+  protected static final Long NO_SURVEY_REPLY = null;
+
   @Autowired
   protected SurveyReplyExcuseRepository surveyReplyExcuseRepository;
 

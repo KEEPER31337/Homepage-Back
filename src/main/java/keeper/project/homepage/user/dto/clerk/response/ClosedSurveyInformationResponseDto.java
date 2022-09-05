@@ -33,10 +33,10 @@ public class ClosedSurveyInformationResponseDto {
         .build();
   }
 
-  public static ClosedSurveyInformationResponseDto notFound() {
+  public static ClosedSurveyInformationResponseDto noResponse(SurveyEntity survey) {
     return ClosedSurveyInformationResponseDto.builder()
-        .surveyId(-1L)
-        .surveyName(null)
+        .surveyId(survey.getId())
+        .surveyName(survey.getName())
         .replyId(null)
         .build();
   }

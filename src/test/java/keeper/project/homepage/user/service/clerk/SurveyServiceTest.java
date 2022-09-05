@@ -335,18 +335,18 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
     //given
     setAuthentication(user);
 
-    generateSurvey(LocalDateTime.now().minusDays(4),
+    SurveyEntity survey = generateSurvey(LocalDateTime.now().minusDays(4),
         LocalDateTime.now().minusDays(2), true);
 
     //when
     ClosedSurveyInformationResponseDto result = surveyService.getLatestClosedSurveyInformation();
 
     //then
-    assertThat(ClosedSurveyInformationResponseDto.notFound().getSurveyId())
+    assertThat(ClosedSurveyInformationResponseDto.noResponse(survey).getSurveyId())
         .isEqualTo(result.getSurveyId());
-    assertThat(ClosedSurveyInformationResponseDto.notFound().getSurveyName())
+    assertThat(ClosedSurveyInformationResponseDto.noResponse(survey).getSurveyName())
         .isEqualTo(result.getSurveyName());
-    assertThat(ClosedSurveyInformationResponseDto.notFound().getReplyId())
+    assertThat(ClosedSurveyInformationResponseDto.noResponse(survey).getReplyId())
         .isEqualTo(result.getReplyId());
   }
 
@@ -374,11 +374,11 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
     ClosedSurveyInformationResponseDto result = surveyService.getLatestClosedSurveyInformation();
 
     //then
-    assertThat(ClosedSurveyInformationResponseDto.notFound().getSurveyId())
+    assertThat(NO_SURVEY.getId())
         .isEqualTo(result.getSurveyId());
-    assertThat(ClosedSurveyInformationResponseDto.notFound().getSurveyName())
+    assertThat(NO_SURVEY.getName())
         .isEqualTo(result.getSurveyName());
-    assertThat(ClosedSurveyInformationResponseDto.notFound().getReplyId())
+    assertThat(NO_SURVEY_REPLY)
         .isEqualTo(result.getReplyId());
   }
 

@@ -167,7 +167,7 @@ public class SurveyService {
     Optional<SurveyMemberReplyEntity> surveyMemberReply = surveyMemberReplyRepository
         .findBySurveyIdAndMemberId(latestClosedSurvey.getId(), reqMemberId);
     if (surveyMemberReply.isEmpty()) {
-      return ClosedSurveyInformationResponseDto.notFound();
+      return ClosedSurveyInformationResponseDto.noResponse(latestClosedSurvey);
     }
     return ClosedSurveyInformationResponseDto.of(latestClosedSurvey, surveyMemberReply.get());
   }
