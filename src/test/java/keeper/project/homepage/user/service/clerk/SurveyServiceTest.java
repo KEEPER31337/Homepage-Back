@@ -342,11 +342,11 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
     ClosedSurveyInformationResponseDto result = surveyService.getLatestClosedSurveyInformation();
 
     //then
-    assertThat(ClosedSurveyInformationResponseDto.noResponse(survey).getSurveyId())
+    assertThat(ClosedSurveyInformationResponseDto.of(survey,null).getSurveyId())
         .isEqualTo(result.getSurveyId());
-    assertThat(ClosedSurveyInformationResponseDto.noResponse(survey).getSurveyName())
+    assertThat(ClosedSurveyInformationResponseDto.of(survey,null).getSurveyName())
         .isEqualTo(result.getSurveyName());
-    assertThat(ClosedSurveyInformationResponseDto.noResponse(survey).getReplyId())
+    assertThat(ClosedSurveyInformationResponseDto.of(survey,null).getReplyId())
         .isEqualTo(result.getReplyId());
   }
 
@@ -378,8 +378,7 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
         .isEqualTo(result.getSurveyId());
     assertThat(NO_SURVEY.getName())
         .isEqualTo(result.getSurveyName());
-    assertThat(NO_SURVEY_REPLY)
-        .isEqualTo(result.getReplyId());
+    assertThat(result.getReplyId()).isNull();
   }
 
 
