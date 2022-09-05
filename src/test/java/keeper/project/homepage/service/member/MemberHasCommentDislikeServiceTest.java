@@ -78,9 +78,6 @@ public class MemberHasCommentDislikeServiceTest {
   @BeforeEach
   public void setup() {
     MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
-    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
-        .memberJobEntity(memberJobEntity)
-        .build();
     memberEntity = MemberEntity.builder()
         .loginId(loginId)
         .password(passwordEncoder.encode(password))
@@ -89,8 +86,8 @@ public class MemberHasCommentDislikeServiceTest {
         .emailAddress(emailAddress)
         .studentId(studentId)
         .generation(0F)
-        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
+    memberEntity.addMemberJob(memberJobEntity);
     memberRepository.save(memberEntity);
 
     CategoryEntity categoryEntity = categoryRepository.save(

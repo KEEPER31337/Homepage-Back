@@ -105,7 +105,7 @@ class SystemAdminControllerTest extends SystemAdminControllerTestHelper {
   public void deleteJob() throws Exception {
     MemberEntity member = generateMemberEntity(회원, 정회원, 일반회원);
     MemberJobEntity subMasterRole = memberJobRepository.findByName(부회장.getJobName()).get();
-    assignJob(member, subMasterRole);
+    member.addMemberJob(subMasterRole);
 
     mockMvc.perform(delete("/v1/admin/system-admin/members/{memberId}/jobs/{jobId}", member.getId(),
             subMasterRole.getId())

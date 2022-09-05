@@ -79,14 +79,9 @@ class AdminClerkServiceTest {
         .nickName("nickName" + memberSequence)
         .realName("realName" + memberSequence)
         .memberType(types.get(0))
-        .memberJobs(new ArrayList<>())
         .build();
     for (MemberJobEntity memberJobEntity : memberJobEntities) {
-      member.getMemberJobs().add(MemberHasMemberJobEntity
-          .builder()
-          .memberEntity(member)
-          .memberJobEntity(memberJobEntity)
-          .build());
+      member.addMemberJob(memberJobEntity);
     }
     return member;
   }

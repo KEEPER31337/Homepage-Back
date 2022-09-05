@@ -81,9 +81,6 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
   @BeforeEach
   public void setUp() throws Exception {
     MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
-    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
-        .memberJobEntity(memberJobEntity)
-        .build();
     memberEntity = MemberEntity.builder()
         .loginId(loginId)
         .password(passwordEncoder.encode(password))
@@ -92,8 +89,8 @@ public class LibraryMainControllerTest extends ApiControllerTestSetUp {
         .emailAddress(emailAddress)
         .studentId(studentId)
         .generation(0F)
-        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
+    memberEntity.addMemberJob(memberJobEntity);
     memberRepository.save(memberEntity);
 
     SimpleDateFormat stringToDate = new SimpleDateFormat("yyyymmdd");

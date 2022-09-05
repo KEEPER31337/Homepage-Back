@@ -150,9 +150,6 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
   @BeforeEach
   public void setUp() throws Exception {
     MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회장").get();
-    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
-        .memberJobEntity(memberJobEntity)
-        .build();
     memberEntity = MemberEntity.builder()
         .loginId(loginId)
         .password(passwordEncoder.encode(password))
@@ -161,14 +158,11 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .emailAddress(emailAddress)
         .studentId(studentId)
         .generation(0F)
-        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
+    memberEntity.addMemberJob(memberJobEntity);
     memberRepository.save(memberEntity);
 
     MemberJobEntity memberAdminJobEntity = memberJobRepository.findByName("ROLE_회장").get();
-    MemberHasMemberJobEntity hasMemberAdminJobEntity = MemberHasMemberJobEntity.builder()
-        .memberJobEntity(memberAdminJobEntity)
-        .build();
     MemberEntity memberAdmin = MemberEntity.builder()
         .loginId(adminLoginId)
         .password(passwordEncoder.encode(adminPassword))
@@ -177,8 +171,8 @@ public class BookManageControllerTest extends ApiControllerTestSetUp {
         .emailAddress(adminEmailAddress)
         .studentId(adminStudentId)
         .generation(0F)
-        .memberJobs(new ArrayList<>(List.of(hasMemberAdminJobEntity)))
         .build();
+    memberAdmin.addMemberJob(memberAdminJobEntity);
     memberRepository.save(memberAdmin);
 
     String content = "{\n"

@@ -91,8 +91,8 @@ public class MemberHasCommentDislikeRepositoryTest {
         .emailAddress(emailAddress)
         .studentId(studentId)
         .generation(0F)
-        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
+    memberEntity.addMemberJob(memberJobEntity);
     memberRepository.save(memberEntity);
 
     CategoryEntity categoryEntity = categoryRepository.save(
