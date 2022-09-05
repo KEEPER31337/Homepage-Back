@@ -155,8 +155,7 @@ public class MemberEntity implements Serializable {
     this.memberType = memberTypeEntity;
   }
 
-  @OneToMany(mappedBy = "memberEntity", cascade = {CascadeType.REMOVE, CascadeType.PERSIST},
-      orphanRemoval = true)
+  @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.PERSIST, orphanRemoval = true)
   @Builder.Default
   private List<MemberHasMemberJobEntity> memberJobs = new ArrayList<>();
 
