@@ -8,6 +8,7 @@ import keeper.project.homepage.exception.about.CustomStaticWriteTypeNotFoundExce
 import keeper.project.homepage.exception.attendance.CustomAttendanceException;
 import keeper.project.homepage.exception.attendance.CustomGameIsOverException;
 import keeper.project.homepage.exception.clerk.CustomClerkInaccessibleJobException;
+import keeper.project.homepage.exception.clerk.CustomSeminarAttendanceFailException;
 import keeper.project.homepage.exception.ctf.CustomContestNotFoundException;
 import keeper.project.homepage.exception.ctf.CustomCtfCategoryNotFoundException;
 import keeper.project.homepage.exception.ctf.CustomCtfChallengeNotFoundException;
@@ -72,6 +73,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -117,6 +119,14 @@ public class ExceptionAdvice {
       MethodArgumentTypeMismatchException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("argumentTypeMismatch.code")),
         getMessage("argumentTypeMismatch.msg"));
+  }
+
+  @ExceptionHandler(MissingServletRequestParameterException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult methodArgumentTypeMismatchException(HttpServletRequest request,
+      MissingServletRequestParameterException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("missingServletRequestParameter.code")),
+        getMessage("missingServletRequestParameter.msg"));
   }
 
   @ExceptionHandler(CustomMemberNotFoundException.class)
@@ -653,6 +663,13 @@ public class ExceptionAdvice {
   protected CommonResult clerkInaccessibleJob(CustomClerkInaccessibleJobException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("inaccessibleJob.code")),
         e.getMessage() == null ? getMessage("inaccessibleJob.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomSeminarAttendanceFailException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult seminarAttendanceFail(CustomSeminarAttendanceFailException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("seminarAttendanceFail.code")),
+        e.getMessage() == null ? getMessage("seminarAttendanceFail.msg") : e.getMessage());
   }
 
 }
