@@ -54,7 +54,7 @@ public class SystemAdminService {
     MemberEntity member = memberUtilService.getById(memberId);
     MemberJobEntity job = memberUtilService.getJobById(jobId);
     checkValidJob(job);
-    assignJobToMember(member, job);
+    member.addMemberJob(job);
     return MemberJobTypeResponseDto.toDto(member);
   }
 
@@ -64,27 +64,13 @@ public class SystemAdminService {
     }
   }
 
-  private void assignJobToMember(MemberEntity member, MemberJobEntity job) {
-    MemberHasMemberJobEntity save = memberHasMemberJobRepository.save(
-        MemberHasMemberJobEntity.builder()
-            .memberEntity(member)
-            .memberJobEntity(job)
-            .build());
-    member.getMemberJobs().add(save);
-    job.getMembers().add(save);
-  }
-
   @Transactional
   public MemberJobTypeResponseDto deleteJob(Long memberId, Long jobId) {
     MemberEntity member = memberUtilService.getById(memberId);
     MemberJobEntity job = memberUtilService.getJobById(jobId);
     checkValidJob(job);
-    deleteJobToMember(member, job);
-    return MemberJobTypeResponseDto.toDto(member);
-  }
-
-  private void deleteJobToMember(MemberEntity member, MemberJobEntity job) {
     member.removeMemberJob(job);
+    return MemberJobTypeResponseDto.toDto(member);
   }
 
   public List<MemberJobTypeResponseDto> getMemberListByJob(Long jobId) {
