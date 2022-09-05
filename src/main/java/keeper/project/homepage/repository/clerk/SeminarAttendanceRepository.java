@@ -16,4 +16,7 @@ public interface SeminarAttendanceRepository extends JpaRepository<SeminarAttend
   Optional<List<SeminarAttendanceEntity>> findAllBySeminarAttendanceStatusEntity(
       SeminarAttendanceStatusEntity seminarAttendanceStatusId);
 
+  List<SeminarAttendanceEntity> findAllBySeminarEntityAndSeminarAttendanceStatusEntity(
+      SeminarEntity seminar, SeminarAttendanceStatusEntity seminarAttendanceStatus);
+
 }
