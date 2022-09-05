@@ -29,9 +29,7 @@ public class SeminarEntity {
   private Long id;
 
   /**
-   * null이면 DB에서 TRIGGER로 이름이 자동 생성
-   * 형식은 생성 날짜의 yyyyMMdd 패턴
-   * ex) 20220901
+   * null이면 DB에서 TRIGGER로 이름이 자동 생성 형식은 생성 날짜의 yyyyMMdd 패턴 ex) 20220901
    */
   @Column(length = 100)
   private String name;
@@ -50,10 +48,11 @@ public class SeminarEntity {
   @OneToMany(mappedBy = "seminarEntity")
   List<SeminarAttendanceEntity> seminarAttendances = new ArrayList<>();
 
-  public void startAttendance(AttendanceStartRequestDto request, String code) {
-    attendanceCloseTime = request.getAttendanceCloseTime();
-    latenessCloseTime = request.getLatenessCloseTime();
-    attendanceCode = code;
+  public void startAttendance(LocalDateTime attendanceCloseTime, LocalDateTime latenessCloseTime,
+      String attendanceCode) {
+    this.attendanceCloseTime = attendanceCloseTime;
+    this.latenessCloseTime = latenessCloseTime;
+    this.attendanceCode = attendanceCode;
   }
 
 }

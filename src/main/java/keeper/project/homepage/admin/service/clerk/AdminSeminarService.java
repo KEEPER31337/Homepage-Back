@@ -111,7 +111,6 @@ public class AdminSeminarService {
         .map(SeminarAttendanceStatusResponseDto::from).toList();
   }
 
-  //TODO: Transactional로 설정
   @Transactional
   public void processAttendance(SeminarAttendanceEntity attendance,
       SeminarAttendanceStatusEntity afterStatusEntity, String absenceExcuse) {
@@ -261,7 +260,8 @@ public class AdminSeminarService {
   public AttendanceStartResponseDto startSeminarAttendance(AttendanceStartRequestDto request) {
     SeminarEntity seminar = seminarRepository.findById(request.getSeminarId())
         .orElseThrow(CustomSeminarNotFoundException::new);
-    seminar.startAttendance(request, generateRandomAttendanceCode());
+    seminar.startAttendance(request.getAttendanceCloseTime(), request.getLatenessCloseTime(),
+        generateRandomAttendanceCode());
     seminarHostAutoAttendance(seminar);
     autoAttendanceAfterDeadline(seminar);
     return AttendanceStartResponseDto.from(seminar);

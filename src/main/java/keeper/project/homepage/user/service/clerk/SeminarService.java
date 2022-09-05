@@ -52,8 +52,7 @@ public class SeminarService {
         .orElseThrow(CustomSeminarNotFoundException::new);
     MemberEntity member = authService.getMemberEntityWithJWT();
     SeminarAttendanceEntity seminarAttendance = seminarAttendanceRepository.findBySeminarEntityAndMemberEntity(
-        seminar, member).orElseThrow(
-        CustomSeminarAttendanceNotFoundException::new);
+        seminar, member).orElseThrow(CustomSeminarAttendanceNotFoundException::new);
     String attendanceTime = request.getAttendanceTime()
         .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
