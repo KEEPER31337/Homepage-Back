@@ -1,10 +1,15 @@
 package keeper.project.homepage.admin.controller.clerk;
 
+import java.time.LocalDate;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import keeper.project.homepage.admin.dto.clerk.request.AttendanceStartRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarWithAttendancesRequestByPeriodDto;
+import keeper.project.homepage.admin.dto.clerk.response.AttendanceStartResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.SeminarSearchByDateResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarWithAttendancesResponseByPeriodDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceStatusResponseDto;
@@ -19,6 +24,7 @@ import keeper.project.homepage.common.service.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
@@ -77,5 +84,19 @@ public class AdminSeminarController {
       @RequestBody  @Valid SeminarAttendanceUpdateRequestDto request) {
     return responseService.getSuccessSingleResult(
         seminarService.updateSeminarAttendanceStatus(attendanceId, request));
+  }
+
+  @GetMapping("/search")
+  public SingleResult<SeminarSearchByDateResponseDto> findSeminarByDate(
+      @RequestParam @NotBlank @DateTimeFormat(pattern = "yyyyMMdd") LocalDate searchDate
+  ) {
+    return responseService.getSuccessSingleResult(seminarService.findSeminarByDate(searchDate));
+  }
+
+  @PatchMapping("/attendances/start")
+  public SingleResult<AttendanceStartResponseDto> startSeminarAttendance(
+      @RequestBody @Valid AttendanceStartRequestDto request
+  ) {
+    return responseService.getSuccessSingleResult(seminarService.startSeminarAttendance(request));
   }
 }

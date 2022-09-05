@@ -70,6 +70,10 @@ public class AdminMeritService {
 
   @Transactional
   public MeritLogEntity addMeritWithLog(MeritAddRequestDto requestDto) {
+    //TODO: 수정 필요
+    /**
+     * Task를 수행하는데 있어서 스프링 내부적으로 별도로 Task가 실행되기에 SecurityContext에 정보가 담기지 않는듯
+     */
     MemberEntity giver = authService.getMemberEntityWithJWT();
     MemberEntity awarder = memberUtilService.getById(requestDto.getMemberId());
     MeritTypeEntity meritType = meritTypeRepository.findById(requestDto.getMeritTypeId())
@@ -78,7 +82,6 @@ public class AdminMeritService {
     addMeritByMeritType(awarder, meritType);
     return meritLogRepository.save(meritLog);
   }
-
 
   protected static void addMeritByMeritType(MemberEntity awarder, MeritTypeEntity meritType) {
     if (meritType.getIsMerit()) {
