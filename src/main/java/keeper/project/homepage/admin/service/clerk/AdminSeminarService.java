@@ -69,8 +69,6 @@ public class AdminSeminarService {
 
   public Page<SeminarWithAttendancesResponseByPeriodDto> getSeminarWithAttendancesByPeriod(
       Pageable pageable, LocalDate seasonStartDate, LocalDate seasonEndDate) {
-    System.out.println("seasonStartDate = " + seasonStartDate.atStartOfDay());
-    System.out.println("seasonEndDate = " + seasonEndDate.plusDays(1L).atStartOfDay());
     return seminarRepository.findAllByOpenTimeBetweenOrderByOpenTimeDesc(pageable,
             seasonStartDate.atStartOfDay(),
             seasonEndDate.plusDays(1).atStartOfDay())
