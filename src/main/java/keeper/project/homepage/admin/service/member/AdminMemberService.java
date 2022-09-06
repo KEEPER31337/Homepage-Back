@@ -9,7 +9,6 @@ import keeper.project.homepage.admin.dto.member.MemberJobDto;
 import keeper.project.homepage.admin.dto.member.MemberMeritDto;
 import keeper.project.homepage.admin.dto.member.MemberRankDto;
 import keeper.project.homepage.admin.dto.member.MemberTypeDto;
-import keeper.project.homepage.admin.dto.member.response.MemberByRealNameResponseDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
