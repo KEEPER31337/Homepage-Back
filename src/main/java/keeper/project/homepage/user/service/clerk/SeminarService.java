@@ -77,7 +77,7 @@ public class SeminarService {
 
   private SeminarAttendanceStatusEntity attendanceProcess(SeminarEntity seminar,
       String userAttendanceCode, LocalDateTime attendanceTime) {
-    if (userAttendanceCode.compareTo(seminar.getAttendanceCode()) != 0) {
+    if (!userAttendanceCode.equals(seminar.getAttendanceCode())) {
       throw new CustomSeminarAttendanceFailException("출석 코드가 일치하지 않습니다.");
     }
 

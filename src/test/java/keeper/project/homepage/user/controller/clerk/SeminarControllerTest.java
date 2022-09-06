@@ -49,7 +49,7 @@ public class SeminarControllerTest extends ClerkControllerTestHelper {
 
     String searchDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-    mockMvc.perform(get("/v1/clerk/seminars/search")
+    mockMvc.perform(get("/v1/clerk/seminars/search/ongoing")
             .header("Authorization", memberToken)
             .param("searchDate", searchDate))
         .andDo(print())
@@ -82,7 +82,7 @@ public class SeminarControllerTest extends ClerkControllerTestHelper {
   public void findSeminarOngoingAttendanceFailByNoneSeminar() throws Exception {
     String searchDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-    mockMvc.perform(get("/v1/clerk/seminars/search")
+    mockMvc.perform(get("/v1/clerk/seminars/search/ongoing")
             .header("Authorization", memberToken)
             .param("searchDate", searchDate))
         .andDo(print())
@@ -100,7 +100,7 @@ public class SeminarControllerTest extends ClerkControllerTestHelper {
 
     String searchDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-    mockMvc.perform(get("/v1/clerk/seminars/search")
+    mockMvc.perform(get("/v1/clerk/seminars/search/ongoing")
             .header("Authorization", memberToken)
             .param("searchDate", searchDate))
         .andDo(print())
@@ -119,7 +119,7 @@ public class SeminarControllerTest extends ClerkControllerTestHelper {
 
     String searchDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-    mockMvc.perform(get("/v1/clerk/seminars/search")
+    mockMvc.perform(get("/v1/clerk/seminars/search/ongoing")
             .header("Authorization", memberToken)
             .param("searchDate", searchDate))
         .andDo(print())

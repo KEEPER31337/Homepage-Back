@@ -28,7 +28,7 @@ public class SeminarController {
   private final ResponseService responseService;
   private final SeminarService seminarService;
 
-  @GetMapping("/search")
+  @GetMapping("/search/ongoing")
   public SingleResult<SeminarOngoingAttendanceResponseDto> findSeminarOngoingAttendance(
       @RequestParam @NotBlank @DateTimeFormat(pattern = "yyyyMMdd") LocalDate searchDate
   ) {
