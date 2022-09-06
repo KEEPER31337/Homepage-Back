@@ -1,6 +1,5 @@
 package keeper.project.homepage.repository.clerk;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import keeper.project.homepage.entity.clerk.SeminarEntity;

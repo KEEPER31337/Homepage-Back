@@ -13,7 +13,6 @@ import java.util.List;
 import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
-import keeper.project.homepage.admin.dto.clerk.request.SeminarWithAttendancesRequestByPeriodDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarWithAttendancesResponseByPeriodDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceStatusResponseDto;
@@ -22,6 +21,7 @@ import keeper.project.homepage.admin.dto.clerk.response.SeminarCreateResponseDto
 import keeper.project.homepage.admin.dto.clerk.response.SeminarResponseDto;
 import keeper.project.homepage.entity.clerk.MeritTypeEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
+import keeper.project.homepage.entity.clerk.SeminarAttendanceExcuseEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
 import keeper.project.homepage.entity.clerk.SeminarEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -67,10 +67,13 @@ public class AdminSeminarService {
         .toList();
   }
 
-  public Page<SeminarWithAttendancesResponseByPeriodDto> getAllSeminarAttendances(Pageable pageable,
-      SeminarWithAttendancesRequestByPeriodDto requestDto) {
+  public Page<SeminarWithAttendancesResponseByPeriodDto> getSeminarWithAttendancesByPeriod(
+      Pageable pageable, LocalDate seasonStartDate, LocalDate seasonEndDate) {
+    System.out.println("seasonStartDate = " + seasonStartDate.atStartOfDay());
+    System.out.println("seasonEndDate = " + seasonEndDate.plusDays(1L).atStartOfDay());
     return seminarRepository.findAllByOpenTimeBetweenOrderByOpenTimeDesc(pageable,
-            requestDto.getSeasonStartDate(), requestDto.getSeasonEndDate())
+            seasonStartDate.atStartOfDay(),
+            seasonEndDate.plusDays(1).atStartOfDay())
         .map(SeminarWithAttendancesResponseByPeriodDto::from);
   }
 
@@ -165,7 +168,10 @@ public class AdminSeminarService {
       throw new CustomAttendanceAbsenceExcuseIsNullException();
     }
     attendance.setSeminarAttendanceExcuseEntity(
-        newInstance(attendance, absenceExcuse));
+        SeminarAttendanceExcuseEntity.builder()
+            .seminarAttendanceEntity(attendance)
+            .absenceExcuse(absenceExcuse)
+            .build());
   }
 
   @Transactional
