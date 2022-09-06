@@ -9,6 +9,7 @@ import static keeper.project.homepage.entity.member.MemberTypeEntity.memberType.
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
@@ -205,6 +206,8 @@ public class AdminSeminarService {
     return seminar.getSeminarAttendances()
         .stream()
         .map(SeminarAttendanceResponseDto::from)
+        .sorted(Comparator.comparing(SeminarAttendanceResponseDto::getGeneration)
+            .thenComparing(SeminarAttendanceResponseDto::getMemberName))
         .toList();
   }
 

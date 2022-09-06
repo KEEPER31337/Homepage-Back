@@ -245,6 +245,7 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
     MemberEntity member1 = generateMember("이정학", 12.5F);
     MemberEntity member2 = generateMember("최우창", 12.5F);
     MemberEntity member3 = generateMember("정현모", 8F);
+    MemberEntity member4 = generateMember("손현경", 13F);
 
     SeminarAttendanceEntity attendanceEntity1 = generateSeminarAttendance(member1, seminar,
         seminarAttendanceStatusRepository.getById(PERSONAL.getId()));
@@ -257,10 +258,13 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
         seminarAttendanceStatusRepository.getById(LATENESS.getId()));
     SeminarAttendanceEntity attendanceEntity3 = generateSeminarAttendance(member3, seminar,
         seminarAttendanceStatusRepository.getById(ABSENCE.getId()));
+    SeminarAttendanceEntity attendanceEntity4 = generateSeminarAttendance(member4, seminar,
+        seminarAttendanceStatusRepository.getById(ATTENDANCE.getId()));
 
     seminar.getSeminarAttendances().add(attendanceEntity1);
     seminar.getSeminarAttendances().add(attendanceEntity2);
     seminar.getSeminarAttendances().add(attendanceEntity3);
+    seminar.getSeminarAttendances().add(attendanceEntity4);
 
     mockMvc.perform(
             get("/v1/admin/clerk/seminars/{seminarId}/attendances",
@@ -272,7 +276,7 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.code").value(0))
         .andExpect(jsonPath("$.msg").value("성공하였습니다."))
-        .andExpect(jsonPath("$.list.size()").value(3))
+        .andExpect(jsonPath("$.list.size()").value(4))
         .andDo(document("get-seminar-attendance",
             pathParameters(
                 parameterWithName("seminarId").description("세미나 id")),
