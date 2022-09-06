@@ -187,6 +187,7 @@ public class AdminMeritControllerTest extends ClerkControllerTestHelper {
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("list.[].memberId").description("회원 id"),
+                fieldWithPath("list.[].realName").description("회원 이름"),
                 fieldWithPath("list.[].totalMerit").description("회원의 상점 누계"),
                 fieldWithPath("list.[].totalDemerit").description("회원의 벌점 누계"),
                 fieldWithPath("list.[].details").description("상벌점 사유 목록")

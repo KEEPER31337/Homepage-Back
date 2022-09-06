@@ -22,6 +22,9 @@ public class MemberTotalMeritLogsResponseDto {
   private Long memberId;
 
   @NonNull
+  private String realName;
+
+  @NonNull
   private Integer totalMerit;
 
   @NonNull
@@ -33,6 +36,7 @@ public class MemberTotalMeritLogsResponseDto {
   public static MemberTotalMeritLogsResponseDto of(MemberEntity member, List<MeritLogEntity> meritLogs) {
     return MemberTotalMeritLogsResponseDto.builder()
         .memberId(member.getId())
+        .realName(member.getRealName())
         .totalMerit(
             meritLogs.stream().map(MeritLogEntity::getMeritType)
                 .filter(MeritTypeEntity::getIsMerit)
