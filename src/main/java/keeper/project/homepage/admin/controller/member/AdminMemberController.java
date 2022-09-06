@@ -84,8 +84,8 @@ public class AdminMemberController {
 
   @Secured({"ROLE_회장", "ROLE_부회장", "ROLE_서기"})
   @GetMapping("/ids")
-  public ListResult<MemberByRealNameResponseDto> getMemberIdsByRealName(
+  public ListResult<MemberByRealNameResponseDto> getMembersByRealName(
       @RequestParam String keyword) {
-    return responseService.getSuccessListResult(adminMemberService.getMemberIdsByRealName(keyword));
+    return responseService.getSuccessListResult(adminMemberService.getMembersByRealName(keyword));
   }
 }

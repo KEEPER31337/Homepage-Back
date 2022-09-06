@@ -171,7 +171,7 @@ public class AdminMemberService {
     return result;
   }
 
-  public List<MemberByRealNameResponseDto> getMemberIdsByRealName(String keyword) {
+  public List<MemberByRealNameResponseDto> getMembersByRealName(String keyword) {
     List<MemberEntity> members = memberRepository.findByRealNameContaining(keyword);
     return members.stream()
         .map(MemberByRealNameResponseDto::from)
