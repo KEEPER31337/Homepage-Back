@@ -9,6 +9,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import keeper.project.homepage.admin.service.clerk.AdminSeminarService;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
 import keeper.project.homepage.entity.clerk.SeminarEntity;
@@ -22,6 +23,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -34,6 +39,9 @@ public class SchedulerServiceTest {
 
   @Autowired
   private MemberRepository memberRepository;
+
+  @Autowired
+  private AdminSeminarService adminSeminarService;
 
   @Autowired
   private SeminarRepository seminarRepository;
@@ -79,8 +87,15 @@ public class SchedulerServiceTest {
     Date date = Date.from(
         seminar.getLatenessCloseTime().plusSeconds(1).atZone(ZoneId.of("Asia/Seoul")).toInstant());
     Runnable task = () -> {
+      //TODO: 개별 Thread로 동작하기에 SecurityContext 정보를 설정하고 시작
+      //TODO: Runnable을 Bean으로 만들어서 DI가 이루어지도록 변경 why? 최신의 DB 정보를 가져올 수 없는 문제
+      //TODO: 테스트가 끝나면 DB를 Clean하게 만들어주는 작업 추가
+      SecurityContext context = SecurityContextHolder.getContext();
+      context.setAuthentication(
+          new UsernamePasswordAuthenticationToken(member.getId(), member.getPassword(),
+              List.of(new SimpleGrantedAuthority("ROLE_회장"))));
       notAttendances.forEach(
-          attendance -> attendance.setSeminarAttendanceStatusEntity(absence)
+          attendance -> adminSeminarService.processAttendance(attendance, absence, "")
       );
     };
     schedulerService.scheduleTask(task, date);

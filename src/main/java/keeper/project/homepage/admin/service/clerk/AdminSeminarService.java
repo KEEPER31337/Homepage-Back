@@ -136,9 +136,8 @@ public class AdminSeminarService {
     if (afterStatus.equals(ABSENCE.getType())) {
       processAbsence(member, attendDate);
     }
-    //TODO: 출석 시간 변경
-    //TODO: 각종 예외 메시지 처리
     attendance.setSeminarAttendanceStatusEntity(afterStatusEntity);
+    attendance.setSeminarAttendTime(LocalDateTime.now());
   }
 
   private void deleteBeforeAbsence(SeminarAttendanceEntity attendance, MemberEntity member) {
@@ -249,6 +248,7 @@ public class AdminSeminarService {
     return find.getId();
   }
 
+  //TODO: 출석 인정 시간, 지각 인정 시간, 출석 코드 모두 반환할수 있도록 반환값 변경
   public SeminarSearchByDateResponseDto findSeminarByDate(LocalDate searchDate) {
     String seminarName = searchDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     return seminarRepository.findByName(seminarName)
