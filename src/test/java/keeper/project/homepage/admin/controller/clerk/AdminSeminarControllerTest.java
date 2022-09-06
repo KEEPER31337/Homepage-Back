@@ -309,19 +309,28 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
         .andExpect(jsonPath("$.data.isExist").value(true))
         .andDo(document("get-seminar-by-date",
             requestParameters(
-                parameterWithName("searchDate").description("출석 진행중인 세미나 조회 날짜(yyyyMMdd)")
+                parameterWithName("searchDate").description("해당 날짜 세미나 조회 날짜(yyyyMMdd)")
             ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("data.seminarId").description(
-                    "출석 진행중인 세미나가 존재하는 경우 : 조회된 세미나 ID +\n출석 진행중인 세미나가 존재하지 않는 경우 : -1"),
-                fieldWithPath("data.seminarName").description(
-                    "출석 진행중인 세미나가 존재하는 경우 : 조회된 세미나 이름 +\n출석 진행중인 세미나가 존재하지 않는 경우 : Not Exist Seminar"
-                ),
                 fieldWithPath("data.isExist").description(
-                    "출석 진행중인 세미나가 존재하는 경우 : true +\n출석 진행중인 세미나가 존재하지 않는 경우 : false"
+                    "세미나가 존재하는 경우 : true +\n세미나가 존재하지 않는 경우 : false"
+                ),
+                fieldWithPath("data.seminarId").description(
+                    "세미나가 존재하는 경우 : 조회된 세미나 ID +\n세미나가 존재하지 않는 경우 : -1"),
+                fieldWithPath("data.seminarName").description(
+                    "세미나가 존재하는 경우 : 조회된 세미나 이름 +\n세미나가 존재하지 않는 경우 : Not Exist Seminar"
+                ),
+                fieldWithPath("data.attendanceCloseTime").description(
+                    "세미나가 존재하는 경우 : 출석 데이터가 있는 경우 출석 인정 시간, 없는 경우 null +\n세미나가 존재하지 않는 경우 : null"
+                ),
+                fieldWithPath("data.latenessCloseTime").description(
+                    "세미나가 존재하는 경우 : 출석 데이터가 있는 경우 지각 인정 시간, 없는 경우 null +\n세미나가 존재하지 않는 경우 : null"
+                ),
+                fieldWithPath("data.attendanceCode").description(
+                    "세미나가 존재하는 경우 : 출석 데이터가 있는 경우 출석 코드, 없는 경우 null+\n세미나가 존재하지 않는 경우 : null"
                 )
             )));
   }

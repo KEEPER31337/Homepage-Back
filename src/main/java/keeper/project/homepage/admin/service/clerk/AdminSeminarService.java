@@ -248,7 +248,6 @@ public class AdminSeminarService {
     return find.getId();
   }
 
-  //TODO: 출석 인정 시간, 지각 인정 시간, 출석 코드 모두 반환할수 있도록 반환값 변경
   public SeminarSearchByDateResponseDto findSeminarByDate(LocalDate searchDate) {
     String seminarName = searchDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
     return seminarRepository.findByName(seminarName)
