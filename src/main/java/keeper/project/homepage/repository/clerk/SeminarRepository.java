@@ -11,7 +11,7 @@ public interface SeminarRepository extends JpaRepository<SeminarEntity, Long> {
 
   List<SeminarEntity> findAllByOrderByOpenTimeDesc();
 
-  Page<SeminarEntity> findAllByOpenTimeBetweenOrderByOpenTimeDesc(Pageable pageable,
+  Page<SeminarEntity> findAllByOpenTimeBetweenOrderByOpenTime(Pageable pageable,
       LocalDateTime startDate, LocalDateTime endDate);
 
   Boolean existsByName(String name);

@@ -69,7 +69,7 @@ public class AdminSeminarService {
 
   public Page<SeminarWithAttendancesResponseByPeriodDto> getSeminarWithAttendancesByPeriod(
       Pageable pageable, LocalDate seasonStartDate, LocalDate seasonEndDate) {
-    return seminarRepository.findAllByOpenTimeBetweenOrderByOpenTimeDesc(pageable,
+    return seminarRepository.findAllByOpenTimeBetweenOrderByOpenTime(pageable,
             seasonStartDate.atStartOfDay(),
             seasonEndDate.plusDays(1).atStartOfDay())
         .map(SeminarWithAttendancesResponseByPeriodDto::from);
