@@ -98,7 +98,11 @@ public class AdminMemberControllerTest extends ApiControllerTestHelper {
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("list").description("검색한 회원 id 목록")
+                fieldWithPath("list.[].memberId").description("회원 id"),
+                fieldWithPath("list.[].realName").description("회원 이름"),
+                fieldWithPath("list.[].generation").description("회원 기수"),
+                fieldWithPath("list.[].thumbnailPath").description("썸네일 경로")
+
             )));
   }
 
@@ -107,6 +111,7 @@ public class AdminMemberControllerTest extends ApiControllerTestHelper {
     return memberRepository.save(
         MemberEntity.builder()
             .loginId("abcd1234" + epochTime)
+            .generation(12.5F)
             .emailAddress("test1234@keeper.co.kr" + epochTime)
             .password("1234")
             .studentId("1234" + epochTime)
