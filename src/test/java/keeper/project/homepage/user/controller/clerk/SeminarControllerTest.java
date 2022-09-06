@@ -139,7 +139,7 @@ public class SeminarControllerTest extends ClerkControllerTestHelper {
     generateSeminarAttendance(member, seminar,
         seminarAttendanceStatusRepository.getById(BEFORE_ATTENDANCE.getId()));
     AttendanceCheckRequestDto request = new AttendanceCheckRequestDto(
-        seminar.getId(), code, LocalDateTime.now());
+        seminar.getId(), code);
 
     mockMvc.perform(post("/v1/clerk/seminars/attendances/check")
             .header("Authorization", memberToken)
@@ -153,8 +153,7 @@ public class SeminarControllerTest extends ClerkControllerTestHelper {
         .andDo(document("check-seminar-attendance",
             requestFields(
               fieldWithPath("seminarId").description("출석을 진행할 세미나 ID"),
-              fieldWithPath("attendanceCode").description("출석 코드"),
-              fieldWithPath("attendanceTime").description("출석 시간(yyyy-MM-dd HH:mm:ss)")
+              fieldWithPath("attendanceCode").description("출석 코드")
             ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
@@ -178,7 +177,7 @@ public class SeminarControllerTest extends ClerkControllerTestHelper {
     generateSeminarAttendance(member, seminar,
         seminarAttendanceStatusRepository.getById(BEFORE_ATTENDANCE.getId()));
     AttendanceCheckRequestDto request = new AttendanceCheckRequestDto(
-        -1L, code, LocalDateTime.now());
+        -1L, code);
 
     mockMvc.perform(post("/v1/clerk/seminars/attendances/check")
             .header("Authorization", memberToken)
@@ -216,7 +215,7 @@ public class SeminarControllerTest extends ClerkControllerTestHelper {
     generateSeminarAttendance(member, seminar,
         seminarAttendanceStatusRepository.getById(BEFORE_ATTENDANCE.getId()));
     AttendanceCheckRequestDto request = new AttendanceCheckRequestDto(
-        seminar.getId(), code, LocalDateTime.now());
+        seminar.getId(), code);
 
     mockMvc.perform(post("/v1/clerk/seminars/attendances/check")
             .header("Authorization", memberToken)
@@ -233,12 +232,12 @@ public class SeminarControllerTest extends ClerkControllerTestHelper {
   @DisplayName("[FAIL] 출석 체크 - 종료된 출석")
   public void checkSeminarAttendanceFailByEndAttendance() throws Exception {
     String code = "1234";
-    SeminarEntity seminar = generateSeminar(LocalDateTime.now(), LocalDateTime.now().plusMinutes(5),
-        LocalDateTime.now().plusMinutes(10), code);
+    SeminarEntity seminar = generateSeminar(LocalDateTime.now().minusMinutes(20), LocalDateTime.now().minusMinutes(10),
+        LocalDateTime.now().minusMinutes(5), code);
     generateSeminarAttendance(member, seminar,
         seminarAttendanceStatusRepository.getById(BEFORE_ATTENDANCE.getId()));
     AttendanceCheckRequestDto request = new AttendanceCheckRequestDto(
-        seminar.getId(), code, LocalDateTime.now().plusMinutes(20));
+        seminar.getId(), code);
 
     mockMvc.perform(post("/v1/clerk/seminars/attendances/check")
             .header("Authorization", memberToken)
@@ -261,7 +260,7 @@ public class SeminarControllerTest extends ClerkControllerTestHelper {
         seminarAttendanceStatusRepository.getById(BEFORE_ATTENDANCE.getId()));
     String userCode = "4321";
     AttendanceCheckRequestDto request = new AttendanceCheckRequestDto(
-        seminar.getId(), userCode, LocalDateTime.now());
+        seminar.getId(), userCode);
 
     mockMvc.perform(post("/v1/clerk/seminars/attendances/check")
             .header("Authorization", memberToken)

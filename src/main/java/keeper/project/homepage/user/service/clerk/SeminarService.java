@@ -48,13 +48,12 @@ public class SeminarService {
 
   @Transactional
   public AttendanceCheckResponseDto checkSeminarAttendance(AttendanceCheckRequestDto request) {
+    LocalDateTime attendanceTime = LocalDateTime.now();
     SeminarEntity seminar = seminarRepository.findById(request.getSeminarId())
         .orElseThrow(CustomSeminarNotFoundException::new);
     MemberEntity member = authService.getMemberEntityWithJWT();
     SeminarAttendanceEntity seminarAttendance = seminarAttendanceRepository.findBySeminarEntityAndMemberEntity(
         seminar, member).orElseThrow(CustomSeminarAttendanceNotFoundException::new);
-    String attendanceTime = request.getAttendanceTime()
-        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
     if (!isPossibleAttendance(seminar, seminarAttendance, attendanceTime)) {
       return AttendanceCheckResponseDto.IMPOSSIBLE;
@@ -67,32 +66,25 @@ public class SeminarService {
   }
 
   private boolean isPossibleAttendance(SeminarEntity seminar,
-      SeminarAttendanceEntity seminarAttendance, String attendanceTime) {
+      SeminarAttendanceEntity seminarAttendance, LocalDateTime attendanceTime) {
     if (seminar.getAttendanceCode() == null) {
       return false;
     }
 
     String status = seminarAttendance.getSeminarAttendanceStatusEntity().getType();
-    String deadline = seminar.getLatenessCloseTime()
-        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-    return status.equals(BEFORE_ATTENDANCE.getType()) && attendanceTime.compareTo(deadline) <= 0;
+    return status.equals(BEFORE_ATTENDANCE.getType()) && attendanceTime.isBefore(seminar.getLatenessCloseTime());
   }
 
   private SeminarAttendanceStatusEntity attendanceProcess(SeminarEntity seminar,
-      String userAttendanceCode, String attendanceTime) {
+      String userAttendanceCode, LocalDateTime attendanceTime) {
     if (userAttendanceCode.compareTo(seminar.getAttendanceCode()) != 0) {
       throw new CustomSeminarAttendanceFailException("출석 코드가 일치하지 않습니다.");
     }
 
-    String attendanceDeadline = seminar.getAttendanceCloseTime()
-        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-    String latenessDeadLine = seminar.getLatenessCloseTime()
-        .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
-    if (attendanceTime.compareTo(attendanceDeadline) <= 0) {
+    if (attendanceTime.isBefore(seminar.getAttendanceCloseTime())) {
       return seminarAttendanceStatusRepository.findById(ATTENDANCE.getId())
           .orElseThrow(CustomSeminarAttendanceStatusNotFoundException::new);
-    } else if (attendanceTime.compareTo(latenessDeadLine) <= 0) {
+    } else if (attendanceTime.isBefore(seminar.getLatenessCloseTime())) {
       return seminarAttendanceStatusRepository.findById(LATENESS.getId())
           .orElseThrow(CustomSeminarAttendanceStatusNotFoundException::new);
     } else {
