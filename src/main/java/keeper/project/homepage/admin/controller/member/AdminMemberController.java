@@ -1,5 +1,6 @@
 package keeper.project.homepage.admin.controller.member;
 
+import keeper.project.homepage.admin.dto.member.response.MemberByRealNameResponseDto;
 import keeper.project.homepage.admin.service.member.AdminMemberService;
 import keeper.project.homepage.admin.dto.member.MemberDemeritDto;
 import keeper.project.homepage.admin.dto.member.MemberDto;
@@ -72,7 +73,6 @@ public class AdminMemberController {
     return responseService.getSuccessSingleResult(adminMemberService.updateMerit(memberMeritDto));
   }
 
-
   @Secured({"ROLE_회장", "ROLE_서기"})
   @PutMapping("/demerit")
   public SingleResult<MemberDto> updateMemberDemerit(
@@ -81,9 +81,4 @@ public class AdminMemberController {
         adminMemberService.updateDemerit(memberDemeritDto));
   }
 
-  @Secured({"ROLE_회장", "ROLE_부회장", "ROLE_서기"})
-  @GetMapping("/ids")
-  public ListResult<Long> getMemberIdsByRealName(@RequestParam String keyword) {
-    return responseService.getSuccessListResult(adminMemberService.getMemberIdsByRealName(keyword));
-  }
 }

@@ -260,7 +260,6 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
 
   public MemberEntity generateMemberEntity(MemberJobName jobName, MemberTypeName typeName,
       MemberRankName rankName) {
-    System.out.println(jobName.getJobName());
     final String epochTime = Long.toHexString(System.nanoTime());
     ThumbnailEntity thumbnailEntity = generateThumbnailEntity();
     MemberJobEntity memberJob = memberJobRepository.findByName(jobName.getJobName()).get();

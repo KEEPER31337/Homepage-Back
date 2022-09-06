@@ -1,6 +1,5 @@
 package keeper.project.homepage.admin.service.member;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import keeper.project.homepage.admin.dto.member.MemberDemeritDto;
@@ -10,6 +9,7 @@ import keeper.project.homepage.admin.dto.member.MemberJobDto;
 import keeper.project.homepage.admin.dto.member.MemberMeritDto;
 import keeper.project.homepage.admin.dto.member.MemberRankDto;
 import keeper.project.homepage.admin.dto.member.MemberTypeDto;
+import keeper.project.homepage.admin.dto.member.response.MemberByRealNameResponseDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
@@ -169,11 +169,6 @@ public class AdminMemberService {
     MemberDto result = MemberDto.builder().build();
     result.initWithEntity(member);
     return result;
-  }
-
-  public List<Long> getMemberIdsByRealName(String keyword) {
-    List<MemberEntity> members = memberRepository.findByRealNameContaining(keyword);
-    return members.stream().map(MemberEntity::getId).toList();
   }
 
 }
