@@ -1,6 +1,7 @@
 package keeper.project.homepage.entity.clerk;
 
 import java.time.LocalDateTime;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -17,6 +18,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -40,13 +42,21 @@ public class SurveyMemberReplyEntity {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "reply_id", nullable = false)
+  @Setter
   private SurveyReplyEntity reply;
 
-  @OneToOne(mappedBy = "surveyMemberReplyEntity")
+  @OneToOne(mappedBy = "surveyMemberReplyEntity", cascade = CascadeType.ALL)
   @PrimaryKeyJoinColumn
+  @Setter
   private SurveyReplyExcuseEntity surveyReplyExcuseEntity;
 
   @Column(nullable = false)
+  @Setter
   private LocalDateTime replyTime;
+
+  public void setMemberReplyExcuse(SurveyReplyExcuseEntity surveyReplyExcuseEntity) {
+    this.setSurveyReplyExcuseEntity(surveyReplyExcuseEntity);
+    surveyReplyExcuseEntity.setSurveyMemberReplyEntity(this);
+  }
 
 }

@@ -15,27 +15,11 @@ endif::[]
 :sectlinks:
 // section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
 
+IMPORTANT: *회장, 부회장, 서기만 접근 가능합니다.*
+
 == API 목록
 
 link:../admin.html[어드민 API 목록으로 돌아가기]
-
-== *수정 가능한 ROLE 목록 불러오기*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/get-job-list/http-request.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/get-job-list/http-response.adoc[]
-
-==== Response Field
-
-include::{snippets}/get-job-list/response-fields.adoc[]
 
 == *수정 가능한 TYPE 목록 불러오기*
 
@@ -77,80 +61,6 @@ include::{snippets}/get-clerk-member-list-by-type/http-response.adoc[]
 
 include::{snippets}/get-clerk-member-list-by-type/response-fields.adoc[]
 
-== *활동 상태별 회원 목록 불러오기*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/get-clerk-member-list-by-role/http-request.adoc[]
-
-==== Path Parameter
-
-include::{snippets}/get-clerk-member-list-by-role/path-parameters.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/get-clerk-member-list-by-role/http-response.adoc[]
-
-==== Response Field
-
-include::{snippets}/get-clerk-member-list-by-role/response-fields.adoc[]
-
-== *직책(ROLE) 등록*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/assign-job/http-request.adoc[]
-
-==== Path Parameter
-
-include::{snippets}/assign-job/path-parameters.adoc[]
-
-==== Request Fields
-
-include::{snippets}/assign-job/request-fields.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/assign-job/http-response.adoc[]
-
-==== Response Field
-
-include::{snippets}/assign-job/response-fields.adoc[]
-
-== *직책(ROLE) 삭제*
-
-=== 요청
-
-==== Request
-
-include::{snippets}/delete-job/http-request.adoc[]
-
-==== Path Parameter
-
-include::{snippets}/delete-job/path-parameters.adoc[]
-
-==== Request Fields
-
-include::{snippets}/delete-job/request-fields.adoc[]
-
-=== 응답
-
-==== Response
-
-include::{snippets}/delete-job/http-response.adoc[]
-
-==== Response Field
-
-include::{snippets}/delete-job/response-fields.adoc[]
-
 == *회원의 활동 상태 변경*
 
 === 요청
@@ -172,3 +82,9 @@ include::{snippets}/update-member-type/http-response.adoc[]
 ==== Response Field
 
 include::{snippets}/update-member-type/response-fields.adoc[]
+
+== *세미나*
+link:clerkSeminar.html[API 문서 보기]
+
+== *상벌점*
+link:clerkMerit.html[API 문서 보기]

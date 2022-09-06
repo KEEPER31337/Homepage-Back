@@ -11,10 +11,12 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import keeper.project.homepage.admin.dto.clerk.request.AdminSurveyRequestDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -46,4 +48,21 @@ public class SurveyEntity {
   @Builder.Default
   @OneToMany(mappedBy = "survey", cascade = CascadeType.REMOVE)
   List<SurveyMemberReplyEntity> respondents = new ArrayList<>();
+
+  public void openSurvey() {
+    this.isVisible = true;
+  }
+
+  public void closeSurvey() {
+    this.isVisible = false;
+  }
+
+  public void modifySurveyContents(String name, String description, LocalDateTime openTime,
+      LocalDateTime closeTime, Boolean isVisible) {
+    this.name = name;
+    this.description = description;
+    this.openTime = openTime;
+    this.closeTime = closeTime;
+    this.isVisible = isVisible;
+  }
 }

@@ -1,5 +1,12 @@
 package keeper.project.homepage.repository.clerk;
 
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ABSENCE;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ATTENDANCE;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.BEFORE_ATTENDANCE;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.LATENESS;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.PERSONAL;
+
 import java.util.List;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
 import org.assertj.core.api.Assertions;
@@ -17,7 +24,7 @@ public class SeminarAttendanceStatusRepositoryTest extends SeminarRepositoryTest
     List<SeminarAttendanceStatusEntity> seminarAttendanceStatusEntities = seminarAttendanceStatusRepository.findAll();
 
     // then
-    Assertions.assertThat(seminarAttendanceStatusEntities.size()).isEqualTo(4);
+    Assertions.assertThat(seminarAttendanceStatusEntities.size()).isEqualTo(seminarAttendanceStatus.values().length);
   }
 
 
@@ -27,15 +34,23 @@ public class SeminarAttendanceStatusRepositoryTest extends SeminarRepositoryTest
     // given
 
     // when
-    SeminarAttendanceStatusEntity ATTENDANCE = seminarAttendanceStatusRepository.getById(1L);
-    SeminarAttendanceStatusEntity LATENESS = seminarAttendanceStatusRepository.getById(2L);
-    SeminarAttendanceStatusEntity ABSENCE = seminarAttendanceStatusRepository.getById(3L);
-    SeminarAttendanceStatusEntity PERSONAL = seminarAttendanceStatusRepository.getById(4L);
+    SeminarAttendanceStatusEntity attendance = seminarAttendanceStatusRepository.getById(
+        ATTENDANCE.getId());
+    SeminarAttendanceStatusEntity lateness = seminarAttendanceStatusRepository.getById(
+        LATENESS.getId());
+    SeminarAttendanceStatusEntity absence = seminarAttendanceStatusRepository.getById(
+        ABSENCE.getId());
+    SeminarAttendanceStatusEntity personal = seminarAttendanceStatusRepository.getById(
+        PERSONAL.getId());
+    SeminarAttendanceStatusEntity beforeAttendance = seminarAttendanceStatusRepository.getById(
+        BEFORE_ATTENDANCE.getId());
 
     // then
-    Assertions.assertThat(ATTENDANCE.getType()).isEqualTo("출석");
-    Assertions.assertThat(LATENESS.getType()).isEqualTo("지각");
-    Assertions.assertThat(ABSENCE.getType()).isEqualTo("결석");
-    Assertions.assertThat(PERSONAL.getType()).isEqualTo("개인사정");
+    Assertions.assertThat(attendance.getType()).isEqualTo(ATTENDANCE.getType());
+    Assertions.assertThat(lateness.getType()).isEqualTo(LATENESS.getType());
+    Assertions.assertThat(absence.getType()).isEqualTo(ABSENCE.getType());
+    Assertions.assertThat(personal.getType()).isEqualTo(PERSONAL.getType());
+    Assertions.assertThat(beforeAttendance.getType()).isEqualTo(BEFORE_ATTENDANCE.getType());
+
   }
 }

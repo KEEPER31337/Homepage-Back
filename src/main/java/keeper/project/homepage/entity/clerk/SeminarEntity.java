@@ -28,7 +28,7 @@ public class SeminarEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @NotNull
+  // null 이면 db 에서 trigger 로 이름이 자동 생성 됩니다.
   private String name;
 
   @Column(length = 10)
@@ -43,6 +43,6 @@ public class SeminarEntity {
 
   @Builder.Default
   @OneToMany(mappedBy = "seminarEntity")
-  List<SeminarAttendanceEntity> seminarAttendanceEntity = new ArrayList<>();
+  List<SeminarAttendanceEntity> seminarAttendances = new ArrayList<>();
 
 }

@@ -260,13 +260,14 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
 
   public MemberEntity generateMemberEntity(MemberJobName jobName, MemberTypeName typeName,
       MemberRankName rankName) {
+    System.out.println(jobName.getJobName());
     final String epochTime = Long.toHexString(System.nanoTime());
     ThumbnailEntity thumbnailEntity = generateThumbnailEntity();
     MemberJobEntity memberJob = memberJobRepository.findByName(jobName.getJobName()).get();
     MemberTypeEntity memberType = memberTypeRepository.findByName(typeName.getTypeName()).get();
     MemberRankEntity memberRank = memberRankRepository.findByName(rankName.getRankName()).get();
 
-    MemberEntity memberEntity = memberRepository.save(MemberEntity.builder()
+    MemberEntity memberEntity = MemberEntity.builder()
         .loginId("LoginId" + epochTime)
         .password(passwordEncoder.encode(memberPassword))
         .realName("RealName" + epochTime)
@@ -278,22 +279,12 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         .memberRank(memberRank)
         .point(1000)
         .thumbnail(thumbnailEntity)
-        .build());
+        .build();
     memberType.getMembers().add(memberEntity);
     memberRank.getMembers().add(memberEntity);
-
-    assignJob(memberEntity, memberJob);
+    memberEntity.addMemberJob(memberJob);
+    memberRepository.save(memberEntity);
     return memberEntity;
-  }
-
-  public void assignJob(MemberEntity memberEntity, MemberJobEntity memberJob) {
-    MemberHasMemberJobEntity hasMemberJobEntity = memberHasMemberJobRepository.save(
-        MemberHasMemberJobEntity.builder()
-            .memberJobEntity(memberJob)
-            .memberEntity(memberEntity)
-            .build());
-    memberJob.getMembers().add(hasMemberJobEntity);
-    memberEntity.getMemberJobs().add(hasMemberJobEntity);
   }
 
   private String memberLogin(String content) throws Exception {
@@ -694,6 +685,20 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     ));
     if (descriptors.length > 0) {
       commonFields.addAll(Arrays.asList(descriptors));
+    }
+    return commonFields;
+  }
+
+  public List<FieldDescriptor> generateGetGenerationListResponseFields(ResponseType type,
+      String success, String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(List.of(
+        fieldWithPath(prefix).description("기수 정보가 중복 없이 오름차순으로 넘겨집니다.")
+    ));
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
     }
     return commonFields;
   }

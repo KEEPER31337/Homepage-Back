@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @Log4j2
@@ -78,5 +79,11 @@ public class AdminMemberController {
       @RequestBody MemberDemeritDto memberDemeritDto) {
     return responseService.getSuccessSingleResult(
         adminMemberService.updateDemerit(memberDemeritDto));
+  }
+
+  @Secured({"ROLE_회장", "ROLE_부회장", "ROLE_서기"})
+  @GetMapping("/ids")
+  public ListResult<Long> getMemberIdsByRealName(@RequestParam String keyword) {
+    return responseService.getSuccessListResult(adminMemberService.getMemberIdsByRealName(keyword));
   }
 }

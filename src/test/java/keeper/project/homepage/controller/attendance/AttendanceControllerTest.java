@@ -386,9 +386,6 @@ public class AttendanceControllerTest extends ApiControllerTestHelper {
   private MemberEntity generateTestMember() {
     final long epochTime = System.nanoTime();
     MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
-    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
-        .memberJobEntity(memberJobEntity)
-        .build();
     MemberEntity memberEntity = MemberEntity.builder()
         .loginId(loginId + epochTime)
         .password(passwordEncoder.encode(password))
@@ -397,8 +394,8 @@ public class AttendanceControllerTest extends ApiControllerTestHelper {
         .emailAddress(emailAddress + epochTime)
         .studentId(studentId + epochTime)
         .generation(0F)
-        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
+    memberEntity.addMemberJob(memberJobEntity);
     memberRepository.save(memberEntity);
     return memberEntity;
   }

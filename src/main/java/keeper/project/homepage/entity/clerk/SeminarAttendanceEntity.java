@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -40,15 +41,18 @@ public class SeminarAttendanceEntity {
   @JoinColumn(name = "seminar_id")
   private SeminarEntity seminarEntity;
 
+  @Setter
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "status_id")
   private SeminarAttendanceStatusEntity seminarAttendanceStatusEntity;
 
-  @OneToOne(mappedBy = "seminarAttendanceEntity", cascade = CascadeType.REMOVE)
+  @Setter
+  @OneToOne(mappedBy = "seminarAttendanceEntity", cascade = CascadeType.ALL)
   @PrimaryKeyJoinColumn
   private SeminarAttendanceExcuseEntity seminarAttendanceExcuseEntity;
 
   @NotNull
   @Column(name = "attend_time")
   private LocalDateTime seminarAttendTime;
+
 }

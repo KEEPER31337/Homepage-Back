@@ -61,9 +61,6 @@ public class SignInControllerTest extends ApiControllerTestHelper {
     MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
     MemberTypeEntity memberTypeEntity = memberTypeRepository.findByName("정회원").get();
     MemberRankEntity memberRankEntity = memberRankRepository.findByName("일반회원").get();
-    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
-        .memberJobEntity(memberJobEntity)
-        .build();
     MemberEntity memberEntity = MemberEntity.builder()
         .loginId(loginId)
         .password(passwordEncoder.encode(password))
@@ -71,12 +68,12 @@ public class SignInControllerTest extends ApiControllerTestHelper {
         .nickName(nickName)
         .emailAddress(emailAddress)
         .studentId(studentId)
-        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .memberType(memberTypeEntity)
         .memberRank(memberRankEntity)
         .thumbnail(thumbnailEntity)
         .generation(0F)
         .build();
+    memberEntity.addMemberJob(memberJobEntity);
     memberRepository.save(memberEntity);
   }
 

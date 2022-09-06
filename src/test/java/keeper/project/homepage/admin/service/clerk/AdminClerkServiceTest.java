@@ -1,26 +1,18 @@
 package keeper.project.homepage.admin.service.clerk;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
-import keeper.project.homepage.admin.dto.clerk.request.AssignJobRequestDto;
-import keeper.project.homepage.admin.dto.clerk.request.DeleteJobRequestDto;
-import keeper.project.homepage.admin.dto.clerk.response.ClerkMemberJobTypeResponseDto;
-import keeper.project.homepage.admin.dto.clerk.response.JobResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.TypeResponseDto;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
-import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
-import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberTypeRepository;
-import keeper.project.homepage.user.service.member.MemberUtilService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -37,35 +29,14 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 class AdminClerkServiceTest {
 
   private static long memberSequence = 1L;
-  private static long jobSequence = 1L;
-  private static List<MemberJobEntity> jobs = new ArrayList<>();
   private static long typeSequence = 1L;
-  private static List<MemberTypeEntity> types = new ArrayList<>();
+  private static final List<MemberTypeEntity> types = new ArrayList<>();
 
   @InjectMocks
   private AdminClerkService adminClerkService;
   @Mock
-  private MemberUtilService memberUtilService;
-  @Mock
-  private MemberJobRepository memberJobRepository;
-  @Mock
   private MemberTypeRepository memberTypeRepository;
-  @Mock
-  private MemberHasMemberJobRepository memberHasMemberJobRepository;
 
-  @BeforeAll
-  static void initJobs() {
-    Stream.of("ROLE_회장", "ROLE_부회장", "ROLE_서기", "ROLE_출제자", "ROLE_회원")
-        .forEach(jobName -> jobs.add(
-            MemberJobEntity.builder()
-                .id(jobSequence++)
-                .name(jobName)
-                .badge(ThumbnailEntity.builder()
-                    .path("testJobPath_" + jobSequence)
-                    .build())
-                .build())
-        );
-  }
 
   @BeforeAll
   static void initTypes() {
@@ -75,7 +46,7 @@ class AdminClerkServiceTest {
                 .id(typeSequence++)
                 .name(typeName)
                 .badge(ThumbnailEntity.builder()
-                    .path("testTypePath_" + jobSequence)
+                    .path("testTypePath_" + typeSequence)
                     .build())
                 .build())
         );
@@ -85,23 +56,6 @@ class AdminClerkServiceTest {
   void setUp() {
     MockHttpServletRequest request = new MockHttpServletRequest();
     RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-  }
-
-  @Test
-  @DisplayName("[SUCCESS] 회원 역할 리스트 불러오기 (회원, 출제자 제외)")
-  void getJobList() {
-    // mocking
-    given(memberJobRepository.findAll())
-        .willReturn(jobs);
-
-    // when
-    List<JobResponseDto> result = adminClerkService.getJobList();
-
-    // then
-    List<JobResponseDto> actual = jobs.stream().map(JobResponseDto::toDto).toList();
-    assertThat(actual).containsAll(result);
-    assertThat("ROLE_회원").isNotIn(result.stream().map(JobResponseDto::getName).toList());
-    assertThat("ROLE_출제자").isNotIn(result.stream().map(JobResponseDto::getName).toList());
   }
 
   @Test
@@ -118,55 +72,6 @@ class AdminClerkServiceTest {
     assertThat(actual).containsAll(result);
   }
 
-  @Test
-  @DisplayName("[SUCCESS] 역할 추가")
-  void assignJob() {
-    // given
-    MemberEntity member = generateMemberEntity();
-    MemberJobEntity job = jobs.get(0);
-    MemberHasMemberJobEntity save = MemberHasMemberJobEntity.builder()
-        .memberEntity(member)
-        .memberJobEntity(job)
-        .build();
-
-    // mocking
-    given(memberHasMemberJobRepository.save(any())).willReturn(save);
-    given(memberUtilService.getById(member.getId())).willReturn(member);
-    given(memberUtilService.getJobById(job.getId())).willReturn(job);
-
-    // when
-    ClerkMemberJobTypeResponseDto result = adminClerkService.assignJob(member.getId(),
-        new AssignJobRequestDto(job.getId()));
-
-    // then
-    assertThat(member.getGeneration()).isEqualTo(result.getGeneration());
-    assertThat(member.getId()).isEqualTo(result.getMemberId());
-    assertThat(JobResponseDto.toDto(job)).isIn(result.getHasJobs());
-    assertThat(TypeResponseDto.toDto(member.getMemberType())).isEqualTo(result.getType());
-  }
-
-  @Test
-  @DisplayName("[SUCCESS] 역할 삭제")
-  void deleteJob() {
-    // given
-    MemberEntity member = generateMemberEntity(jobs.get(0), jobs.get(1));
-    MemberJobEntity job = jobs.get(0);
-
-    // mocking
-    given(memberUtilService.getById(member.getId())).willReturn(member);
-    given(memberUtilService.getJobById(job.getId())).willReturn(job);
-
-    // when
-    ClerkMemberJobTypeResponseDto result = adminClerkService.deleteJob(member.getId(),
-        new DeleteJobRequestDto(job.getId()));
-
-    // then
-    assertThat(member.getGeneration()).isEqualTo(result.getGeneration());
-    assertThat(member.getId()).isEqualTo(result.getMemberId());
-    assertThat(JobResponseDto.toDto(job)).isNotIn(result.getHasJobs());
-    assertThat(TypeResponseDto.toDto(member.getMemberType())).isEqualTo(result.getType());
-  }
-
   private static MemberEntity generateMemberEntity(MemberJobEntity... memberJobEntities) {
     MemberEntity member = MemberEntity.builder()
         .id(memberSequence++)
@@ -174,14 +79,9 @@ class AdminClerkServiceTest {
         .nickName("nickName" + memberSequence)
         .realName("realName" + memberSequence)
         .memberType(types.get(0))
-        .memberJobs(new ArrayList<>())
         .build();
     for (MemberJobEntity memberJobEntity : memberJobEntities) {
-      member.getMemberJobs().add(MemberHasMemberJobEntity
-          .builder()
-          .memberEntity(member)
-          .memberJobEntity(memberJobEntity)
-          .build());
+      member.addMemberJob(memberJobEntity);
     }
     return member;
   }

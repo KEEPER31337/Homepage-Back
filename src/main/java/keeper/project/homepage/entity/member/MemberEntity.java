@@ -21,6 +21,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import keeper.project.homepage.entity.ThumbnailEntity;
+import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.entity.study.StudyHasMemberEntity;
 import keeper.project.homepage.user.dto.member.MultiMemberResponseDto;
@@ -154,7 +155,7 @@ public class MemberEntity implements Serializable {
     this.memberType = memberTypeEntity;
   }
 
-  @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.REMOVE)
+  @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.PERSIST, orphanRemoval = true)
   @Builder.Default
   private List<MemberHasMemberJobEntity> memberJobs = new ArrayList<>();
 
@@ -162,6 +163,9 @@ public class MemberEntity implements Serializable {
   @Builder.Default
   private List<PostingEntity> posting = new ArrayList<>();
 
+  @OneToMany(mappedBy = "memberEntity")
+  @Builder.Default
+  private List<SeminarAttendanceEntity> seminarAttendances = new ArrayList<>();
 
   public void updatePoint(int point) {
     this.point = point;
@@ -213,5 +217,19 @@ public class MemberEntity implements Serializable {
         .type(this.memberType.getName())
         .msg("Success")
         .build();
+  }
+
+  public void addMemberJob(MemberJobEntity job) {
+    MemberHasMemberJobEntity memberHasMemberJobEntity = MemberHasMemberJobEntity.builder()
+        .memberEntity(this)
+        .memberJobEntity(job)
+        .build();
+    getMemberJobs().add(memberHasMemberJobEntity);
+    job.getMembers().add(memberHasMemberJobEntity);
+  }
+
+  public void removeMemberJob(MemberJobEntity job) {
+    getMemberJobs().removeIf(entity -> entity.getMemberJobEntity().equals(job));
+    job.getMembers().removeIf(entity -> entity.getMemberEntity().equals(this));
   }
 }
