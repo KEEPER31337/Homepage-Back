@@ -140,7 +140,6 @@ class SystemAdminServiceTest {
         .build();
 
     // mocking
-    given(memberHasMemberJobRepository.save(any())).willReturn(save);
     given(memberUtilService.getById(member.getId())).willReturn(member);
     given(memberUtilService.getJobById(job.getId())).willReturn(job);
 
@@ -225,7 +224,6 @@ class SystemAdminServiceTest {
         .nickName("nickName" + memberSequence)
         .realName("realName" + memberSequence)
         .memberType(types.get(0))
-        .memberJobs(new ArrayList<>())
         .build();
     for (MemberJobEntity memberJobEntity : memberJobEntities) {
       Long uniqueId = UUID.randomUUID().getMostSignificantBits() & Long.MAX_VALUE;

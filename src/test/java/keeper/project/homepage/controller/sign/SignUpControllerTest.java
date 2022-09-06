@@ -52,9 +52,6 @@ public class SignUpControllerTest extends ApiControllerTestSetUp {
     Date birthdayDate = stringToDate.parse(birthday);
 
     MemberJobEntity memberJobEntity = memberJobRepository.findByName("ROLE_회원").get();
-    MemberHasMemberJobEntity hasMemberJobEntity = MemberHasMemberJobEntity.builder()
-        .memberJobEntity(memberJobEntity)
-        .build();
     MemberEntity memberEntity = MemberEntity.builder()
         .loginId(loginId)
         .password(passwordEncoder.encode(password))
@@ -63,8 +60,8 @@ public class SignUpControllerTest extends ApiControllerTestSetUp {
         .emailAddress(emailAddress)
         .studentId(studentId)
         .generation(0F)
-        .memberJobs(new ArrayList<>(List.of(hasMemberJobEntity)))
         .build();
+    memberEntity.addMemberJob(memberJobEntity);
     memberRepository.save(memberEntity);
   }
 

@@ -25,19 +25,12 @@ public class ClosedSurveyInformationResponseDto {
   private Long replyId;
 
   public static ClosedSurveyInformationResponseDto of(SurveyEntity survey,
-      SurveyMemberReplyEntity surveyMemberReply) {
+      Long replyId) {
     return ClosedSurveyInformationResponseDto.builder()
         .surveyId(survey.getId())
         .surveyName(survey.getName())
-        .replyId(surveyMemberReply.getReply().getId())
+        .replyId(replyId)
         .build();
   }
 
-  public static ClosedSurveyInformationResponseDto notFound() {
-    return ClosedSurveyInformationResponseDto.builder()
-        .surveyId(-1L)
-        .surveyName(null)
-        .replyId(null)
-        .build();
-  }
 }
