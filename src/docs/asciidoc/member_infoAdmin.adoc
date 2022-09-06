@@ -42,3 +42,25 @@ include::{snippets}/admin-members/response-body.adoc[]
 ==== Response Fields
 
 include::{snippets}/admin-members/response-fields.adoc[]
+
+== *회원 이름 키워드로 회원 조회* ==
+
+=== 요청
+
+==== Request
+
+include::{snippets}/get-memberId-list-by-realName/http-request.adoc[]
+
+==== Request Parameters
+
+include::{snippets}/get-memberId-list-by-realName/request-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/get-memberId-list-by-realName/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/get-memberId-list-by-realName/response-fields.adoc[]
