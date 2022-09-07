@@ -106,14 +106,6 @@ public class AdminMeritService {
   }
 
   @Transactional
-  public List<Long> updateMeritsWithLogs(List<MeritLogUpdateRequestDto> requestDtoList) {
-    List<Long> responses = new ArrayList<>();
-    for (MeritLogUpdateRequestDto requestDto : requestDtoList) {
-      responses.add(updateMeritWithLog(requestDto));
-    }
-    return responses;
-  }
-  @Transactional
   public Long updateMeritWithLog(MeritLogUpdateRequestDto requestDto) {
     MeritLogEntity meritLog = meritLogRepository.findById(requestDto.getMeritLogId())
         .orElseThrow(CustomMeritLogNotFoundException::new);

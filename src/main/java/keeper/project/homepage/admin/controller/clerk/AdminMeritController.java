@@ -55,9 +55,9 @@ public class AdminMeritController {
   }
 
   @PatchMapping
-  public ListResult<Long> updateMeritsWithLogs(
-      @RequestBody @Valid List<MeritLogUpdateRequestDto> requestDtoList) {
-    return responseService.getSuccessListResult(adminMeritService.updateMeritsWithLogs(requestDtoList));
+  public SingleResult<Long> updateMeritWithLog(
+      @RequestBody @Valid MeritLogUpdateRequestDto requestDto) {
+    return responseService.getSuccessSingleResult(adminMeritService.updateMeritWithLog(requestDto));
   }
 
   @DeleteMapping

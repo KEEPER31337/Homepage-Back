@@ -73,11 +73,11 @@ include::{snippets}/delete-merit-log-list/response-fields.adoc[]
 
 ==== Request
 
-include::{snippets}/update-merit-log-list/http-request.adoc[]
+include::{snippets}/update-merit-log/http-request.adoc[]
 
 ==== Request Fields
 
-include::{snippets}/update-merit-log-list/request-fields.adoc[]
+include::{snippets}/update-merit-log/request-fields.adoc[]
 
 === 응답
 

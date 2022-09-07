@@ -116,35 +116,31 @@ public class AdminMeritControllerTest extends ClerkControllerTestHelper {
     MemberEntity giver = clerk;
     MemberEntity awarder = generateMember("이정학", 12.5F);
     MeritTypeEntity publicAnnouncement = generateMeritType(2, true, "각종대외발표");
-    MeritTypeEntity absence = generateMeritType(3, false, "결석");
-    awarder.changeMerit(2);
-    awarder.changeDemerit(3);
-
     MeritTypeEntity bestTechDoc = generateMeritType(3, true, "우수기술문서작성");
-    MeritLogEntity meritLog1 = generateMeritLog(awarder, giver, publicAnnouncement, LocalDate.now());
-    MeritLogEntity meritLog2 = generateMeritLog(awarder, giver, absence, LocalDate.now());
+    MeritLogEntity meritLog = generateMeritLog(awarder, giver, publicAnnouncement, LocalDate.now());
+    awarder.changeMerit(2);
 
-    MeritLogUpdateRequestDto requestDto1 = getMeritLogUpdateRequestDto(bestTechDoc, meritLog1);
-    MeritLogUpdateRequestDto requestDto2 = getMeritLogUpdateRequestDto(bestTechDoc, meritLog2);
+    MeritLogUpdateRequestDto requestDto = getMeritLogUpdateRequestDto(bestTechDoc, meritLog);
 
-    mockMvc.perform(patch("/v1/admin/clerk/merits").contentType(MediaType.APPLICATION_JSON)
-            .content(asJsonDateString(List.of(requestDto1, requestDto2)))
+    mockMvc.perform(patch("/v1/admin/clerk/merits")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonDateString(requestDto))
             .header("Authorization", clerkToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.code").value(0))
         .andExpect(jsonPath("$.msg").value("성공하였습니다."))
-        .andExpect(jsonPath("$.list.size()").value(2))
-        .andDo(document("update-merit-log-list",
+        .andExpect(jsonPath("$.data").value(meritLog.getId()))
+        .andDo(document("update-merit-log",
             requestFields(
-                fieldWithPath("[].meritLogId").description("수정할 상벌점 내역 id"),
-                fieldWithPath("[].meritTypeId").description("수정할 상벌점 타입"),
-                fieldWithPath("[].date").description("수정할 날짜")),
+                fieldWithPath("meritLogId").description("수정할 상벌점 내역 id"),
+                fieldWithPath("meritTypeId").description("수정할 상벌점 타입"),
+                fieldWithPath("date").description("수정할 날짜")),
             responseFields(fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("list").description("수정한 상벌점 내역 id 리스트"))));
+                fieldWithPath("data").description("수정한 상벌점 내역 id"))));
   }
 
   @Test
