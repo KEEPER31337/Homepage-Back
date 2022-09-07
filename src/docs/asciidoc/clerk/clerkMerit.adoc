@@ -51,21 +51,21 @@ include::{snippets}/add-merit-log-list/response-fields.adoc[]
 
 ==== Request
 
-include::{snippets}/delete-merit/http-request.adoc[]
+include::{snippets}/delete-merit-log-list/http-request.adoc[]
 
-==== Path Parameters
+==== Request Parameters
 
-include::{snippets}/delete-merit/path-parameters.adoc[]
+include::{snippets}/delete-merit-log-list/request-parameters.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/delete-merit/http-response.adoc[]
+include::{snippets}/delete-merit-log-list/http-response.adoc[]
 
 ==== Response Field
 
-include::{snippets}/delete-merit/response-fields.adoc[]
+include::{snippets}/delete-merit-log-list/response-fields.adoc[]
 
 == *상벌점 내역 수정* ==
 
@@ -73,11 +73,11 @@ include::{snippets}/delete-merit/response-fields.adoc[]
 
 ==== Request
 
-include::{snippets}/update-merit-log/http-request.adoc[]
+include::{snippets}/update-merit-log-list/http-request.adoc[]
 
 ==== Request Fields
 
-include::{snippets}/update-merit-log/request-fields.adoc[]
+include::{snippets}/update-merit-log-list/request-fields.adoc[]
 
 === 응답
 
@@ -115,9 +115,9 @@ include::{snippets}/get-merit-log-total/response-fields.adoc[]
 
 include::{snippets}/get-merit-log-by-year/http-request.adoc[]
 
-==== Request Fields
+==== Request Parameters
 
-include::{snippets}/get-merit-log-by-year/request-fields.adoc[]
+include::{snippets}/get-merit-log-by-year/request-parameters.adoc[]
 
 === 응답
 
@@ -171,21 +171,21 @@ include::{snippets}/get-merit-types/response-fields.adoc[]
 
 ==== Request
 
-include::{snippets}/create-merit-type/http-request.adoc[]
+include::{snippets}/create-merit-types/http-request.adoc[]
 
 ==== Request Fields
 
-include::{snippets}/create-merit-type/request-fields.adoc[]
+include::{snippets}/create-merit-types/request-fields.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/create-merit-type/http-response.adoc[]
+include::{snippets}/create-merit-types/http-response.adoc[]
 
 ==== Response Field
 
-include::{snippets}/create-merit-type/response-fields.adoc[]
+include::{snippets}/create-merit-types/response-fields.adoc[]
 
 == *상벌점 타입 삭제* ==
 
@@ -193,18 +193,18 @@ include::{snippets}/create-merit-type/response-fields.adoc[]
 
 ==== Request
 
-include::{snippets}/delete-merit-type/http-request.adoc[]
+include::{snippets}/delete-merit-types/http-request.adoc[]
 
-==== Path Parameters
+==== Request Parameters
 
-include::{snippets}/delete-merit-type/path-parameters.adoc[]
+include::{snippets}/delete-merit-types/request-parameters.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/delete-merit-type/http-response.adoc[]
+include::{snippets}/delete-merit-types/http-response.adoc[]
 
 ==== Response Fields
 
-include::{snippets}/delete-merit-type/response-fields.adoc[]
+include::{snippets}/delete-merit-types/response-fields.adoc[]
