@@ -7,15 +7,14 @@ import javax.validation.constraints.NotNull;
 import keeper.project.homepage.admin.dto.clerk.request.AttendanceStartRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
-import keeper.project.homepage.admin.dto.clerk.request.SeminarWithAttendancesRequestByPeriodDto;
 import keeper.project.homepage.admin.dto.clerk.response.AttendanceStartResponseDto;
-import keeper.project.homepage.admin.dto.clerk.response.SeminarSearchByDateResponseDto;
-import keeper.project.homepage.admin.dto.clerk.response.SeminarWithAttendancesResponseByPeriodDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceStatusResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceUpdateResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarCreateResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.SeminarSearchByDateResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.SeminarWithAttendancesResponseByPeriodDto;
 import keeper.project.homepage.admin.service.clerk.AdminSeminarService;
 import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.common.dto.result.PageResult;
@@ -25,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,7 +52,8 @@ public class AdminSeminarController {
   }
 
   @PostMapping
-  SingleResult<SeminarCreateResponseDto> createSeminar(@RequestBody @Valid SeminarCreateRequestDto request) {
+  SingleResult<SeminarCreateResponseDto> createSeminar(
+      @RequestBody @Valid SeminarCreateRequestDto request) {
     return responseService.getSuccessSingleResult(seminarService.createSeminar(request));
   }
 
@@ -62,10 +63,14 @@ public class AdminSeminarController {
   }
 
   @GetMapping("/attendances")
-  PageResult<SeminarWithAttendancesResponseByPeriodDto> getAllSeminarAttendances(Pageable pageable,
-      @RequestBody @Valid SeminarWithAttendancesRequestByPeriodDto requestDto) {
-    return responseService.getSuccessPageResult(seminarService.getAllSeminarAttendances(pageable, requestDto));
+  PageResult<SeminarWithAttendancesResponseByPeriodDto> getSeminarWithAttendancesByPeriod(
+      Pageable pageable,
+      @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate seasonStartDate,
+      @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate seasonEndDate) {
+    return responseService.getSuccessPageResult(
+        seminarService.getSeminarWithAttendancesByPeriod(pageable, seasonStartDate, seasonEndDate));
   }
+
   @GetMapping("{seminarId}/attendances")
   ListResult<SeminarAttendanceResponseDto> getSeminarAttendances(
       @PathVariable @NotNull Long seminarId
@@ -81,7 +86,7 @@ public class AdminSeminarController {
   @PatchMapping("/attendances/{attendanceId}")
   SingleResult<SeminarAttendanceUpdateResponseDto> updateSeminarAttendance(
       @PathVariable @NotNull Long attendanceId,
-      @RequestBody  @Valid SeminarAttendanceUpdateRequestDto request) {
+      @RequestBody @Valid SeminarAttendanceUpdateRequestDto request) {
     return responseService.getSuccessSingleResult(
         seminarService.updateSeminarAttendanceStatus(attendanceId, request));
   }

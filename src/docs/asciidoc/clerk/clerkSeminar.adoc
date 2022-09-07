@@ -131,6 +131,10 @@ include::{snippets}/get-seminar-attendance-statuses/response-fields.adoc[]
 
 include::{snippets}/get-seminar-attendance-list/http-request.adoc[]
 
+==== Request Parameters
+
+include::{snippets}/get-seminar-attendance-list/request-parameters.adoc[]
+
 === 응답
 
 ==== Response

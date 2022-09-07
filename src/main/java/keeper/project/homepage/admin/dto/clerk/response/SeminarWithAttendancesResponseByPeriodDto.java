@@ -2,7 +2,6 @@ package keeper.project.homepage.admin.dto.clerk.response;
 
 import java.util.Comparator;
 import java.util.List;
-import keeper.project.homepage.admin.dto.clerk.SeminarAttendanceDto;
 import keeper.project.homepage.entity.clerk.SeminarEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +21,7 @@ public class SeminarWithAttendancesResponseByPeriodDto {
   @NonNull
   private String seminarName;
 
-  List<SeminarAttendanceDto> sortedSeminarAttendances;
+  List<SeminarAttendanceResponseDto> sortedSeminarAttendances;
 
   public static SeminarWithAttendancesResponseByPeriodDto from(SeminarEntity seminar) {
     return SeminarWithAttendancesResponseByPeriodDto.builder()
@@ -30,9 +29,9 @@ public class SeminarWithAttendancesResponseByPeriodDto {
         .seminarName(seminar.getName())
         .sortedSeminarAttendances(
             seminar.getSeminarAttendances().stream()
-                .map(SeminarAttendanceDto::toDto)
-                .sorted(Comparator.comparing(SeminarAttendanceDto::getGeneration)
-                    .thenComparing(SeminarAttendanceDto::getMemberName))
+                .map(SeminarAttendanceResponseDto::from)
+                .sorted(Comparator.comparing(SeminarAttendanceResponseDto::getGeneration)
+                    .thenComparing(SeminarAttendanceResponseDto::getMemberName))
                 .toList()
         )
         .build();
