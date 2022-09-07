@@ -1,7 +1,6 @@
 package keeper.project.homepage.admin.controller.clerk;
 
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.서기;
-import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.우수회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberTypeName.정회원;
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ABSENCE;
@@ -45,7 +44,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -53,13 +51,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
 
   private MemberEntity clerk;
-  private MemberEntity member;
   private String clerkToken;
 
   @BeforeEach
   public void setUp() throws Exception {
     clerk = generateMemberEntity(서기, 정회원, 우수회원);
-    member = generateMemberEntity(회원, 정회원, 우수회원);
     clerkToken = generateJWTToken(clerk);
   }
 
@@ -437,19 +433,23 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
             )));
   }
 
-  @Test
+
+  //* 1. 테스트 진행시 선행 작업 임의의 세미나 생성(ID는 9999L)
+  //* 2. 임의의 세미나 출석 생성(세미나는 9999L, 멤버는 1L, 출석 상태 5L)
+  //* 3. 해당 결과는 테스트 종료 후 DB 조회를 통해 확인 - 생성한 출석 상태가 5 -> 3번으로 변경
+  //* 4. AdminSeminarService autoAttendanceAfterDeadline 수정
+  //@Test
   @DisplayName("[SUCCESS] 세미나 출석 시작 - 자동 출석 확인")
-  @Rollback(value = false)
   public void startSeminarAttendanceAutoAttendance() throws Exception {
-    SeminarEntity byId = seminarRepository.getById(10L);
-    generateSeminarAttendance(clerk, byId,
+    SeminarEntity seminar = seminarRepository.getById(9999L);
+    generateSeminarAttendance(clerk, seminar,
         seminarAttendanceStatusRepository.getById(BEFORE_ATTENDANCE.getId()));
 
     LocalDateTime attendanceCloseTime = LocalDateTime.now().plusSeconds(1);
     LocalDateTime latenessCloseTime = LocalDateTime.now().plusSeconds(2);
 
     AttendanceStartRequestDto request = new AttendanceStartRequestDto(
-        10L, attendanceCloseTime, latenessCloseTime);
+        seminar.getId(), attendanceCloseTime, latenessCloseTime);
 
     SecurityContext context = SecurityContextHolder.getContext();
     context.setAuthentication(
@@ -465,9 +465,6 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
 
     Thread.sleep(5000);
 
-    seminarAttendanceRepository.findAll().forEach(
-        attendance -> System.out.println(attendance.getSeminarAttendanceStatusEntity().getType())
-    );
   }
 
 }

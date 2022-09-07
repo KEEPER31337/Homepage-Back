@@ -15,6 +15,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 import keeper.project.homepage.admin.dto.clerk.request.AttendanceStartRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
@@ -56,7 +57,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @Slf4j
 @Service
@@ -68,6 +72,7 @@ public class AdminSeminarService {
   static final int ATTENDANCE_CODE_LENGTH = 4;
 
   private final Random random = new Random();
+  private final TransactionTemplate transactionTemplate;
 
   private final AdminMeritService meritService;
   private final MemberUtilService memberUtilService;
@@ -299,25 +304,31 @@ public class AdminSeminarService {
     SeminarAttendanceStatusEntity absence = seminarAttendanceStatusRepository.findById(
         ABSENCE.getId()).orElseThrow(CustomSeminarAttendanceStatusNotFoundException::new);
     Date date = Date.from(
-        seminar.getLatenessCloseTime().plusSeconds(1).atZone(ZoneId.of("Asia/Seoul")).toInstant());
+        //* 테스트 진행 시 추가되는 시간을 30 -> 1초로 변경
+        seminar.getLatenessCloseTime().plusSeconds(30).atZone(ZoneId.of("Asia/Seoul")).toInstant());
     Runnable task = new Runnable() {
       @Override
       public void run() {
-        System.out.println(host);
-        SecurityContext context = SecurityContextHolder.getContext();
-        context.setAuthentication(
-            new UsernamePasswordAuthenticationToken(1L, host.getPassword(),
-                List.of(new SimpleGrantedAuthority("ROLE_회장"))));
-        List<SeminarAttendanceEntity> notAttendances = seminarAttendanceRepository.findAllBySeminarEntityAndSeminarAttendanceStatusEntity(
-            seminar, beforeAttendance);
-        log.info("result : " + notAttendances);
-        notAttendances.forEach(
-            attendance -> {
-              processAttendance(attendance, absence, "세미나 불참");
-            }
-        );
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+          @Override
+          protected void doInTransactionWithoutResult(TransactionStatus status) {
+            SecurityContext context = SecurityContextHolder.getContext();
+            context.setAuthentication(
+                //* AdminSeminarControllerTest [SUCCESS] 세미나 출석 시작 - 자동 출석 확인
+                //* 테스트 결과 확인을 위해서는 host.getId() -> 1L
+                new UsernamePasswordAuthenticationToken(host.getId(), host.getPassword(),
+                    host.getJobs().stream().map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList())));
+            List<SeminarAttendanceEntity> notAttendances = seminarAttendanceRepository.findAllBySeminarEntityAndSeminarAttendanceStatusEntity(
+                seminar, beforeAttendance);
+            notAttendances.forEach(
+                attendance -> processAttendance(attendance, absence, "세미나 불참")
+            );
+          }
+        });
       }
     };
     schedulerService.scheduleTask(task, date);
   }
+
 }
