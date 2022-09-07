@@ -4,6 +4,7 @@ import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -43,6 +44,18 @@ public class AdminMeritService {
 
   private final AuthService authService;
 
+  public List<Integer> getYears() {
+    try {
+      MeritLogEntity meritLog = meritLogRepository.findFirstByOrderByDate()
+          .orElseThrow(CustomMeritLogNotFoundException::new);
+      return IntStream.range(meritLog.getDate().getYear(), LocalDate.now().getYear() + 1)
+          .boxed()
+          .toList();
+    } catch (Exception e) {
+      return Collections.emptyList();
+    }
+  }
+
   public List<MeritLogByYearResponseDto> getMeritLogByYear(Integer year) {
     List<MeritLogEntity> meritLogs = meritLogRepository.findAllByYear(year);
 
@@ -81,15 +94,6 @@ public class AdminMeritService {
     return meritLogRepository.save(meritLog);
   }
 
-  @Transactional
-  void addMeritByMeritType(MemberEntity awarder, MeritTypeEntity meritType) {
-    if (meritType.getIsMerit()) {
-      awarder.changeMerit(awarder.getMerit() + meritType.getMerit());
-    } else {
-      awarder.changeDemerit(awarder.getDemerit() + meritType.getMerit());
-    }
-  }
-
   private static MeritLogEntity getMeritLog(LocalDate date,
       MeritTypeEntity meritType, MemberEntity awarder, MemberEntity giver) {
     return MeritLogEntity.builder()
@@ -101,47 +105,14 @@ public class AdminMeritService {
         .build();
   }
 
-  public List<Integer> getYears() {
-    MeritLogEntity meritLog = meritLogRepository.findFirstByOrderByDate()
-        .orElseThrow(CustomMeritLogNotFoundException::new);
-    return IntStream.range(meritLog.getDate().getYear(), LocalDate.now().getYear() + 1)
-        .boxed()
-        .toList();
-  }
-
   @Transactional
-  public Long createMeritType(MeritTypeCreateRequestDto requestDto) {
-    return meritTypeRepository.save(
-        MeritTypeEntity.newInstance(requestDto.getMerit(), requestDto.getIsMerit(),
-            requestDto.getDetail())).getId();
+  public List<Long> updateMeritsWithLogs(List<MeritLogUpdateRequestDto> requestDtoList) {
+    List<Long> responses = new ArrayList<>();
+    for (MeritLogUpdateRequestDto requestDto : requestDtoList) {
+      responses.add(updateMeritWithLog(requestDto));
+    }
+    return responses;
   }
-
-  @Transactional
-  public Long deleteMeritType(Long typeId) {
-    MeritTypeEntity meritTypeEntity = meritTypeRepository.findById(typeId)
-        .orElseThrow(CustomMeritTypeNotFoundException::new);
-    meritTypeRepository.delete(meritTypeEntity);
-    return meritTypeEntity.getId();
-  }
-
-  public List<MeritTypeResponseDto> getMeritTypes() {
-    return meritTypeRepository.findAll()
-        .stream()
-        .map(MeritTypeResponseDto::from)
-        .toList();
-  }
-
-  @Transactional
-  public Long deleteMeritWithLog(Long meritLogId) {
-    MeritLogEntity meritLog = meritLogRepository.findById(meritLogId)
-        .orElseThrow(CustomMeritLogNotFoundException::new);
-
-    deleteMeritByMeritType(meritLog.getAwarder(), meritLog.getMeritType());
-    meritLogRepository.delete(meritLog);
-
-    return meritLog.getId();
-  }
-
   @Transactional
   public Long updateMeritWithLog(MeritLogUpdateRequestDto requestDto) {
     MeritLogEntity meritLog = meritLogRepository.findById(requestDto.getMeritLogId())
@@ -157,7 +128,22 @@ public class AdminMeritService {
 
     return meritLog.getId();
   }
-
+  @Transactional
+  public List<Long> deleteMeritsWithLogs(List<Long> meritLogIds) {
+    List<Long> responses = new ArrayList<>();
+    for (Long meritLogId : meritLogIds) {
+      responses.add(deleteMeritWithLog(meritLogId));
+    }
+    return responses;
+  }
+  @Transactional
+  public Long deleteMeritWithLog(Long meritLogId) {
+    MeritLogEntity meritLog = meritLogRepository.findById(meritLogId)
+        .orElseThrow(CustomMeritLogNotFoundException::new);
+    deleteMeritByMeritType(meritLog.getAwarder(), meritLog.getMeritType());
+    meritLogRepository.delete(meritLog);
+    return meritLog.getId();
+  }
   @Transactional
   void deleteAbsenceLog(MemberEntity awarder, LocalDate date) {
     MeritTypeEntity absence = meritTypeRepository.findByDetail(ABSENCE.getType())
@@ -174,6 +160,22 @@ public class AdminMeritService {
     deleteMeritByMeritType(awarder, absence);
   }
 
+  public List<MeritTypeResponseDto> getMeritTypes() {
+    return meritTypeRepository.findAll()
+        .stream()
+        .map(MeritTypeResponseDto::from)
+        .toList();
+  }
+
+  @Transactional
+  void addMeritByMeritType(MemberEntity awarder, MeritTypeEntity meritType) {
+    if (meritType.getIsMerit()) {
+      awarder.changeMerit(awarder.getMerit() + meritType.getMerit());
+    } else {
+      awarder.changeDemerit(awarder.getDemerit() + meritType.getMerit());
+    }
+  }
+
   @Transactional
   void deleteMeritByMeritType(MemberEntity awarder, MeritTypeEntity meritType) {
     if (meritType.getIsMerit()) {
@@ -181,5 +183,38 @@ public class AdminMeritService {
     } else {
       awarder.changeDemerit(awarder.getDemerit() - meritType.getMerit());
     }
+  }
+
+  @Transactional
+  public List<Long> createMeritTypes(List<MeritTypeCreateRequestDto> requestDtoList) {
+    List<Long> result = new ArrayList<>();
+    for (MeritTypeCreateRequestDto request : requestDtoList) {
+      result.add(createMeritType(request));
+    }
+    return result;
+  }
+
+  @Transactional
+  public Long createMeritType(MeritTypeCreateRequestDto requestDto) {
+    return meritTypeRepository.save(
+        MeritTypeEntity.newInstance(requestDto.getMerit(), requestDto.getIsMerit(),
+            requestDto.getDetail())).getId();
+  }
+
+  @Transactional
+  public List<Long> deleteMeritTypes(List<Long> typeIdList) {
+    List<Long> result = new ArrayList<>();
+    for (Long typeId : typeIdList) {
+      result.add(deleteMeritType(typeId));
+    }
+    return result;
+  }
+
+  @Transactional
+  public Long deleteMeritType(Long typeId) {
+    MeritTypeEntity meritTypeEntity = meritTypeRepository.findById(typeId)
+        .orElseThrow(CustomMeritTypeNotFoundException::new);
+    meritTypeRepository.delete(meritTypeEntity);
+    return meritTypeEntity.getId();
   }
 }

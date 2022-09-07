@@ -2,6 +2,7 @@ package keeper.project.homepage.admin.controller.clerk;
 
 import java.util.List;
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.MeritLogUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.MeritTypeCreateRequestDto;
@@ -49,18 +50,19 @@ public class AdminMeritController {
   @PostMapping
   public ListResult<Long> addMeritsWithLogs(
       @RequestBody @Valid List<MeritAddRequestDto> requestDtoList) {
-    return responseService.getSuccessListResult(adminMeritService.addMeritsWithLogs(requestDtoList));
+    return responseService.getSuccessListResult(
+        adminMeritService.addMeritsWithLogs(requestDtoList));
   }
 
   @PatchMapping
-  public SingleResult<Long> updateMeritLog(
-      @RequestBody @Valid MeritLogUpdateRequestDto requestDto) {
-    return responseService.getSuccessSingleResult(adminMeritService.updateMeritWithLog(requestDto));
+  public ListResult<Long> updateMeritsWithLogs(
+      @RequestBody @Valid List<MeritLogUpdateRequestDto> requestDtoList) {
+    return responseService.getSuccessListResult(adminMeritService.updateMeritsWithLogs(requestDtoList));
   }
 
-  @DeleteMapping("/{meritLogId}")
-  public SingleResult<Long> deleteMeritWith(@PathVariable Long meritLogId) {
-    return responseService.getSuccessSingleResult(adminMeritService.deleteMeritWithLog(meritLogId));
+  @DeleteMapping
+  public ListResult<Long> deleteMeritsWithLogs(@RequestParam @NotEmpty  List<Long> meritLogIds) {
+    return responseService.getSuccessListResult(adminMeritService.deleteMeritsWithLogs(meritLogIds));
   }
 
   @GetMapping("/years")
@@ -74,14 +76,14 @@ public class AdminMeritController {
   }
 
   @PostMapping("types")
-  public SingleResult<Long> createMeritType(
-      @RequestBody @Valid MeritTypeCreateRequestDto requestDto) {
-    return responseService.getSuccessSingleResult(adminMeritService.createMeritType(requestDto));
+  public ListResult<Long> createMeritTypes(
+      @RequestBody @Valid List<MeritTypeCreateRequestDto> requestDtoList) {
+    return responseService.getSuccessListResult(adminMeritService.createMeritTypes(requestDtoList));
   }
 
-  @DeleteMapping("types/{typeId}")
-  public SingleResult<Long> deleteMeritType(@PathVariable Long typeId) {
-    return responseService.getSuccessSingleResult(adminMeritService.deleteMeritType(typeId));
+  @DeleteMapping("types")
+  public ListResult<Long> deleteMeritTypes(@RequestParam List<Long> typeIds) {
+    return responseService.getSuccessListResult(adminMeritService.deleteMeritTypes(typeIds));
   }
 
 }
