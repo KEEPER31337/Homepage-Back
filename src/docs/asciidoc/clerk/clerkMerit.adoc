@@ -51,21 +51,21 @@ include::{snippets}/add-merit-log-list/response-fields.adoc[]
 
 ==== Request
 
-include::{snippets}/delete-merit-log-list/http-request.adoc[]
+include::{snippets}/delete-merit-log/http-request.adoc[]
 
-==== Request Parameters
+==== Path Parameters
 
-include::{snippets}/delete-merit-log-list/request-parameters.adoc[]
+include::{snippets}/delete-merit-log/path-parameters.adoc[]
 
 === 응답
 
 ==== Response
 
-include::{snippets}/delete-merit-log-list/http-response.adoc[]
+include::{snippets}/delete-merit-log/http-response.adoc[]
 
 ==== Response Field
 
-include::{snippets}/delete-merit-log-list/response-fields.adoc[]
+include::{snippets}/delete-merit-log/response-fields.adoc[]
 
 == *상벌점 내역 수정* ==
 

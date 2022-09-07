@@ -12,6 +12,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
+import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -80,34 +81,29 @@ public class AdminMeritControllerTest extends ClerkControllerTestHelper {
 
   @Test
   @DisplayName("[SUCCESS] 상벌점 내역 삭제")
-  void deleteMeritsWithLogsTest() throws Exception {
-    MemberEntity giver = clerk;
+  void deleteMeritWithLogTest() throws Exception {
     MemberEntity awarder = generateMember("이정학", 12.5F);
     MeritTypeEntity publicAnnouncement = generateMeritType(2, true, "각종대외발표");
-    MeritTypeEntity manyTechDoc = generateMeritType(3, true, "연2개이상의기술문서작성");
 
-    Long meritLogId1 = generateMeritLog(awarder, giver, publicAnnouncement,
+    Long meritId = generateMeritLog(awarder, clerk, publicAnnouncement,
         LocalDate.now()).getId();
-    Long meritLogId2 = generateMeritLog(awarder, giver, manyTechDoc, LocalDate.now()).getId();
-    String param = meritLogId1 + "," + meritLogId2;
 
-    mockMvc.perform(delete("/v1/admin/clerk/merits/")
-            .header("Authorization", clerkToken)
-            .param("meritLogIds", param))
+    mockMvc.perform(delete("/v1/admin/clerk/merits/{meritId}", meritId)
+            .header("Authorization", clerkToken))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.code").value(0))
         .andExpect(jsonPath("$.msg").value("성공하였습니다."))
-        .andExpect(jsonPath("$.list.size()").value(2))
-        .andDo(document("delete-merit-log-list",
-            requestParameters(
-                parameterWithName("meritLogIds").description("삭제할 상벌점 내역 id 리스트")),
+        .andExpect(jsonPath("$.data").value(meritId))
+        .andDo(document("delete-merit-log",
+            pathParameters(
+                parameterWithName("meritId").description("삭제할 상벌점 내역 id")),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
-                fieldWithPath("list").description("삭제한 상벌점 내역 id 리스트"))));
+                fieldWithPath("data").description("삭제한 상벌점 내역 id"))));
   }
 
   @Test
@@ -207,6 +203,7 @@ public class AdminMeritControllerTest extends ClerkControllerTestHelper {
             responseFields(fieldWithPath("success").description("성공: true +\n실패: false"),
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("list.[].meritLogId").description("상벌점 내역 id"),
                 fieldWithPath("list.[].awarderRealName").description("상벌점 수상자 이름"),
                 fieldWithPath("list.[].date").description("상벌점 수여 날짜"),
                 fieldWithPath("list.[].isMerit").description("상점이면 1, 벌점이면 0"),
