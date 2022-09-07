@@ -2,14 +2,11 @@ package keeper.project.homepage.util.service;
 
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ABSENCE;
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.BEFORE_ATTENDANCE;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.List;
-import keeper.project.homepage.admin.service.clerk.AdminSeminarService;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
 import keeper.project.homepage.entity.clerk.SeminarEntity;
@@ -19,14 +16,12 @@ import keeper.project.homepage.repository.clerk.SeminarAttendanceStatusRepositor
 import keeper.project.homepage.repository.clerk.SeminarRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -41,9 +36,6 @@ public class SchedulerServiceTest {
   private MemberRepository memberRepository;
 
   @Autowired
-  private AdminSeminarService adminSeminarService;
-
-  @Autowired
   private SeminarRepository seminarRepository;
 
   @Autowired
@@ -52,19 +44,24 @@ public class SchedulerServiceTest {
   @Autowired
   private SeminarAttendanceStatusRepository seminarAttendanceStatusRepository;
 
-  @Test
-  @DisplayName("스케쥴 작업 테스트")
-  public void testScheduledTask() throws Exception {
+  private MemberEntity member;
+  private SeminarEntity seminar;
+  private SeminarAttendanceEntity seminarAttendance;
+  private SeminarAttendanceStatusEntity beforeAttendance;
+  private SeminarAttendanceStatusEntity absence;
+
+  @BeforeEach
+  public void setUp() {
     LocalDateTime now = LocalDateTime.now();
     LocalDateTime attendanceCloseTime = LocalDateTime.now().plusSeconds(1);
     LocalDateTime latenessCloseTime = LocalDateTime.now().plusSeconds(1);
     String code = "1234";
-    MemberEntity member = memberRepository.getById(1L);
-    SeminarAttendanceStatusEntity beforeAttendance = seminarAttendanceStatusRepository.getById(
+    member = memberRepository.getById(1L);
+    beforeAttendance = seminarAttendanceStatusRepository.getById(
         BEFORE_ATTENDANCE.getId());
-    SeminarAttendanceStatusEntity absence = seminarAttendanceStatusRepository.getById(
+    absence = seminarAttendanceStatusRepository.getById(
         ABSENCE.getId());
-    SeminarEntity seminar = seminarRepository.save(SeminarEntity.builder()
+    seminar = seminarRepository.save(SeminarEntity.builder()
         .name(now.format(DateTimeFormatter.ofPattern("yyyyMMdd")))
         .openTime(now)
         .attendanceCloseTime(attendanceCloseTime)
@@ -72,7 +69,7 @@ public class SchedulerServiceTest {
         .attendanceCode(code)
         .build()
     );
-    SeminarAttendanceEntity seminarAttendance = seminarAttendanceRepository.save(
+    seminarAttendance = seminarAttendanceRepository.save(
         SeminarAttendanceEntity.builder()
             .memberEntity(member)
             .seminarEntity(seminar)
@@ -80,31 +77,28 @@ public class SchedulerServiceTest {
             .seminarAttendTime(LocalDateTime.now())
             .build()
     );
+  }
 
-    List<SeminarAttendanceEntity> notAttendances = seminarAttendanceRepository.findAllBySeminarEntityAndSeminarAttendanceStatusEntity(
-        seminar, beforeAttendance);
-
+  @Test
+  @DisplayName("스케줄 작업 테스트")
+  public void testScheduledTask() throws Exception {
     Date date = Date.from(
         seminar.getLatenessCloseTime().plusSeconds(1).atZone(ZoneId.of("Asia/Seoul")).toInstant());
+
+    log.info(seminarAttendance.getSeminarAttendanceStatusEntity().getType());
+
     Runnable task = () -> {
-      //TODO: 개별 Thread로 동작하기에 SecurityContext 정보를 설정하고 시작
-      //TODO: Runnable을 Bean으로 만들어서 DI가 이루어지도록 변경 why? 최신의 DB 정보를 가져올 수 없는 문제
-      //TODO: 테스트가 끝나면 DB를 Clean하게 만들어주는 작업 추가
-      SecurityContext context = SecurityContextHolder.getContext();
-      context.setAuthentication(
-          new UsernamePasswordAuthenticationToken(member.getId(), member.getPassword(),
-              List.of(new SimpleGrantedAuthority("ROLE_회장"))));
-      notAttendances.forEach(
-          attendance -> adminSeminarService.processAttendance(attendance, absence, "")
-      );
+      seminarAttendance.setSeminarAttendanceStatusEntity(absence);
     };
     schedulerService.scheduleTask(task, date);
 
     Thread.sleep(3000);
 
-    SeminarAttendanceEntity after = seminarAttendanceRepository.getById(seminarAttendance.getId());
+    SeminarAttendanceEntity result = seminarAttendanceRepository.getById(seminarAttendance.getId());
 
-    assertThat(after.getSeminarAttendanceStatusEntity().getType()).isEqualTo(ABSENCE.getType());
+    log.info(seminarAttendance.getSeminarAttendanceStatusEntity().getType());
+
+    Assertions.assertThat(result.getSeminarAttendanceStatusEntity().getType()).isEqualTo(absence.getType());
   }
 
 }

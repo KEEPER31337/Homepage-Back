@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 import keeper.project.homepage.admin.dto.clerk.request.AttendanceStartRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
@@ -47,10 +48,15 @@ import keeper.project.homepage.repository.clerk.SeminarRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.user.service.member.MemberUtilService;
 import keeper.project.homepage.util.service.SchedulerService;
+import keeper.project.homepage.util.task.AutoAttendanceTask;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -261,8 +267,9 @@ public class AdminSeminarService {
         .orElseThrow(CustomSeminarNotFoundException::new);
     seminar.startAttendance(request.getAttendanceCloseTime(), request.getLatenessCloseTime(),
         generateRandomAttendanceCode());
-    seminarHostAutoAttendance(seminar);
-    autoAttendanceAfterDeadline(seminar);
+    MemberEntity host = authService.getMemberEntityWithJWT();
+    seminarHostAutoAttendance(seminar, host);
+    autoAttendanceAfterDeadline(seminar, host);
     return AttendanceStartResponseDto.from(seminar);
   }
 
@@ -274,8 +281,7 @@ public class AdminSeminarService {
     return code.toString();
   }
 
-  private void seminarHostAutoAttendance(SeminarEntity seminar) {
-    MemberEntity host = authService.getMemberEntityWithJWT();
+  private void seminarHostAutoAttendance(SeminarEntity seminar, MemberEntity host) {
     SeminarAttendanceEntity seminarAttendance = seminarAttendanceRepository.findBySeminarEntityAndMemberEntity(
         seminar, host).orElseThrow(CustomSeminarAttendanceNotFoundException::new);
     SeminarAttendanceStatusEntity status = seminarAttendanceStatusRepository.findById(
@@ -283,17 +289,30 @@ public class AdminSeminarService {
     processAttendance(seminarAttendance, status, "");
   }
 
-  private void autoAttendanceAfterDeadline(SeminarEntity seminar) {
+  private void autoAttendanceAfterDeadline(SeminarEntity seminar, MemberEntity host) {
     SeminarAttendanceStatusEntity beforeAttendance = seminarAttendanceStatusRepository.findById(
         BEFORE_ATTENDANCE.getId()).orElseThrow(CustomSeminarAttendanceStatusNotFoundException::new);
     SeminarAttendanceStatusEntity absence = seminarAttendanceStatusRepository.findById(
         ABSENCE.getId()).orElseThrow(CustomSeminarAttendanceStatusNotFoundException::new);
-    List<SeminarAttendanceEntity> notAttendances = seminarAttendanceRepository.findAllBySeminarEntityAndSeminarAttendanceStatusEntity(
-        seminar, beforeAttendance);
     Date date = Date.from(
-        seminar.getLatenessCloseTime().plusSeconds(10).atZone(ZoneId.of("Asia/Seoul")).toInstant());
-    Runnable task = () -> {
-      notAttendances.forEach(attendance -> processAttendance(attendance, absence, "세미나 불참"));
+        seminar.getLatenessCloseTime().plusSeconds(1).atZone(ZoneId.of("Asia/Seoul")).toInstant());
+    Runnable task = new Runnable() {
+      @Override
+      public void run() {
+        System.out.println(host);
+        SecurityContext context = SecurityContextHolder.getContext();
+        context.setAuthentication(
+            new UsernamePasswordAuthenticationToken(1L, host.getPassword(),
+                List.of(new SimpleGrantedAuthority("ROLE_회장"))));
+        List<SeminarAttendanceEntity> notAttendances = seminarAttendanceRepository.findAllBySeminarEntityAndSeminarAttendanceStatusEntity(
+            seminar, beforeAttendance);
+        log.info("result : " + notAttendances);
+        notAttendances.forEach(
+            attendance -> {
+              processAttendance(attendance, absence, "세미나 불참");
+            }
+        );
+      }
     };
     schedulerService.scheduleTask(task, date);
   }
