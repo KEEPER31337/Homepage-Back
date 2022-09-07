@@ -18,6 +18,9 @@ import lombok.ToString;
 public class MeritLogByYearResponseDto {
 
   @NonNull
+  private Long meritLogId;
+
+  @NonNull
   private String awarderRealName;
 
   @NonNull
@@ -34,6 +37,7 @@ public class MeritLogByYearResponseDto {
 
   public static MeritLogByYearResponseDto from(MeritLogEntity meritLog) {
     return MeritLogByYearResponseDto.builder()
+        .meritLogId(meritLog.getId())
         .awarderRealName(meritLog.getAwarder().getRealName())
         .date(meritLog.getDate())
         .isMerit(meritLog.getMeritType().getIsMerit())
