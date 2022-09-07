@@ -120,14 +120,7 @@ public class AdminMeritService {
 
     return meritLog.getId();
   }
-  @Transactional
-  public List<Long> deleteMeritsWithLogs(List<Long> meritLogIds) {
-    List<Long> responses = new ArrayList<>();
-    for (Long meritLogId : meritLogIds) {
-      responses.add(deleteMeritWithLog(meritLogId));
-    }
-    return responses;
-  }
+
   @Transactional
   public Long deleteMeritWithLog(Long meritLogId) {
     MeritLogEntity meritLog = meritLogRepository.findById(meritLogId)
@@ -136,6 +129,7 @@ public class AdminMeritService {
     meritLogRepository.delete(meritLog);
     return meritLog.getId();
   }
+
   @Transactional
   void deleteAbsenceLog(MemberEntity awarder, LocalDate date) {
     MeritTypeEntity absence = meritTypeRepository.findByDetail(ABSENCE.getType())

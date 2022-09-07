@@ -3,6 +3,7 @@ package keeper.project.homepage.admin.controller.clerk;
 import java.util.List;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.MeritLogUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.MeritTypeCreateRequestDto;
@@ -60,9 +61,9 @@ public class AdminMeritController {
     return responseService.getSuccessSingleResult(adminMeritService.updateMeritWithLog(requestDto));
   }
 
-  @DeleteMapping
-  public ListResult<Long> deleteMeritsWithLogs(@RequestParam @NotEmpty  List<Long> meritLogIds) {
-    return responseService.getSuccessListResult(adminMeritService.deleteMeritsWithLogs(meritLogIds));
+  @DeleteMapping("/{meritId}")
+  public SingleResult<Long> deleteMeritWithLog(@PathVariable @NotNull Long meritId) {
+    return responseService.getSuccessSingleResult(adminMeritService.deleteMeritWithLog(meritId));
   }
 
   @GetMapping("/years")
