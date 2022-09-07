@@ -16,7 +16,6 @@ import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
 import keeper.project.homepage.repository.ThumbnailRepository;
-import keeper.project.homepage.user.service.posting.PostingService;
 import keeper.project.homepage.util.image.preprocessing.ImagePreprocessing;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,7 +30,6 @@ public class ThumbnailService {
 
   private final ImageFormatChecking imageFormatChecking;
   private final ThumbnailRepository thumbnailRepository;
-  private final PostingService postingService;
   private final FileService fileService;
 
   public enum ThumbType {
@@ -171,7 +169,7 @@ public class ThumbnailService {
 //  TODO : 타입 분기 고려 / 현재는 overloading
   @Transactional
   public ThumbnailEntity save(ThumbType type, ImagePreprocessing imagePreprocessing,
-      MultipartFile multipartFile, String ipAddress, Long postingId) {
+      MultipartFile multipartFile, String ipAddress, PostingEntity postingEntity) {
 
     if (isNullMultipartFile(multipartFile)) {
       return getDefaultThumbnailEntity(type);
@@ -184,7 +182,7 @@ public class ThumbnailService {
         FileService.fileRelDirPath,
         ipAddress,
         multipartFile.getOriginalFilename(),
-        postingService.getPostingById(postingId));
+        postingEntity);
     
     return thumbnailRepository.save(
         ThumbnailEntity.builder()

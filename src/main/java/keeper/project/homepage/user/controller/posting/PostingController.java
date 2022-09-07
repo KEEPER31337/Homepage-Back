@@ -181,9 +181,10 @@ public class PostingController {
     public SingleResult<ThumbnailFileIdDto> uploadPostingImage(
       @RequestParam(value = "postingImage") MultipartFile postingImage,
       Long postingId, HttpServletRequest httpServletRequest){
-  
+
+      PostingEntity postingEntity = postingService.getPostingById(postingId);
       ThumbnailEntity postingImageEntity = thumbnailService.save(ThumbType.PostThumbnail,
-        new ImageNoChange(), postingImage, getUserIP(httpServletRequest), postingId);
+        new ImageNoChange(), postingImage, getUserIP(httpServletRequest), postingEntity);
       ThumbnailFileIdDto thumbnailFileIdDto = thumbnailService.getThumbnailFileId(postingImageEntity);
 
       return responseService.getSuccessSingleResult(thumbnailFileIdDto);
