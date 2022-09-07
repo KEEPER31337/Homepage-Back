@@ -22,10 +22,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
-import keeper.project.homepage.admin.dto.clerk.request.SeminarWithAttendancesRequestByPeriodDto;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceExcuseEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
@@ -147,10 +147,9 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
   @Test
   @DisplayName("[SUCCESS] 기간별 세미나 출석 목록 불러오기")
   public void getAllSeminarAttendances() throws Exception {
-    SeminarWithAttendancesRequestByPeriodDto requestDto = SeminarWithAttendancesRequestByPeriodDto.builder()
-        .seasonStartDate(LocalDateTime.now())
-        .seasonEndDate(LocalDateTime.now().plusWeeks(2))
-        .build();
+    String seasonStartDate = String.valueOf(LocalDate.now());
+    String seasonEndDate = String.valueOf(LocalDate.now().plusWeeks(2));
+
     SeminarEntity seminar = generateSeminar(LocalDateTime.now().plusWeeks(1));
     MemberEntity member1 = generateMember("이정학", 12.5F);
     MemberEntity member2 = generateMember("최우창", 12.5F);
@@ -177,8 +176,8 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
             .header("Authorization", clerkToken)
             .param("page", "0")
             .param("size", "10")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(asJsonDateString(requestDto)))
+            .param("seasonStartDate", seasonStartDate)
+            .param("seasonEndDate", seasonEndDate))
         .andDo(print())
         .andExpect(status().isOk())
         .andExpect(jsonPath("$.success").value(true))
@@ -187,11 +186,9 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
         .andDo(document("get-seminar-attendance-list",
             requestParameters(
                 parameterWithName("page").optional().description("페이지 번호(default = 0)"),
-                parameterWithName("size").optional().description("한 페이지당 출력 수(default = 10)")
-            ),
-            requestFields(
-                fieldWithPath("seasonStartDate").description("학기 시작 날짜(시간 포함)"),
-                fieldWithPath("seasonEndDate").description("학기 종료 날짜(시간 포함)")
+                parameterWithName("size").optional().description("한 페이지당 출력 수(default = 10)"),
+                parameterWithName("seasonStartDate").description("학기 시작 날짜"),
+                parameterWithName("seasonEndDate").description("학기 종료 날짜")
             ),
             responseFields(
                 generateSeminarAttendanceResponseFields(ResponseType.PAGE,
@@ -242,23 +239,32 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
   }
 
   @Test
-  @DisplayName("[SUCCESS] 세미나 출석 목록 조회")
+  @DisplayName("[SUCCESS] 특정 세미나 출석 목록 조회")
   public void getSeminarAttendances() throws Exception {
     SeminarEntity seminar = generateSeminar(LocalDateTime.now().plusWeeks(1));
     MemberEntity member1 = generateMember("이정학", 12.5F);
     MemberEntity member2 = generateMember("최우창", 12.5F);
     MemberEntity member3 = generateMember("정현모", 8F);
+    MemberEntity member4 = generateMember("손현경", 13F);
 
     SeminarAttendanceEntity attendanceEntity1 = generateSeminarAttendance(member1, seminar,
-        seminarAttendanceStatusRepository.getById(ATTENDANCE.getId()));
+        seminarAttendanceStatusRepository.getById(PERSONAL.getId()));
+    attendanceEntity1.setSeminarAttendanceExcuseEntity(
+        SeminarAttendanceExcuseEntity.builder()
+            .seminarAttendanceEntity(attendanceEntity1)
+            .absenceExcuse("예비군 훈련으로 인한 결석")
+            .build());
     SeminarAttendanceEntity attendanceEntity2 = generateSeminarAttendance(member2, seminar,
         seminarAttendanceStatusRepository.getById(LATENESS.getId()));
     SeminarAttendanceEntity attendanceEntity3 = generateSeminarAttendance(member3, seminar,
         seminarAttendanceStatusRepository.getById(ABSENCE.getId()));
+    SeminarAttendanceEntity attendanceEntity4 = generateSeminarAttendance(member4, seminar,
+        seminarAttendanceStatusRepository.getById(ATTENDANCE.getId()));
 
     seminar.getSeminarAttendances().add(attendanceEntity1);
     seminar.getSeminarAttendances().add(attendanceEntity2);
     seminar.getSeminarAttendances().add(attendanceEntity3);
+    seminar.getSeminarAttendances().add(attendanceEntity4);
 
     mockMvc.perform(
             get("/v1/admin/clerk/seminars/{seminarId}/attendances",
@@ -270,7 +276,7 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
         .andExpect(jsonPath("$.success").value(true))
         .andExpect(jsonPath("$.code").value(0))
         .andExpect(jsonPath("$.msg").value("성공하였습니다."))
-        .andExpect(jsonPath("$.list.size()").value(3))
+        .andExpect(jsonPath("$.list.size()").value(4))
         .andDo(document("get-seminar-attendance",
             pathParameters(
                 parameterWithName("seminarId").description("세미나 id")),
@@ -279,7 +285,10 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("list.[].attendanceId").description("세미나 출석 Id"),
-                fieldWithPath("list.[].memberName").description("해당 출석의 회원 이름")
+                fieldWithPath("list.[].memberName").description("회원 이름"),
+                fieldWithPath("list.[].generation").description("회원 기수"),
+                fieldWithPath("list.[].attendanceStatusType").description("출석 상태"),
+                fieldWithPath("list.[].absenceExcuse").optional().description("개인사정 결석 사유")
             )));
   }
 }

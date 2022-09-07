@@ -9,11 +9,11 @@ import static keeper.project.homepage.entity.member.MemberTypeEntity.memberType.
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
-import keeper.project.homepage.admin.dto.clerk.request.SeminarWithAttendancesRequestByPeriodDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarWithAttendancesResponseByPeriodDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceStatusResponseDto;
@@ -22,6 +22,7 @@ import keeper.project.homepage.admin.dto.clerk.response.SeminarCreateResponseDto
 import keeper.project.homepage.admin.dto.clerk.response.SeminarResponseDto;
 import keeper.project.homepage.entity.clerk.MeritTypeEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
+import keeper.project.homepage.entity.clerk.SeminarAttendanceExcuseEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
 import keeper.project.homepage.entity.clerk.SeminarEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -67,10 +68,11 @@ public class AdminSeminarService {
         .toList();
   }
 
-  public Page<SeminarWithAttendancesResponseByPeriodDto> getAllSeminarAttendances(Pageable pageable,
-      SeminarWithAttendancesRequestByPeriodDto requestDto) {
-    return seminarRepository.findAllByOpenTimeBetweenOrderByOpenTimeDesc(pageable,
-            requestDto.getSeasonStartDate(), requestDto.getSeasonEndDate())
+  public Page<SeminarWithAttendancesResponseByPeriodDto> getSeminarWithAttendancesByPeriod(
+      Pageable pageable, LocalDate seasonStartDate, LocalDate seasonEndDate) {
+    return seminarRepository.findAllByOpenTimeBetweenOrderByOpenTime(pageable,
+            seasonStartDate.atStartOfDay(),
+            seasonEndDate.plusDays(1).atStartOfDay())
         .map(SeminarWithAttendancesResponseByPeriodDto::from);
   }
 
@@ -165,7 +167,10 @@ public class AdminSeminarService {
       throw new CustomAttendanceAbsenceExcuseIsNullException();
     }
     attendance.setSeminarAttendanceExcuseEntity(
-        newInstance(attendance, absenceExcuse));
+        SeminarAttendanceExcuseEntity.builder()
+            .seminarAttendanceEntity(attendance)
+            .absenceExcuse(absenceExcuse)
+            .build());
   }
 
   @Transactional
@@ -201,6 +206,8 @@ public class AdminSeminarService {
     return seminar.getSeminarAttendances()
         .stream()
         .map(SeminarAttendanceResponseDto::from)
+        .sorted(Comparator.comparing(SeminarAttendanceResponseDto::getGeneration)
+            .thenComparing(SeminarAttendanceResponseDto::getMemberName))
         .toList();
   }
 
