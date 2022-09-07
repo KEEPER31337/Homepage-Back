@@ -60,6 +60,8 @@ public class AdminMeritService {
         .map(entry -> MemberTotalMeritLogsResponseDto.of(entry.getKey(), entry.getValue()))
         .toList();
   }
+
+  @Transactional
   public List<Long> addMeritsWithLogs(List<MeritAddRequestDto> requestDtoList) {
     List<Long> responses = new ArrayList<>();
     for (MeritAddRequestDto requestDto : requestDtoList) {
@@ -79,8 +81,8 @@ public class AdminMeritService {
     return meritLogRepository.save(meritLog);
   }
 
-
-  protected static void addMeritByMeritType(MemberEntity awarder, MeritTypeEntity meritType) {
+  @Transactional
+  void addMeritByMeritType(MemberEntity awarder, MeritTypeEntity meritType) {
     if (meritType.getIsMerit()) {
       awarder.changeMerit(awarder.getMerit() + meritType.getMerit());
     } else {
@@ -114,6 +116,7 @@ public class AdminMeritService {
             requestDto.getDetail())).getId();
   }
 
+  @Transactional
   public Long deleteMeritType(Long typeId) {
     MeritTypeEntity meritTypeEntity = meritTypeRepository.findById(typeId)
         .orElseThrow(CustomMeritTypeNotFoundException::new);
@@ -155,6 +158,7 @@ public class AdminMeritService {
     return meritLog.getId();
   }
 
+  @Transactional
   void deleteAbsenceLog(MemberEntity awarder, LocalDate date) {
     MeritTypeEntity absence = meritTypeRepository.findByDetail(ABSENCE.getType())
         .orElseThrow(CustomMeritTypeNotFoundException::new);
@@ -170,6 +174,7 @@ public class AdminMeritService {
     deleteMeritByMeritType(awarder, absence);
   }
 
+  @Transactional
   void deleteMeritByMeritType(MemberEntity awarder, MeritTypeEntity meritType) {
     if (meritType.getIsMerit()) {
       awarder.changeMerit(awarder.getMerit() - meritType.getMerit());
