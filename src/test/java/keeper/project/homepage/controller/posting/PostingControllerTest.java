@@ -48,11 +48,13 @@ import org.springframework.util.MultiValueMap;
 @Log4j2
 public class PostingControllerTest extends ApiControllerTestHelper {
 
+  private final String userDirectory = System.getProperty("user.dir");
+  private final String createTestImage = testFileRelDir + File.separator + "createTest.jpg";
+  private final String modifyAftTestImage = testFileRelDir + File.separator + "modifyAftTest.jpg";
   private String userToken;
   private String adminToken;
   private String freshManToken;
   private String freshManHasAccessToken;
-
   private MemberEntity memberEntity;
   private MemberEntity adminEntity;
   private MemberEntity freshMan;
@@ -67,16 +69,16 @@ public class PostingControllerTest extends ApiControllerTestHelper {
   private PostingEntity postingNoticeTest2;
   private PostingEntity notAccessPostingTestEntity;
   private PostingEntity accessNoticePostingTestEntity;
-
   private ThumbnailEntity generalThumbnail;
   private FileEntity generalImageFile;
   private ThumbnailEntity deleteThumbnail;
   private ThumbnailEntity deleteThumbnail2;
   private ThumbnailEntity modifyThumbnail;
 
-  private final String userDirectory = System.getProperty("user.dir");
-  private final String createTestImage = testFileRelDir + File.separator + "createTest.jpg";
-  private final String modifyAftTestImage = testFileRelDir + File.separator + "modifyAftTest.jpg";
+  @AfterAll
+  public static void clearFiles() {
+    deleteTestFiles();
+  }
 
   @BeforeEach
   public void setUp() throws Exception {
@@ -132,11 +134,6 @@ public class PostingControllerTest extends ApiControllerTestHelper {
         generatePostingEntity(memberEntity, notAccessCategoryTestEntity, 0, 0, 0);
     accessNoticePostingTestEntity =
         generatePostingEntity(memberEntity, notAccessCategoryTestEntity, 1, 0, 0);
-  }
-
-  @AfterAll
-  public static void clearFiles() {
-    deleteTestFiles();
   }
 
   @Test
@@ -496,9 +493,8 @@ public class PostingControllerTest extends ApiControllerTestHelper {
         "image/jpg", new FileInputStream(userDirectory + File.separator + createTestImage));
 
     ResultActions result = mockMvc.perform(
-        multipart("/v1/post/newPostingImage")
+        multipart("/v1/post/image/{pid}", postingGeneralTest.getId().toString())
             .file(postingImage)
-            .param("postingId", postingGeneralTest.getId().toString())
             .header("Authorization", userToken)
             .contentType(MediaType.MULTIPART_FORM_DATA)
             .with(request -> {
@@ -509,9 +505,6 @@ public class PostingControllerTest extends ApiControllerTestHelper {
     result.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
         .andDo(document("post-image-upload",
-            requestParameters(
-                parameterWithName("postingId").description("게시판 ID")
-            ),
             requestParts(
                 partWithName("postingImage").description(
                     "게시물 삽입 용 이미지 (form-data 에서 postingImage= parameter 부분)")
