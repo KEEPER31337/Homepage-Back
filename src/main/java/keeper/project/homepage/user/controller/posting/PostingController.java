@@ -27,7 +27,6 @@ import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.common.service.ResponseService;
 import keeper.project.homepage.util.service.ThumbnailService;
 import keeper.project.homepage.util.image.preprocessing.ImageCenterCropping;
-import keeper.project.homepage.util.image.preprocessing.ImageNoChange;
 import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import keeper.project.homepage.user.service.posting.CommentService;
 import keeper.project.homepage.user.service.posting.PostingService;
@@ -183,14 +182,10 @@ public class PostingController {
     public SingleResult<PostingImageUploadResponseDto> uploadPostingImage(
       @PathVariable("pid") Long postingId,
       @RequestParam(value = "postingImage") MultipartFile postingImage,
-      HttpServletRequest httpServletRequest){
+      HttpServletRequest request){
 
-      PostingEntity postingEntity = postingService.getPostingById(postingId);
-      ThumbnailEntity postingImageEntity = thumbnailService.save(ThumbType.PostThumbnail,
-        new ImageNoChange(), postingImage, getUserIP(httpServletRequest), postingEntity);
-      PostingImageUploadResponseDto thumbnailFileIdDto = thumbnailService.getThumbnailFileId(postingImageEntity);
-
-      return responseService.getSuccessSingleResult(thumbnailFileIdDto);
+      return responseService.getSuccessSingleResult(
+          postingService.uploadPostingImage(postingId, postingImage, request));
     }  
 
   @GetMapping(value = "/delete/{fileId}")

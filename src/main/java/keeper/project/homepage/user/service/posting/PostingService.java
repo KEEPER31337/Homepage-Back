@@ -1,11 +1,14 @@
 package keeper.project.homepage.user.service.posting;
 
+import static keeper.project.homepage.util.ClientUtil.getUserIP;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
@@ -37,14 +40,18 @@ import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.common.service.util.AuthService;
+import keeper.project.homepage.user.dto.posting.PostingImageUploadResponseDto;
 import keeper.project.homepage.user.dto.posting.PostingResponseDto;
-import keeper.project.homepage.user.service.member.MemberService;
 import keeper.project.homepage.user.service.member.MemberUtilService;
+import keeper.project.homepage.util.image.preprocessing.ImageNoChange;
+import keeper.project.homepage.util.service.ThumbnailService;
+import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @RequiredArgsConstructor
 @Service
@@ -63,7 +70,7 @@ public class PostingService {
   private final AttendanceRepository attendanceRepository;
   private final MemberUtilService memberUtilService;
   private final AuthService authService;
-  private final MemberService memberService;
+  private final ThumbnailService thumbnailService;
 
   public static final Integer isNotTempPosting = 0;
   public static final Integer isTempPosting = 1;
@@ -450,6 +457,20 @@ public class PostingService {
     }
 
     return new LikeAndDislikeDto(checked.get(0), checked.get(1));
+  }
+
+  @Transactional
+  public PostingImageUploadResponseDto uploadPostingImage(
+      Long postingId,
+      MultipartFile postingImage,
+      HttpServletRequest request){
+
+    PostingEntity postingEntity = getPostingById(postingId);
+
+    ThumbnailEntity postingImageEntity = thumbnailService.save(
+        ThumbType.PostThumbnail, new ImageNoChange(), postingImage, getUserIP(request), postingEntity);
+
+    return PostingImageUploadResponseDto.from(postingImageEntity);
   }
 
   public boolean isNotAccessExamBoard(PostingEntity postingEntity) {

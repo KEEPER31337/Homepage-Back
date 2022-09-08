@@ -8,7 +8,6 @@ import java.util.stream.Stream;
 import keeper.project.homepage.exception.file.CustomInvalidImageFileException;
 import keeper.project.homepage.util.image.ImageFormatChecking;
 import keeper.project.homepage.util.MultipartFileWrapper;
-import keeper.project.homepage.user.dto.posting.PostingImageUploadResponseDto;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
@@ -187,10 +186,6 @@ public class ThumbnailService {
             .path(type.getSaveDirPath() + File.separator + saveFile.getThumbnailFile().getName())
             .file(fileEntity)
             .build());
-  }
-
-  public PostingImageUploadResponseDto getThumbnailFileId(ThumbnailEntity thumbnailEntity){
-    return PostingImageUploadResponseDto.from(thumbnailEntity);
   }
 
   private FilePair saveFilesInServer(ThumbType type, ImagePreprocessing imagePreprocessing,
