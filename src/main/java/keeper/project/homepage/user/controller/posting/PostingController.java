@@ -21,7 +21,7 @@ import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
 import keeper.project.homepage.user.dto.posting.PostingResponseDto;
-import keeper.project.homepage.util.dto.ThumbnailFileIdDto;
+import keeper.project.homepage.user.dto.posting.PostingImageUploadResponseDto;
 import keeper.project.homepage.util.image.preprocessing.ImageSize;
 import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.common.service.ResponseService;
@@ -180,7 +180,7 @@ public class PostingController {
   @PostMapping(value="/image/{pid}",
       consumes = "multipart/form-data",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-    public SingleResult<ThumbnailFileIdDto> uploadPostingImage(
+    public SingleResult<PostingImageUploadResponseDto> uploadPostingImage(
       @PathVariable("pid") Long postingId,
       @RequestParam(value = "postingImage") MultipartFile postingImage,
       HttpServletRequest httpServletRequest){
@@ -188,7 +188,7 @@ public class PostingController {
       PostingEntity postingEntity = postingService.getPostingById(postingId);
       ThumbnailEntity postingImageEntity = thumbnailService.save(ThumbType.PostThumbnail,
         new ImageNoChange(), postingImage, getUserIP(httpServletRequest), postingEntity);
-      ThumbnailFileIdDto thumbnailFileIdDto = thumbnailService.getThumbnailFileId(postingImageEntity);
+      PostingImageUploadResponseDto thumbnailFileIdDto = thumbnailService.getThumbnailFileId(postingImageEntity);
 
       return responseService.getSuccessSingleResult(thumbnailFileIdDto);
     }  

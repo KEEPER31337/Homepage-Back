@@ -1,4 +1,4 @@
-package keeper.project.homepage.util.dto;
+package keeper.project.homepage.user.dto.posting;
 
 import keeper.project.homepage.entity.ThumbnailEntity;
 import lombok.AllArgsConstructor;
@@ -10,13 +10,13 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ThumbnailFileIdDto {
+public class PostingImageUploadResponseDto {
 
   private Long thumbnailId;
   private Long fileId;
 
-  public static ThumbnailFileIdDto from(ThumbnailEntity entity) {
-    return ThumbnailFileIdDto.builder()
+  public static PostingImageUploadResponseDto from(ThumbnailEntity entity) {
+    return PostingImageUploadResponseDto.builder()
         .thumbnailId(entity.getId())
         .fileId(entity.getFile().getId())
         .build();
