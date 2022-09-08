@@ -123,6 +123,7 @@ public class AdminSeminarService {
       processAbsence(member, attendDate);
     }
     attendance.setSeminarAttendanceStatusEntity(afterStatusEntity);
+    attendance.setSeminarAttendTime(LocalDateTime.now());
   }
 
   @Transactional
@@ -132,7 +133,7 @@ public class AdminSeminarService {
   }
 
   @Transactional
-  private void processLateness(MemberEntity member, LocalDate attendDate) {
+  void processLateness(MemberEntity member, LocalDate attendDate) {
     // 지각 2회는 결석 처리
     if (getLatenessCount(member) % 2 == 1) {
       processAbsence(member, attendDate);
