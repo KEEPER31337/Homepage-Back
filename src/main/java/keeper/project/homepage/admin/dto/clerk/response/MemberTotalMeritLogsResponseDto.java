@@ -1,6 +1,8 @@
 package keeper.project.homepage.admin.dto.clerk.response;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import keeper.project.homepage.entity.clerk.MeritLogEntity;
 import keeper.project.homepage.entity.clerk.MeritTypeEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
@@ -31,9 +33,10 @@ public class MemberTotalMeritLogsResponseDto {
   private Integer totalDemerit;
 
   @NonNull
-  private List<String> details;
+  private Map<String, Long> detailsWithCount;
 
-  public static MemberTotalMeritLogsResponseDto of(MemberEntity member, List<MeritLogEntity> meritLogs) {
+  public static MemberTotalMeritLogsResponseDto of(MemberEntity member,
+      List<MeritLogEntity> meritLogs) {
     return MemberTotalMeritLogsResponseDto.builder()
         .memberId(member.getId())
         .realName(member.getRealName())
@@ -47,11 +50,10 @@ public class MemberTotalMeritLogsResponseDto {
                 .filter(type -> type.getIsMerit().equals(false))
                 .mapToInt(MeritTypeEntity::getMerit)
                 .sum())
-        .details(
+        .detailsWithCount(
             meritLogs.stream()
                 .map(MeritLogEntity::getMeritType)
-                .map(MeritTypeEntity::getDetail)
-                .toList())
+                .collect(Collectors.groupingBy(MeritTypeEntity::getDetail, Collectors.counting())))
         .build();
   }
 }
