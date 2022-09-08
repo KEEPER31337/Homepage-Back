@@ -176,7 +176,7 @@ public class PostingController {
     return responseService.getSuccessResult();
   }
 
-  @PostMapping(value="/image/{pid}",
+  @PostMapping(value="/{pid}/image",
       consumes = "multipart/form-data",
       produces = {MediaType.APPLICATION_JSON_VALUE})
     public SingleResult<PostingImageUploadResponseDto> uploadPostingImage(

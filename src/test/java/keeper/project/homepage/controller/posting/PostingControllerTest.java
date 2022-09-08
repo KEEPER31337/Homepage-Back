@@ -493,7 +493,7 @@ public class PostingControllerTest extends ApiControllerTestHelper {
         "image/jpg", new FileInputStream(userDirectory + File.separator + createTestImage));
 
     ResultActions result = mockMvc.perform(
-        multipart("/v1/post/image/{pid}", postingGeneralTest.getId().toString())
+        multipart("/v1/post/{pid}/image", postingGeneralTest.getId().toString())
             .file(postingImage)
             .header("Authorization", userToken)
             .contentType(MediaType.MULTIPART_FORM_DATA)
