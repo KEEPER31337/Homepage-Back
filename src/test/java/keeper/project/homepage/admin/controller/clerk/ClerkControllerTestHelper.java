@@ -162,6 +162,7 @@ public class ClerkControllerTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".sortedSeminarAttendances").description("세미나 출석 정보"),
         fieldWithPath(prefix + ".sortedSeminarAttendances.[].attendanceId").description(
             "세미나 출석 id"),
+        fieldWithPath(prefix + ".sortedSeminarAttendances.[].memberId").description("회원 id"),
         fieldWithPath(prefix + ".sortedSeminarAttendances.[].generation").description("회원 기수"),
         fieldWithPath(prefix + ".sortedSeminarAttendances.[].memberName").description("회원 이름"),
         fieldWithPath(
