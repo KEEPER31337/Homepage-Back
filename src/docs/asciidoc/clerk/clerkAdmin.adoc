@@ -83,8 +83,32 @@ include::{snippets}/update-member-type/http-response.adoc[]
 
 include::{snippets}/update-member-type/response-fields.adoc[]
 
+== *회원의 활동 상태 일괄 변경*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/update-member-type-all/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/update-member-type-all/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/update-member-type-all/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/update-member-type-all/response-fields.adoc[]
+
 == *세미나*
+
 link:clerkSeminar.html[API 문서 보기]
 
 == *상벌점*
+
 link:clerkMerit.html[API 문서 보기]
