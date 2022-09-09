@@ -1,6 +1,9 @@
 package keeper.project.homepage.admin.controller.clerk;
 
+import java.util.List;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import keeper.project.homepage.admin.dto.clerk.request.ClerkMemberTypeRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.ClerkMemberJobTypeResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.TypeResponseDto;
 import keeper.project.homepage.admin.service.clerk.AdminClerkService;
@@ -13,6 +16,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,6 +39,13 @@ public class AdminClerkController {
   public ListResult<ClerkMemberJobTypeResponseDto> getClerkMemberListByType(
       @PathVariable @NotNull Long typeId) {
     return responseService.getSuccessListResult(adminClerkService.getClerkMemberListByType(typeId));
+  }
+
+  @PutMapping("/members/types")
+  public ListResult<ClerkMemberJobTypeResponseDto> updateMemberTypeAll(
+      @RequestBody @Valid List<ClerkMemberTypeRequestDto> requestDto
+  ) {
+    return responseService.getSuccessListResult(adminClerkService.updateMemberTypeAll(requestDto));
   }
 
   @PutMapping("/members/{memberId}/types/{typeId}")
