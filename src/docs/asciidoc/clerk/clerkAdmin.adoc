@@ -91,7 +91,7 @@ include::{snippets}/update-member-type/response-fields.adoc[]
 
 include::{snippets}/update-member-type-all/http-request.adoc[]
 
-==== Path Parameter
+==== Request Fields
 
 include::{snippets}/update-member-type-all/request-fields.adoc[]
 
