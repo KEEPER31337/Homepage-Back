@@ -1,7 +1,7 @@
 package keeper.project.homepage.admin.service.clerk;
 
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceExcuseEntity.*;
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ABSENCE;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ATTENDANCE;
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.BEFORE_ATTENDANCE;
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.LATENESS;
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.PERSONAL;
@@ -9,17 +9,26 @@ import static keeper.project.homepage.entity.member.MemberTypeEntity.memberType.
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+import keeper.project.homepage.admin.dto.clerk.request.AttendanceStartRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
-import keeper.project.homepage.admin.dto.clerk.response.SeminarWithAttendancesResponseByPeriodDto;
+import keeper.project.homepage.admin.dto.clerk.response.AttendanceStartResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceStatusResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceUpdateResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarCreateResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.SeminarSearchByDateResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.SeminarWithAttendancesResponseByPeriodDto;
+import keeper.project.homepage.common.service.util.AuthService;
 import keeper.project.homepage.entity.clerk.MeritTypeEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceExcuseEntity;
@@ -38,12 +47,20 @@ import keeper.project.homepage.repository.clerk.SeminarAttendanceStatusRepositor
 import keeper.project.homepage.repository.clerk.SeminarRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.user.service.member.MemberUtilService;
+import keeper.project.homepage.util.service.SchedulerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @Slf4j
 @Service
@@ -52,14 +69,21 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminSeminarService {
 
   static final Integer ABSENCE_DEMERIT = 3;
+  static final int ATTENDANCE_CODE_LENGTH = 4;
 
+  private final Random random = new Random();
+  private final TransactionTemplate transactionTemplate;
+
+  private final AdminMeritService meritService;
+  private final MemberUtilService memberUtilService;
+  private final AuthService authService;
+  private final SchedulerService schedulerService;
+
+  private final MeritTypeRepository meritTypeRepository;
   private final SeminarRepository seminarRepository;
   private final SeminarAttendanceRepository seminarAttendanceRepository;
   private final SeminarAttendanceStatusRepository seminarAttendanceStatusRepository;
-  private final MemberUtilService memberUtilService;
   private final MemberRepository memberRepository;
-  private final MeritTypeRepository meritTypeRepository;
-  private final AdminMeritService meritService;
 
   public List<SeminarResponseDto> getSeminars() {
     return seminarRepository.findAllByOrderByOpenTimeDesc()
@@ -98,7 +122,7 @@ public class AdminSeminarService {
   }
 
   @Transactional
-  void processAttendance(SeminarAttendanceEntity attendance,
+  public void processAttendance(SeminarAttendanceEntity attendance,
       SeminarAttendanceStatusEntity afterStatusEntity, String absenceExcuse) {
     MemberEntity member = attendance.getMemberEntity();
     String beforeStatus = attendance.getSeminarAttendanceStatusEntity().getType();
@@ -228,6 +252,74 @@ public class AdminSeminarService {
     return find.getId();
   }
 
+  public SeminarSearchByDateResponseDto findSeminarByDate(LocalDate searchDate) {
+    String seminarName = searchDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    return seminarRepository.findByName(seminarName)
+        .map(SeminarSearchByDateResponseDto::from)
+        .orElse(SeminarSearchByDateResponseDto.NONE);
+  }
+
+  @Transactional
+  public AttendanceStartResponseDto startSeminarAttendance(AttendanceStartRequestDto request) {
+    SeminarEntity seminar = seminarRepository.findById(request.getSeminarId())
+        .orElseThrow(CustomSeminarNotFoundException::new);
+    seminar.startAttendance(request.getAttendanceCloseTime(), request.getLatenessCloseTime(),
+        generateRandomAttendanceCode());
+    MemberEntity host = authService.getMemberEntityWithJWT();
+    seminarHostAutoAttendance(seminar, host);
+    autoAttendanceAfterDeadline(seminar, host);
+    return AttendanceStartResponseDto.from(seminar);
+  }
+
+  private String generateRandomAttendanceCode() {
+    StringBuilder code = new StringBuilder();
+    for (int i = 0; i < ATTENDANCE_CODE_LENGTH; i++) {
+      code.append(random.nextInt(10));
+    }
+    return code.toString();
+  }
+
+  private void seminarHostAutoAttendance(SeminarEntity seminar, MemberEntity host) {
+    SeminarAttendanceEntity seminarAttendance = seminarAttendanceRepository.findBySeminarEntityAndMemberEntity(
+        seminar, host).orElseThrow(CustomSeminarAttendanceNotFoundException::new);
+    SeminarAttendanceStatusEntity status = seminarAttendanceStatusRepository.findById(
+        ATTENDANCE.getId()).orElseThrow(CustomSeminarAttendanceStatusNotFoundException::new);
+    processAttendance(seminarAttendance, status, "");
+  }
+
+  private void autoAttendanceAfterDeadline(SeminarEntity seminar, MemberEntity host) {
+    SeminarAttendanceStatusEntity beforeAttendance = seminarAttendanceStatusRepository.findById(
+        BEFORE_ATTENDANCE.getId()).orElseThrow(CustomSeminarAttendanceStatusNotFoundException::new);
+    SeminarAttendanceStatusEntity absence = seminarAttendanceStatusRepository.findById(
+        ABSENCE.getId()).orElseThrow(CustomSeminarAttendanceStatusNotFoundException::new);
+    Date date = Date.from(
+        //* 테스트 진행 시 추가되는 시간을 30 -> 1초로 변경
+        seminar.getLatenessCloseTime().plusSeconds(30).atZone(ZoneId.of("Asia/Seoul")).toInstant());
+    Runnable task = new Runnable() {
+      @Override
+      public void run() {
+        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+          @Override
+          protected void doInTransactionWithoutResult(TransactionStatus status) {
+            SecurityContext context = SecurityContextHolder.getContext();
+            context.setAuthentication(
+                //* AdminSeminarControllerTest [SUCCESS] 세미나 출석 시작 - 자동 출석 확인
+                //* 테스트 결과 확인을 위해서는 host.getId() -> 1L
+                new UsernamePasswordAuthenticationToken(host.getId(), host.getPassword(),
+                    host.getJobs().stream().map(SimpleGrantedAuthority::new)
+                        .collect(Collectors.toList())));
+            List<SeminarAttendanceEntity> notAttendances = seminarAttendanceRepository.findAllBySeminarEntityAndSeminarAttendanceStatusEntity(
+                seminar, beforeAttendance);
+            notAttendances.forEach(
+                attendance -> processAttendance(attendance, absence, "세미나 불참")
+            );
+          }
+        });
+      }
+    };
+    schedulerService.scheduleTask(task, date);
+  }
+
   private static MeritAddRequestDto getMeritAddRequestDto(MemberEntity member,
       MeritTypeEntity type, LocalDate date) {
     return MeritAddRequestDto.builder()
@@ -244,4 +336,5 @@ public class AdminSeminarService {
                 .equals(LATENESS.getType())
         ).count();
   }
+
 }

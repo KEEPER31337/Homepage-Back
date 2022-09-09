@@ -5,6 +5,7 @@ import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.우
 import static keeper.project.homepage.ApiControllerTestHelper.MemberTypeName.정회원;
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ABSENCE;
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ATTENDANCE;
+import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.BEFORE_ATTENDANCE;
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.LATENESS;
 import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.PERSONAL;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -24,6 +25,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import keeper.project.homepage.admin.dto.clerk.request.AttendanceStartRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
 import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
@@ -36,6 +40,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
@@ -44,7 +52,6 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
 
   private MemberEntity clerk;
   private String clerkToken;
-
 
   @BeforeEach
   public void setUp() throws Exception {
@@ -292,4 +299,173 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
                 fieldWithPath("list.[].absenceExcuse").optional().description("개인사정 결석 사유")
             )));
   }
+
+  @Test
+  @DisplayName("[SUCCESS] 해당 날짜의 세미나 조회")
+  public void searchSeminarByDate() throws Exception {
+    SeminarEntity seminar = generateSeminar(LocalDateTime.now());
+
+    String searchDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+    mockMvc.perform(get("/v1/admin/clerk/seminars/search")
+            .header("Authorization", clerkToken)
+            .param("searchDate", searchDate))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.data.seminarId").value(seminar.getId()))
+        .andExpect(jsonPath("$.data.seminarName").value(seminar.getName()))
+        .andExpect(jsonPath("$.data.isExist").value(true))
+        .andDo(document("get-seminar-by-date",
+            requestParameters(
+                parameterWithName("searchDate").description("해당 날짜 세미나 조회 날짜(yyyyMMdd)")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("data.isExist").description(
+                    "세미나가 존재하는 경우 : true +\n세미나가 존재하지 않는 경우 : false"
+                ),
+                fieldWithPath("data.seminarId").description(
+                    "세미나가 존재하는 경우 : 조회된 세미나 ID +\n세미나가 존재하지 않는 경우 : -1"),
+                fieldWithPath("data.seminarName").description(
+                    "세미나가 존재하는 경우 : 조회된 세미나 이름 +\n세미나가 존재하지 않는 경우 : Not Exist Seminar"
+                ),
+                fieldWithPath("data.attendanceCloseTime").description(
+                    "세미나가 존재하는 경우 : 출석 데이터가 있는 경우 출석 인정 시간, 없는 경우 null +\n세미나가 존재하지 않는 경우 : null"
+                ),
+                fieldWithPath("data.latenessCloseTime").description(
+                    "세미나가 존재하는 경우 : 출석 데이터가 있는 경우 지각 인정 시간, 없는 경우 null +\n세미나가 존재하지 않는 경우 : null"
+                ),
+                fieldWithPath("data.attendanceCode").description(
+                    "세미나가 존재하는 경우 : 출석 데이터가 있는 경우 출석 코드, 없는 경우 null+\n세미나가 존재하지 않는 경우 : null"
+                )
+            )));
+  }
+
+  @Test
+  @DisplayName("[FAIL] 해당 날짜의 세미나 조회 - 세미나가 존재하지 않는 경우")
+  public void searchSeminarByDateNotExist() throws Exception {
+    String searchDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+    mockMvc.perform(get("/v1/admin/clerk/seminars/search")
+            .header("Authorization", clerkToken)
+            .param("searchDate", searchDate))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.data.seminarId").value(-1))
+        .andExpect(jsonPath("$.data.seminarName").value("Not Exist Seminar"))
+        .andExpect(jsonPath("$.data.isExist").value(false));
+  }
+
+  @Test
+  @DisplayName("[FAIL] 해당 날짜의 세미나 조회 - 날짜를 입력하지 않은 경우")
+  public void searchSeminarByDateNoneDate() throws Exception {
+    String searchDate = null;
+
+    mockMvc.perform(get("/v1/admin/clerk/seminars/search")
+            .header("Authorization", clerkToken)
+            .param("searchDate", searchDate))
+        .andDo(print())
+        .andExpect(status().is4xxClientError())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(-9997))
+        .andExpect(jsonPath("$.msg").value("요청 파라미터 입력이 필요합니다."));
+  }
+
+  @Test
+  @DisplayName("[FAIL] 해당 날짜의 세미나 조회 - 형식에 맞지 않은 날짜 입력")
+  public void searchSeminarByDateNotValidDate() throws Exception {
+    String searchDate = "201111111";
+
+    mockMvc.perform(get("/v1/admin/clerk/seminars/search")
+            .header("Authorization", clerkToken)
+            .param("searchDate", searchDate))
+        .andDo(print())
+        .andExpect(status().is4xxClientError())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(-9998))
+        .andExpect(jsonPath("$.msg").value("파라미터 타입이 일치하지 않습니다."));
+  }
+
+  @Test
+  @DisplayName("[SUCCESS] 세미나 출석 시작")
+  public void startSeminarAttendance() throws Exception {
+    SeminarEntity seminar = generateSeminar(LocalDateTime.now());
+    generateSeminarAttendance(clerk, seminar,
+        seminarAttendanceStatusRepository.getById(BEFORE_ATTENDANCE.getId()));
+
+    LocalDateTime attendanceCloseTime = LocalDateTime.now().plusSeconds(1);
+    LocalDateTime latenessCloseTime = LocalDateTime.now().plusSeconds(2);
+
+    AttendanceStartRequestDto request = new AttendanceStartRequestDto(
+        seminar.getId(), attendanceCloseTime, latenessCloseTime);
+
+    SecurityContext context = SecurityContextHolder.getContext();
+    context.setAuthentication(
+        new UsernamePasswordAuthenticationToken(clerk.getId(), clerk.getPassword(),
+            List.of(new SimpleGrantedAuthority("ROLE_서기"))));
+
+    mockMvc.perform(patch("/v1/admin/clerk/seminars/attendances/start")
+            .header("Authorization", clerkToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonDateString(request)))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("data.attendanceCode").value(seminar.getAttendanceCode()))
+        .andDo(document("start-seminar-attendance",
+            requestFields(
+                fieldWithPath("seminarId").description("출석을 시작하려는 세미나 ID"),
+                fieldWithPath("attendanceCloseTime").description(
+                    "세미나 출석 인정 기준 시간(yyyy-MM-dd HH:mm:ss)"),
+                fieldWithPath("latenessCloseTime").description(
+                    "세미나 지각 인정 기준 시간(yyyy-MM-dd HH:mm:ss)")
+            ),
+            responseFields(
+                fieldWithPath("success").description("성공: true +\n실패: false"),
+                fieldWithPath("code").description("성공 시 0을 반환"),
+                fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
+                fieldWithPath("data.attendanceCloseTime").description("세미나 출석 인정 기준 시간"),
+                fieldWithPath("data.latenessCloseTime").description("세미나 지각 인정 기준 시간"),
+                fieldWithPath("data.attendanceCode").description("세미나 출석 코드")
+            )));
+  }
+
+
+  //* 1. 테스트 진행시 선행 작업 임의의 세미나 생성(ID는 9999L)
+  //* 2. 임의의 세미나 출석 생성(세미나는 9999L, 멤버는 1L, 출석 상태 5L)
+  //* 3. 해당 결과는 테스트 종료 후 DB 조회를 통해 확인 - 생성한 출석 상태가 5 -> 3번으로 변경
+  //* 4. AdminSeminarService autoAttendanceAfterDeadline 수정
+  //@Test
+  @DisplayName("[SUCCESS] 세미나 출석 시작 - 자동 출석 확인")
+  public void startSeminarAttendanceAutoAttendance() throws Exception {
+    SeminarEntity seminar = seminarRepository.getById(9999L);
+    generateSeminarAttendance(clerk, seminar,
+        seminarAttendanceStatusRepository.getById(BEFORE_ATTENDANCE.getId()));
+
+    LocalDateTime attendanceCloseTime = LocalDateTime.now().plusSeconds(1);
+    LocalDateTime latenessCloseTime = LocalDateTime.now().plusSeconds(2);
+
+    AttendanceStartRequestDto request = new AttendanceStartRequestDto(
+        seminar.getId(), attendanceCloseTime, latenessCloseTime);
+
+    SecurityContext context = SecurityContextHolder.getContext();
+    context.setAuthentication(
+        new UsernamePasswordAuthenticationToken(clerk.getId(), clerk.getPassword(),
+            List.of(new SimpleGrantedAuthority("ROLE_서기"))));
+
+    mockMvc.perform(patch("/v1/admin/clerk/seminars/attendances/start")
+            .header("Authorization", clerkToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonDateString(request)))
+        .andDo(print())
+        .andExpect(status().isOk());
+
+    Thread.sleep(5000);
+
+  }
+
 }

@@ -2,7 +2,6 @@ package keeper.project.homepage.admin.controller.clerk;
 
 import java.util.List;
 import javax.validation.Valid;
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.MeritLogUpdateRequestDto;

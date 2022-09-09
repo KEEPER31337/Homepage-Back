@@ -2,15 +2,19 @@ package keeper.project.homepage.admin.controller.clerk;
 
 import java.time.LocalDate;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import keeper.project.homepage.admin.dto.clerk.request.AttendanceStartRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarAttendanceUpdateRequestDto;
 import keeper.project.homepage.admin.dto.clerk.request.SeminarCreateRequestDto;
-import keeper.project.homepage.admin.dto.clerk.response.SeminarWithAttendancesResponseByPeriodDto;
+import keeper.project.homepage.admin.dto.clerk.response.AttendanceStartResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceStatusResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarAttendanceUpdateResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarCreateResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.SeminarResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.SeminarSearchByDateResponseDto;
+import keeper.project.homepage.admin.dto.clerk.response.SeminarWithAttendancesResponseByPeriodDto;
 import keeper.project.homepage.admin.service.clerk.AdminSeminarService;
 import keeper.project.homepage.common.dto.result.ListResult;
 import keeper.project.homepage.common.dto.result.PageResult;
@@ -85,5 +89,19 @@ public class AdminSeminarController {
       @RequestBody @Valid SeminarAttendanceUpdateRequestDto request) {
     return responseService.getSuccessSingleResult(
         seminarService.updateSeminarAttendanceStatus(attendanceId, request));
+  }
+
+  @GetMapping("/search")
+  public SingleResult<SeminarSearchByDateResponseDto> findSeminarByDate(
+      @RequestParam @NotBlank @DateTimeFormat(pattern = "yyyyMMdd") LocalDate searchDate
+  ) {
+    return responseService.getSuccessSingleResult(seminarService.findSeminarByDate(searchDate));
+  }
+
+  @PatchMapping("/attendances/start")
+  public SingleResult<AttendanceStartResponseDto> startSeminarAttendance(
+      @RequestBody @Valid AttendanceStartRequestDto request
+  ) {
+    return responseService.getSuccessSingleResult(seminarService.startSeminarAttendance(request));
   }
 }
