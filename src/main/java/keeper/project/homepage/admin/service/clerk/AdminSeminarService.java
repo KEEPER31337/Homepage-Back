@@ -100,6 +100,12 @@ public class AdminSeminarService {
         .map(SeminarWithAttendancesResponseByPeriodDto::from);
   }
 
+  public List<SeminarAttendanceStatusResponseDto> getSeminarAttendanceStatuses() {
+    return seminarAttendanceStatusRepository.findAll()
+        .stream()
+        .map(SeminarAttendanceStatusResponseDto::from).toList();
+  }
+
   @Transactional
   public SeminarAttendanceUpdateResponseDto updateSeminarAttendanceStatus(Long attendanceId,
       SeminarAttendanceUpdateRequestDto requestDto) {
@@ -113,12 +119,6 @@ public class AdminSeminarService {
     processAttendance(seminarAttendance, status, absenceExcuse);
 
     return SeminarAttendanceUpdateResponseDto.from(seminarAttendance);
-  }
-
-  public List<SeminarAttendanceStatusResponseDto> getSeminarAttendanceStatuses() {
-    return seminarAttendanceStatusRepository.findAll()
-        .stream()
-        .map(SeminarAttendanceStatusResponseDto::from).toList();
   }
 
   @Transactional
@@ -150,45 +150,31 @@ public class AdminSeminarService {
     attendance.setSeminarAttendTime(LocalDateTime.now());
   }
 
-  private void deleteBeforeAbsence(SeminarAttendanceEntity attendance, MemberEntity member) {
+  @Transactional
+  void deleteBeforeAbsence(SeminarAttendanceEntity attendance, MemberEntity member) {
     LocalDate attendDate = attendance.getSeminarAttendTime().toLocalDate();
     meritService.deleteAbsenceLog(member, attendDate);
   }
 
-  private void processLateness(MemberEntity member, LocalDate attendDate) {
+  @Transactional
+  void processLateness(MemberEntity member, LocalDate attendDate) {
     // 지각 2회는 결석 처리
     if (getLatenessCount(member) % 2 == 1) {
       processAbsence(member, attendDate);
     }
   }
 
-  private void processAbsence(MemberEntity member, LocalDate attendDate) {
+  @Transactional
+  void processAbsence(MemberEntity member, LocalDate attendDate) {
     MeritTypeEntity absence = meritTypeRepository.findByDetail(ABSENCE.getType())
         .orElseThrow(CustomMeritTypeNotFoundException::new);
-    MeritAddRequestDto meritLogCreateRequestDto = generateMeritAddRequestDto(
+    MeritAddRequestDto meritLogCreateRequestDto = getMeritAddRequestDto(
         member, absence, attendDate);
     meritService.addMeritWithLog(meritLogCreateRequestDto);
   }
 
-  private static MeritAddRequestDto generateMeritAddRequestDto(MemberEntity member,
-      MeritTypeEntity type, LocalDate date) {
-    return MeritAddRequestDto.builder()
-        .date(date)
-        .memberId(member.getId())
-        .meritTypeId(type.getId())
-        .build();
-  }
-
-  private static long getLatenessCount(MemberEntity member) {
-    return member.getSeminarAttendances().stream()
-        .filter(seminarAttendance ->
-            seminarAttendance.getSeminarAttendanceStatusEntity().getType()
-                .equals(LATENESS.getType())
-        ).count();
-  }
-
-  private static void processPersonal(SeminarAttendanceEntity attendance,
-      String absenceExcuse) {
+  @Transactional
+  void processPersonal(SeminarAttendanceEntity attendance, String absenceExcuse) {
     if (absenceExcuse == null) {
       throw new CustomAttendanceAbsenceExcuseIsNullException();
     }
@@ -237,6 +223,7 @@ public class AdminSeminarService {
         .toList();
   }
 
+  @Transactional
   SeminarEntity generateSeminar(LocalDateTime openTime) {
     return seminarRepository.save(SeminarEntity.builder()
         .openTime(openTime)
@@ -244,6 +231,7 @@ public class AdminSeminarService {
     );
   }
 
+  @Transactional
   SeminarAttendanceEntity generateSeminarAttendance(MemberEntity member, SeminarEntity seminar,
       SeminarAttendanceStatusEntity status) {
     return seminarAttendanceRepository.save(
@@ -256,6 +244,7 @@ public class AdminSeminarService {
     );
   }
 
+  @Transactional
   public Long deleteSeminar(Long seminarId) {
     SeminarEntity find = seminarRepository.findById(seminarId)
         .orElseThrow(CustomSeminarNotFoundException::new);
@@ -329,6 +318,23 @@ public class AdminSeminarService {
       }
     };
     schedulerService.scheduleTask(task, date);
+  }
+
+  private static MeritAddRequestDto getMeritAddRequestDto(MemberEntity member,
+      MeritTypeEntity type, LocalDate date) {
+    return MeritAddRequestDto.builder()
+        .date(date)
+        .memberId(member.getId())
+        .meritTypeId(type.getId())
+        .build();
+  }
+
+  private static long getLatenessCount(MemberEntity member) {
+    return member.getSeminarAttendances().stream()
+        .filter(seminarAttendance ->
+            seminarAttendance.getSeminarAttendanceStatusEntity().getType()
+                .equals(LATENESS.getType())
+        ).count();
   }
 
 }

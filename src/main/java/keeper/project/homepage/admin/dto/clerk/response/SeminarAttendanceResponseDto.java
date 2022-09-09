@@ -18,6 +18,9 @@ public class SeminarAttendanceResponseDto {
   private Long attendanceId;
 
   @NonNull
+  private Long memberId;
+
+  @NonNull
   private Float generation;
 
   @NonNull
@@ -34,6 +37,7 @@ public class SeminarAttendanceResponseDto {
 
     return SeminarAttendanceResponseDto.builder()
         .attendanceId(seminarAttendance.getId())
+        .memberId(seminarAttendance.getMemberEntity().getId())
         .generation(seminarAttendance.getMemberEntity().getGeneration())
         .memberName(seminarAttendance.getMemberEntity().getRealName())
         .attendanceStatusType(

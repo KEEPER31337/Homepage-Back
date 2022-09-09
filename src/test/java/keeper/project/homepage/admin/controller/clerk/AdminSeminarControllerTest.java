@@ -292,8 +292,9 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
                 fieldWithPath("code").description("성공 시 0을 반환"),
                 fieldWithPath("msg").description("성공: 성공하였습니다 +\n실패: 에러 메세지 반환"),
                 fieldWithPath("list.[].attendanceId").description("세미나 출석 Id"),
-                fieldWithPath("list.[].memberName").description("회원 이름"),
+                fieldWithPath("list.[].memberId").description("회원 id"),
                 fieldWithPath("list.[].generation").description("회원 기수"),
+                fieldWithPath("list.[].memberName").description("회원 이름"),
                 fieldWithPath("list.[].attendanceStatusType").description("출석 상태"),
                 fieldWithPath("list.[].absenceExcuse").optional().description("개인사정 결석 사유")
             )));
