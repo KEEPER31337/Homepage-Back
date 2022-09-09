@@ -1,12 +1,12 @@
 package keeper.project.homepage.admin.service.clerk;
 
+import java.util.ArrayList;
 import java.util.List;
+import keeper.project.homepage.admin.dto.clerk.request.ClerkMemberTypeRequestDto;
 import keeper.project.homepage.admin.dto.clerk.response.ClerkMemberJobTypeResponseDto;
 import keeper.project.homepage.admin.dto.clerk.response.TypeResponseDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
-import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
-import keeper.project.homepage.repository.member.MemberJobRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.member.MemberTypeRepository;
 import keeper.project.homepage.user.service.member.MemberUtilService;
@@ -50,5 +50,17 @@ public class AdminClerkService {
     member.changeMemberType(type);
 
     return ClerkMemberJobTypeResponseDto.toDto(member);
+  }
+
+  @Transactional
+  public List<ClerkMemberJobTypeResponseDto> updateMemberTypeAll(
+      List<ClerkMemberTypeRequestDto> requestDto) {
+    List<ClerkMemberJobTypeResponseDto> result = new ArrayList<>();
+    for (ClerkMemberTypeRequestDto clerkMemberTypeRequestDto : requestDto) {
+      result.add(updateMemberType(
+          clerkMemberTypeRequestDto.getMemberId(), clerkMemberTypeRequestDto.getTypeId())
+      );
+    }
+    return result;
   }
 }
