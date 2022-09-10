@@ -59,8 +59,7 @@ public class ClerkControllerTestHelper extends ApiControllerTestHelper {
       LocalDateTime latenessCloseTime, String code) {
     return seminarRepository.save(SeminarEntity.builder()
         .name(openTime.toLocalDate()
-            .toString()
-            .replaceAll("-", ""))
+            .toString())
         .openTime(openTime)
         .attendanceCloseTime(attendanceCloseTime)
         .latenessCloseTime(latenessCloseTime)

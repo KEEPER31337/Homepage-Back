@@ -47,7 +47,7 @@ public class SeminarControllerTest extends ClerkControllerTestHelper {
     SeminarEntity seminar = generateSeminar(LocalDateTime.now(), LocalDateTime.now().plusMinutes(5),
         LocalDateTime.now().plusMinutes(10), "1234");
 
-    String searchDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    String searchDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
     mockMvc.perform(get("/v1/clerk/seminars/search/ongoing")
             .header("Authorization", memberToken)
@@ -60,7 +60,7 @@ public class SeminarControllerTest extends ClerkControllerTestHelper {
         .andExpect(jsonPath("$.data.isExist").value(true))
         .andDo(document("get-seminar-ongoing-attendance",
             requestParameters(
-                parameterWithName("searchDate").description("세미나 조회 날짜(yyyyMMdd)")
+                parameterWithName("searchDate").description("세미나 조회 날짜(yyyy-MM-dd)")
             ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
@@ -80,7 +80,7 @@ public class SeminarControllerTest extends ClerkControllerTestHelper {
   @Test
   @DisplayName("[FAIL] 출석 진행중인 세미나 조회 - 해당 날짜에 세미나가 없는 경우")
   public void findSeminarOngoingAttendanceFailByNoneSeminar() throws Exception {
-    String searchDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    String searchDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
     mockMvc.perform(get("/v1/clerk/seminars/search/ongoing")
             .header("Authorization", memberToken)
@@ -98,7 +98,7 @@ public class SeminarControllerTest extends ClerkControllerTestHelper {
   public void findSeminarOngoingAttendanceFailByNotStartSeminar() throws Exception {
     generateSeminar(LocalDateTime.now(), null, null, null);
 
-    String searchDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    String searchDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
     mockMvc.perform(get("/v1/clerk/seminars/search/ongoing")
             .header("Authorization", memberToken)
@@ -117,7 +117,7 @@ public class SeminarControllerTest extends ClerkControllerTestHelper {
     generateSeminar(LocalDateTime.now(), LocalDateTime.now().minusMinutes(10),
         LocalDateTime.now().minusMinutes(5), "1234");
 
-    String searchDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    String searchDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
     mockMvc.perform(get("/v1/clerk/seminars/search/ongoing")
             .header("Authorization", memberToken)
@@ -128,6 +128,22 @@ public class SeminarControllerTest extends ClerkControllerTestHelper {
         .andExpect(jsonPath("$.data.seminarId").value(-1))
         .andExpect(jsonPath("$.data.seminarName").value("Not Exist Seminar"))
         .andExpect(jsonPath("$.data.isExist").value(false));
+  }
+
+  @Test
+  @DisplayName("[FAIL] 출석 진행중인 세미나 조회 - 형식에 맞지 않는 날짜")
+  public void findSeminarOngoingAttendanceFailByFormat() throws Exception {
+
+    String searchDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+
+    mockMvc.perform(get("/v1/clerk/seminars/search/ongoing")
+            .header("Authorization", memberToken)
+            .param("searchDate", searchDate))
+        .andDo(print())
+        .andExpect(status().is4xxClientError())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(-9998))
+        .andExpect(jsonPath("$.msg").value("파라미터 타입이 일치하지 않습니다."));
   }
 
   @Test

@@ -305,7 +305,7 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
   public void searchSeminarByDate() throws Exception {
     SeminarEntity seminar = generateSeminar(LocalDateTime.now());
 
-    String searchDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    String searchDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
     mockMvc.perform(get("/v1/admin/clerk/seminars/search")
             .header("Authorization", clerkToken)
@@ -318,7 +318,7 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
         .andExpect(jsonPath("$.data.isExist").value(true))
         .andDo(document("get-seminar-by-date",
             requestParameters(
-                parameterWithName("searchDate").description("해당 날짜 세미나 조회 날짜(yyyyMMdd)")
+                parameterWithName("searchDate").description("해당 날짜 세미나 조회 날짜(yyyy-MM-dd)")
             ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
@@ -347,7 +347,7 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
   @Test
   @DisplayName("[FAIL] 해당 날짜의 세미나 조회 - 세미나가 존재하지 않는 경우")
   public void searchSeminarByDateNotExist() throws Exception {
-    String searchDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    String searchDate = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
     mockMvc.perform(get("/v1/admin/clerk/seminars/search")
             .header("Authorization", clerkToken)
@@ -378,7 +378,7 @@ public class AdminSeminarControllerTest extends ClerkControllerTestHelper {
   @Test
   @DisplayName("[FAIL] 해당 날짜의 세미나 조회 - 형식에 맞지 않은 날짜 입력")
   public void searchSeminarByDateNotValidDate() throws Exception {
-    String searchDate = "201111111";
+    String searchDate = "20200202";
 
     mockMvc.perform(get("/v1/admin/clerk/seminars/search")
             .header("Authorization", clerkToken)
