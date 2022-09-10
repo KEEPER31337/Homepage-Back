@@ -93,7 +93,7 @@ public class AdminSeminarController {
 
   @GetMapping("/search")
   public SingleResult<SeminarSearchByDateResponseDto> findSeminarByDate(
-      @RequestParam @NotBlank @DateTimeFormat(pattern = "yyyyMMdd") LocalDate searchDate
+      @RequestParam @NotBlank @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate searchDate
   ) {
     return responseService.getSuccessSingleResult(seminarService.findSeminarByDate(searchDate));
   }

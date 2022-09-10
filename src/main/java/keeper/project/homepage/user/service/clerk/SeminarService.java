@@ -40,7 +40,7 @@ public class SeminarService {
   private final AdminSeminarService adminSeminarService;
 
   public SeminarOngoingAttendanceResponseDto findSeminarOngoingAttendance(LocalDate searchDate) {
-    String seminarName = searchDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    String seminarName = searchDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     return seminarRepository.findSeminarOngoingAttendance(seminarName, LocalDateTime.now())
         .map(SeminarOngoingAttendanceResponseDto::from)
         .orElse(SeminarOngoingAttendanceResponseDto.NONE);
