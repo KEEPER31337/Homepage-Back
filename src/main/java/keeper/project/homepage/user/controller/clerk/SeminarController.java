@@ -30,7 +30,7 @@ public class SeminarController {
 
   @GetMapping("/search/ongoing")
   public SingleResult<SeminarOngoingAttendanceResponseDto> findSeminarOngoingAttendance(
-      @RequestParam @NotBlank @DateTimeFormat(pattern = "yyyyMMdd") LocalDate searchDate
+      @RequestParam @NotBlank @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate searchDate
   ) {
     return responseService.getSuccessSingleResult(seminarService.findSeminarOngoingAttendance(searchDate));
   }

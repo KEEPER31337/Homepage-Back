@@ -203,9 +203,7 @@ public class AdminSeminarService {
   }
 
   private void checkDuplicateSeminar(LocalDateTime openTime) {
-    String seminarName = openTime.toLocalDate()
-        .toString()
-        .replaceAll("-", "");
+    String seminarName = openTime.toLocalDate().toString();
     if (seminarRepository.existsByName(seminarName)) {
       throw new CustomDuplicateSeminarException();
     }
@@ -253,7 +251,7 @@ public class AdminSeminarService {
   }
 
   public SeminarSearchByDateResponseDto findSeminarByDate(LocalDate searchDate) {
-    String seminarName = searchDate.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+    String seminarName = searchDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
     return seminarRepository.findByName(seminarName)
         .map(SeminarSearchByDateResponseDto::from)
         .orElse(SeminarSearchByDateResponseDto.NONE);
