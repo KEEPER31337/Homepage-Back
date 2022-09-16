@@ -21,6 +21,7 @@ import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
 import keeper.project.homepage.user.dto.posting.PostingResponseDto;
+import keeper.project.homepage.user.dto.posting.PostingImageUploadResponseDto;
 import keeper.project.homepage.util.image.preprocessing.ImageSize;
 import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.common.service.ResponseService;
@@ -157,9 +158,10 @@ public class PostingController {
         .body(resource);
   }
 
-  @RequestMapping(method = {RequestMethod.PUT,
-      RequestMethod.PATCH}, value = "/{pid}", consumes = "multipart/form-data", produces = {
-      MediaType.APPLICATION_JSON_VALUE})
+  @RequestMapping(method = {RequestMethod.PUT, RequestMethod.PATCH},
+      value = "/{pid}",
+      consumes = "multipart/form-data",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
   public CommonResult modifyPosting(
       @RequestParam(value = "file", required = false) List<MultipartFile> files,
       @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
@@ -173,6 +175,18 @@ public class PostingController {
 
     return responseService.getSuccessResult();
   }
+
+  @PostMapping(value="/{pid}/image",
+      consumes = "multipart/form-data",
+      produces = {MediaType.APPLICATION_JSON_VALUE})
+    public SingleResult<PostingImageUploadResponseDto> uploadPostingImage(
+      @PathVariable("pid") Long postingId,
+      @RequestParam(value = "postingImage") MultipartFile postingImage,
+      HttpServletRequest request){
+
+      return responseService.getSuccessSingleResult(
+          postingService.uploadPostingImage(postingId, postingImage, request));
+    }  
 
   @GetMapping(value = "/delete/{fileId}")
   public CommonResult deleteFile(@PathVariable("fileId") Long fileId) {

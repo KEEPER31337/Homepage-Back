@@ -10,6 +10,7 @@ import keeper.project.homepage.util.image.ImageFormatChecking;
 import keeper.project.homepage.util.MultipartFileWrapper;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
+import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
 import keeper.project.homepage.repository.ThumbnailRepository;
 import keeper.project.homepage.util.image.preprocessing.ImagePreprocessing;
@@ -155,6 +156,31 @@ public class ThumbnailService {
     FileEntity fileEntity = fileService.saveFileEntity(saveFile.getOriginalFile(),
         FileService.fileRelDirPath,
         ipAddress, multipartFile.getOriginalFilename(), null);
+    return thumbnailRepository.save(
+        ThumbnailEntity.builder()
+            .path(type.getSaveDirPath() + File.separator + saveFile.getThumbnailFile().getName())
+            .file(fileEntity)
+            .build());
+  }
+
+//  TODO : 타입 분기 고려 / 현재는 overloading
+  @Transactional
+  public ThumbnailEntity save(ThumbType type, ImagePreprocessing imagePreprocessing,
+      MultipartFile multipartFile, String ipAddress, PostingEntity postingEntity) {
+
+    if (isNullMultipartFile(multipartFile)) {
+      return getDefaultThumbnailEntity(type);
+    }
+
+    FilePair saveFile = saveFilesInServer(type, imagePreprocessing, multipartFile);
+
+    FileEntity fileEntity = fileService.saveFileEntity(
+        saveFile.getOriginalFile(),
+        FileService.fileRelDirPath,
+        ipAddress,
+        multipartFile.getOriginalFilename(),
+        postingEntity);
+    
     return thumbnailRepository.save(
         ThumbnailEntity.builder()
             .path(type.getSaveDirPath() + File.separator + saveFile.getThumbnailFile().getName())
