@@ -293,6 +293,7 @@ public class AdminSeminarService {
     Date date = Date.from(
         //* 테스트 진행 시 추가되는 시간을 30 -> 1초로 변경
         seminar.getLatenessCloseTime().plusSeconds(30).atZone(ZoneId.of("Asia/Seoul")).toInstant());
+    List<String> jobs = host.getJobs();
     Runnable task = new Runnable() {
       @Override
       public void run() {
@@ -304,7 +305,7 @@ public class AdminSeminarService {
                 //* AdminSeminarControllerTest [SUCCESS] 세미나 출석 시작 - 자동 출석 확인
                 //* 테스트 결과 확인을 위해서는 host.getId() -> 1L
                 new UsernamePasswordAuthenticationToken(host.getId(), host.getPassword(),
-                    host.getJobs().stream().map(SimpleGrantedAuthority::new)
+                    jobs.stream().map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList())));
             List<SeminarAttendanceEntity> notAttendances = seminarAttendanceRepository.findAllBySeminarEntityAndSeminarAttendanceStatusEntity(
                 seminar, beforeAttendance);
