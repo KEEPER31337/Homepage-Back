@@ -6,7 +6,7 @@ import static keeper.project.homepage.util.service.SurveyUtilService.NO_SURVEY;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import keeper.project.homepage.user.dto.clerk.response.ClosedSurveyInformationResponseDto;
-import keeper.project.homepage.common.service.util.AuthService;
+import keeper.project.homepage.util.service.auth.AuthService;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
 import keeper.project.homepage.entity.clerk.SurveyReplyEntity;

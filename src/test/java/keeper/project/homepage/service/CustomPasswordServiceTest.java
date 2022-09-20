@@ -3,7 +3,7 @@ package keeper.project.homepage.service;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import keeper.project.homepage.common.service.sign.CustomPasswordService;
+import keeper.project.homepage.sign.service.CustomPasswordService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

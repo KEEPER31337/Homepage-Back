@@ -10,9 +10,9 @@ import keeper.project.homepage.clerk.dto.response.MemberTotalMeritLogsResponseDt
 import keeper.project.homepage.clerk.dto.response.MeritLogByYearResponseDto;
 import keeper.project.homepage.clerk.dto.response.MeritTypeResponseDto;
 import keeper.project.homepage.admin.service.clerk.AdminMeritService;
-import keeper.project.homepage.common.dto.result.ListResult;
-import keeper.project.homepage.common.dto.result.SingleResult;
-import keeper.project.homepage.common.service.ResponseService;
+import keeper.project.homepage.util.dto.result.ListResult;
+import keeper.project.homepage.util.dto.result.SingleResult;
+import keeper.project.homepage.util.service.result.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.annotation.Secured;

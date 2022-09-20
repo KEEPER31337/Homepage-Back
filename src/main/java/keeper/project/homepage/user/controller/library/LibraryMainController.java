@@ -1,9 +1,9 @@
 package keeper.project.homepage.user.controller.library;
 
 import keeper.project.homepage.user.dto.library.BookResult;
-import keeper.project.homepage.common.dto.result.ListResult;
-import keeper.project.homepage.common.dto.result.SingleResult;
-import keeper.project.homepage.common.service.ResponseService;
+import keeper.project.homepage.util.dto.result.ListResult;
+import keeper.project.homepage.util.dto.result.SingleResult;
+import keeper.project.homepage.util.service.result.ResponseService;
 import keeper.project.homepage.user.service.library.LibraryMainService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

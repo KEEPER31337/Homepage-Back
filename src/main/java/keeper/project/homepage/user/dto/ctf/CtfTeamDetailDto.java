@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.time.LocalDateTime;
 import java.util.List;
-import keeper.project.homepage.common.dto.member.CommonMemberDto;
+import keeper.project.homepage.member.dto.CommonMemberDto;
 import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
 import keeper.project.homepage.entity.ctf.CtfTeamEntity;

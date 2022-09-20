@@ -1,10 +1,10 @@
 package keeper.project.homepage.user.controller.election;
 
 import javax.validation.Valid;
-import keeper.project.homepage.common.dto.result.ListResult;
-import keeper.project.homepage.common.dto.result.PageResult;
-import keeper.project.homepage.common.dto.result.SingleResult;
-import keeper.project.homepage.common.service.ResponseService;
+import keeper.project.homepage.util.dto.result.ListResult;
+import keeper.project.homepage.util.dto.result.PageResult;
+import keeper.project.homepage.util.dto.result.SingleResult;
+import keeper.project.homepage.util.service.result.ResponseService;
 import keeper.project.homepage.user.dto.election.request.ElectionVoteRequestDto;
 import keeper.project.homepage.user.dto.election.response.ElectionCandidatesResponseDto;
 import keeper.project.homepage.user.dto.election.response.ElectionResponseDto;

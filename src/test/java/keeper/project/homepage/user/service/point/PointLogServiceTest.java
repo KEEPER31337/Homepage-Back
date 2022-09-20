@@ -6,7 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import keeper.project.homepage.common.service.util.AuthService;
+import keeper.project.homepage.util.service.auth.AuthService;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.point.PointLogEntity;
 import keeper.project.homepage.repository.member.MemberRepository;

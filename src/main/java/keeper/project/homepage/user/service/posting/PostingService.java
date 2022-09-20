@@ -39,7 +39,7 @@ import keeper.project.homepage.repository.member.MemberHasPostingLikeRepository;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.posting.PostingRepository;
-import keeper.project.homepage.common.service.util.AuthService;
+import keeper.project.homepage.util.service.auth.AuthService;
 import keeper.project.homepage.user.dto.posting.PostingImageUploadResponseDto;
 import keeper.project.homepage.user.dto.posting.PostingResponseDto;
 import keeper.project.homepage.user.service.member.MemberUtilService;

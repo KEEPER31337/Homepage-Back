@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import keeper.project.homepage.common.service.util.AuthService;
+import keeper.project.homepage.util.service.auth.AuthService;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.study.StudyEntity;

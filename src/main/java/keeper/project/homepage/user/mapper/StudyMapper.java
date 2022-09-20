@@ -1,7 +1,5 @@
 package keeper.project.homepage.user.mapper;
 
-import keeper.project.homepage.common.dto.member.CommonMemberDto;
-import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.study.StudyEntity;
 import keeper.project.homepage.user.dto.study.StudyDto;
 import org.mapstruct.Mapper;

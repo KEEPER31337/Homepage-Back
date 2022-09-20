@@ -1,8 +1,8 @@
 package keeper.project.homepage.user.controller.about;
 
-import keeper.project.homepage.common.dto.result.ListResult;
+import keeper.project.homepage.util.dto.result.ListResult;
 import keeper.project.homepage.about.dto.response.StaticWriteTitleResponseDto;
-import keeper.project.homepage.common.service.ResponseService;
+import keeper.project.homepage.util.service.result.ResponseService;
 import keeper.project.homepage.user.service.about.StaticWriteTitleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

@@ -18,7 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.io.File;
 import java.io.FileInputStream;
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.common.dto.sign.EmailAuthDto;
+import keeper.project.homepage.sign.dto.EmailAuthDto;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import lombok.extern.log4j.Log4j2;

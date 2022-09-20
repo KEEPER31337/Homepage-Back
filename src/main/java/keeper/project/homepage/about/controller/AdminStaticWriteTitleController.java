@@ -1,8 +1,8 @@
 package keeper.project.homepage.about.controller;
 
 import keeper.project.homepage.admin.service.about.AdminStaticWriteTitleService;
-import keeper.project.homepage.common.service.ResponseService;
-import keeper.project.homepage.common.dto.result.SingleResult;
+import keeper.project.homepage.util.service.result.ResponseService;
+import keeper.project.homepage.util.dto.result.SingleResult;
 import keeper.project.homepage.about.dto.request.StaticWriteTitleDto;
 import keeper.project.homepage.about.dto.response.StaticWriteTitleResponseDto;
 import lombok.RequiredArgsConstructor;

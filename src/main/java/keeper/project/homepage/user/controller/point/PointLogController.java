@@ -3,8 +3,8 @@ package keeper.project.homepage.user.controller.point;
 import java.util.Map;
 import keeper.project.homepage.user.dto.point.request.PointGiftLogRequestDto;
 import keeper.project.homepage.user.dto.point.response.PointGiftLogResponseDto;
-import keeper.project.homepage.common.dto.result.SingleResult;
-import keeper.project.homepage.common.service.ResponseService;
+import keeper.project.homepage.util.dto.result.SingleResult;
+import keeper.project.homepage.util.service.result.ResponseService;
 
 import keeper.project.homepage.user.service.point.PointLogService;
 import lombok.RequiredArgsConstructor;

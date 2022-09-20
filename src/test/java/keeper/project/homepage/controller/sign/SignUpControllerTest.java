@@ -15,13 +15,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import keeper.project.homepage.ApiControllerTestSetUp;
-import keeper.project.homepage.common.dto.sign.EmailAuthDto;
+import keeper.project.homepage.sign.dto.EmailAuthDto;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

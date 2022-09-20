@@ -12,14 +12,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.ArrayList;
-import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.ApiControllerTestSetUp;
-import keeper.project.homepage.common.dto.result.SingleResult;
-import keeper.project.homepage.common.dto.sign.SignInDto;
+import keeper.project.homepage.util.dto.result.SingleResult;
+import keeper.project.homepage.sign.dto.SignInDto;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.AfterAll;

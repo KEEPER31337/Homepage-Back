@@ -3,12 +3,12 @@ package keeper.project.homepage.posting.controller;
 
 import java.util.List;
 import keeper.project.homepage.admin.service.posting.AdminPostingService;
-import keeper.project.homepage.common.dto.result.CommonResult;
+import keeper.project.homepage.util.dto.result.CommonResult;
 import keeper.project.homepage.entity.FileEntity;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.util.service.FileService;
-import keeper.project.homepage.common.service.ResponseService;
+import keeper.project.homepage.util.service.result.ResponseService;
 import keeper.project.homepage.util.service.ThumbnailService;
 import keeper.project.homepage.user.service.posting.PostingService;
 import lombok.RequiredArgsConstructor;

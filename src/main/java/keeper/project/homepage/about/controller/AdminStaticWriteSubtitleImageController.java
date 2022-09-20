@@ -2,8 +2,8 @@ package keeper.project.homepage.about.controller;
 
 import keeper.project.homepage.admin.service.about.AdminStaticWriteSubtitleImageService;
 import keeper.project.homepage.about.dto.request.StaticWriteSubtitleImageDto;
-import keeper.project.homepage.common.dto.result.SingleResult;
-import keeper.project.homepage.common.service.ResponseService;
+import keeper.project.homepage.util.dto.result.SingleResult;
+import keeper.project.homepage.util.service.result.ResponseService;
 import keeper.project.homepage.about.dto.response.StaticWriteSubtitleImageResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

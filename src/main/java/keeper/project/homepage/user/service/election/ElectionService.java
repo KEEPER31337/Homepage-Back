@@ -3,7 +3,7 @@ package keeper.project.homepage.user.service.election;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import keeper.project.homepage.common.service.util.AuthService;
+import keeper.project.homepage.util.service.auth.AuthService;
 import keeper.project.homepage.entity.election.ElectionCandidateEntity;
 import keeper.project.homepage.entity.election.ElectionChartLogEntity;
 import keeper.project.homepage.entity.election.ElectionEntity;

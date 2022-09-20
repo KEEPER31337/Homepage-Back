@@ -12,25 +12,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.File;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.util.FileConversion;
-import keeper.project.homepage.common.dto.result.SingleResult;
-import keeper.project.homepage.common.dto.sign.SignInDto;
-import keeper.project.homepage.entity.FileEntity;
+import keeper.project.homepage.util.dto.result.SingleResult;
+import keeper.project.homepage.sign.dto.SignInDto;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;
 import keeper.project.homepage.entity.member.MemberRankEntity;
 import keeper.project.homepage.entity.member.MemberTypeEntity;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

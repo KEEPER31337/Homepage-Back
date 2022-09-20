@@ -2,8 +2,8 @@ package keeper.project.homepage.util.controller;
 
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
-import keeper.project.homepage.common.dto.result.CommonResult;
-import keeper.project.homepage.common.service.ResponseService;
+import keeper.project.homepage.util.dto.result.CommonResult;
+import keeper.project.homepage.util.service.result.ResponseService;
 import keeper.project.homepage.util.ClientUtil;
 import keeper.project.homepage.util.image.preprocessing.ImageNoChange;
 import keeper.project.homepage.util.image.preprocessing.ImageResizing;

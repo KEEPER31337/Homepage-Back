@@ -1,7 +1,7 @@
 package keeper.project.homepage.user.service.member;
 
 import java.util.List;
-import keeper.project.homepage.common.service.util.AuthService;
+import keeper.project.homepage.util.service.auth.AuthService;
 import keeper.project.homepage.entity.member.FriendEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.entity.member.MemberJobEntity;

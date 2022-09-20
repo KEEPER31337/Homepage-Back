@@ -1,6 +1,6 @@
 package keeper.project.homepage.exception;
 
-import keeper.project.homepage.common.dto.result.CommonResult;
+import keeper.project.homepage.util.dto.result.CommonResult;
 import keeper.project.homepage.exception.about.CustomStaticWriteContentNotFoundException;
 import keeper.project.homepage.exception.about.CustomStaticWriteSubtitleImageNotFoundException;
 import keeper.project.homepage.exception.about.CustomStaticWriteTitleNotFoundException;
@@ -56,7 +56,7 @@ import keeper.project.homepage.exception.posting.CustomPostingTempException;
 import keeper.project.homepage.exception.sign.CustomAuthenticationEntryPointException;
 import keeper.project.homepage.exception.sign.CustomLoginIdSigninFailedException;
 import keeper.project.homepage.exception.sign.CustomSignUpFailedException;
-import keeper.project.homepage.common.service.ResponseService;
+import keeper.project.homepage.util.service.result.ResponseService;
 import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.exception.study.CustomIpAddressNotFoundException;
 import keeper.project.homepage.exception.study.CustomSeasonInvalidException;

@@ -1,8 +1,8 @@
 package keeper.project.homepage.user.controller.attendance;
 
-import keeper.project.homepage.common.dto.result.PageResult;
+import keeper.project.homepage.util.dto.result.PageResult;
 import keeper.project.homepage.user.dto.attendance.RankDto;
-import keeper.project.homepage.common.service.ResponseService;
+import keeper.project.homepage.util.service.result.ResponseService;
 import keeper.project.homepage.user.service.attendance.RankService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

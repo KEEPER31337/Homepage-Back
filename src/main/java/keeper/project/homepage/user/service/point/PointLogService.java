@@ -15,7 +15,7 @@ import keeper.project.homepage.exception.point.CustomPointLackException;
 import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.point.PointLogRepository;
-import keeper.project.homepage.common.service.util.AuthService;
+import keeper.project.homepage.util.service.auth.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

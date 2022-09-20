@@ -5,7 +5,7 @@ import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_CONTES
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import keeper.project.homepage.common.service.util.AuthService;
+import keeper.project.homepage.util.service.auth.AuthService;
 import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
 import keeper.project.homepage.entity.ctf.CtfFlagEntity;

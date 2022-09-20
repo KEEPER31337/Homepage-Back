@@ -4,7 +4,7 @@ import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_PROBLE
 
 import java.time.LocalDateTime;
 import java.util.List;
-import keeper.project.homepage.common.service.util.AuthService;
+import keeper.project.homepage.util.service.auth.AuthService;
 import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
 import keeper.project.homepage.entity.ctf.CtfFlagEntity;
@@ -13,7 +13,6 @@ import keeper.project.homepage.entity.ctf.CtfTeamEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.exception.ctf.CustomContestNotFoundException;
 import keeper.project.homepage.exception.ctf.CustomCtfChallengeNotFoundException;
-import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
 import keeper.project.homepage.repository.ctf.CtfChallengeRepository;
 import keeper.project.homepage.repository.ctf.CtfContestRepository;
 import keeper.project.homepage.repository.ctf.CtfFlagRepository;

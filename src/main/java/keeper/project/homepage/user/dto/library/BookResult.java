@@ -1,11 +1,8 @@
 package keeper.project.homepage.user.dto.library;
 
-import java.time.LocalDateTime;
 import java.util.Date;
-import keeper.project.homepage.common.controller.util.ImageController;
 import keeper.project.homepage.entity.library.BookEntity;
 import keeper.project.homepage.util.EnvironmentProperty;
-import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
 import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -17,7 +17,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.common.dto.result.ListResult;
+import keeper.project.homepage.util.dto.result.ListResult;
 import keeper.project.homepage.entity.posting.CategoryEntity;
 import keeper.project.homepage.entity.posting.CommentEntity;
 import keeper.project.homepage.entity.posting.PostingEntity;

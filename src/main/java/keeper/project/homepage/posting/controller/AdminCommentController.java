@@ -1,8 +1,8 @@
 package keeper.project.homepage.posting.controller;
 
 import keeper.project.homepage.admin.service.posting.AdminCommentService;
-import keeper.project.homepage.common.dto.result.CommonResult;
-import keeper.project.homepage.common.service.ResponseService;
+import keeper.project.homepage.util.dto.result.CommonResult;
+import keeper.project.homepage.util.service.result.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;

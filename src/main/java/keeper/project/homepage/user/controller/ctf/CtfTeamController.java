@@ -1,8 +1,8 @@
 package keeper.project.homepage.user.controller.ctf;
 
-import keeper.project.homepage.common.dto.result.PageResult;
-import keeper.project.homepage.common.dto.result.SingleResult;
-import keeper.project.homepage.common.service.ResponseService;
+import keeper.project.homepage.util.dto.result.PageResult;
+import keeper.project.homepage.util.dto.result.SingleResult;
+import keeper.project.homepage.util.service.result.ResponseService;
 import keeper.project.homepage.user.dto.ctf.CtfJoinTeamRequestDto;
 import keeper.project.homepage.user.dto.ctf.CtfLeaveTeamRequestDto;
 import keeper.project.homepage.user.dto.ctf.CtfTeamDetailDto;

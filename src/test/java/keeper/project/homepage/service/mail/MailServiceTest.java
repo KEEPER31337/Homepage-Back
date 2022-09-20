@@ -2,7 +2,7 @@ package keeper.project.homepage.service.mail;
 
 import java.util.ArrayList;
 import java.util.List;
-import keeper.project.homepage.common.service.mail.MailService;
+import keeper.project.homepage.util.service.mail.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 

@@ -1,8 +1,8 @@
 package keeper.project.homepage.user.controller.ctf;
 
-import keeper.project.homepage.common.dto.member.CommonMemberDto;
-import keeper.project.homepage.common.dto.result.ListResult;
-import keeper.project.homepage.common.service.ResponseService;
+import keeper.project.homepage.member.dto.CommonMemberDto;
+import keeper.project.homepage.util.dto.result.ListResult;
+import keeper.project.homepage.util.service.result.ResponseService;
 import keeper.project.homepage.user.dto.ctf.CtfChallengeCategoryDto;
 import keeper.project.homepage.user.dto.ctf.CtfChallengeTypeDto;
 import keeper.project.homepage.user.dto.ctf.CtfContestDto;

@@ -34,7 +34,7 @@ import keeper.project.homepage.user.service.member.MemberDeleteService;
 import keeper.project.homepage.user.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.user.service.member.MemberHasCommentLikeService;
 import keeper.project.homepage.user.service.posting.CommentService;
-import keeper.project.homepage.common.service.sign.SignUpService;
+import keeper.project.homepage.sign.service.SignUpService;
 import keeper.project.homepage.user.service.member.MemberService;
 import keeper.project.homepage.user.service.posting.PostingService;
 import keeper.project.homepage.user.service.study.StudyService;

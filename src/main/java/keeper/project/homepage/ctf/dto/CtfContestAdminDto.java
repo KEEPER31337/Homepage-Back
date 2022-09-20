@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.time.LocalDateTime;
-import keeper.project.homepage.common.dto.member.CommonMemberDto;
+import keeper.project.homepage.member.dto.CommonMemberDto;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import keeper.project.homepage.user.dto.ctf.CtfContestDto;
