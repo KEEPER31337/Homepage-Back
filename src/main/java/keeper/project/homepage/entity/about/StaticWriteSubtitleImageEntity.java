@@ -12,7 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import keeper.project.homepage.admin.dto.about.request.StaticWriteSubtitleImageDto;
+import keeper.project.homepage.about.dto.request.StaticWriteSubtitleImageDto;
 import keeper.project.homepage.entity.ThumbnailEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

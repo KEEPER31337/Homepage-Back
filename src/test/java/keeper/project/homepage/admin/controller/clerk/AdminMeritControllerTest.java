@@ -21,9 +21,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import keeper.project.homepage.admin.dto.clerk.request.MeritAddRequestDto;
-import keeper.project.homepage.admin.dto.clerk.request.MeritLogUpdateRequestDto;
-import keeper.project.homepage.admin.dto.clerk.request.MeritTypeCreateRequestDto;
+import keeper.project.homepage.clerk.dto.request.MeritAddRequestDto;
+import keeper.project.homepage.clerk.dto.request.MeritLogUpdateRequestDto;
+import keeper.project.homepage.clerk.dto.request.MeritTypeCreateRequestDto;
 import keeper.project.homepage.entity.clerk.MeritLogEntity;
 import keeper.project.homepage.entity.clerk.MeritTypeEntity;
 import keeper.project.homepage.entity.member.MemberEntity;

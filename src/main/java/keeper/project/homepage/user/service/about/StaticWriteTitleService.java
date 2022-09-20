@@ -2,7 +2,7 @@ package keeper.project.homepage.user.service.about;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import keeper.project.homepage.admin.dto.about.response.StaticWriteTitleResponseDto;
+import keeper.project.homepage.about.dto.response.StaticWriteTitleResponseDto;
 import keeper.project.homepage.entity.about.StaticWriteTitleEntity;
 import keeper.project.homepage.exception.about.CustomStaticWriteTypeNotFoundException;
 import keeper.project.homepage.repository.about.StaticWriteTitleRepository;

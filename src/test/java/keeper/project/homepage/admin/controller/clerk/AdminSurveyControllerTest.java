@@ -1,7 +1,6 @@
 package keeper.project.homepage.admin.controller.clerk;
 
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.ACTIVITY;
-import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.GRADUATE;
 import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
@@ -12,7 +11,6 @@ import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuild
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -20,11 +18,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
-import keeper.project.homepage.admin.dto.clerk.request.AdminSurveyRequestDto;
+import keeper.project.homepage.clerk.dto.request.AdminSurveyRequestDto;
 import keeper.project.homepage.controller.clerk.SurveySpringTestHelper;
 import keeper.project.homepage.entity.clerk.SurveyEntity;
 import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
-import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
 import keeper.project.homepage.entity.member.MemberEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;

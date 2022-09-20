@@ -2,7 +2,7 @@ package keeper.project.homepage.user.service.ctf;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import keeper.project.homepage.admin.dto.ctf.CtfChallengeAdminDto;
+import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
 import keeper.project.homepage.admin.service.ctf.CtfAdminService;
 import keeper.project.homepage.controller.ctf.CtfSpringTestHelper;
 import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
@@ -15,8 +15,6 @@ import keeper.project.homepage.user.dto.ctf.CtfTeamDetailDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

@@ -19,9 +19,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import keeper.project.homepage.admin.dto.ctf.CtfChallengeAdminDto;
-import keeper.project.homepage.admin.dto.ctf.CtfContestAdminDto;
-import keeper.project.homepage.admin.dto.ctf.CtfProbMakerDto;
+import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
+import keeper.project.homepage.ctf.dto.CtfContestAdminDto;
+import keeper.project.homepage.ctf.dto.CtfProbMakerDto;
 import keeper.project.homepage.controller.ctf.CtfSpringTestHelper;
 import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
 import keeper.project.homepage.entity.ctf.CtfChallengeEntity;

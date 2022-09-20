@@ -14,8 +14,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import keeper.project.homepage.admin.dto.election.request.ElectionCandidateCreateRequestDto;
-import keeper.project.homepage.admin.dto.election.request.ElectionCreateRequestDto;
+import keeper.project.homepage.election.dto.request.ElectionCandidateCreateRequestDto;
+import keeper.project.homepage.election.dto.request.ElectionCreateRequestDto;
 import keeper.project.homepage.controller.election.ElectionSpringTestHelper;
 import keeper.project.homepage.entity.election.ElectionCandidateEntity;
 import keeper.project.homepage.entity.election.ElectionEntity;

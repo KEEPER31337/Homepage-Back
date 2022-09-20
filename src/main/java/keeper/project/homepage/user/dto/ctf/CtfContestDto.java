@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
-import keeper.project.homepage.admin.dto.ctf.CtfContestAdminDto;
 import keeper.project.homepage.common.dto.member.CommonMemberDto;
 import keeper.project.homepage.entity.ctf.CtfContestEntity;
 import lombok.AllArgsConstructor;

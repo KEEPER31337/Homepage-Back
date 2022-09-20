@@ -7,7 +7,7 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import keeper.project.homepage.admin.dto.about.response.StaticWriteTitleResponseDto;
+import keeper.project.homepage.about.dto.response.StaticWriteTitleResponseDto;
 import keeper.project.homepage.entity.about.StaticWriteTitleEntity;
 import keeper.project.homepage.repository.about.StaticWriteTitleRepository;
 import org.junit.jupiter.api.DisplayName;

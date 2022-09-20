@@ -3,7 +3,7 @@ package keeper.project.homepage.admin.repository.about;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.Optional;
-import keeper.project.homepage.admin.dto.about.request.StaticWriteSubtitleImageDto;
+import keeper.project.homepage.about.dto.request.StaticWriteSubtitleImageDto;
 import keeper.project.homepage.entity.about.StaticWriteSubtitleImageEntity;
 import keeper.project.homepage.entity.about.StaticWriteTitleEntity;
 import keeper.project.homepage.repository.about.StaticWriteSubtitleImageRepository;
