@@ -2,11 +2,11 @@ package keeper.project.homepage.repository.clerk;
 
 import java.time.LocalDateTime;
 import javax.persistence.EntityManager;
-import keeper.project.homepage.entity.clerk.SurveyEntity;
-import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
-import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
-import keeper.project.homepage.entity.clerk.SurveyReplyExcuseEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.clerk.entity.SurveyEntity;
+import keeper.project.homepage.clerk.entity.SurveyMemberReplyEntity;
+import keeper.project.homepage.clerk.entity.SurveyReplyEntity;
+import keeper.project.homepage.clerk.entity.SurveyReplyExcuseEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.repository.member.MemberRepository;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;

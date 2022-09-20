@@ -1,6 +1,6 @@
 package keeper.project.homepage.clerk.dto.response;
 
-import keeper.project.homepage.entity.clerk.SeminarEntity;
+import keeper.project.homepage.clerk.entity.SeminarEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

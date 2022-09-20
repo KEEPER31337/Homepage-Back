@@ -1,8 +1,6 @@
 package keeper.project.homepage.user.dto.attendance;
 
-import keeper.project.homepage.entity.attendance.AttendanceEntity;
-import keeper.project.homepage.util.EnvironmentProperty;
-import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
+import keeper.project.homepage.attendance.entity.AttendanceEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

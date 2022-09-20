@@ -1,8 +1,8 @@
 package keeper.project.homepage.user.dto.point.request;
 
 import java.time.LocalDateTime;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.point.PointLogEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.point.entity.PointLogEntity;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Getter;

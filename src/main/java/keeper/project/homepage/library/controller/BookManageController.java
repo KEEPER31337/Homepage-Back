@@ -2,13 +2,13 @@ package keeper.project.homepage.library.controller;
 
 import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.admin.service.library.BookManageService;
-import keeper.project.homepage.exception.file.CustomThumbnailEntityNotFoundException;
+import keeper.project.homepage.util.exception.file.CustomThumbnailEntityNotFoundException;
 import keeper.project.homepage.util.image.preprocessing.ImageCenterCropping;
 import keeper.project.homepage.library.dto.BookDto;
 import keeper.project.homepage.util.dto.result.CommonResult;
-import keeper.project.homepage.entity.ThumbnailEntity;
+import keeper.project.homepage.util.entity.ThumbnailEntity;
 import keeper.project.homepage.util.dto.result.ListResult;
-import keeper.project.homepage.entity.library.BookBorrowEntity;
+import keeper.project.homepage.library.entity.BookBorrowEntity;
 import keeper.project.homepage.util.image.preprocessing.ImageSize;
 import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.util.service.ThumbnailService;

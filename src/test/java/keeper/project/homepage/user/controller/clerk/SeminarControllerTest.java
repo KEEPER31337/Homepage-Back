@@ -3,7 +3,7 @@ package keeper.project.homepage.user.controller.clerk;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.우수회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberTypeName.정회원;
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.BEFORE_ATTENDANCE;
+import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.BEFORE_ATTENDANCE;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -18,8 +18,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import keeper.project.homepage.entity.clerk.SeminarEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.clerk.entity.SeminarEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.user.dto.clerk.request.AttendanceCheckRequestDto;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;

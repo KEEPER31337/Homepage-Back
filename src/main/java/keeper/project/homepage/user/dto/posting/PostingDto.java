@@ -1,10 +1,10 @@
 package keeper.project.homepage.user.dto.posting;
 
 import java.time.LocalDateTime;
-import keeper.project.homepage.entity.posting.CategoryEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.posting.PostingEntity;
-import keeper.project.homepage.entity.ThumbnailEntity;
+import keeper.project.homepage.posting.entity.CategoryEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.posting.entity.PostingEntity;
+import keeper.project.homepage.util.entity.ThumbnailEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

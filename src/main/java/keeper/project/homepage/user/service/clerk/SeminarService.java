@@ -1,22 +1,22 @@
 package keeper.project.homepage.user.service.clerk;
 
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ATTENDANCE;
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.BEFORE_ATTENDANCE;
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.LATENESS;
+import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ATTENDANCE;
+import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.BEFORE_ATTENDANCE;
+import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.LATENESS;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import keeper.project.homepage.admin.service.clerk.AdminSeminarService;
 import keeper.project.homepage.util.service.auth.AuthService;
-import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
-import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
-import keeper.project.homepage.entity.clerk.SeminarEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.exception.clerk.CustomSeminarAttendanceFailException;
-import keeper.project.homepage.exception.clerk.CustomSeminarAttendanceNotFoundException;
-import keeper.project.homepage.exception.clerk.CustomSeminarAttendanceStatusNotFoundException;
-import keeper.project.homepage.exception.clerk.CustomSeminarNotFoundException;
+import keeper.project.homepage.clerk.entity.SeminarAttendanceEntity;
+import keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity;
+import keeper.project.homepage.clerk.entity.SeminarEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.clerk.exception.CustomSeminarAttendanceFailException;
+import keeper.project.homepage.clerk.exception.CustomSeminarAttendanceNotFoundException;
+import keeper.project.homepage.clerk.exception.CustomSeminarAttendanceStatusNotFoundException;
+import keeper.project.homepage.clerk.exception.CustomSeminarNotFoundException;
 import keeper.project.homepage.repository.clerk.SeminarAttendanceRepository;
 import keeper.project.homepage.repository.clerk.SeminarAttendanceStatusRepository;
 import keeper.project.homepage.repository.clerk.SeminarRepository;

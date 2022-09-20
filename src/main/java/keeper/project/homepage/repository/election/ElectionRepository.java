@@ -1,6 +1,6 @@
 package keeper.project.homepage.repository.election;
 
-import keeper.project.homepage.entity.election.ElectionEntity;
+import keeper.project.homepage.election.entity.ElectionEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

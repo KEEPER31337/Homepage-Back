@@ -2,8 +2,8 @@ package keeper.project.homepage.repository.election;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import keeper.project.homepage.entity.election.ElectionEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.election.entity.ElectionEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.user.dto.election.response.ElectionVoteStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

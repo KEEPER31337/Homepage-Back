@@ -2,10 +2,10 @@ package keeper.project.homepage.election.dto;
 
 import java.time.LocalDateTime;
 import javax.validation.constraints.NotNull;
-import keeper.project.homepage.entity.election.ElectionCandidateEntity;
-import keeper.project.homepage.entity.election.ElectionEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberJobEntity;
+import keeper.project.homepage.election.entity.ElectionCandidateEntity;
+import keeper.project.homepage.election.entity.ElectionEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.member.entity.MemberJobEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

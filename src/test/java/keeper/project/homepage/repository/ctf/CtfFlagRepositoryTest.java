@@ -2,11 +2,11 @@ package keeper.project.homepage.repository.ctf;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
-import keeper.project.homepage.entity.ctf.CtfContestEntity;
-import keeper.project.homepage.entity.ctf.CtfFlagEntity;
-import keeper.project.homepage.entity.ctf.CtfTeamEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
+import keeper.project.homepage.ctf.entity.CtfContestEntity;
+import keeper.project.homepage.ctf.entity.CtfFlagEntity;
+import keeper.project.homepage.ctf.entity.CtfTeamEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

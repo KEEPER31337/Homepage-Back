@@ -2,7 +2,7 @@ package keeper.project.homepage.repository.library;
 
 import java.util.List;
 import java.util.Optional;
-import keeper.project.homepage.entity.library.BookEntity;
+import keeper.project.homepage.library.entity.BookEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 

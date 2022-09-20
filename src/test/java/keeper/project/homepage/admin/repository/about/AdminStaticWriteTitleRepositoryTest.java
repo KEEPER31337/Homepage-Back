@@ -2,7 +2,7 @@ package keeper.project.homepage.admin.repository.about;
 
 import static org.assertj.core.api.Assertions.*;
 
-import keeper.project.homepage.entity.about.StaticWriteTitleEntity;
+import keeper.project.homepage.about.entity.StaticWriteTitleEntity;
 import keeper.project.homepage.repository.about.StaticWriteTitleRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -3,8 +3,8 @@ package keeper.project.homepage.user.repostiory.point;
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.point.PointLogEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.point.entity.PointLogEntity;
 import keeper.project.homepage.repository.member.MemberRepository;
 import keeper.project.homepage.repository.point.PointLogRepository;
 import keeper.project.homepage.user.dto.point.request.PointLogRequestDto;

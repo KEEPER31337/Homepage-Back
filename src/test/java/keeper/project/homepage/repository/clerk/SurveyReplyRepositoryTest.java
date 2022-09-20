@@ -1,14 +1,13 @@
 package keeper.project.homepage.repository.clerk;
 
-import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.ACTIVITY;
-import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.GRADUATE;
-import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.LEAVE;
-import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.MILITARY_DORMANT;
-import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
+import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.ACTIVITY;
+import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.GRADUATE;
+import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.LEAVE;
+import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.MILITARY_DORMANT;
+import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
 
-import java.util.ArrayList;
 import java.util.List;
-import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
+import keeper.project.homepage.clerk.entity.SurveyReplyEntity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

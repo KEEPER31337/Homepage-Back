@@ -1,7 +1,7 @@
 package keeper.project.homepage.user.dto.posting;
 
 import java.time.LocalDateTime;
-import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.posting.entity.PostingEntity;
 import keeper.project.homepage.util.EnvironmentProperty;
 import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import lombok.AllArgsConstructor;

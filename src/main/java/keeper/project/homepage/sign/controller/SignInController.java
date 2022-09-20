@@ -5,7 +5,7 @@ import keeper.project.homepage.sign.dto.EmailAuthDto;
 import keeper.project.homepage.user.dto.member.MemberDto;
 import keeper.project.homepage.util.dto.result.SingleResult;
 import keeper.project.homepage.sign.dto.SignInDto;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.util.service.result.ResponseService;
 import keeper.project.homepage.sign.service.SignInService;
 import lombok.RequiredArgsConstructor;

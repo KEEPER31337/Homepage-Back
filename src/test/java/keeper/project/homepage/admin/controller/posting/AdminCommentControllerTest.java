@@ -8,10 +8,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.posting.CategoryEntity;
-import keeper.project.homepage.entity.posting.CommentEntity;
-import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.posting.entity.CategoryEntity;
+import keeper.project.homepage.posting.entity.CommentEntity;
+import keeper.project.homepage.posting.entity.PostingEntity;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

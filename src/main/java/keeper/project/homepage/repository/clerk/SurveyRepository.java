@@ -1,10 +1,8 @@
 package keeper.project.homepage.repository.clerk;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
-import keeper.project.homepage.entity.clerk.SurveyEntity;
-import keeper.project.homepage.entity.election.ElectionEntity;
+import keeper.project.homepage.clerk.entity.SurveyEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

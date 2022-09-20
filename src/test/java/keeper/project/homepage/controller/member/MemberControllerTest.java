@@ -15,9 +15,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.entity.member.FriendEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.exception.member.CustomMemberNotFoundException;
+import keeper.project.homepage.member.entity.FriendEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.member.exception.CustomMemberNotFoundException;
 import keeper.project.homepage.user.service.member.MemberUtilService;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.AfterAll;

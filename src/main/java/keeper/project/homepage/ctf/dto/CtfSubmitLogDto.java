@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.time.LocalDateTime;
-import keeper.project.homepage.entity.ctf.CtfSubmitLogEntity;
+import keeper.project.homepage.ctf.entity.CtfSubmitLogEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

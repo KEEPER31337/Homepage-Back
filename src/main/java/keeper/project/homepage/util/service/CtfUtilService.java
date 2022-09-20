@@ -1,17 +1,16 @@
 package keeper.project.homepage.util.service;
 
-import static keeper.project.homepage.entity.ctf.CtfChallengeTypeEntity.DYNAMIC;
+import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.DYNAMIC;
 
 import java.util.List;
-import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
-import keeper.project.homepage.entity.ctf.CtfDynamicChallengeInfoEntity;
-import keeper.project.homepage.entity.ctf.CtfFlagEntity;
-import keeper.project.homepage.entity.ctf.CtfTeamEntity;
-import keeper.project.homepage.entity.ctf.CtfTeamHasMemberEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.exception.ctf.CustomContestNotFoundException;
-import keeper.project.homepage.exception.ctf.CustomCtfChallengeNotFoundException;
-import keeper.project.homepage.exception.ctf.CustomCtfTeamNotFoundException;
+import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
+import keeper.project.homepage.ctf.entity.CtfDynamicChallengeInfoEntity;
+import keeper.project.homepage.ctf.entity.CtfFlagEntity;
+import keeper.project.homepage.ctf.entity.CtfTeamEntity;
+import keeper.project.homepage.ctf.entity.CtfTeamHasMemberEntity;
+import keeper.project.homepage.ctf.exception.CustomContestNotFoundException;
+import keeper.project.homepage.ctf.exception.CustomCtfChallengeNotFoundException;
+import keeper.project.homepage.ctf.exception.CustomCtfTeamNotFoundException;
 import keeper.project.homepage.repository.ctf.CtfChallengeRepository;
 import keeper.project.homepage.repository.ctf.CtfContestRepository;
 import keeper.project.homepage.repository.ctf.CtfFlagRepository;

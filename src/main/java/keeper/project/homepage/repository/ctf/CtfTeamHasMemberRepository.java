@@ -1,10 +1,9 @@
 package keeper.project.homepage.repository.ctf;
 
 import java.util.List;
-import java.util.Optional;
-import keeper.project.homepage.entity.ctf.CtfTeamHasMemberEntity;
-import keeper.project.homepage.entity.ctf.CtfTeamHasMemberEntityPK;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.ctf.entity.CtfTeamHasMemberEntity;
+import keeper.project.homepage.ctf.entity.CtfTeamHasMemberEntityPK;
+import keeper.project.homepage.member.entity.MemberEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CtfTeamHasMemberRepository extends

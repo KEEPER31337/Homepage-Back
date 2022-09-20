@@ -1,7 +1,7 @@
 package keeper.project.homepage.user.dto.election.response;
 
 import java.time.LocalDateTime;
-import keeper.project.homepage.entity.election.ElectionCandidateEntity;
+import keeper.project.homepage.election.entity.ElectionCandidateEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -13,11 +13,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.File;
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.entity.FileEntity;
-import keeper.project.homepage.entity.ThumbnailEntity;
-import keeper.project.homepage.entity.about.StaticWriteContentEntity;
-import keeper.project.homepage.entity.about.StaticWriteSubtitleImageEntity;
-import keeper.project.homepage.entity.about.StaticWriteTitleEntity;
+import keeper.project.homepage.util.entity.FileEntity;
+import keeper.project.homepage.util.entity.ThumbnailEntity;
+import keeper.project.homepage.about.entity.StaticWriteContentEntity;
+import keeper.project.homepage.about.entity.StaticWriteSubtitleImageEntity;
+import keeper.project.homepage.about.entity.StaticWriteTitleEntity;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

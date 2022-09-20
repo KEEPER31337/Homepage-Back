@@ -1,9 +1,8 @@
 package keeper.project.homepage.repository.clerk;
 
 import javax.persistence.EntityManager;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.repository.member.MemberRepository;
-import keeper.project.homepage.user.service.member.MemberUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;

@@ -2,8 +2,8 @@ package keeper.project.homepage.user.dto.clerk.response;
 
 import java.time.LocalDateTime;
 import javax.validation.constraints.NotNull;
-import keeper.project.homepage.entity.clerk.SurveyEntity;
-import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
+import keeper.project.homepage.clerk.entity.SurveyEntity;
+import keeper.project.homepage.clerk.entity.SurveyMemberReplyEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -1,8 +1,8 @@
 package keeper.project.homepage.user.service.clerk;
 
-import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.ACTIVITY;
-import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.GRADUATE;
-import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
+import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.ACTIVITY;
+import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.GRADUATE;
+import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -11,10 +11,10 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import keeper.project.homepage.user.dto.clerk.response.ClosedSurveyInformationResponseDto;
 import keeper.project.homepage.controller.clerk.SurveySpringTestHelper;
-import keeper.project.homepage.entity.clerk.SurveyEntity;
-import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.exception.clerk.CustomSurveyMemberReplyNotFoundException;
+import keeper.project.homepage.clerk.entity.SurveyEntity;
+import keeper.project.homepage.clerk.entity.SurveyMemberReplyEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.clerk.exception.CustomSurveyMemberReplyNotFoundException;
 import keeper.project.homepage.user.dto.clerk.request.SurveyResponseRequestDto;
 import keeper.project.homepage.user.dto.clerk.response.SurveyInformationResponseDto;
 import org.junit.jupiter.api.BeforeEach;

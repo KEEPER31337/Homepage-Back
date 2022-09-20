@@ -22,8 +22,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberJobEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.member.entity.MemberJobEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

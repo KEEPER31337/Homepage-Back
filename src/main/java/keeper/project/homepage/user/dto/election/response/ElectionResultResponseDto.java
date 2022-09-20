@@ -1,6 +1,6 @@
 package keeper.project.homepage.user.dto.election.response;
 
-import keeper.project.homepage.entity.election.ElectionChartLogEntity;
+import keeper.project.homepage.election.entity.ElectionChartLogEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

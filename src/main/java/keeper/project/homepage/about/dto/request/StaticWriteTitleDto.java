@@ -1,6 +1,5 @@
 package keeper.project.homepage.about.dto.request;
 
-import keeper.project.homepage.entity.about.StaticWriteTitleEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

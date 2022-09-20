@@ -4,24 +4,19 @@ import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.출�
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.일반회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberTypeName.정회원;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.restdocs.request.RequestDocumentation.requestParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import keeper.project.homepage.ApiControllerTestHelper.MemberJobName;
-import keeper.project.homepage.ApiControllerTestHelper.MemberRankName;
-import keeper.project.homepage.ApiControllerTestHelper.MemberTypeName;
 import keeper.project.homepage.controller.ctf.CtfSpringTestHelper;
-import keeper.project.homepage.entity.ctf.CtfContestEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.ctf.entity.CtfContestEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

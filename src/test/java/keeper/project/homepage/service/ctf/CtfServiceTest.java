@@ -4,17 +4,17 @@ import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.회�
 import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.우수회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberTypeName.정회원;
 import static keeper.project.homepage.controller.ctf.CtfSpringTestHelper.CtfChallengeType.STANDARD;
-import static keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity.MISC;
+import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.MISC;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
 import keeper.project.homepage.admin.service.ctf.CtfAdminService;
 import keeper.project.homepage.controller.ctf.CtfSpringTestHelper;
-import keeper.project.homepage.entity.ctf.CtfContestEntity;
-import keeper.project.homepage.entity.ctf.CtfFlagEntity;
-import keeper.project.homepage.entity.ctf.CtfSubmitLogEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.ctf.entity.CtfContestEntity;
+import keeper.project.homepage.ctf.entity.CtfFlagEntity;
+import keeper.project.homepage.ctf.entity.CtfSubmitLogEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.user.dto.ctf.CtfChallengeCategoryDto;
 import keeper.project.homepage.user.dto.ctf.CtfChallengeTypeDto;
 import keeper.project.homepage.user.dto.ctf.CtfFlagDto;

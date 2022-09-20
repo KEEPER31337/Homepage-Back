@@ -1,20 +1,20 @@
 package keeper.project.homepage.user.service.clerk;
 
-import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
+import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
 import static keeper.project.homepage.util.service.SurveyUtilService.NO_SURVEY;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 import keeper.project.homepage.user.dto.clerk.response.ClosedSurveyInformationResponseDto;
 import keeper.project.homepage.util.service.auth.AuthService;
-import keeper.project.homepage.entity.clerk.SurveyEntity;
-import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
-import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
-import keeper.project.homepage.entity.clerk.SurveyReplyExcuseEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.exception.clerk.CustomSurveyInVisibleException;
-import keeper.project.homepage.exception.clerk.CustomSurveyMemberReplyNotFoundException;
-import keeper.project.homepage.exception.clerk.CustomSurveyNotFoundException;
+import keeper.project.homepage.clerk.entity.SurveyEntity;
+import keeper.project.homepage.clerk.entity.SurveyMemberReplyEntity;
+import keeper.project.homepage.clerk.entity.SurveyReplyEntity;
+import keeper.project.homepage.clerk.entity.SurveyReplyExcuseEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.clerk.exception.CustomSurveyInVisibleException;
+import keeper.project.homepage.clerk.exception.CustomSurveyMemberReplyNotFoundException;
+import keeper.project.homepage.clerk.exception.CustomSurveyNotFoundException;
 import keeper.project.homepage.repository.clerk.SurveyMemberReplyRepository;
 import keeper.project.homepage.repository.clerk.SurveyReplyExcuseRepository;
 import keeper.project.homepage.repository.clerk.SurveyReplyRepository;

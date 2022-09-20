@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
-import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.posting.entity.PostingEntity;
 import keeper.project.homepage.user.dto.posting.PostingDto;
 import keeper.project.homepage.user.service.posting.PostingService;
 import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;

@@ -1,10 +1,10 @@
 package keeper.project.homepage.util.service;
 
 import java.util.List;
-import keeper.project.homepage.entity.clerk.SurveyEntity;
-import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
-import keeper.project.homepage.exception.clerk.CustomSurveyMemberReplyNotFoundException;
-import keeper.project.homepage.exception.clerk.CustomSurveyNotFoundException;
+import keeper.project.homepage.clerk.entity.SurveyEntity;
+import keeper.project.homepage.clerk.entity.SurveyMemberReplyEntity;
+import keeper.project.homepage.clerk.exception.CustomSurveyMemberReplyNotFoundException;
+import keeper.project.homepage.clerk.exception.CustomSurveyNotFoundException;
 import keeper.project.homepage.repository.clerk.SurveyMemberReplyRepository;
 import keeper.project.homepage.repository.clerk.SurveyReplyExcuseRepository;
 import keeper.project.homepage.repository.clerk.SurveyReplyRepository;

@@ -1,14 +1,12 @@
 package keeper.project.homepage.repository.library;
 
-import com.sun.source.doctree.UnknownBlockTagTree;
 import java.sql.Date;
 import java.util.List;
-import keeper.project.homepage.entity.library.BookBorrowEntity;
+import keeper.project.homepage.library.entity.BookBorrowEntity;
 import org.springframework.data.domain.Pageable;
 import java.util.Optional;
-import keeper.project.homepage.entity.library.BookBorrowEntity;
-import keeper.project.homepage.entity.library.BookEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.library.entity.BookEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BookBorrowRepository extends JpaRepository<BookBorrowEntity, Long> {

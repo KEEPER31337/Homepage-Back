@@ -1,6 +1,6 @@
 package keeper.project.homepage.clerk.dto.response;
 
-import keeper.project.homepage.entity.clerk.SurveyEntity;
+import keeper.project.homepage.clerk.entity.SurveyEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

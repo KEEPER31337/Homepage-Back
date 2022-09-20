@@ -14,13 +14,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import keeper.project.homepage.controller.ctf.CtfSpringTestHelper;
-import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
-import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
-import keeper.project.homepage.entity.ctf.CtfChallengeTypeEntity;
-import keeper.project.homepage.entity.ctf.CtfContestEntity;
-import keeper.project.homepage.entity.ctf.CtfFlagEntity;
-import keeper.project.homepage.entity.ctf.CtfTeamEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity;
+import keeper.project.homepage.ctf.entity.CtfContestEntity;
+import keeper.project.homepage.ctf.entity.CtfFlagEntity;
+import keeper.project.homepage.ctf.entity.CtfTeamEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

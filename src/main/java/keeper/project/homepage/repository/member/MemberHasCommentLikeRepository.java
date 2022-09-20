@@ -1,10 +1,10 @@
 package keeper.project.homepage.repository.member;
 
 import java.util.List;
-import keeper.project.homepage.entity.posting.CommentEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberHasCommentEntityPK;
-import keeper.project.homepage.entity.member.MemberHasCommentLikeEntity;
+import keeper.project.homepage.posting.entity.CommentEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.member.entity.MemberHasCommentEntityPK;
+import keeper.project.homepage.member.entity.MemberHasCommentLikeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

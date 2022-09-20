@@ -2,8 +2,8 @@ package keeper.project.homepage.repository.ctf;
 
 import java.util.List;
 import java.util.Optional;
-import keeper.project.homepage.entity.ctf.CtfContestEntity;
-import keeper.project.homepage.entity.ctf.CtfTeamEntity;
+import keeper.project.homepage.ctf.entity.CtfContestEntity;
+import keeper.project.homepage.ctf.entity.CtfTeamEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,6 +1,6 @@
 package keeper.project.homepage.clerk.dto.response;
 
-import keeper.project.homepage.entity.clerk.MeritTypeEntity;
+import keeper.project.homepage.clerk.entity.MeritTypeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

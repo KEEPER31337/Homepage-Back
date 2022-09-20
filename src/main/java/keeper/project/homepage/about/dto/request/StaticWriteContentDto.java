@@ -1,7 +1,7 @@
 package keeper.project.homepage.about.dto.request;
 
-import keeper.project.homepage.entity.about.StaticWriteContentEntity;
-import keeper.project.homepage.entity.about.StaticWriteSubtitleImageEntity;
+import keeper.project.homepage.about.entity.StaticWriteContentEntity;
+import keeper.project.homepage.about.entity.StaticWriteSubtitleImageEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

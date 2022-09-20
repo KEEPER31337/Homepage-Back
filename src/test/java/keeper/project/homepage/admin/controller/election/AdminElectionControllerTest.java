@@ -17,11 +17,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import keeper.project.homepage.election.dto.request.ElectionCandidateCreateRequestDto;
 import keeper.project.homepage.election.dto.request.ElectionCreateRequestDto;
 import keeper.project.homepage.controller.election.ElectionSpringTestHelper;
-import keeper.project.homepage.entity.election.ElectionCandidateEntity;
-import keeper.project.homepage.entity.election.ElectionEntity;
-import keeper.project.homepage.entity.election.ElectionVoterEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberJobEntity;
+import keeper.project.homepage.election.entity.ElectionCandidateEntity;
+import keeper.project.homepage.election.entity.ElectionEntity;
+import keeper.project.homepage.election.entity.ElectionVoterEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.member.entity.MemberJobEntity;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

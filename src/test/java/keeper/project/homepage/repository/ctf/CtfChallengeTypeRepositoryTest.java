@@ -2,7 +2,7 @@ package keeper.project.homepage.repository.ctf;
 
 import java.util.ArrayList;
 import java.util.List;
-import keeper.project.homepage.entity.ctf.CtfChallengeTypeEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,7 +1,7 @@
 package keeper.project.homepage.admin.service.clerk;
 
-import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.ACTIVITY;
-import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.GRADUATE;
+import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.ACTIVITY;
+import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.GRADUATE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -12,9 +12,9 @@ import keeper.project.homepage.clerk.dto.request.AdminSurveyRequestDto;
 import keeper.project.homepage.clerk.dto.response.SurveyRespondentResponseDto;
 import keeper.project.homepage.clerk.dto.response.SurveyResponseDto;
 import keeper.project.homepage.controller.clerk.SurveySpringTestHelper;
-import keeper.project.homepage.entity.clerk.SurveyEntity;
-import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.clerk.entity.SurveyEntity;
+import keeper.project.homepage.clerk.entity.SurveyMemberReplyEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

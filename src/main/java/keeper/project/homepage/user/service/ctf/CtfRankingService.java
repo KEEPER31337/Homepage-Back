@@ -2,7 +2,7 @@ package keeper.project.homepage.user.service.ctf;
 
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_TEAM_ID;
 
-import keeper.project.homepage.entity.ctf.CtfTeamEntity;
+import keeper.project.homepage.ctf.entity.CtfTeamEntity;
 import keeper.project.homepage.repository.ctf.CtfTeamRepository;
 import keeper.project.homepage.user.dto.ctf.CtfRankingDto;
 import keeper.project.homepage.util.service.CtfUtilService;

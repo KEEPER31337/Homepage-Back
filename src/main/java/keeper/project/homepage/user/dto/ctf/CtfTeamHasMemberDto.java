@@ -2,7 +2,7 @@ package keeper.project.homepage.user.dto.ctf;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
-import keeper.project.homepage.entity.ctf.CtfTeamHasMemberEntity;
+import keeper.project.homepage.ctf.entity.CtfTeamHasMemberEntity;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

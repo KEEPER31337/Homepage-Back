@@ -1,8 +1,8 @@
 package keeper.project.homepage.repository.attendance;
 
 import java.util.Optional;
-import keeper.project.homepage.entity.attendance.GameEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.attendance.entity.GameEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface GameRepository extends JpaRepository<GameEntity, Long> {

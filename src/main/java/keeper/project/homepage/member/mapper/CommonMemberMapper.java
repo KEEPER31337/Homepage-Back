@@ -1,7 +1,7 @@
 package keeper.project.homepage.member.mapper;
 
 import keeper.project.homepage.member.dto.CommonMemberDto;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;

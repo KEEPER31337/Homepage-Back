@@ -18,11 +18,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.study.StudyEntity;
-import keeper.project.homepage.entity.study.StudyHasMemberEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.study.entity.StudyEntity;
+import keeper.project.homepage.study.entity.StudyHasMemberEntity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;

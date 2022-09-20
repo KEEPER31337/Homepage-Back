@@ -6,13 +6,10 @@ import static org.springframework.restdocs.request.RequestDocumentation.paramete
 import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
-import java.io.File;
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.util.FileConversion;
-import keeper.project.homepage.entity.FileEntity;
-import keeper.project.homepage.entity.ThumbnailEntity;
+import keeper.project.homepage.util.entity.FileEntity;
+import keeper.project.homepage.util.entity.ThumbnailEntity;
 import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

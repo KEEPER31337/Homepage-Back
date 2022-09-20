@@ -3,7 +3,7 @@ package keeper.project.homepage.about.dto.response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import keeper.project.homepage.entity.about.StaticWriteSubtitleImageEntity;
+import keeper.project.homepage.about.entity.StaticWriteSubtitleImageEntity;
 import keeper.project.homepage.util.EnvironmentProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

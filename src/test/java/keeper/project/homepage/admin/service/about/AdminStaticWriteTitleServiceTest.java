@@ -6,7 +6,7 @@ import static org.mockito.Mockito.*;
 import java.util.Optional;
 import keeper.project.homepage.about.dto.request.StaticWriteTitleDto;
 import keeper.project.homepage.about.dto.response.StaticWriteTitleResponseDto;
-import keeper.project.homepage.entity.about.StaticWriteTitleEntity;
+import keeper.project.homepage.about.entity.StaticWriteTitleEntity;
 import keeper.project.homepage.repository.about.StaticWriteTitleRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

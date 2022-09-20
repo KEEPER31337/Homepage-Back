@@ -1,7 +1,7 @@
 package keeper.project.homepage.clerk.dto.response;
 
-import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
-import keeper.project.homepage.entity.clerk.SeminarAttendanceExcuseEntity;
+import keeper.project.homepage.clerk.entity.SeminarAttendanceEntity;
+import keeper.project.homepage.clerk.entity.SeminarAttendanceExcuseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

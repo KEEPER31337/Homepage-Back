@@ -3,8 +3,8 @@ package keeper.project.homepage.repository.attendance;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import keeper.project.homepage.entity.attendance.AttendanceEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.attendance.entity.AttendanceEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AttendanceRepository extends JpaRepository<AttendanceEntity, Long> {

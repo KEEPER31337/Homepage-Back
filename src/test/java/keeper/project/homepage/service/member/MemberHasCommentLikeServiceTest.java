@@ -1,23 +1,14 @@
 package keeper.project.homepage.service.member;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberHasCommentEntityPK;
-import keeper.project.homepage.entity.member.MemberHasCommentLikeEntity;
-import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
-import keeper.project.homepage.entity.member.MemberJobEntity;
-import keeper.project.homepage.entity.posting.CategoryEntity;
-import keeper.project.homepage.entity.posting.CommentEntity;
-import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.member.entity.MemberHasCommentEntityPK;
+import keeper.project.homepage.member.entity.MemberHasCommentLikeEntity;
+import keeper.project.homepage.posting.entity.CategoryEntity;
+import keeper.project.homepage.posting.entity.CommentEntity;
+import keeper.project.homepage.posting.entity.PostingEntity;
 import keeper.project.homepage.repository.member.MemberHasCommentLikeRepository;
-import keeper.project.homepage.repository.member.MemberJobRepository;
-import keeper.project.homepage.repository.member.MemberRepository;
-import keeper.project.homepage.repository.posting.CategoryRepository;
-import keeper.project.homepage.repository.posting.CommentRepository;
-import keeper.project.homepage.repository.posting.PostingRepository;
 import keeper.project.homepage.user.service.member.MemberHasCommentLikeService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,7 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 

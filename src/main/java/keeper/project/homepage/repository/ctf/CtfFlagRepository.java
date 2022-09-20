@@ -2,10 +2,7 @@ package keeper.project.homepage.repository.ctf;
 
 import java.util.List;
 import java.util.Optional;
-import keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity;
-import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
-import keeper.project.homepage.entity.ctf.CtfFlagEntity;
-import keeper.project.homepage.entity.ctf.CtfTeamEntity;
+import keeper.project.homepage.ctf.entity.CtfFlagEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CtfFlagRepository extends

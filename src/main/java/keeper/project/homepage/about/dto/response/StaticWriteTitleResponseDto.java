@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import keeper.project.homepage.entity.about.StaticWriteTitleEntity;
+import keeper.project.homepage.about.entity.StaticWriteTitleEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

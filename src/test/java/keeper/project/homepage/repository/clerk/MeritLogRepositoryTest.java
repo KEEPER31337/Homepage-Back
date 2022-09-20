@@ -1,10 +1,9 @@
 package keeper.project.homepage.repository.clerk;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import keeper.project.homepage.entity.clerk.MeritLogEntity;
-import keeper.project.homepage.entity.clerk.MeritTypeEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.clerk.entity.MeritLogEntity;
+import keeper.project.homepage.clerk.entity.MeritTypeEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

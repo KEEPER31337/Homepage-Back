@@ -4,8 +4,8 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.Optional;
 import keeper.project.homepage.about.dto.request.StaticWriteSubtitleImageDto;
-import keeper.project.homepage.entity.about.StaticWriteSubtitleImageEntity;
-import keeper.project.homepage.entity.about.StaticWriteTitleEntity;
+import keeper.project.homepage.about.entity.StaticWriteSubtitleImageEntity;
+import keeper.project.homepage.about.entity.StaticWriteTitleEntity;
 import keeper.project.homepage.repository.about.StaticWriteSubtitleImageRepository;
 import keeper.project.homepage.repository.about.StaticWriteTitleRepository;
 import org.junit.jupiter.api.DisplayName;

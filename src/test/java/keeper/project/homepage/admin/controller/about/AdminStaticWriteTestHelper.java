@@ -1,9 +1,9 @@
 package keeper.project.homepage.admin.controller.about;
 
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.entity.about.StaticWriteContentEntity;
-import keeper.project.homepage.entity.about.StaticWriteSubtitleImageEntity;
-import keeper.project.homepage.entity.about.StaticWriteTitleEntity;
+import keeper.project.homepage.about.entity.StaticWriteContentEntity;
+import keeper.project.homepage.about.entity.StaticWriteSubtitleImageEntity;
+import keeper.project.homepage.about.entity.StaticWriteTitleEntity;
 
 public class AdminStaticWriteTestHelper extends ApiControllerTestHelper {
   

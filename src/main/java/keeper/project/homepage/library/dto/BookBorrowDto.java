@@ -1,9 +1,9 @@
 package keeper.project.homepage.library.dto;
 
 import java.sql.Date;
-import keeper.project.homepage.entity.library.BookBorrowEntity;
-import keeper.project.homepage.entity.library.BookEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.library.entity.BookBorrowEntity;
+import keeper.project.homepage.library.entity.BookEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

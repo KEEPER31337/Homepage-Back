@@ -3,13 +3,12 @@ package keeper.project.homepage.clerk.dto.request;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDateTime;
 import javax.validation.constraints.NotNull;
-import keeper.project.homepage.entity.clerk.SurveyEntity;
+import keeper.project.homepage.clerk.entity.SurveyEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.lang.Nullable;
 
 @Getter

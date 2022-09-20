@@ -1,14 +1,14 @@
 package keeper.project.homepage.repository.member;
 
-import static keeper.project.homepage.entity.member.MemberTypeEntity.memberType.DORMANT_MEMBER;
-import static keeper.project.homepage.entity.member.MemberTypeEntity.memberType.GRADUATED_MEMBER;
-import static keeper.project.homepage.entity.member.MemberTypeEntity.memberType.NON_MEMBER;
-import static keeper.project.homepage.entity.member.MemberTypeEntity.memberType.REGULAR_MEMBER;
-import static keeper.project.homepage.entity.member.MemberTypeEntity.memberType.WITHDRAWAL_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.DORMANT_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.GRADUATED_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.NON_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.REGULAR_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.WITHDRAWAL_MEMBER;
 
 import java.util.List;
-import keeper.project.homepage.entity.member.MemberTypeEntity;
-import keeper.project.homepage.entity.member.MemberTypeEntity.memberType;
+import keeper.project.homepage.member.entity.MemberTypeEntity;
+import keeper.project.homepage.member.entity.MemberTypeEntity.memberType;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

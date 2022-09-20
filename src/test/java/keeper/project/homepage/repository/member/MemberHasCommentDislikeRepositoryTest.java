@@ -1,17 +1,16 @@
 package keeper.project.homepage.repository.member;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
-import keeper.project.homepage.entity.member.MemberJobEntity;
-import keeper.project.homepage.entity.posting.CategoryEntity;
-import keeper.project.homepage.entity.posting.CommentEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberHasCommentDislikeEntity;
-import keeper.project.homepage.entity.member.MemberHasCommentEntityPK;
-import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.member.entity.MemberHasMemberJobEntity;
+import keeper.project.homepage.member.entity.MemberJobEntity;
+import keeper.project.homepage.posting.entity.CategoryEntity;
+import keeper.project.homepage.posting.entity.CommentEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.member.entity.MemberHasCommentDislikeEntity;
+import keeper.project.homepage.member.entity.MemberHasCommentEntityPK;
+import keeper.project.homepage.posting.entity.PostingEntity;
 import keeper.project.homepage.repository.posting.CategoryRepository;
 import keeper.project.homepage.repository.posting.CommentRepository;
 import keeper.project.homepage.repository.posting.PostingRepository;

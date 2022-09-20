@@ -17,9 +17,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.File;
 import java.io.FileInputStream;
-import keeper.project.homepage.entity.about.StaticWriteSubtitleImageEntity;
-import keeper.project.homepage.entity.about.StaticWriteTitleEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.about.entity.StaticWriteSubtitleImageEntity;
+import keeper.project.homepage.about.entity.StaticWriteTitleEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;

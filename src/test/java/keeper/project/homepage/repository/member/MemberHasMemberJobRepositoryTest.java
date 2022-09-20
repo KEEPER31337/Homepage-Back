@@ -3,9 +3,9 @@ package keeper.project.homepage.repository.member;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
-import keeper.project.homepage.entity.member.MemberJobEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.member.entity.MemberHasMemberJobEntity;
+import keeper.project.homepage.member.entity.MemberJobEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

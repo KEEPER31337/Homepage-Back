@@ -1,10 +1,10 @@
 package keeper.project.homepage.repository.study;
 
 import java.util.List;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.study.StudyEntity;
-import keeper.project.homepage.entity.study.StudyHasMemberEntity;
-import keeper.project.homepage.entity.study.StudyHasMemberEntityPK;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.study.entity.StudyEntity;
+import keeper.project.homepage.study.entity.StudyHasMemberEntity;
+import keeper.project.homepage.study.entity.StudyHasMemberEntityPK;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StudyHasMemberRepository extends

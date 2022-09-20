@@ -1,7 +1,7 @@
 package keeper.project.homepage.clerk.dto.response;
 
 import java.time.LocalDate;
-import keeper.project.homepage.entity.clerk.MeritLogEntity;
+import keeper.project.homepage.clerk.entity.MeritLogEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

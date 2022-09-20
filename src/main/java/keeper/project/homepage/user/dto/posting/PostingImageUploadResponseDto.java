@@ -1,6 +1,6 @@
 package keeper.project.homepage.user.dto.posting;
 
-import keeper.project.homepage.entity.ThumbnailEntity;
+import keeper.project.homepage.util.entity.ThumbnailEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

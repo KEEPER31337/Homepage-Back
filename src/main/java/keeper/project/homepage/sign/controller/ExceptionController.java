@@ -1,6 +1,6 @@
 package keeper.project.homepage.sign.controller;
 
-import keeper.project.homepage.exception.sign.CustomAuthenticationEntryPointException;
+import keeper.project.homepage.sign.exception.CustomAuthenticationEntryPointException;
 import keeper.project.homepage.util.dto.result.CommonResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;

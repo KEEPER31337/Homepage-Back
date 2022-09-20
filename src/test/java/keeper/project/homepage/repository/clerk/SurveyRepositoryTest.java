@@ -1,16 +1,16 @@
 package keeper.project.homepage.repository.clerk;
 
 
-import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.ACTIVITY;
-import static keeper.project.homepage.entity.clerk.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
+import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.ACTIVITY;
+import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import keeper.project.homepage.entity.clerk.SurveyEntity;
-import keeper.project.homepage.entity.clerk.SurveyMemberReplyEntity;
-import keeper.project.homepage.entity.clerk.SurveyReplyEntity;
-import keeper.project.homepage.entity.clerk.SurveyReplyExcuseEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.clerk.entity.SurveyEntity;
+import keeper.project.homepage.clerk.entity.SurveyMemberReplyEntity;
+import keeper.project.homepage.clerk.entity.SurveyReplyEntity;
+import keeper.project.homepage.clerk.entity.SurveyReplyExcuseEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

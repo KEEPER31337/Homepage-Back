@@ -1,16 +1,16 @@
 package keeper.project.homepage.util.service;
 
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ABSENCE;
-import static keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity.seminarAttendanceStatus.BEFORE_ATTENDANCE;
+import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ABSENCE;
+import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.BEFORE_ATTENDANCE;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import keeper.project.homepage.entity.clerk.SeminarAttendanceEntity;
-import keeper.project.homepage.entity.clerk.SeminarAttendanceStatusEntity;
-import keeper.project.homepage.entity.clerk.SeminarEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.clerk.entity.SeminarAttendanceEntity;
+import keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity;
+import keeper.project.homepage.clerk.entity.SeminarEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.repository.clerk.SeminarAttendanceRepository;
 import keeper.project.homepage.repository.clerk.SeminarAttendanceStatusRepository;
 import keeper.project.homepage.repository.clerk.SeminarRepository;

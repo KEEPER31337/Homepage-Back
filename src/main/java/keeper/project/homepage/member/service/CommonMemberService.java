@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.member.dto.CommonMemberDto;
 import keeper.project.homepage.member.mapper.CommonMemberMapper;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;

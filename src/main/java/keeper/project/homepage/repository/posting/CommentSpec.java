@@ -4,8 +4,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import keeper.project.homepage.entity.posting.CommentEntity;
-import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.posting.entity.CommentEntity;
+import keeper.project.homepage.posting.entity.PostingEntity;
 import org.springframework.data.jpa.domain.Specification;
 
 public class CommentSpec {

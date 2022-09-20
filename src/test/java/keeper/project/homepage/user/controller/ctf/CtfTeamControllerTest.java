@@ -1,7 +1,7 @@
 package keeper.project.homepage.user.controller.ctf;
 
-import static keeper.project.homepage.entity.ctf.CtfChallengeCategoryEntity.MISC;
-import static keeper.project.homepage.entity.ctf.CtfChallengeTypeEntity.STANDARD;
+import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.MISC;
+import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.STANDARD;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -18,11 +18,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import keeper.project.homepage.controller.ctf.CtfSpringTestHelper;
-import keeper.project.homepage.entity.ctf.CtfChallengeEntity;
-import keeper.project.homepage.entity.ctf.CtfContestEntity;
-import keeper.project.homepage.entity.ctf.CtfTeamEntity;
-import keeper.project.homepage.entity.ctf.CtfTeamHasMemberEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
+import keeper.project.homepage.ctf.entity.CtfContestEntity;
+import keeper.project.homepage.ctf.entity.CtfTeamEntity;
+import keeper.project.homepage.ctf.entity.CtfTeamHasMemberEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.user.dto.ctf.CtfJoinTeamRequestDto;
 import keeper.project.homepage.user.dto.ctf.CtfLeaveTeamRequestDto;
 import keeper.project.homepage.user.dto.ctf.CtfTeamDetailDto;

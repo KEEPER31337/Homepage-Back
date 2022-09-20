@@ -1,6 +1,6 @@
 package keeper.project.homepage.systemadmin.dto.response;
 
-import keeper.project.homepage.entity.member.MemberJobEntity;
+import keeper.project.homepage.member.entity.MemberJobEntity;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

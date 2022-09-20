@@ -1,10 +1,10 @@
 package keeper.project.homepage.user.service.member;
 
 import java.util.Optional;
-import keeper.project.homepage.entity.posting.CommentEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberHasCommentDislikeEntity;
-import keeper.project.homepage.entity.member.MemberHasCommentEntityPK;
+import keeper.project.homepage.posting.entity.CommentEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.member.entity.MemberHasCommentDislikeEntity;
+import keeper.project.homepage.member.entity.MemberHasCommentEntityPK;
 import keeper.project.homepage.repository.member.MemberHasCommentDislikeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

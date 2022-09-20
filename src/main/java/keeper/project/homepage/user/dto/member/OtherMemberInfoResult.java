@@ -3,7 +3,7 @@ package keeper.project.homepage.user.dto.member;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

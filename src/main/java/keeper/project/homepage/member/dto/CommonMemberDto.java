@@ -1,7 +1,7 @@
 package keeper.project.homepage.member.dto;
 
 import java.util.List;
-import keeper.project.homepage.entity.member.MemberEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

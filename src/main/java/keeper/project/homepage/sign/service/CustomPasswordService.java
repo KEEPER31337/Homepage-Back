@@ -9,7 +9,7 @@ import java.util.Base64;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
-import keeper.project.homepage.exception.sign.CustomLoginIdSigninFailedException;
+import keeper.project.homepage.sign.exception.CustomLoginIdSigninFailedException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 

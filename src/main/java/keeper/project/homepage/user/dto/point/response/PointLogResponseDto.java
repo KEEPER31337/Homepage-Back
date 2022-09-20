@@ -1,7 +1,7 @@
 package keeper.project.homepage.user.dto.point.response;
 
 import java.time.LocalDateTime;
-import keeper.project.homepage.entity.point.PointLogEntity;
+import keeper.project.homepage.point.entity.PointLogEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

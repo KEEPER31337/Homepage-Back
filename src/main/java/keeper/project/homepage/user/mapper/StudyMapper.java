@@ -1,6 +1,6 @@
 package keeper.project.homepage.user.mapper;
 
-import keeper.project.homepage.entity.study.StudyEntity;
+import keeper.project.homepage.study.entity.StudyEntity;
 import keeper.project.homepage.user.dto.study.StudyDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
