@@ -3,7 +3,7 @@ package keeper.project.homepage.user.service.ctf;
 import java.time.LocalDateTime;
 import java.util.List;
 import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
-import keeper.project.homepage.admin.service.ctf.CtfAdminService;
+import keeper.project.homepage.ctf.service.CtfAdminService;
 import keeper.project.homepage.controller.ctf.CtfSpringTestHelper;
 import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity;

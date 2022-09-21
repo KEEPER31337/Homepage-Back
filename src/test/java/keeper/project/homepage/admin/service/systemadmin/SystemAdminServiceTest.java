@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 import keeper.project.homepage.systemadmin.dto.response.JobResponseDto;
 import keeper.project.homepage.systemadmin.dto.response.MemberJobTypeResponseDto;
 import keeper.project.homepage.systemadmin.dto.response.TypeResponseDto;
+import keeper.project.homepage.systemadmin.service.SystemAdminService;
 import keeper.project.homepage.util.entity.ThumbnailEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.member.entity.MemberHasMemberJobEntity;

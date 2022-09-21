@@ -15,7 +15,7 @@ import keeper.project.homepage.clerk.dto.response.SeminarCreateResponseDto;
 import keeper.project.homepage.clerk.dto.response.SeminarResponseDto;
 import keeper.project.homepage.clerk.dto.response.SeminarSearchByDateResponseDto;
 import keeper.project.homepage.clerk.dto.response.SeminarWithAttendancesResponseByPeriodDto;
-import keeper.project.homepage.admin.service.clerk.AdminSeminarService;
+import keeper.project.homepage.clerk.service.AdminSeminarService;
 import keeper.project.homepage.util.dto.result.ListResult;
 import keeper.project.homepage.util.dto.result.PageResult;
 import keeper.project.homepage.util.dto.result.SingleResult;

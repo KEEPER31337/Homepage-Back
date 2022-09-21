@@ -1,6 +1,6 @@
 package keeper.project.homepage.about.controller;
 
-import keeper.project.homepage.admin.service.about.AdminStaticWriteTitleService;
+import keeper.project.homepage.about.service.AdminStaticWriteTitleService;
 import keeper.project.homepage.util.service.result.ResponseService;
 import keeper.project.homepage.util.dto.result.SingleResult;
 import keeper.project.homepage.about.dto.request.StaticWriteTitleDto;

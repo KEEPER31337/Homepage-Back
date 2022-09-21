@@ -2,7 +2,7 @@ package keeper.project.homepage.posting.controller;
 
 
 import java.util.List;
-import keeper.project.homepage.admin.service.posting.AdminPostingService;
+import keeper.project.homepage.posting.service.AdminPostingService;
 import keeper.project.homepage.util.dto.result.CommonResult;
 import keeper.project.homepage.util.entity.FileEntity;
 import keeper.project.homepage.util.entity.ThumbnailEntity;

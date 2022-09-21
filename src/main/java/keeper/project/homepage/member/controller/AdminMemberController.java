@@ -1,6 +1,6 @@
 package keeper.project.homepage.member.controller;
 
-import keeper.project.homepage.admin.service.member.AdminMemberService;
+import keeper.project.homepage.member.service.AdminMemberService;
 import keeper.project.homepage.member.dto.MemberDemeritDto;
 import keeper.project.homepage.member.dto.MemberDto;
 import keeper.project.homepage.member.dto.MemberGenerationDto;

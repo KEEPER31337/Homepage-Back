@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 import keeper.project.homepage.clerk.dto.response.TypeResponseDto;
+import keeper.project.homepage.clerk.service.AdminClerkService;
 import keeper.project.homepage.util.entity.ThumbnailEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.member.entity.MemberJobEntity;

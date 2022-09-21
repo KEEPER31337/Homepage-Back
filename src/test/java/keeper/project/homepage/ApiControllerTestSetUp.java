@@ -25,7 +25,7 @@ import keeper.project.homepage.util.repository.FileRepository;
 import keeper.project.homepage.posting.repository.PostingRepository;
 import keeper.project.homepage.util.repository.ThumbnailRepository;
 import keeper.project.homepage.member.repository.MemberRepository;
-import keeper.project.homepage.admin.service.library.BookManageService;
+import keeper.project.homepage.library.service.BookManageService;
 import keeper.project.homepage.study.repository.StudyHasMemberRepository;
 import keeper.project.homepage.study.repository.StudyRepository;
 import keeper.project.homepage.attendance.service.AttendanceService;

@@ -6,7 +6,7 @@ import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
 import keeper.project.homepage.ctf.dto.CtfContestAdminDto;
 import keeper.project.homepage.ctf.dto.CtfProbMakerDto;
 import keeper.project.homepage.ctf.dto.CtfSubmitLogDto;
-import keeper.project.homepage.admin.service.ctf.CtfAdminService;
+import keeper.project.homepage.ctf.service.CtfAdminService;
 import keeper.project.homepage.util.dto.result.CommonResult;
 import keeper.project.homepage.util.dto.result.PageResult;
 import keeper.project.homepage.util.dto.result.SingleResult;

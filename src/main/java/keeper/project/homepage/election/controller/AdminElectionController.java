@@ -8,7 +8,7 @@ import keeper.project.homepage.election.dto.response.ElectionDeleteResponseDto;
 import keeper.project.homepage.election.dto.response.ElectionUpdateResponseDto;
 import keeper.project.homepage.election.dto.response.ElectionVoterCreateResponseDto;
 import keeper.project.homepage.election.dto.response.ElectionVoterResponseDto;
-import keeper.project.homepage.admin.service.election.AdminElectionService;
+import keeper.project.homepage.election.service.AdminElectionService;
 import keeper.project.homepage.util.dto.result.ListResult;
 import keeper.project.homepage.util.dto.result.SingleResult;
 import keeper.project.homepage.util.service.result.ResponseService;

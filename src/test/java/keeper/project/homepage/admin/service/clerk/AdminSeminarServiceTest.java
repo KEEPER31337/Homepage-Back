@@ -1,6 +1,6 @@
 package keeper.project.homepage.admin.service.clerk;
 
-import static keeper.project.homepage.admin.service.clerk.AdminSeminarService.ABSENCE_DEMERIT;
+import static keeper.project.homepage.clerk.service.AdminSeminarService.ABSENCE_DEMERIT;
 import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ABSENCE;
 import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ATTENDANCE;
 import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.BEFORE_ATTENDANCE;
@@ -22,6 +22,7 @@ import keeper.project.homepage.clerk.entity.MeritTypeEntity;
 import keeper.project.homepage.clerk.entity.SeminarAttendanceEntity;
 import keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity;
 import keeper.project.homepage.clerk.entity.SeminarEntity;
+import keeper.project.homepage.clerk.service.AdminSeminarService;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.member.entity.MemberTypeEntity;
 import keeper.project.homepage.clerk.exception.CustomDuplicateSeminarException;

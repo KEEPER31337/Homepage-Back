@@ -7,7 +7,6 @@ import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import keeper.project.homepage.admin.service.clerk.AdminSeminarService;
 import keeper.project.homepage.util.service.auth.AuthService;
 import keeper.project.homepage.clerk.entity.SeminarAttendanceEntity;
 import keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity;

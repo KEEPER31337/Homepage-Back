@@ -1,7 +1,7 @@
 package keeper.project.homepage.library.controller;
 
 import javax.servlet.http.HttpServletRequest;
-import keeper.project.homepage.admin.service.library.BookManageService;
+import keeper.project.homepage.library.service.BookManageService;
 import keeper.project.homepage.util.exception.file.CustomThumbnailEntityNotFoundException;
 import keeper.project.homepage.util.image.preprocessing.ImageCenterCropping;
 import keeper.project.homepage.library.dto.BookDto;

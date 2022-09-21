@@ -1,6 +1,6 @@
 package keeper.project.homepage.posting.controller;
 
-import keeper.project.homepage.admin.service.posting.AdminCommentService;
+import keeper.project.homepage.posting.service.AdminCommentService;
 import keeper.project.homepage.util.dto.result.CommonResult;
 import keeper.project.homepage.util.service.result.ResponseService;
 import lombok.RequiredArgsConstructor;

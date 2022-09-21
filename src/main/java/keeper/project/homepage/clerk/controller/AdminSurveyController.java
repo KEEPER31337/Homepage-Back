@@ -8,7 +8,7 @@ import keeper.project.homepage.clerk.dto.response.DeleteSurveyResponseDto;
 import keeper.project.homepage.clerk.dto.response.SurveyResponseDto;
 import keeper.project.homepage.clerk.dto.response.SurveyRespondentResponseDto;
 import keeper.project.homepage.clerk.dto.response.SurveyUpdateResponseDto;
-import keeper.project.homepage.admin.service.clerk.AdminSurveyService;
+import keeper.project.homepage.clerk.service.AdminSurveyService;
 import keeper.project.homepage.util.dto.result.ListResult;
 import keeper.project.homepage.util.dto.result.PageResult;
 import keeper.project.homepage.util.dto.result.SingleResult;

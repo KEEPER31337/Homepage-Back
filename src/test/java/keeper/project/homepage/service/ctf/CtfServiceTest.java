@@ -9,7 +9,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
-import keeper.project.homepage.admin.service.ctf.CtfAdminService;
+import keeper.project.homepage.ctf.service.CtfAdminService;
 import keeper.project.homepage.controller.ctf.CtfSpringTestHelper;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;

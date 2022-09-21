@@ -3,7 +3,7 @@ package keeper.project.homepage.systemadmin.controller;
 import javax.validation.constraints.NotNull;
 import keeper.project.homepage.systemadmin.dto.response.JobResponseDto;
 import keeper.project.homepage.systemadmin.dto.response.MemberJobTypeResponseDto;
-import keeper.project.homepage.admin.service.systemadmin.SystemAdminService;
+import keeper.project.homepage.systemadmin.service.SystemAdminService;
 import keeper.project.homepage.util.dto.result.ListResult;
 import keeper.project.homepage.util.dto.result.SingleResult;
 import keeper.project.homepage.util.service.result.ResponseService;

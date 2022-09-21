@@ -9,7 +9,7 @@ import keeper.project.homepage.clerk.dto.request.MeritTypeCreateRequestDto;
 import keeper.project.homepage.clerk.dto.response.MemberTotalMeritLogsResponseDto;
 import keeper.project.homepage.clerk.dto.response.MeritLogByYearResponseDto;
 import keeper.project.homepage.clerk.dto.response.MeritTypeResponseDto;
-import keeper.project.homepage.admin.service.clerk.AdminMeritService;
+import keeper.project.homepage.clerk.service.AdminMeritService;
 import keeper.project.homepage.util.dto.result.ListResult;
 import keeper.project.homepage.util.dto.result.SingleResult;
 import keeper.project.homepage.util.service.result.ResponseService;

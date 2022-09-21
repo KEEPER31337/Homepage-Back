@@ -6,7 +6,7 @@ import javax.validation.constraints.NotNull;
 import keeper.project.homepage.clerk.dto.request.ClerkMemberTypeRequestDto;
 import keeper.project.homepage.clerk.dto.response.ClerkMemberJobTypeResponseDto;
 import keeper.project.homepage.clerk.dto.response.TypeResponseDto;
-import keeper.project.homepage.admin.service.clerk.AdminClerkService;
+import keeper.project.homepage.clerk.service.AdminClerkService;
 import keeper.project.homepage.util.dto.result.ListResult;
 import keeper.project.homepage.util.dto.result.SingleResult;
 import keeper.project.homepage.util.service.result.ResponseService;
