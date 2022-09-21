@@ -1,4 +1,4 @@
-package keeper.project.homepage.controller.member;
+package keeper.project.homepage.member.controller;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.greaterThan;

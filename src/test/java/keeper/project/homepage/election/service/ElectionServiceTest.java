@@ -1,9 +1,9 @@
-package keeper.project.homepage.user.service.election;
+package keeper.project.homepage.election.service;
 
 import static org.assertj.core.api.Assertions.*;
 
 import javax.persistence.EntityManager;
-import keeper.project.homepage.controller.election.ElectionSpringTestHelper;
+import keeper.project.homepage.election.controller.ElectionSpringTestHelper;
 import keeper.project.homepage.election.entity.ElectionCandidateEntity;
 import keeper.project.homepage.election.entity.ElectionChartLogEntity;
 import keeper.project.homepage.election.entity.ElectionEntity;

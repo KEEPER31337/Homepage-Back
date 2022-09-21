@@ -1,4 +1,4 @@
-package keeper.project.homepage.admin.controller.systemadmin;
+package keeper.project.homepage.systemadmin.controller;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;

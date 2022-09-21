@@ -1,4 +1,4 @@
-package keeper.project.homepage.service.mail;
+package keeper.project.homepage.sign.service.mail;
 
 import java.util.ArrayList;
 import java.util.List;

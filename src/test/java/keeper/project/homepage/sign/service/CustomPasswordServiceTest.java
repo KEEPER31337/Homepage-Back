@@ -1,4 +1,4 @@
-package keeper.project.homepage.service;
+package keeper.project.homepage.sign.service;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;

@@ -1,4 +1,4 @@
-package keeper.project.homepage.controller.clerk;
+package keeper.project.homepage.clerk.controller;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;

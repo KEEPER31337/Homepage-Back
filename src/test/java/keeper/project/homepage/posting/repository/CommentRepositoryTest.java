@@ -1,4 +1,4 @@
-package keeper.project.homepage.repository.posting;
+package keeper.project.homepage.posting.repository;
 
 import java.time.LocalDateTime;
 import java.util.Optional;

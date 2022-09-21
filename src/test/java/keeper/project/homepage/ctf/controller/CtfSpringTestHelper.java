@@ -1,4 +1,4 @@
-package keeper.project.homepage.controller.ctf;
+package keeper.project.homepage.ctf.controller;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;

@@ -1,4 +1,4 @@
-package keeper.project.homepage.user.service.point;
+package keeper.project.homepage.point.service;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;

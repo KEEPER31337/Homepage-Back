@@ -9,7 +9,7 @@ import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.DYNAMIC;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
-import keeper.project.homepage.controller.ctf.CtfSpringTestHelper;
+import keeper.project.homepage.ctf.controller.CtfSpringTestHelper;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;

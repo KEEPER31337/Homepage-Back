@@ -1,4 +1,4 @@
-package keeper.project.homepage.admin.repository.about;
+package keeper.project.homepage.about.repository;
 
 import static org.assertj.core.api.Assertions.*;
 

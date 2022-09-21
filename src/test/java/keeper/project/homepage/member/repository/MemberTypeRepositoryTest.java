@@ -1,4 +1,4 @@
-package keeper.project.homepage.repository.member;
+package keeper.project.homepage.member.repository;
 
 import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.DORMANT_MEMBER;
 import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.GRADUATED_MEMBER;

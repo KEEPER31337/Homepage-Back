@@ -1,4 +1,4 @@
-package keeper.project.homepage.controller.election;
+package keeper.project.homepage.election.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;

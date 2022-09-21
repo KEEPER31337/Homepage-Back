@@ -1,4 +1,4 @@
-package keeper.project.homepage.user.controller.election;
+package keeper.project.homepage.election.controller;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -17,13 +17,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import keeper.project.homepage.controller.election.ElectionSpringTestHelper;
 import keeper.project.homepage.election.dto.request.ElectionVoteRequestDto;
 import keeper.project.homepage.election.entity.ElectionCandidateEntity;
 import keeper.project.homepage.election.entity.ElectionEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.member.entity.MemberJobEntity;
-import keeper.project.homepage.user.dto.election.request.ElectionVoteRequestDto;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

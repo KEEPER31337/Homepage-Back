@@ -1,4 +1,4 @@
-package keeper.project.homepage.controller.attendance;
+package keeper.project.homepage.attendance.controller;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;

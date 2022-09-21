@@ -1,4 +1,4 @@
-package keeper.project.homepage.controller.member;
+package keeper.project.homepage.member.controller;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;

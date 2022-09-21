@@ -1,4 +1,4 @@
-package keeper.project.homepage.admin.service.clerk;
+package keeper.project.homepage.clerk.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;

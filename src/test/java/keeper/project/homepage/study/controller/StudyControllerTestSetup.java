@@ -1,4 +1,4 @@
-package keeper.project.homepage.user.controller.study;
+package keeper.project.homepage.study.controller;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;

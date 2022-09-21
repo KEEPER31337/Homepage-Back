@@ -1,4 +1,4 @@
-package keeper.project.homepage.admin.controller.about;
+package keeper.project.homepage.about.controller;
 
 import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.about.entity.StaticWriteContentEntity;

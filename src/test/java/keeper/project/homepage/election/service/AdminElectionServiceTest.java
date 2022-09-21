@@ -1,11 +1,11 @@
-package keeper.project.homepage.admin.service.election;
+package keeper.project.homepage.election.service;
 
 import static org.assertj.core.api.Assertions.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.persistence.EntityManager;
-import keeper.project.homepage.controller.election.ElectionSpringTestHelper;
+import keeper.project.homepage.election.controller.ElectionSpringTestHelper;
 import keeper.project.homepage.election.entity.ElectionCandidateEntity;
 import keeper.project.homepage.election.entity.ElectionEntity;
 import keeper.project.homepage.member.entity.MemberEntity;

@@ -1,4 +1,4 @@
-package keeper.project.homepage.repository.election;
+package keeper.project.homepage.election.repository;
 
 import java.time.LocalDateTime;
 import javax.persistence.EntityManager;

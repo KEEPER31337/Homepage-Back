@@ -1,4 +1,4 @@
-package keeper.project.homepage.user.controller.clerk;
+package keeper.project.homepage.clerk.controller;
 
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.우수회원;
@@ -18,9 +18,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import keeper.project.homepage.clerk.dto.request.AttendanceCheckRequestDto;
 import keeper.project.homepage.clerk.entity.SeminarEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
-import keeper.project.homepage.clerk.dto.request.AttendanceCheckRequestDto;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -168,8 +168,8 @@ public class SeminarControllerTest extends ClerkControllerTestHelper {
         .andExpect(jsonPath("$.data.attendanceStatus").value("출석"))
         .andDo(document("check-seminar-attendance",
             requestFields(
-              fieldWithPath("seminarId").description("출석을 진행할 세미나 ID"),
-              fieldWithPath("attendanceCode").description("출석 코드")
+                fieldWithPath("seminarId").description("출석을 진행할 세미나 ID"),
+                fieldWithPath("attendanceCode").description("출석 코드")
             ),
             responseFields(
                 fieldWithPath("success").description("성공: true +\n실패: false"),
@@ -248,7 +248,8 @@ public class SeminarControllerTest extends ClerkControllerTestHelper {
   @DisplayName("[FAIL] 출석 체크 - 종료된 출석")
   public void checkSeminarAttendanceFailByEndAttendance() throws Exception {
     String code = "1234";
-    SeminarEntity seminar = generateSeminar(LocalDateTime.now().minusMinutes(20), LocalDateTime.now().minusMinutes(10),
+    SeminarEntity seminar = generateSeminar(LocalDateTime.now().minusMinutes(20),
+        LocalDateTime.now().minusMinutes(10),
         LocalDateTime.now().minusMinutes(5), code);
     generateSeminarAttendance(member, seminar,
         seminarAttendanceStatusRepository.getById(BEFORE_ATTENDANCE.getId()));

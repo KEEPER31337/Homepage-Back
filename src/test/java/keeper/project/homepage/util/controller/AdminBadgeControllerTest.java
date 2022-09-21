@@ -1,4 +1,4 @@
-package keeper.project.homepage.admin.controller.util;
+package keeper.project.homepage.util.controller;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;

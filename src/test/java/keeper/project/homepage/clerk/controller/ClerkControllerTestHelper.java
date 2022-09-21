@@ -1,4 +1,4 @@
-package keeper.project.homepage.admin.controller.clerk;
+package keeper.project.homepage.clerk.controller;
 
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
@@ -60,6 +60,19 @@ public class ClerkControllerTestHelper extends ApiControllerTestHelper {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
+  }
+
+  SeminarEntity generateSeminar(LocalDateTime openTime, LocalDateTime attendanceCloseTime,
+      LocalDateTime latenessCloseTime, String code) {
+    return seminarRepository.save(SeminarEntity.builder()
+        .name(openTime.toLocalDate()
+            .toString())
+        .openTime(openTime)
+        .attendanceCloseTime(attendanceCloseTime)
+        .latenessCloseTime(latenessCloseTime)
+        .attendanceCode(code)
+        .build()
+    );
   }
 
   protected List<FieldDescriptor> generateJobDtoResponseFields(ResponseType type,

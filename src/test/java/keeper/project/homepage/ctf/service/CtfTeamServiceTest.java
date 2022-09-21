@@ -1,10 +1,10 @@
-package keeper.project.homepage.user.service.ctf;
+package keeper.project.homepage.ctf.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
 import keeper.project.homepage.ctf.service.CtfAdminService;
-import keeper.project.homepage.controller.ctf.CtfSpringTestHelper;
+import keeper.project.homepage.ctf.controller.CtfSpringTestHelper;
 import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;

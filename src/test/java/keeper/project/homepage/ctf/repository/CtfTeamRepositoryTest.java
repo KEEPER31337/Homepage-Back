@@ -1,4 +1,4 @@
-package keeper.project.homepage.repository.ctf;
+package keeper.project.homepage.ctf.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

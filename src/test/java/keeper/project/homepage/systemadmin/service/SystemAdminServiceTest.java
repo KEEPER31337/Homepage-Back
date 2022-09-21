@@ -1,4 +1,4 @@
-package keeper.project.homepage.admin.service.systemadmin;
+package keeper.project.homepage.systemadmin.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

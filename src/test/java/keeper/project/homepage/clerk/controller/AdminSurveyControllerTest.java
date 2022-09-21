@@ -1,4 +1,4 @@
-package keeper.project.homepage.admin.controller.clerk;
+package keeper.project.homepage.clerk.controller;
 
 import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.ACTIVITY;
 import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
@@ -19,7 +19,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.time.LocalDateTime;
 import keeper.project.homepage.clerk.dto.request.AdminSurveyRequestDto;
-import keeper.project.homepage.controller.clerk.SurveySpringTestHelper;
 import keeper.project.homepage.clerk.entity.SurveyEntity;
 import keeper.project.homepage.clerk.entity.SurveyMemberReplyEntity;
 import keeper.project.homepage.member.entity.MemberEntity;

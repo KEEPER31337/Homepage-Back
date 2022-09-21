@@ -1,4 +1,4 @@
-package keeper.project.homepage.repository.ctf;
+package keeper.project.homepage.ctf.repository;
 
 import java.time.LocalDateTime;
 import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;

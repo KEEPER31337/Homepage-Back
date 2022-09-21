@@ -1,4 +1,4 @@
-package keeper.project.homepage.admin.controller.member;
+package keeper.project.homepage.member.controller;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;

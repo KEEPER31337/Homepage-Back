@@ -1,4 +1,4 @@
-package keeper.project.homepage.admin.service.clerk;
+package keeper.project.homepage.clerk.service;
 
 import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.ACTIVITY;
 import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.GRADUATE;
@@ -11,8 +11,7 @@ import javax.persistence.EntityManager;
 import keeper.project.homepage.clerk.dto.request.AdminSurveyRequestDto;
 import keeper.project.homepage.clerk.dto.response.SurveyRespondentResponseDto;
 import keeper.project.homepage.clerk.dto.response.SurveyResponseDto;
-import keeper.project.homepage.clerk.service.AdminSurveyService;
-import keeper.project.homepage.controller.clerk.SurveySpringTestHelper;
+import keeper.project.homepage.clerk.controller.SurveySpringTestHelper;
 import keeper.project.homepage.clerk.entity.SurveyEntity;
 import keeper.project.homepage.clerk.entity.SurveyMemberReplyEntity;
 import keeper.project.homepage.member.entity.MemberEntity;

@@ -1,4 +1,4 @@
-package keeper.project.homepage.user.controller.point;
+package keeper.project.homepage.point.controller;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;

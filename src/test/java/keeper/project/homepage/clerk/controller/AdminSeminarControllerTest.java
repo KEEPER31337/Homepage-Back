@@ -1,4 +1,4 @@
-package keeper.project.homepage.admin.controller.clerk;
+package keeper.project.homepage.clerk.controller;
 
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.서기;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.우수회원;

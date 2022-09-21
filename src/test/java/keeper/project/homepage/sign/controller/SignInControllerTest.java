@@ -1,4 +1,4 @@
-package keeper.project.homepage.controller.sign;
+package keeper.project.homepage.sign.controller;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;

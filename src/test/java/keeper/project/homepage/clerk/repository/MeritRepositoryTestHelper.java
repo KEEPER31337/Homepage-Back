@@ -1,4 +1,4 @@
-package keeper.project.homepage.repository.clerk;
+package keeper.project.homepage.clerk.repository;
 
 import javax.persistence.EntityManager;
 import keeper.project.homepage.clerk.repository.MeritLogRepository;

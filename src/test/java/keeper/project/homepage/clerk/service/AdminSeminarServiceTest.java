@@ -1,4 +1,4 @@
-package keeper.project.homepage.admin.service.clerk;
+package keeper.project.homepage.clerk.service;
 
 import static keeper.project.homepage.clerk.service.AdminSeminarService.ABSENCE_DEMERIT;
 import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ABSENCE;

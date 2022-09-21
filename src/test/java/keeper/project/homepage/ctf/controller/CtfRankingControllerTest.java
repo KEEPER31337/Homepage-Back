@@ -1,4 +1,4 @@
-package keeper.project.homepage.user.controller.ctf;
+package keeper.project.homepage.ctf.controller;
 
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.*;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.일반회원;
@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import keeper.project.homepage.controller.ctf.CtfSpringTestHelper;
+import keeper.project.homepage.ctf.controller.CtfSpringTestHelper;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
 import org.junit.jupiter.api.DisplayName;

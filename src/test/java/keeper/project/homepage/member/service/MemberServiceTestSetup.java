@@ -1,4 +1,4 @@
-package keeper.project.homepage.service.member;
+package keeper.project.homepage.member.service;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;

@@ -1,4 +1,4 @@
-package keeper.project.homepage.user.repostiory.point;
+package keeper.project.homepage.point.repository;
 
 import static org.assertj.core.api.Assertions.*;
 

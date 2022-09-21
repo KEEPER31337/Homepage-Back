@@ -1,4 +1,4 @@
-package keeper.project.homepage.repository;
+package keeper.project.homepage.util.repository;
 
 import keeper.project.homepage.member.entity.EmailAuthRedisEntity;
 import keeper.project.homepage.sign.repository.EmailAuthRedisRepository;
