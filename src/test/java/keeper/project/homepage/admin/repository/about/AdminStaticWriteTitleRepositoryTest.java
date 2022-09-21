@@ -3,7 +3,7 @@ package keeper.project.homepage.admin.repository.about;
 import static org.assertj.core.api.Assertions.*;
 
 import keeper.project.homepage.about.entity.StaticWriteTitleEntity;
-import keeper.project.homepage.repository.about.StaticWriteTitleRepository;
+import keeper.project.homepage.about.repository.StaticWriteTitleRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -10,10 +10,10 @@ import keeper.project.homepage.election.entity.ElectionVoterEntity;
 import keeper.project.homepage.election.entity.ElectionVoterPK;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.member.entity.MemberJobEntity;
-import keeper.project.homepage.repository.election.ElectionCandidateRepository;
-import keeper.project.homepage.repository.election.ElectionChartLogRepository;
-import keeper.project.homepage.repository.election.ElectionRepository;
-import keeper.project.homepage.repository.election.ElectionVoterRepository;
+import keeper.project.homepage.election.repository.ElectionCandidateRepository;
+import keeper.project.homepage.election.repository.ElectionChartLogRepository;
+import keeper.project.homepage.election.repository.ElectionRepository;
+import keeper.project.homepage.election.repository.ElectionVoterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ElectionSpringTestHelper extends ApiControllerTestHelper {

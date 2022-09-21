@@ -2,8 +2,8 @@ package keeper.project.homepage.util.service;
 
 import keeper.project.homepage.election.entity.ElectionEntity;
 import keeper.project.homepage.election.exception.CustomElectionNotFoundException;
-import keeper.project.homepage.repository.election.ElectionRepository;
-import keeper.project.homepage.repository.election.ElectionVoterRepository;
+import keeper.project.homepage.election.repository.ElectionRepository;
+import keeper.project.homepage.election.repository.ElectionVoterRepository;
 import keeper.project.homepage.user.dto.election.response.ElectionVoteStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

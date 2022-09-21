@@ -19,10 +19,10 @@ import keeper.project.homepage.election.exception.CustomElectionNotMatchCandidat
 import keeper.project.homepage.election.exception.CustomElectionVoteCountNotMatchException;
 import keeper.project.homepage.election.exception.CustomElectionVoteDuplicationJobException;
 import keeper.project.homepage.election.exception.CustomElectionVoterNotFoundException;
-import keeper.project.homepage.repository.election.ElectionCandidateRepository;
-import keeper.project.homepage.repository.election.ElectionChartLogRepository;
-import keeper.project.homepage.repository.election.ElectionRepository;
-import keeper.project.homepage.repository.election.ElectionVoterRepository;
+import keeper.project.homepage.election.repository.ElectionCandidateRepository;
+import keeper.project.homepage.election.repository.ElectionChartLogRepository;
+import keeper.project.homepage.election.repository.ElectionRepository;
+import keeper.project.homepage.election.repository.ElectionVoterRepository;
 import keeper.project.homepage.user.dto.election.request.ElectionVoteRequestDto;
 import keeper.project.homepage.user.dto.election.response.ElectionCandidatesResponseDto;
 import keeper.project.homepage.user.dto.election.response.ElectionResponseDto;

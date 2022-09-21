@@ -20,9 +20,9 @@ import keeper.project.homepage.sign.exception.CustomAuthenticationEntryPointExce
 import keeper.project.homepage.member.exception.CustomMemberDuplicateException;
 import keeper.project.homepage.member.exception.CustomMemberEmptyFieldException;
 import keeper.project.homepage.member.exception.CustomMemberNotFoundException;
-import keeper.project.homepage.repository.member.EmailAuthRedisRepository;
-import keeper.project.homepage.repository.member.FriendRepository;
-import keeper.project.homepage.repository.member.MemberRepository;
+import keeper.project.homepage.sign.repository.EmailAuthRedisRepository;
+import keeper.project.homepage.member.repository.FriendRepository;
+import keeper.project.homepage.member.repository.MemberRepository;
 import keeper.project.homepage.util.image.preprocessing.ImageSize;
 import keeper.project.homepage.util.service.FileService;
 import keeper.project.homepage.util.service.ThumbnailService;

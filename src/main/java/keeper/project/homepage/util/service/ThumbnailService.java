@@ -12,7 +12,7 @@ import keeper.project.homepage.util.entity.FileEntity;
 import keeper.project.homepage.util.entity.ThumbnailEntity;
 import keeper.project.homepage.posting.entity.PostingEntity;
 import keeper.project.homepage.util.exception.file.CustomThumbnailEntityNotFoundException;
-import keeper.project.homepage.repository.ThumbnailRepository;
+import keeper.project.homepage.util.repository.ThumbnailRepository;
 import keeper.project.homepage.util.image.preprocessing.ImagePreprocessing;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

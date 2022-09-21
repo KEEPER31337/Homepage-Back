@@ -9,6 +9,7 @@ import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.
 import java.util.List;
 import keeper.project.homepage.member.entity.MemberTypeEntity;
 import keeper.project.homepage.member.entity.MemberTypeEntity.memberType;
+import keeper.project.homepage.member.repository.MemberTypeRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

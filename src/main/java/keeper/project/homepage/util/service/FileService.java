@@ -21,7 +21,7 @@ import keeper.project.homepage.util.exception.file.CustomFileNotFoundException;
 import keeper.project.homepage.util.exception.file.CustomFileDeleteFailedException;
 import keeper.project.homepage.util.exception.file.CustomFileEntityNotFoundException;
 import keeper.project.homepage.util.exception.file.CustomFileTransferFailedException;
-import keeper.project.homepage.repository.FileRepository;
+import keeper.project.homepage.util.repository.FileRepository;
 import keeper.project.homepage.util.service.ThumbnailService.DefaultThumbnailInfo;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.IOUtils;

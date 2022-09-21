@@ -1,7 +1,7 @@
 package keeper.project.homepage.repository;
 
 import keeper.project.homepage.member.entity.EmailAuthRedisEntity;
-import keeper.project.homepage.repository.member.EmailAuthRedisRepository;
+import keeper.project.homepage.sign.repository.EmailAuthRedisRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

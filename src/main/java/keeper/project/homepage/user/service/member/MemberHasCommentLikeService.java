@@ -5,7 +5,7 @@ import keeper.project.homepage.posting.entity.CommentEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.member.entity.MemberHasCommentEntityPK;
 import keeper.project.homepage.member.entity.MemberHasCommentLikeEntity;
-import keeper.project.homepage.repository.member.MemberHasCommentLikeRepository;
+import keeper.project.homepage.member.repository.MemberHasCommentLikeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

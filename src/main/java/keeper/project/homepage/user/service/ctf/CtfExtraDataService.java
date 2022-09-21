@@ -2,11 +2,11 @@ package keeper.project.homepage.user.service.ctf;
 
 import java.util.List;
 import keeper.project.homepage.member.dto.CommonMemberDto;
-import keeper.project.homepage.repository.ctf.CtfChallengeCategoryRepository;
-import keeper.project.homepage.repository.ctf.CtfChallengeTypeRepository;
-import keeper.project.homepage.repository.ctf.CtfContestRepository;
-import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
-import keeper.project.homepage.repository.member.MemberJobRepository;
+import keeper.project.homepage.ctf.repository.CtfChallengeCategoryRepository;
+import keeper.project.homepage.ctf.repository.CtfChallengeTypeRepository;
+import keeper.project.homepage.ctf.repository.CtfContestRepository;
+import keeper.project.homepage.member.repository.MemberHasMemberJobRepository;
+import keeper.project.homepage.member.repository.MemberJobRepository;
 import keeper.project.homepage.user.dto.ctf.CtfChallengeCategoryDto;
 import keeper.project.homepage.user.dto.ctf.CtfChallengeTypeDto;
 import keeper.project.homepage.user.dto.ctf.CtfContestDto;

@@ -11,7 +11,7 @@ import keeper.project.homepage.util.entity.ThumbnailEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.member.entity.MemberJobEntity;
 import keeper.project.homepage.member.entity.MemberTypeEntity;
-import keeper.project.homepage.repository.member.MemberTypeRepository;
+import keeper.project.homepage.member.repository.MemberTypeRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

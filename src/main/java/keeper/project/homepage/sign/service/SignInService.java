@@ -12,7 +12,7 @@ import keeper.project.homepage.sign.dto.SignInDto;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.member.entity.MemberHasMemberJobEntity;
 import keeper.project.homepage.sign.exception.CustomLoginIdSigninFailedException;
-import keeper.project.homepage.repository.member.MemberRepository;
+import keeper.project.homepage.member.repository.MemberRepository;
 import keeper.project.homepage.util.service.mail.MailService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

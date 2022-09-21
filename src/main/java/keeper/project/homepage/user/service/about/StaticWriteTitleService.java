@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 import keeper.project.homepage.about.dto.response.StaticWriteTitleResponseDto;
 import keeper.project.homepage.about.entity.StaticWriteTitleEntity;
 import keeper.project.homepage.about.exception.CustomStaticWriteTypeNotFoundException;
-import keeper.project.homepage.repository.about.StaticWriteTitleRepository;
+import keeper.project.homepage.about.repository.StaticWriteTitleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

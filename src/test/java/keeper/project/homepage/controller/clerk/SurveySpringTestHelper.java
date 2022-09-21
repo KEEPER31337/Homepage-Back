@@ -15,10 +15,10 @@ import keeper.project.homepage.clerk.entity.SurveyMemberReplyEntity;
 import keeper.project.homepage.clerk.entity.SurveyReplyEntity;
 import keeper.project.homepage.clerk.entity.SurveyReplyExcuseEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
-import keeper.project.homepage.repository.clerk.SurveyMemberReplyRepository;
-import keeper.project.homepage.repository.clerk.SurveyReplyExcuseRepository;
-import keeper.project.homepage.repository.clerk.SurveyReplyRepository;
-import keeper.project.homepage.repository.clerk.SurveyRepository;
+import keeper.project.homepage.clerk.repository.SurveyMemberReplyRepository;
+import keeper.project.homepage.clerk.repository.SurveyReplyExcuseRepository;
+import keeper.project.homepage.clerk.repository.SurveyReplyRepository;
+import keeper.project.homepage.clerk.repository.SurveyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.restdocs.payload.FieldDescriptor;
 

@@ -7,7 +7,7 @@ import java.util.Set;
 import keeper.project.homepage.user.dto.library.BookResult;
 import keeper.project.homepage.library.entity.BookEntity;
 import keeper.project.homepage.library.exception.CustomBookNotFoundException;
-import keeper.project.homepage.repository.library.BookRepository;
+import keeper.project.homepage.library.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

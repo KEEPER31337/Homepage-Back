@@ -17,9 +17,9 @@ import keeper.project.homepage.clerk.exception.CustomSeminarAttendanceFailExcept
 import keeper.project.homepage.clerk.exception.CustomSeminarAttendanceNotFoundException;
 import keeper.project.homepage.clerk.exception.CustomSeminarAttendanceStatusNotFoundException;
 import keeper.project.homepage.clerk.exception.CustomSeminarNotFoundException;
-import keeper.project.homepage.repository.clerk.SeminarAttendanceRepository;
-import keeper.project.homepage.repository.clerk.SeminarAttendanceStatusRepository;
-import keeper.project.homepage.repository.clerk.SeminarRepository;
+import keeper.project.homepage.clerk.repository.SeminarAttendanceRepository;
+import keeper.project.homepage.clerk.repository.SeminarAttendanceStatusRepository;
+import keeper.project.homepage.clerk.repository.SeminarRepository;
 import keeper.project.homepage.user.dto.clerk.request.AttendanceCheckRequestDto;
 import keeper.project.homepage.user.dto.clerk.response.AttendanceCheckResponseDto;
 import keeper.project.homepage.user.dto.clerk.response.SeminarOngoingAttendanceResponseDto;

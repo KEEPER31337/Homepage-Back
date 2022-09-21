@@ -11,11 +11,11 @@ import keeper.project.homepage.sign.exception.CustomAuthenticationEntryPointExce
 import keeper.project.homepage.util.exception.CustomNumberOverflowException;
 import keeper.project.homepage.posting.exception.CustomCommentEmptyFieldException;
 import keeper.project.homepage.posting.exception.CustomCommentNotFoundException;
-import keeper.project.homepage.repository.member.MemberHasCommentDislikeRepository;
-import keeper.project.homepage.repository.member.MemberHasCommentLikeRepository;
-import keeper.project.homepage.repository.posting.CommentRepository;
-import keeper.project.homepage.repository.posting.CommentSpec;
-import keeper.project.homepage.repository.posting.PostingRepository;
+import keeper.project.homepage.member.repository.MemberHasCommentDislikeRepository;
+import keeper.project.homepage.member.repository.MemberHasCommentLikeRepository;
+import keeper.project.homepage.posting.repository.CommentRepository;
+import keeper.project.homepage.posting.repository.CommentSpec;
+import keeper.project.homepage.posting.repository.PostingRepository;
 import keeper.project.homepage.user.service.member.MemberHasCommentDislikeService;
 import keeper.project.homepage.user.service.member.MemberHasCommentLikeService;
 import keeper.project.homepage.user.service.member.MemberUtilService;

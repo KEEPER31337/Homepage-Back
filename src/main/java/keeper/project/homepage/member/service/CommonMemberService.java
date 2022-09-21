@@ -5,7 +5,7 @@ import java.util.List;
 import keeper.project.homepage.member.dto.CommonMemberDto;
 import keeper.project.homepage.member.mapper.CommonMemberMapper;
 import keeper.project.homepage.member.entity.MemberEntity;
-import keeper.project.homepage.repository.member.MemberRepository;
+import keeper.project.homepage.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Service;

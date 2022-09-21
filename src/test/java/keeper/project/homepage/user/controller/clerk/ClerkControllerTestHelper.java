@@ -9,12 +9,12 @@ import keeper.project.homepage.clerk.entity.SeminarAttendanceExcuseEntity;
 import keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity;
 import keeper.project.homepage.clerk.entity.SeminarEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
-import keeper.project.homepage.repository.clerk.MeritLogRepository;
-import keeper.project.homepage.repository.clerk.MeritTypeRepository;
-import keeper.project.homepage.repository.clerk.SeminarAttendanceExcuseRepository;
-import keeper.project.homepage.repository.clerk.SeminarAttendanceRepository;
-import keeper.project.homepage.repository.clerk.SeminarAttendanceStatusRepository;
-import keeper.project.homepage.repository.clerk.SeminarRepository;
+import keeper.project.homepage.clerk.repository.MeritLogRepository;
+import keeper.project.homepage.clerk.repository.MeritTypeRepository;
+import keeper.project.homepage.clerk.repository.SeminarAttendanceExcuseRepository;
+import keeper.project.homepage.clerk.repository.SeminarAttendanceRepository;
+import keeper.project.homepage.clerk.repository.SeminarAttendanceStatusRepository;
+import keeper.project.homepage.clerk.repository.SeminarRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ClerkControllerTestHelper extends ApiControllerTestHelper {

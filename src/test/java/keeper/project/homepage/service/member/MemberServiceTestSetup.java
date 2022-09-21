@@ -28,8 +28,8 @@ import keeper.project.homepage.point.entity.PointLogEntity;
 import keeper.project.homepage.posting.entity.CategoryEntity;
 import keeper.project.homepage.posting.entity.CommentEntity;
 import keeper.project.homepage.posting.entity.PostingEntity;
-import keeper.project.homepage.repository.member.MemberHasCommentDislikeRepository;
-import keeper.project.homepage.repository.member.MemberHasCommentLikeRepository;
+import keeper.project.homepage.member.repository.MemberHasCommentDislikeRepository;
+import keeper.project.homepage.member.repository.MemberHasCommentLikeRepository;
 import org.junit.jupiter.api.Assertions;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -9,9 +9,9 @@ import keeper.project.homepage.member.entity.MemberTypeEntity;
 import keeper.project.homepage.member.exception.CustomAccessVirtualMemberException;
 import keeper.project.homepage.member.exception.CustomMemberInfoNotFoundException;
 import keeper.project.homepage.member.exception.CustomMemberNotFoundException;
-import keeper.project.homepage.repository.member.MemberJobRepository;
-import keeper.project.homepage.repository.member.MemberRepository;
-import keeper.project.homepage.repository.member.MemberTypeRepository;
+import keeper.project.homepage.member.repository.MemberJobRepository;
+import keeper.project.homepage.member.repository.MemberRepository;
+import keeper.project.homepage.member.repository.MemberTypeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
