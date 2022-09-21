@@ -7,7 +7,7 @@ import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
-import keeper.project.homepage.user.dto.election.response.ElectionVoteStatus;
+import keeper.project.homepage.election.dto.response.ElectionVoteStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
