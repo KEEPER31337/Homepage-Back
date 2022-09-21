@@ -4,7 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
-import keeper.project.homepage.exception.file.CustomImageIOException;
+import keeper.project.homepage.util.exception.file.CustomImageIOException;
 
 public class ImageCenterCropping implements ImagePreprocessing {
 

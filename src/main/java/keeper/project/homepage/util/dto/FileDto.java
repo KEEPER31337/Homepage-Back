@@ -1,8 +1,8 @@
 package keeper.project.homepage.util.dto;
 
 import java.time.LocalDateTime;
-import keeper.project.homepage.entity.FileEntity;
-import keeper.project.homepage.entity.posting.PostingEntity;
+import keeper.project.homepage.util.entity.FileEntity;
+import keeper.project.homepage.posting.entity.PostingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

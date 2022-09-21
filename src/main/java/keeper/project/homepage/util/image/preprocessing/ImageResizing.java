@@ -4,7 +4,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.imageio.ImageIO;
-import keeper.project.homepage.exception.file.CustomImageIOException;
+import keeper.project.homepage.util.exception.file.CustomImageIOException;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2

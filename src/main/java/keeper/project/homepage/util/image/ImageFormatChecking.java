@@ -2,8 +2,8 @@ package keeper.project.homepage.util.image;
 
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
-import keeper.project.homepage.exception.file.CustomImageFormatException;
-import keeper.project.homepage.exception.file.CustomImageIOException;
+import keeper.project.homepage.util.exception.file.CustomImageFormatException;
+import keeper.project.homepage.util.exception.file.CustomImageIOException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
