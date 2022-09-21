@@ -1,5 +1,7 @@
 ## 연관 issue
 
-*Ex) close #7*
+close
+
+- #
 
 ## 프론트 전달사항

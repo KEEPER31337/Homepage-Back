@@ -7,11 +7,20 @@ assignees: ''
 
 ---
 
+## 사전 수행 issue
+
+- [ ] 사전에 수행할 이슈 번호 *Ex) #300*
+
 ## 이슈 내용
+
 이슈 내용
+
+```
+이슈 관련 코드
+```
+
 <img width="400" alt="image" src="https://user-images.githubusercontent.com/26597702/191195545-9541c7e1-a0fd-4684-aebf-9dccd48443c4.png">
 
-- [ ] 수행해야할이슈
+## 이슈 수행 사항
 
-## 사전 수행 issue
-- [ ] 사전에 수행할 이슈 번호 *Ex) #300*
+- [ ] 수행해야할이슈
