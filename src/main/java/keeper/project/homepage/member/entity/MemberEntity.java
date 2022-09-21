@@ -21,7 +21,7 @@ import keeper.project.homepage.util.entity.ThumbnailEntity;
 import keeper.project.homepage.clerk.entity.SeminarAttendanceEntity;
 import keeper.project.homepage.posting.entity.PostingEntity;
 import keeper.project.homepage.study.entity.StudyHasMemberEntity;
-import keeper.project.homepage.user.dto.member.MultiMemberResponseDto;
+import keeper.project.homepage.member.dto.MultiMemberResponseDto;
 import keeper.project.homepage.util.EnvironmentProperty;
 import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import lombok.AllArgsConstructor;

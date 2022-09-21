@@ -27,7 +27,7 @@ import keeper.project.homepage.util.entity.FileEntity;
 import keeper.project.homepage.posting.entity.PostingEntity;
 import keeper.project.homepage.util.entity.ThumbnailEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
-import keeper.project.homepage.user.service.posting.PostingService;
+import keeper.project.homepage.posting.service.PostingService;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;

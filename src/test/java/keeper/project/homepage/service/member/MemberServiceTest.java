@@ -7,7 +7,7 @@ import keeper.project.homepage.member.entity.MemberHasMemberJobEntity;
 import keeper.project.homepage.member.entity.MemberJobEntity;
 import keeper.project.homepage.posting.entity.PostingEntity;
 import keeper.project.homepage.member.exception.CustomAccountDeleteFailedException;
-import keeper.project.homepage.user.service.member.MemberUtilService;
+import keeper.project.homepage.member.service.MemberUtilService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

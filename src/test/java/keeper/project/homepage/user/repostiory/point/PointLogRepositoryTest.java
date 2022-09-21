@@ -7,7 +7,7 @@ import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.point.entity.PointLogEntity;
 import keeper.project.homepage.member.repository.MemberRepository;
 import keeper.project.homepage.point.repository.PointLogRepository;
-import keeper.project.homepage.user.dto.point.request.PointLogRequestDto;
+import keeper.project.homepage.point.dto.request.PointLogRequestDto;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

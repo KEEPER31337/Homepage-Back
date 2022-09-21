@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 import keeper.project.homepage.controller.clerk.SurveySpringTestHelper;
 import keeper.project.homepage.clerk.entity.SurveyEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
-import keeper.project.homepage.user.dto.clerk.request.SurveyResponseRequestDto;
+import keeper.project.homepage.clerk.dto.request.SurveyResponseRequestDto;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

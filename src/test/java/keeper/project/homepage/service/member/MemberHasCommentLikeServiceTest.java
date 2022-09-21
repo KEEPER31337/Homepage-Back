@@ -9,7 +9,7 @@ import keeper.project.homepage.posting.entity.CategoryEntity;
 import keeper.project.homepage.posting.entity.CommentEntity;
 import keeper.project.homepage.posting.entity.PostingEntity;
 import keeper.project.homepage.member.repository.MemberHasCommentLikeRepository;
-import keeper.project.homepage.user.service.member.MemberHasCommentLikeService;
+import keeper.project.homepage.member.service.MemberHasCommentLikeService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

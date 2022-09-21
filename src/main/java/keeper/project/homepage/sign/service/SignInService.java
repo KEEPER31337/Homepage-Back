@@ -7,7 +7,7 @@ import java.util.Random;
 import javax.transaction.Transactional;
 import keeper.project.homepage.config.security.JwtTokenProvider;
 import keeper.project.homepage.sign.dto.EmailAuthDto;
-import keeper.project.homepage.user.dto.member.MemberDto;
+import keeper.project.homepage.member.dto.UserMemberDto;
 import keeper.project.homepage.sign.dto.SignInDto;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.member.entity.MemberHasMemberJobEntity;
@@ -95,7 +95,7 @@ public class SignInService {
   }
 
   public SignInDto createSignInDto(String token, MemberEntity member) {
-    MemberDto memberDto = new MemberDto();
+    UserMemberDto memberDto = new UserMemberDto();
     memberDto.initWithEntity(member);
     return new SignInDto(token, memberDto);
   }

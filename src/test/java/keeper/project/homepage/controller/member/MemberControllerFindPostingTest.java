@@ -25,7 +25,7 @@ import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.posting.entity.CategoryEntity;
 import keeper.project.homepage.posting.entity.PostingEntity;
-import keeper.project.homepage.user.service.posting.PostingService;
+import keeper.project.homepage.posting.service.PostingService;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

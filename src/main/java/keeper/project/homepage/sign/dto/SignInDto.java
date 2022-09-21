@@ -2,7 +2,7 @@ package keeper.project.homepage.sign.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import keeper.project.homepage.user.dto.member.MemberDto;
+import keeper.project.homepage.member.dto.UserMemberDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,5 +18,5 @@ import lombok.Setter;
 public class SignInDto {
 
   private String token;
-  private MemberDto member;
+  private UserMemberDto member;
 }

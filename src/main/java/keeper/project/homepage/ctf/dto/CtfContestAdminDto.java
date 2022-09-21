@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import keeper.project.homepage.member.dto.CommonMemberDto;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
-import keeper.project.homepage.user.dto.ctf.CtfContestDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

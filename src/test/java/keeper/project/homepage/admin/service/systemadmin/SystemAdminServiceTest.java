@@ -21,7 +21,7 @@ import keeper.project.homepage.member.entity.MemberTypeEntity;
 import keeper.project.homepage.clerk.exception.CustomClerkInaccessibleJobException;
 import keeper.project.homepage.member.repository.MemberHasMemberJobRepository;
 import keeper.project.homepage.member.repository.MemberJobRepository;
-import keeper.project.homepage.user.service.member.MemberUtilService;
+import keeper.project.homepage.member.service.MemberUtilService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;

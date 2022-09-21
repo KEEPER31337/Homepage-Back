@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.regex.Pattern;
 import keeper.project.homepage.sign.dto.EmailAuthDto;
-import keeper.project.homepage.user.dto.member.MemberDto;
+import keeper.project.homepage.member.dto.UserMemberDto;
 import keeper.project.homepage.member.entity.EmailAuthRedisEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.member.entity.MemberHasMemberJobEntity;
@@ -59,7 +59,7 @@ public class SignUpService {
     mailService.sendMail(toUserList, subject, text);
   }
 
-  public void signUpWithEmailAuthCode(MemberDto memberDto) {
+  public void signUpWithEmailAuthCode(UserMemberDto memberDto) {
     String memberEmail = memberDto.getEmailAddress();
     String authCode = memberDto.getAuthCode();
 
@@ -119,17 +119,17 @@ public class SignUpService {
     // 출처: https://www.baeldung.com/java-random-string
   }
 
-  private boolean isValidAll(MemberDto memberDto) {
+  private boolean isValidAll(UserMemberDto memberDto) {
     return !isDuplicate(memberDto) && isValid(memberDto);
   }
 
-  private boolean isDuplicate(MemberDto memberDto) {
+  private boolean isDuplicate(UserMemberDto memberDto) {
     return duplicateCheckService.isEmailAddressDuplicate(memberDto.getEmailAddress()) ||
         duplicateCheckService.isLoginIdDuplicate(memberDto.getLoginId()) ||
         duplicateCheckService.isStudentIdDuplicate(memberDto.getStudentId());
   }
 
-  private boolean isValid(MemberDto memberDto) {
+  private boolean isValid(UserMemberDto memberDto) {
     return isLoginIdValid(memberDto.getLoginId()) &&
         isPasswordValid(memberDto.getPassword()) &&
         isNicknameValid(memberDto.getNickName()) &&

@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.user.dto.point.request.PointLogRequestDto;
+import keeper.project.homepage.point.dto.request.PointLogRequestDto;
 import keeper.project.homepage.util.entity.ThumbnailEntity;
 import keeper.project.homepage.attendance.entity.AttendanceEntity;
 import keeper.project.homepage.library.entity.BookBorrowEntity;

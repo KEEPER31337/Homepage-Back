@@ -18,7 +18,7 @@ import keeper.project.homepage.ApiControllerTestHelper;
 import keeper.project.homepage.member.entity.FriendEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.member.exception.CustomMemberNotFoundException;
-import keeper.project.homepage.user.service.member.MemberUtilService;
+import keeper.project.homepage.member.service.MemberUtilService;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;

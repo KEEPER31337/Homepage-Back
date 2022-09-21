@@ -22,7 +22,7 @@ import keeper.project.homepage.posting.entity.CategoryEntity;
 import keeper.project.homepage.posting.entity.CommentEntity;
 import keeper.project.homepage.posting.entity.PostingEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
-import keeper.project.homepage.user.dto.posting.CommentDto;
+import keeper.project.homepage.posting.dto.CommentDto;
 import keeper.project.homepage.util.image.ImageFormatChecking;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.AfterAll;
