@@ -64,17 +64,14 @@ public class SurveyService {
         .getId();
   }
 
-  private Long getMemberTypeId(Long replyId){
-    if (replyId.equals(ACTIVITY.getId())){
+  private Long getMemberTypeId(Long replyId) {
+    if (replyId.equals(ACTIVITY.getId())) {
       return REGULAR_MEMBER.getId();
-    }
-    else if (replyId.equals(GRADUATE.getId())){
+    } else if (replyId.equals(GRADUATE.getId())) {
       return GRADUATED_MEMBER.getId();
-    }
-    else if (replyId.equals(LEAVE.getId())){
+    } else if (replyId.equals(LEAVE.getId())) {
       return WITHDRAWAL_MEMBER.getId();
-    }
-    else{
+    } else {
       return DORMANT_MEMBER.getId();
     }
   }
@@ -196,9 +193,10 @@ public class SurveyService {
     Optional<SurveyMemberReplyEntity> surveyMemberReply = surveyMemberReplyRepository
         .findBySurveyIdAndMemberId(latestClosedSurvey.getId(), reqMemberId);
     if (surveyMemberReply.isEmpty()) {
-      return ClosedSurveyInformationResponseDto.of(latestClosedSurvey,null);
+      return ClosedSurveyInformationResponseDto.of(latestClosedSurvey, null);
     }
-    return ClosedSurveyInformationResponseDto.of(latestClosedSurvey, surveyMemberReply.get().getReply().getId());
+    return ClosedSurveyInformationResponseDto.of(latestClosedSurvey,
+        surveyMemberReply.get().getReply().getId());
   }
 
 }
