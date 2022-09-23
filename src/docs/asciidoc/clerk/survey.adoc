@@ -1,0 +1,146 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+// 자동으로 생성된 snippet 설정하는 부분
+
+= KEEPER API 문서
+:icons: font
+// NOTE, TIP, WARNING, CAUTION, IMPORTANT 같은 경고구들 아이콘화 해줌
+:source-highlighter: highlight.js
+// source code 블럭에서 사용되는 highlighter 설정, 4개 정도 있던데 차이를 아직 잘 모르겠음.
+:toc: left
+// table of contents(toc) 왼쪽정렬하여 생성
+:toclevels: 1
+// default : 2 (==,  ===) 까지 toc에 보여줌.
+:sectlinks:
+// section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
+
+== API 목록
+
+link:../keeper.html[API 목록으로 돌아가기]
+
+== *설문 조사 응답*
+
+NOTE: 요청을 보낸 회원의 JWT를 기반으로 해당 설문에서 회원의 응답 정보를 저장합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-response/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/survey-response/path-parameters.adoc[]
+
+==== Request Body
+
+include::{snippets}/survey-response/request-body.adoc[]
+
+==== Request Field
+
+include::{snippets}/survey-response/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-response/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-response/response-fields.adoc[]
+
+== *설문 응답 수정*
+
+NOTE: 요청을 보낸 회원의 JWT를 기반으로 해당 설문에서 회원의 응답 정보를 저장합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-response-modify/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/survey-response-modify/path-parameters.adoc[]
+
+==== Request Body
+
+include::{snippets}/survey-response-modify/request-body.adoc[]
+
+==== Request Field
+
+include::{snippets}/survey-response-modify/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-response-modify/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-response-modify/response-fields.adoc[]
+
+== *설문 정보 조회*
+
+NOTE: 요청을 보낸 회원의 JWT를 기반으로 해당 설문에서 회원의 응답 정보를 전달합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-information/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/survey-information/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-information/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-information/response-fields.adoc[]
+
+== *공개 상태의 설문 조회(가장 최근)*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-visible-latest/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-visible-latest/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-visible-latest/response-fields.adoc[]
+
+== *종료된 설문 정보 조회(가장 최근)*
+
+NOTE: 요청을 보낸 회원의 JWT를 기반으로 해당 설문에서 회원의 응답 정보를 전달합니다.
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-closed-latest/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-closed-latest/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-closed-latest/response-fields.adoc[]
