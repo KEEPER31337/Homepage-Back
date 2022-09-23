@@ -1,11 +1,19 @@
 package keeper.project.homepage.clerk.service;
 
+import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.ACTIVITY;
+import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.GRADUATE;
+import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.LEAVE;
 import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.DORMANT_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.GRADUATED_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.REGULAR_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.WITHDRAWAL_MEMBER;
 import static keeper.project.homepage.util.service.SurveyUtilService.NO_SURVEY;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 import keeper.project.homepage.clerk.dto.response.ClosedSurveyInformationResponseDto;
+import keeper.project.homepage.member.entity.MemberTypeEntity;
 import keeper.project.homepage.util.service.auth.AuthService;
 import keeper.project.homepage.clerk.entity.SurveyEntity;
 import keeper.project.homepage.clerk.entity.SurveyMemberReplyEntity;
@@ -49,8 +57,26 @@ public class SurveyService {
     validateVisibleSurvey(survey);
     MemberEntity member = authService.getMemberEntityWithJWT();
 
+    MemberTypeEntity type = memberUtilService.getTypeById(getMemberTypeId(requestDto.getReplyId()));
+    member.changeMemberType(type);
+
     return surveyMemberReplyRepository.save(generateMemberReplyEntity(survey, member, requestDto))
         .getId();
+  }
+
+  private Long getMemberTypeId(Long replyId){
+    if (replyId.equals(ACTIVITY.getId())){
+      return REGULAR_MEMBER.getId();
+    }
+    else if (replyId.equals(GRADUATE.getId())){
+      return GRADUATED_MEMBER.getId();
+    }
+    else if (replyId.equals(LEAVE.getId())){
+      return WITHDRAWAL_MEMBER.getId();
+    }
+    else{
+      return DORMANT_MEMBER.getId();
+    }
   }
 
   private SurveyMemberReplyEntity generateMemberReplyEntity(SurveyEntity survey,
@@ -93,6 +119,9 @@ public class SurveyService {
     SurveyReplyEntity modifyReplyType = surveyReplyRepository.getById(requestDto.getReplyId());
     SurveyReplyEntity beforeReply = memberReply.getReply();
     modifyReply(memberReply, requestDto, beforeReply, modifyReplyType);
+
+    MemberTypeEntity type = memberUtilService.getTypeById(getMemberTypeId(requestDto.getReplyId()));
+    member.changeMemberType(type);
 
     return SurveyModifyResponseDto.from(surveyMemberReplyRepository.save(memberReply),
         requestDto.getExcuse());
