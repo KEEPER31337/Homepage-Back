@@ -3,6 +3,9 @@ package keeper.project.homepage.clerk.service;
 import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.ACTIVITY;
 import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.GRADUATE;
 import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.DORMANT_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.GRADUATED_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.REGULAR_MEMBER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -18,6 +21,8 @@ import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.clerk.exception.CustomSurveyMemberReplyNotFoundException;
 import keeper.project.homepage.clerk.dto.request.SurveyResponseRequestDto;
 import keeper.project.homepage.clerk.dto.response.SurveyInformationResponseDto;
+import keeper.project.homepage.member.entity.MemberTypeEntity;
+import keeper.project.homepage.member.service.MemberUtilService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +41,8 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
 
   @Autowired
   private SurveyService surveyService;
+  @Autowired
+  private MemberUtilService memberUtilService;
 
   private MemberEntity user;
   private MemberEntity admin;
@@ -69,6 +76,29 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
 
     //then
     assertThat(surveyMemberReplyEntity.getReply().getId()).isEqualTo(ACTIVITY.getId());
+  }
+
+  @Test
+  @DisplayName("설문 응답시 멤버의 활동 상태 타입도 갱신")
+  public void updateMemberType() throws Exception {
+    //given
+    setAuthentication(user);
+    MemberTypeEntity type = memberUtilService.getTypeById(DORMANT_MEMBER.getId());
+    user.changeMemberType(type);
+
+    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
+        true);
+
+    SurveyResponseRequestDto requestDto = SurveyResponseRequestDto.builder()
+        .replyId(ACTIVITY.getId())
+        .excuse(null)
+        .build();
+
+    //when
+    surveyService.responseSurvey(survey.getId(), requestDto);
+
+    //then
+    assertThat(user.getMemberType().getId()).isEqualTo(REGULAR_MEMBER.getId());
   }
 
   @Test
@@ -200,6 +230,31 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
     assertThat(surveyMemberReplyEntity2.getSurveyReplyExcuseEntity().getRestExcuse()).isEqualTo(
         requestDto.getExcuse());
   }
+
+  @Test
+  @DisplayName("설문 응답 수정 시 멤버의 활동 상태 타입도 갱신")
+  public void updateMemberTypeWhenModifyResponse() throws Exception {
+    //given
+    setAuthentication(user);
+    MemberTypeEntity type = memberUtilService.getTypeById(REGULAR_MEMBER.getId());
+    user.changeMemberType(type);
+
+    SurveyEntity survey = generateSurvey(LocalDateTime.now(), LocalDateTime.now().plusDays(5),
+        true);
+    generateSurveyMemberReply(survey, user, surveyReplyRepository.getById(ACTIVITY.getId()));
+
+    SurveyResponseRequestDto requestDto = SurveyResponseRequestDto.builder()
+        .replyId(GRADUATE.getId())
+        .excuse(null)
+        .build();
+
+    //when
+    surveyService.modifyResponse(survey.getId(), requestDto);
+
+    //then
+    assertThat(user.getMemberType().getId()).isEqualTo(GRADUATED_MEMBER.getId());
+  }
+
 
   @Test
   @DisplayName("설문 정보 조회")
@@ -343,11 +398,11 @@ public class SurveyServiceTest extends SurveySpringTestHelper {
     ClosedSurveyInformationResponseDto result = surveyService.getLatestClosedSurveyInformation();
 
     //then
-    assertThat(ClosedSurveyInformationResponseDto.of(survey,null).getSurveyId())
+    assertThat(ClosedSurveyInformationResponseDto.of(survey, null).getSurveyId())
         .isEqualTo(result.getSurveyId());
-    assertThat(ClosedSurveyInformationResponseDto.of(survey,null).getSurveyName())
+    assertThat(ClosedSurveyInformationResponseDto.of(survey, null).getSurveyName())
         .isEqualTo(result.getSurveyName());
-    assertThat(ClosedSurveyInformationResponseDto.of(survey,null).getReplyId())
+    assertThat(ClosedSurveyInformationResponseDto.of(survey, null).getReplyId())
         .isEqualTo(result.getReplyId());
   }
 
