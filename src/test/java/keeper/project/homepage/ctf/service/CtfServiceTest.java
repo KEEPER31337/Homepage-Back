@@ -3,8 +3,8 @@ package keeper.project.homepage.ctf.service;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.우수회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberTypeName.정회원;
-import static keeper.project.homepage.ctf.controller.CtfSpringTestHelper.CtfChallengeType.STANDARD;
-import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.MISC;
+import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.MISC;
+import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.STANDARD;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;

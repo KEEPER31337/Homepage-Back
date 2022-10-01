@@ -1,6 +1,6 @@
 package keeper.project.homepage.util.service;
 
-import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.DYNAMIC;
+import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.DYNAMIC;
 
 import java.util.List;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;

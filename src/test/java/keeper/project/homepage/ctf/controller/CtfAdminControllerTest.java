@@ -1,5 +1,9 @@
 package keeper.project.homepage.ctf.controller;
 
+import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.FORENSIC;
+import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.MISC;
+import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.DYNAMIC;
+import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.STANDARD;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -256,8 +260,9 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
   @DisplayName("출제자 권한으로 문제 생성 - 성공")
   public void createProblemSuccess() throws Exception {
     CtfChallengeCategoryDto category = CtfChallengeCategoryDto.toDto(
-        CtfChallengeCategoryEntity.FORENSIC);
-    CtfChallengeTypeDto type = CtfChallengeTypeDto.toDto(CtfChallengeTypeEntity.DYNAMIC);
+        ctfChallengeCategoryRepository.getById(FORENSIC.getId()));
+    CtfChallengeTypeDto type = CtfChallengeTypeDto.toDto(
+        ctfChallengeTypeRepository.getById(DYNAMIC.getId()));
     MemberEntity creator = generateMemberEntity(MemberJobName.출제자, MemberTypeName.정회원,
         MemberRankName.일반회원);
     String creatorToken = generateJWTToken(creator);
@@ -335,8 +340,9 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
   @DisplayName("회장 권한으로 STANDARD 문제 생성 - 성공")
   public void createStandardProblemSuccess() throws Exception {
     CtfChallengeCategoryDto category = CtfChallengeCategoryDto.toDto(
-        CtfChallengeCategoryEntity.FORENSIC);
-    CtfChallengeTypeDto type = CtfChallengeTypeDto.toDto(CtfChallengeTypeEntity.STANDARD);
+        ctfChallengeCategoryRepository.getById(FORENSIC.getId()));
+    CtfChallengeTypeDto type = CtfChallengeTypeDto.toDto(
+        ctfChallengeTypeRepository.getById(STANDARD.getId()));
     MemberEntity creator = generateMemberEntity(MemberJobName.출제자, MemberTypeName.정회원,
         MemberRankName.일반회원);
     Long teamScore = 0L;
@@ -385,8 +391,8 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
         "<<png data>>".getBytes());
     Long score = 1234L;
     CtfChallengeEntity challenge = generateCtfChallenge(contestEntity,
-        CtfChallengeTypeEntity.DYNAMIC,
-        CtfChallengeCategoryEntity.FORENSIC, score);
+        DYNAMIC,
+        FORENSIC, score);
 
     mockMvc.perform(multipart("/v1/admin/ctf/prob/file")
             .file(file)
@@ -421,8 +427,8 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
     Long score = 1234L;
     CtfTeamEntity team = generateCtfTeam(contestEntity, creator, teamScore);
     CtfChallengeEntity challenge = generateCtfChallenge(contestEntity,
-        CtfChallengeTypeEntity.STANDARD,
-        CtfChallengeCategoryEntity.MISC, score);
+        STANDARD,
+        MISC, score);
     generateCtfFlag(team, challenge, false);
 
     mockMvc.perform(patch("/v1/admin/ctf/prob/{pid}/open", challenge.getId())
@@ -457,8 +463,8 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
     Long score = 1234L;
     CtfTeamEntity team = generateCtfTeam(contestEntity, creator, teamScore);
     CtfChallengeEntity challenge = generateCtfChallenge(contestEntity,
-        CtfChallengeTypeEntity.STANDARD,
-        CtfChallengeCategoryEntity.MISC, score);
+        STANDARD,
+        MISC, score);
     generateCtfFlag(team, challenge, false);
 
     mockMvc.perform(patch("/v1/admin/ctf/prob/{pid}/close", challenge.getId())
@@ -493,8 +499,8 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
     Long score = 1234L;
     CtfTeamEntity team = generateCtfTeam(contestEntity, creator, teamScore);
     CtfChallengeEntity challenge = generateCtfChallenge(contestEntity,
-        CtfChallengeTypeEntity.STANDARD,
-        CtfChallengeCategoryEntity.MISC, score);
+        STANDARD,
+        MISC, score);
     generateCtfFlag(team, challenge, false);
 
     // when
@@ -540,11 +546,11 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
     Long score = 1234L;
     CtfTeamEntity team = generateCtfTeam(contestEntity, creator, teamScore);
     CtfChallengeEntity challenge = generateCtfChallenge(contestEntity,
-        CtfChallengeTypeEntity.STANDARD,
-        CtfChallengeCategoryEntity.MISC, score);
+        STANDARD,
+        MISC, score);
     CtfChallengeEntity challenge2 = generateCtfChallenge(contestEntity,
-        CtfChallengeTypeEntity.DYNAMIC,
-        CtfChallengeCategoryEntity.FORENSIC, score);
+        DYNAMIC,
+        FORENSIC, score);
     generateDynamicChallengeInfo(challenge2, 1000L, 100L);
     generateCtfFlag(team, challenge2, false);
     generateCtfFlag(team, challenge, false);
@@ -590,11 +596,11 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
     Long score = 1234L;
     CtfTeamEntity team = generateCtfTeam(contestEntity, creator, teamScore);
     CtfChallengeEntity challenge = generateCtfChallenge(contestEntity,
-        CtfChallengeTypeEntity.STANDARD,
-        CtfChallengeCategoryEntity.MISC, score);
+        STANDARD,
+        MISC, score);
     CtfChallengeEntity challenge2 = generateCtfChallenge(contestEntity,
-        CtfChallengeTypeEntity.DYNAMIC,
-        CtfChallengeCategoryEntity.FORENSIC, score);
+        DYNAMIC,
+        FORENSIC, score);
     generateDynamicChallengeInfo(challenge2, 1000L, 100L);
     generateCtfFlag(team, challenge2, false);
     generateCtfFlag(team, challenge, false);

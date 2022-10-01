@@ -1,5 +1,10 @@
 package keeper.project.homepage.ctf.controller;
 
+import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.FORENSIC;
+import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.MISC;
+import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.WEB;
+import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.DYNAMIC;
+import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.STANDARD;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
@@ -15,8 +20,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import keeper.project.homepage.ctf.controller.CtfSpringTestHelper;
 import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;
 import keeper.project.homepage.ctf.entity.CtfTeamEntity;
@@ -53,11 +60,11 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
     Long score = 1000L;
 
     CtfChallengeEntity dynamicChallenge = getCtfChallengeEntityIsSolvable(
-        contest, CtfChallengeTypeEntity.DYNAMIC, CtfChallengeCategoryEntity.FORENSIC, score);
+        contest, DYNAMIC, FORENSIC, score);
     CtfChallengeEntity standardChallenge = getCtfChallengeEntityIsSolvable(
-        contest, CtfChallengeTypeEntity.STANDARD, CtfChallengeCategoryEntity.MISC, score);
+        contest, STANDARD, MISC, score);
     CtfChallengeEntity notSolvable = generateCtfChallenge(
-        contest, CtfChallengeTypeEntity.DYNAMIC, CtfChallengeCategoryEntity.WEB, score);
+        contest, DYNAMIC, WEB, score);
 
     CtfTeamEntity team = generateCtfTeam(contest, userEntity, 0L);
 
@@ -108,7 +115,7 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
   }
 
   private CtfChallengeEntity getCtfChallengeEntityIsSolvable(CtfContestEntity contest,
-      CtfChallengeTypeEntity dynamic, CtfChallengeCategoryEntity forensic, Long score) {
+      CtfChallengeType dynamic, CtfChallengeCategory forensic, Long score) {
     CtfChallengeEntity dynamicChallenge = generateCtfChallenge(contest,
         dynamic, forensic, score);
     dynamicChallenge.setIsSolvable(true);
@@ -126,7 +133,7 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
     Long minScore = 567L;
 
     CtfChallengeEntity dynamicChallenge = getCtfChallengeEntityIsSolvable(
-        contest, CtfChallengeTypeEntity.DYNAMIC, CtfChallengeCategoryEntity.FORENSIC, score);
+        contest, DYNAMIC, FORENSIC, score);
     generateDynamicChallengeInfo(dynamicChallenge, maxScore, minScore);
 
     CtfTeamEntity team = generateCtfTeam(contest, userEntity, 0L);
@@ -170,7 +177,7 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
     Long score = 1000L;
 
     CtfChallengeEntity dynamicChallenge = getCtfChallengeEntityIsSolvable(
-        contest, CtfChallengeTypeEntity.DYNAMIC, CtfChallengeCategoryEntity.FORENSIC, score);
+        contest, DYNAMIC, FORENSIC, score);
     generateFileInChallenge(dynamicChallenge);
 
     CtfTeamEntity team = generateCtfTeam(contest, userEntity, 0L);

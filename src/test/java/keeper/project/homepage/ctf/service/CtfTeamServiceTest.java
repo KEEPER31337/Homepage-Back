@@ -1,5 +1,8 @@
 package keeper.project.homepage.ctf.service;
 
+import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.SYSTEM;
+import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.STANDARD;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
@@ -180,9 +183,9 @@ class CtfTeamServiceTest extends CtfSpringTestHelper {
         .contestId(contest.getId())
         .flag(testFlag)
         .isSolvable(true)
-        .type(CtfChallengeTypeDto.builder().id(CtfChallengeTypeEntity.STANDARD.getId()).build())
+        .type(CtfChallengeTypeDto.builder().id(STANDARD.getId()).build())
         .category(
-            CtfChallengeCategoryDto.builder().id(CtfChallengeCategoryEntity.SYSTEM.getId()).build())
+            CtfChallengeCategoryDto.builder().id(SYSTEM.getId()).build())
         .title(testTitle)
         .score(testScore)
         .build();
