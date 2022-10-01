@@ -1,6 +1,6 @@
 package keeper.project.homepage.ctf.service;
 
-import static keeper.project.homepage.entity.ctf.CtfChallengeTypeEntity.DYNAMIC;
+import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.DYNAMIC;
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_CONTEST_ID;
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_PROBLEM_ID;
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_TEAM_ID;

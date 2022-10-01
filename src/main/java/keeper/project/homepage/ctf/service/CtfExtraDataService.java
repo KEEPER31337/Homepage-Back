@@ -1,18 +1,18 @@
-package keeper.project.homepage.user.service.ctf;
+package keeper.project.homepage.ctf.service;
 
-import static keeper.project.homepage.common.dto.member.CommonMemberDto.toDto;
+import static keeper.project.homepage.member.dto.CommonMemberDto.toDto;
 
 import java.util.List;
-import keeper.project.homepage.common.dto.member.CommonMemberDto;
-import keeper.project.homepage.entity.member.MemberJobEntity;
-import keeper.project.homepage.repository.ctf.CtfChallengeCategoryRepository;
-import keeper.project.homepage.repository.ctf.CtfChallengeTypeRepository;
-import keeper.project.homepage.repository.ctf.CtfContestRepository;
-import keeper.project.homepage.repository.member.MemberHasMemberJobRepository;
-import keeper.project.homepage.repository.member.MemberJobRepository;
-import keeper.project.homepage.user.dto.ctf.CtfChallengeCategoryDto;
-import keeper.project.homepage.user.dto.ctf.CtfChallengeTypeDto;
-import keeper.project.homepage.user.dto.ctf.CtfContestDto;
+import keeper.project.homepage.ctf.dto.CtfChallengeCategoryDto;
+import keeper.project.homepage.ctf.dto.CtfChallengeTypeDto;
+import keeper.project.homepage.ctf.dto.CtfContestDto;
+import keeper.project.homepage.ctf.repository.CtfChallengeCategoryRepository;
+import keeper.project.homepage.ctf.repository.CtfChallengeTypeRepository;
+import keeper.project.homepage.ctf.repository.CtfContestRepository;
+import keeper.project.homepage.member.dto.CommonMemberDto;
+import keeper.project.homepage.member.entity.MemberJobEntity;
+import keeper.project.homepage.member.repository.MemberHasMemberJobRepository;
+import keeper.project.homepage.member.repository.MemberJobRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;

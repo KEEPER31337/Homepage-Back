@@ -1,17 +1,17 @@
-package keeper.project.homepage.admin.controller.ctf;
+package keeper.project.homepage.ctf.controller;
 
 import java.nio.file.AccessDeniedException;
 import javax.servlet.http.HttpServletRequest;
-import keeper.project.homepage.admin.dto.ctf.CtfChallengeAdminDto;
-import keeper.project.homepage.admin.dto.ctf.CtfContestAdminDto;
-import keeper.project.homepage.admin.dto.ctf.CtfProbMakerDto;
-import keeper.project.homepage.admin.dto.ctf.CtfSubmitLogDto;
-import keeper.project.homepage.admin.service.ctf.CtfAdminService;
-import keeper.project.homepage.common.dto.result.CommonResult;
-import keeper.project.homepage.common.dto.result.PageResult;
-import keeper.project.homepage.common.dto.result.SingleResult;
-import keeper.project.homepage.common.service.ResponseService;
+import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
+import keeper.project.homepage.ctf.dto.CtfContestAdminDto;
+import keeper.project.homepage.ctf.dto.CtfProbMakerDto;
+import keeper.project.homepage.ctf.dto.CtfSubmitLogDto;
+import keeper.project.homepage.ctf.service.CtfAdminService;
 import keeper.project.homepage.util.dto.FileDto;
+import keeper.project.homepage.util.dto.result.CommonResult;
+import keeper.project.homepage.util.dto.result.PageResult;
+import keeper.project.homepage.util.dto.result.SingleResult;
+import keeper.project.homepage.util.service.result.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Pageable;
