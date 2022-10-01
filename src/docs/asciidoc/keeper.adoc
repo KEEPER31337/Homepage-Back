@@ -78,3 +78,11 @@ link:study/study.html[API 문서 보기]
 == *CTF*
 
 link:ctf/ctf.html[API 문서 보기]
+
+== *선거*
+
+link:election/election.html[API 문서 보기]
+
+== *세미나*
+
+link:clerk/seminar.html[API 문서 보기]

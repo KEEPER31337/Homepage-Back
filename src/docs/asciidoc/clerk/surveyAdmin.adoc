@@ -1,0 +1,182 @@
+ifndef::snippets[]
+:snippets: ./build/generated-snippets
+endif::[]
+// 자동으로 생성된 snippet 설정하는 부분
+
+= KEEPER API 문서
+:icons: font
+// NOTE, TIP, WARNING, CAUTION, IMPORTANT 같은 경고구들 아이콘화 해줌
+:source-highlighter: highlight.js
+// source code 블럭에서 사용되는 highlighter 설정, 4개 정도 있던데 차이를 아직 잘 모르겠음.
+:toc: left
+// table of contents(toc) 왼쪽정렬하여 생성
+:toclevels: 1
+// default : 2 (==,  ===) 까지 toc에 보여줌.
+:sectlinks:
+// section( ==, === ... ) 들을 자기 참조 링크가 있게끔 만들어줌
+
+== API 목록
+
+link:../admin.html[어드민 API 목록으로 돌아가기]
+
+== *설문 조사 개설*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-create/http-request.adoc[]
+
+==== Request Body
+
+include::{snippets}/survey-create/request-body.adoc[]
+
+==== Request Field
+
+include::{snippets}/survey-create/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-create/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-create/response-fields.adoc[]
+
+== *설문 수정*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-modify/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/survey-modify/path-parameters.adoc[]
+
+==== Request Body
+
+include::{snippets}/survey-modify/request-body.adoc[]
+
+==== Request Field
+
+include::{snippets}/survey-modify/request-fields.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-modify/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-modify/response-fields.adoc[]
+
+== *설문 조사 삭제*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-delete/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/survey-delete/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-delete/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-delete/response-fields.adoc[]
+
+== *설문 조사 공개*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-open/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/survey-open/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-open/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-open/response-fields.adoc[]
+
+== *설문 조사 비공개*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-close/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/survey-close/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-close/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-close/response-fields.adoc[]
+
+== *설문 응답자 목록 조회*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-respondents/http-request.adoc[]
+
+==== Path Parameter
+
+include::{snippets}/survey-respondents/path-parameters.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-respondents/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-respondents/response-fields.adoc[]
+
+== *설문 목록 가져오기*
+
+=== 요청
+
+==== Request
+
+include::{snippets}/survey-list/http-request.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/survey-list/http-response.adoc[]
+
+==== Response Field
+
+include::{snippets}/survey-list/response-fields.adoc[]

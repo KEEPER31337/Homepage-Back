@@ -1,12 +1,11 @@
 package keeper.project.homepage;
 
 import static java.util.stream.Collectors.toList;
-import static keeper.project.homepage.common.service.sign.SignUpService.HALF_GENERATION_MONTH;
-import static keeper.project.homepage.common.service.sign.SignUpService.KEEPER_FOUNDING_YEAR;
+import static keeper.project.homepage.sign.service.SignUpService.HALF_GENERATION_MONTH;
+import static keeper.project.homepage.sign.service.SignUpService.KEEPER_FOUNDING_YEAR;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
 import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -25,25 +24,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import keeper.project.homepage.entity.attendance.AttendanceEntity;
-import keeper.project.homepage.entity.point.PointLogEntity;
+import keeper.project.homepage.util.dto.result.SingleResult;
+import keeper.project.homepage.sign.dto.SignInDto;
+import keeper.project.homepage.util.entity.FileEntity;
+import keeper.project.homepage.util.entity.ThumbnailEntity;
+import keeper.project.homepage.attendance.entity.AttendanceEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.member.entity.MemberJobEntity;
+import keeper.project.homepage.member.entity.MemberRankEntity;
+import keeper.project.homepage.member.entity.MemberTypeEntity;
+import keeper.project.homepage.point.entity.PointLogEntity;
+import keeper.project.homepage.posting.entity.CategoryEntity;
+import keeper.project.homepage.posting.entity.CommentEntity;
+import keeper.project.homepage.posting.entity.PostingEntity;
 import keeper.project.homepage.util.FileConversion;
-import keeper.project.homepage.common.dto.result.SingleResult;
-import keeper.project.homepage.common.dto.sign.SignInDto;
-import keeper.project.homepage.entity.FileEntity;
-import keeper.project.homepage.entity.ThumbnailEntity;
-import keeper.project.homepage.entity.member.MemberEntity;
-import keeper.project.homepage.entity.member.MemberHasMemberJobEntity;
-import keeper.project.homepage.entity.member.MemberJobEntity;
-import keeper.project.homepage.entity.member.MemberRankEntity;
-import keeper.project.homepage.entity.member.MemberTypeEntity;
-import keeper.project.homepage.entity.posting.CategoryEntity;
-import keeper.project.homepage.entity.posting.CommentEntity;
-import keeper.project.homepage.entity.posting.PostingEntity;
 import keeper.project.homepage.util.dto.FileDto;
-import keeper.project.homepage.util.service.ThumbnailService;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.request.ParameterDescriptor;
@@ -266,7 +261,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     MemberTypeEntity memberType = memberTypeRepository.findByName(typeName.getTypeName()).get();
     MemberRankEntity memberRank = memberRankRepository.findByName(rankName.getRankName()).get();
 
-    MemberEntity memberEntity = memberRepository.save(MemberEntity.builder()
+    MemberEntity memberEntity = MemberEntity.builder()
         .loginId("LoginId" + epochTime)
         .password(passwordEncoder.encode(memberPassword))
         .realName("RealName" + epochTime)
@@ -278,17 +273,11 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         .memberRank(memberRank)
         .point(1000)
         .thumbnail(thumbnailEntity)
-        .build());
+        .build();
     memberType.getMembers().add(memberEntity);
     memberRank.getMembers().add(memberEntity);
-
-    MemberHasMemberJobEntity hasMemberJobEntity = memberHasMemberJobRepository.save(
-        MemberHasMemberJobEntity.builder()
-            .memberJobEntity(memberJob)
-            .memberEntity(memberEntity)
-            .build());
-    memberJob.getMembers().add(hasMemberJobEntity);
-    memberEntity.getMemberJobs().add(hasMemberJobEntity);
+    memberEntity.addMemberJob(memberJob);
+    memberRepository.save(memberEntity);
     return memberEntity;
   }
 
@@ -690,6 +679,20 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
     ));
     if (descriptors.length > 0) {
       commonFields.addAll(Arrays.asList(descriptors));
+    }
+    return commonFields;
+  }
+
+  public List<FieldDescriptor> generateGetGenerationListResponseFields(ResponseType type,
+      String success, String code, String msg, FieldDescriptor... addDescriptors) {
+    String prefix = type.getReponseFieldPrefix();
+    List<FieldDescriptor> commonFields = new ArrayList<>();
+    commonFields.addAll(generateCommonResponseFields(success, code, msg));
+    commonFields.addAll(List.of(
+        fieldWithPath(prefix).description("기수 정보가 중복 없이 오름차순으로 넘겨집니다.")
+    ));
+    if (addDescriptors.length > 0) {
+      commonFields.addAll(Arrays.asList(addDescriptors));
     }
     return commonFields;
   }
