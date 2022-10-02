@@ -36,14 +36,16 @@ public class CtfTeamController {
 
   @PostMapping("")
   public SingleResult<CtfTeamDetailDto> createTeam(
-      @RequestBody CtfTeamDetailDto ctfTeamDetailDto) {
+      @RequestBody CtfTeamDetailDto ctfTeamDetailDto
+  ) {
     return responseService.getSuccessSingleResult(ctfTeamService.createTeam(ctfTeamDetailDto));
   }
 
   @RequestMapping(value = "/{teamId}", method = {RequestMethod.PUT, RequestMethod.PATCH})
   public SingleResult<CtfTeamDetailDto> modifyTeam(
       @PathVariable("teamId") Long teamId,
-      @RequestBody CtfTeamDto ctfTeamDto) {
+      @RequestBody CtfTeamDto ctfTeamDto
+  ) {
     return responseService.getSuccessSingleResult(ctfTeamService.modifyTeam(teamId, ctfTeamDto));
   }
 
@@ -51,19 +53,20 @@ public class CtfTeamController {
   public SingleResult<CtfTeamHasMemberDto> joinTeam(
       @RequestBody CtfJoinTeamRequestDto requestDto
   ) {
-    return responseService.getSuccessSingleResult(ctfTeamService.joinTeam(requestDto));
+    return responseService.getSuccessSingleResult(ctfTeamService.tryJoinTeam(requestDto));
   }
 
   @DeleteMapping(value = "/member")
   public SingleResult<CtfTeamDetailDto> leaveTeam(
       @RequestBody CtfLeaveTeamRequestDto requestDto
   ) {
-    return responseService.getSuccessSingleResult(ctfTeamService.leaveTeam(requestDto.getCtfId()));
+    return responseService.getSuccessSingleResult(ctfTeamService.tryLeaveTeam(requestDto.getCtfId()));
   }
 
   @GetMapping(value = "/{teamId}")
   public SingleResult<CtfTeamDetailDto> getTeamDetail(
-      @PathVariable("teamId") Long teamId) {
+      @PathVariable("teamId") Long teamId
+  ) {
     return responseService.getSuccessSingleResult(ctfTeamService.getTeamDetail(teamId));
   }
 
@@ -77,7 +80,8 @@ public class CtfTeamController {
 
   @GetMapping(value = "/{ctfId}/my-team")
   public SingleResult<CtfTeamDetailDto> getMyTeam(
-      @PathVariable("ctfId") Long ctfId) {
+      @PathVariable("ctfId") Long ctfId
+  ) {
     return responseService.getSuccessSingleResult(ctfTeamService.getMyTeam(ctfId));
   }
 }

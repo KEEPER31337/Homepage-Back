@@ -3,8 +3,8 @@ package keeper.project.homepage.util.service;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.일반회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberTypeName.정회원;
-import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.FORENSIC;
-import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.DYNAMIC;
+import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.FORENSIC;
+import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.DYNAMIC;
 
 import java.util.ArrayList;
 import java.util.List;

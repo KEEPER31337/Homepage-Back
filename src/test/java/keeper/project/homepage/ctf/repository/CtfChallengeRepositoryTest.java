@@ -1,5 +1,7 @@
 package keeper.project.homepage.ctf.repository;
 
+import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.SYSTEM;
+import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.STANDARD;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
@@ -24,9 +26,9 @@ class CtfChallengeRepositoryTest extends CtfTestHelper {
     MemberEntity member = memberRepository.getById(1L);
     boolean isSolvable = true;
     CtfChallengeTypeEntity ctfChallengeTypeEntity = ctfChallengeTypeRepository.getById(
-        CtfChallengeType.STANDARD.getId());
+        STANDARD.getId());
     CtfChallengeCategoryEntity ctfChallengeCategoryEntity = ctfChallengeCategoryRepository.getById(
-        CtfChallengeCategory.System.getId());
+        SYSTEM.getId());
     Long score = 1000L;
     CtfContestEntity contest = generateCtfContest(member);
 
@@ -67,9 +69,9 @@ class CtfChallengeRepositoryTest extends CtfTestHelper {
     MemberEntity member = memberRepository.getById(1L);
     boolean isSolvable = true;
     CtfChallengeTypeEntity ctfChallengeTypeEntity = ctfChallengeTypeRepository.getById(
-        CtfChallengeType.STANDARD.getId());
+        STANDARD.getId());
     CtfChallengeCategoryEntity ctfChallengeCategoryEntity = ctfChallengeCategoryRepository.getById(
-        CtfChallengeCategory.System.getId());
+        SYSTEM.getId());
     Long score = 1000L;
     CtfContestEntity contest = generateCtfContest(member);
 

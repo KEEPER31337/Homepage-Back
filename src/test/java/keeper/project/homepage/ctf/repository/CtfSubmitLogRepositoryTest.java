@@ -1,8 +1,11 @@
 package keeper.project.homepage.ctf.repository;
 
+import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.MISC;
+import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.STANDARD;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDateTime;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfSubmitLogEntity;
@@ -23,8 +26,7 @@ class CtfSubmitLogRepositoryTest extends CtfTestHelper {
     MemberEntity member = memberRepository.getById(1L);
     CtfContestEntity contest = generateCtfContest(member);
     CtfTeamEntity ctfTeam = generateCtfTeam(contest, member, 0L);
-    CtfChallengeEntity ctfChallenge = generateCtfChallenge(contest, CtfChallengeType.STANDARD,
-        CtfChallengeCategory.Misc, 1000L);
+    CtfChallengeEntity ctfChallenge = generateCtfChallenge(contest, STANDARD, MISC, 1000L);
 
     // when
     CtfSubmitLogEntity submitLog = CtfSubmitLogEntity.builder()

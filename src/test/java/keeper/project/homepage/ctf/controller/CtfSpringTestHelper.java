@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
+import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType;
 import keeper.project.homepage.util.entity.FileEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
@@ -76,28 +78,6 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
     } catch (Exception e) {
       throw new RuntimeException(e);
     }
-  }
-
-  @RequiredArgsConstructor
-  @Getter
-  protected enum CtfChallengeCategory {
-    Misc(1L),
-    System(2L),
-    Reversing(3L),
-    Forensic(4L),
-    Web(5L),
-    Crypto(6L);
-
-    private final Long id;
-  }
-
-  @RequiredArgsConstructor
-  @Getter
-  public enum CtfChallengeType {
-    STANDARD(1L),
-    DYNAMIC(2L);
-
-    private final Long id;
   }
 
   protected CtfContestEntity generateCtfContest(MemberEntity creator, boolean isJoinable) {
@@ -182,10 +162,14 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
 
   protected CtfChallengeEntity generateCtfChallenge(
       CtfContestEntity ctfContestEntity,
-      CtfChallengeTypeEntity ctfChallengeTypeEntity,
-      CtfChallengeCategoryEntity ctfChallengeCategoryEntity,
+      CtfChallengeType ctfChallengeType,
+      CtfChallengeCategory ctfChallengeCategory,
       Long score) {
     final long epochTime = System.nanoTime();
+    CtfChallengeTypeEntity ctfChallengeTypeEntity = ctfChallengeTypeRepository.getById(
+        ctfChallengeType.getId());
+    CtfChallengeCategoryEntity ctfChallengeCategoryEntity = ctfChallengeCategoryRepository.getById(
+        ctfChallengeCategory.getId());
     CtfChallengeEntity entity = CtfChallengeEntity.builder()
         .name("name_" + epochTime)
         .description("desc_" + epochTime)

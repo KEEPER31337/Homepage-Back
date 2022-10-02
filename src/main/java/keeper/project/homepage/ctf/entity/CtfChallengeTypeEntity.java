@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Builder
 @Getter
@@ -19,8 +20,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "ctf_challenge_type")
 public class CtfChallengeTypeEntity {
-  public static final CtfChallengeTypeEntity STANDARD = new CtfChallengeTypeEntity(1L, "STANDARD");
-  public static final CtfChallengeTypeEntity DYNAMIC = new CtfChallengeTypeEntity(2L, "DYNAMIC");
 
   @Id
   @Column(nullable = false)
@@ -29,4 +28,14 @@ public class CtfChallengeTypeEntity {
 
   @Column(nullable = false, length = 45)
   String name;
+
+  @Getter
+  @RequiredArgsConstructor
+  public enum CtfChallengeType {
+    STANDARD(1L, "STANDARD"),
+    DYNAMIC(2L, "DYNAMIC");
+
+    private final Long id;
+    private final String name;
+  }
 }

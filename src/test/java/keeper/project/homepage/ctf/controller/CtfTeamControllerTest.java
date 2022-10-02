@@ -1,7 +1,7 @@
 package keeper.project.homepage.ctf.controller;
 
-import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.MISC;
-import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.STANDARD;
+import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.MISC;
+import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.STANDARD;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.delete;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;

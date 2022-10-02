@@ -2,8 +2,10 @@ package keeper.project.homepage.ctf.repository;
 
 import java.time.LocalDateTime;
 import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;
 import keeper.project.homepage.ctf.entity.CtfSubmitLogEntity;
@@ -54,28 +56,6 @@ public class CtfTestHelper {
 
   @Autowired
   protected MemberRepository memberRepository;
-
-  @RequiredArgsConstructor
-  @Getter
-  protected enum CtfChallengeCategory {
-    Misc(1L),
-    System(2L),
-    Reversing(3L),
-    Forensic(4L),
-    Web(5L),
-    Crypto(6L);
-
-    private final Long id;
-  }
-
-  @RequiredArgsConstructor
-  @Getter
-  protected enum CtfChallengeType {
-    STANDARD(1L),
-    DYNAMIC(2L);
-
-    private final Long id;
-  }
 
   protected CtfContestEntity generateCtfContest(MemberEntity creator) {
     final long epochTime = System.nanoTime();
