@@ -59,12 +59,12 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
 
     Long score = 1000L;
 
-    CtfChallengeEntity dynamicChallenge = getCtfChallengeEntityIsSolvable(
-        contest, DYNAMIC, FORENSIC, score);
-    CtfChallengeEntity standardChallenge = getCtfChallengeEntityIsSolvable(
-        contest, STANDARD, MISC, score);
+    CtfChallengeEntity dynamicChallenge = generateCtfChallenge(
+        contest, DYNAMIC, FORENSIC, score, true);
+    CtfChallengeEntity standardChallenge = generateCtfChallenge(
+        contest, STANDARD, MISC, score, true);
     CtfChallengeEntity notSolvable = generateCtfChallenge(
-        contest, DYNAMIC, WEB, score);
+        contest, DYNAMIC, WEB, score, false);
 
     CtfTeamEntity team = generateCtfTeam(contest, userEntity, 0L);
 
@@ -114,15 +114,6 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
             )));
   }
 
-  private CtfChallengeEntity getCtfChallengeEntityIsSolvable(CtfContestEntity contest,
-      CtfChallengeType dynamic, CtfChallengeCategory forensic, Long score) {
-    CtfChallengeEntity dynamicChallenge = generateCtfChallenge(contest,
-        dynamic, forensic, score);
-    dynamicChallenge.setIsSolvable(true);
-    ctfChallengeRepository.save(dynamicChallenge);
-    return dynamicChallenge;
-  }
-
   @Test
   @DisplayName("플래그 체크 - 성공")
   public void checkFlagSuccess() throws Exception {
@@ -132,8 +123,8 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
     Long maxScore = 1234L;
     Long minScore = 567L;
 
-    CtfChallengeEntity dynamicChallenge = getCtfChallengeEntityIsSolvable(
-        contest, DYNAMIC, FORENSIC, score);
+    CtfChallengeEntity dynamicChallenge = generateCtfChallenge(
+        contest, DYNAMIC, FORENSIC, score, true);
     generateDynamicChallengeInfo(dynamicChallenge, maxScore, minScore);
 
     CtfTeamEntity team = generateCtfTeam(contest, userEntity, 0L);
@@ -176,8 +167,8 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
 
     Long score = 1000L;
 
-    CtfChallengeEntity dynamicChallenge = getCtfChallengeEntityIsSolvable(
-        contest, DYNAMIC, FORENSIC, score);
+    CtfChallengeEntity dynamicChallenge = generateCtfChallenge(
+        contest, DYNAMIC, FORENSIC, score, true);
     generateFileInChallenge(dynamicChallenge);
 
     CtfTeamEntity team = generateCtfTeam(contest, userEntity, 0L);
