@@ -202,6 +202,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         .minScore(minScore)
         .build();
     ctfChallengeEntity.setDynamicChallengeInfoEntity(entity);
+    ctfChallengeEntity.setScore(maxScore);
     ctfChallengeRepository.save(ctfChallengeEntity);
     return entity;
   }
