@@ -112,6 +112,7 @@ public class CtfUtilService {
     this.setChallengeScore(challenge, changedScore);
   }
 
+  @Transactional
   public void setChallengeScore(CtfChallengeEntity challenge, long changedScore) {
     List<CtfFlagEntity> ctfSolvedList = flagRepository.
         findAllByCtfChallengeEntityIdAndIsCorrect(challenge.getId(), true);

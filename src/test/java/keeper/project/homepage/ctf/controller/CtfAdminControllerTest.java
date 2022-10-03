@@ -526,6 +526,100 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
             )));
   }
 
+  @Test
+  @DisplayName("문제 삭제 시 해당 문제를 푼 팀의 점수 롤백 (STANDARD TYPE) - 성공")
+  public void deleteStandardProblemScoreRollbackSuccess() throws Exception {
+    // given
+    MemberEntity creator = generateMemberEntity(MemberJobName.출제자, MemberTypeName.정회원,
+        MemberRankName.일반회원);
+    creator.addMemberJob(memberJobRepository.findByName("ROLE_회원").get());
+    Long teamScore = 0L;
+    Long score = 1234L;
+    CtfTeamEntity team = generateCtfTeam(contestEntity, creator, teamScore);
+    CtfChallengeEntity challenge = generateCtfChallenge(contestEntity,
+        STANDARD, MISC, score, true);
+    CtfFlagEntity flag = generateCtfFlag(team, challenge, false);
+
+    // when
+    insertDummyFileInChallenge(challenge);
+    solveChallenge(challenge, flag, generateJWTToken(creator));
+
+    // then
+    Long scoreBeforeDelete = ctfTeamRepository.getById(team.getId()).getScore();
+    Assertions.assertThat(scoreBeforeDelete).isEqualTo(score);
+
+    mockMvc.perform(delete("/v1/admin/ctf/prob/{pid}", challenge.getId())
+            .header("Authorization", adminToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.data.title").value(challenge.getName()))
+        .andExpect(jsonPath("$.data.content").value(challenge.getDescription()))
+        .andExpect(jsonPath("$.data.contestId").value(contestEntity.getId()))
+        .andExpect(jsonPath("$.data.isSolvable").value(challenge.getIsSolvable()))
+        .andExpect(jsonPath("$.data.creatorName").value(challenge.getCreator().getNickName()))
+        .andExpect(jsonPath("$.data.score").value(0));
+
+    Long scoreAfterDelete = ctfTeamRepository.getById(team.getId()).getScore();
+    Assertions.assertThat(scoreAfterDelete).isEqualTo(0);
+  }
+
+  @Test
+  @DisplayName("문제 삭제 시 해당 문제를 푼 팀의 점수 롤백 (DYNAMIC TYPE) - 성공")
+  public void deleteDynamicProblemScoreRollbackSuccess() throws Exception {
+    // given
+    MemberEntity creator = generateMemberEntity(MemberJobName.출제자, MemberTypeName.정회원,
+        MemberRankName.일반회원);
+    creator.addMemberJob(memberJobRepository.findByName("ROLE_회원").get());
+    Long teamScore = 0L;
+    Long score = 1234L;
+    CtfTeamEntity team = generateCtfTeam(contestEntity, creator, teamScore);
+    CtfChallengeEntity challenge = generateCtfChallenge(contestEntity,
+        DYNAMIC, MISC, score, true);
+    Long maxScore = 2000L;
+    Long minScore = 100L;
+    generateDynamicChallengeInfo(challenge, maxScore, minScore);
+    CtfFlagEntity flag = generateCtfFlag(team, challenge, false);
+
+    // when
+    insertDummyFileInChallenge(challenge);
+    solveChallenge(challenge, flag, generateJWTToken(creator));
+
+    // then
+    Long scoreBeforeDelete = ctfTeamRepository.getById(team.getId()).getScore();
+    Assertions.assertThat(scoreBeforeDelete).isEqualTo(minScore);
+
+    mockMvc.perform(delete("/v1/admin/ctf/prob/{pid}", challenge.getId())
+            .header("Authorization", adminToken))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.data.title").value(challenge.getName()))
+        .andExpect(jsonPath("$.data.content").value(challenge.getDescription()))
+        .andExpect(jsonPath("$.data.contestId").value(contestEntity.getId()))
+        .andExpect(jsonPath("$.data.isSolvable").value(challenge.getIsSolvable()))
+        .andExpect(jsonPath("$.data.creatorName").value(challenge.getCreator().getNickName()))
+        .andExpect(jsonPath("$.data.score").value(0));
+
+    Long scoreAfterDelete = ctfTeamRepository.getById(team.getId()).getScore();
+    Assertions.assertThat(scoreAfterDelete).isEqualTo(0);
+  }
+
+  private void solveChallenge(CtfChallengeEntity challenge, CtfFlagEntity flag, String authToken)
+      throws Exception {
+    String content = "{\n"
+        + "    \"content\": \"" + flag.getContent() + "\"\n"
+        + "}";
+    mockMvc.perform(RestDocumentationRequestBuilders.post("/v1/ctf/prob/{pid}/submit/flag",
+                String.valueOf(challenge.getId()))
+            .header("Authorization", authToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
+        .andDo(print());
+  }
+
   private void insertDummyFileInChallenge(CtfChallengeEntity challenge) throws Exception {
     MockMultipartFile file = new MockMultipartFile("file", "image.png", "image/png",
         "<<png data>>".getBytes());
