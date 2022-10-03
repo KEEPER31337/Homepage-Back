@@ -109,7 +109,7 @@ public class CtfAdminService {
   @Transactional
   public CtfChallengeAdminDto createChallenge(CtfChallengeAdminDto challengeAdminDto) {
     CtfChallengeEntity newChallenge = createChallengeEntity(challengeAdminDto);
-    if (isDynamicType(challengeAdminDto)) {
+    if (ctfUtilService.isTypeDynamic(newChallenge)) {
       trySetDynamicInfoInChallenge(newChallenge, challengeAdminDto);
     }
     setFlagAllTeam(challengeAdminDto.getFlag(), newChallenge);
@@ -232,10 +232,6 @@ public class CtfAdminService {
 
   private Long getChallengeTypeId(CtfChallengeAdminDto challengeAdminDto) {
     return challengeAdminDto.getType().getId();
-  }
-
-  private boolean isDynamicType(CtfChallengeAdminDto challengeAdminDto) {
-    return challengeAdminDto.getType().getId().equals(DYNAMIC.getId());
   }
 
   private Page<CtfContestEntity> getAllContests(Pageable pageable) {
