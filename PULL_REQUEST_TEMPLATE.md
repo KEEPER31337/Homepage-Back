@@ -1,6 +1,6 @@
 ## 연관 issue
 
-close
+close : #
 
 - #
 
