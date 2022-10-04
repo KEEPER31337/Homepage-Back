@@ -149,6 +149,14 @@ public class ExceptionAdvice {
         e.getMessage() == null ? exceptionUtil.getMessage("dataNotFound.msg") : e.getMessage());
   }
 
+  @ExceptionHandler(DataIntegrityViolationException.class)
+  @ResponseStatus(HttpStatus.CONFLICT)
+  protected CommonResult dataDuplicate(DataIntegrityViolationException e) {
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("dataDuplicate.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("dataDuplicate.msg") : e.getMessage());
+  }
+
   @ExceptionHandler(CustomMemberNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult memberNotFoundException(CustomMemberNotFoundException e) {
@@ -236,154 +244,6 @@ public class ExceptionAdvice {
     return responseService.getFailResult(
         Integer.parseInt(exceptionUtil.getMessage("numberOverflow.code")),
         exceptionUtil.getMessage("numberOverflow.msg"));
-  }
-
-  @ExceptionHandler(CustomContestNotFoundException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult contestNotFound(CustomContestNotFoundException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("contestNotFound.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("contestNotFound.msg") : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomCtfCategoryNotFoundException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult ctfCategoryNotFound(CustomCtfCategoryNotFoundException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("ctfCategoryNotFound.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("ctfCategoryNotFound.msg")
-            : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomCtfTypeNotFoundException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult ctfTypeNotFound(CustomCtfTypeNotFoundException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("ctfTypeNotFound.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("ctfTypeNotFound.msg") : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomCtfChallengeNotFoundException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult ctfChallengeNotFound(CustomCtfChallengeNotFoundException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("ctfChallengeNotFound.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("ctfChallengeNotFound.msg")
-            : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomCtfTeamNotFoundException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult teamNotFound(CustomCtfTeamNotFoundException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("ctfTeamNotFound.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("ctfTeamNotFound.msg") : e.getMessage());
-  }
-
-  @ExceptionHandler(DataIntegrityViolationException.class)
-  @ResponseStatus(HttpStatus.CONFLICT)
-  protected CommonResult dataDuplicate(DataIntegrityViolationException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("dataDuplicate.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("dataDuplicate.msg") : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomElectionNotFoundException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult electionNotFound(CustomElectionNotFoundException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("electionNotFound.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("electionNotFound.msg") : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomElectionCandidateNotFoundException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult electionCandidateNotFound(CustomElectionCandidateNotFoundException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("electionCandidateNotFound.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("electionCandidateNotFound.msg")
-            : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomElectionVoterNotFoundException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult electionVoterNotFound(CustomElectionVoterNotFoundException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("electionVoterNotFound.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("electionVoterNotFound.msg")
-            : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomElectionCandidateExistException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult electionCandidateExist(CustomElectionCandidateExistException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("electionCandidateExist.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("electionCandidateExist.msg")
-            : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomElectionVoterExistException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult electionVoterExist(CustomElectionVoterExistException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("electionVoterExist.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("electionVoterExist.msg")
-            : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomElectionVoteCountNotMatchException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult electionCandidateCountNotMatch(
-      CustomElectionVoteCountNotMatchException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("electionVoteCountNotMatch.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("electionVoteCountNotMatch.msg")
-            : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomElectionVoteDuplicationJobException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult electionVoteDuplicationJob(CustomElectionVoteDuplicationJobException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("electionVoteDuplicationJob.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("electionVoteDuplicationJob.msg")
-            : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomCloseElectionVoteException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult closeElectionVote(CustomCloseElectionVoteException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("closeElectionVote.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("closeElectionVote.msg")
-            : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomElectionNotMatchCandidateException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult electionNotMatchCandidate(CustomElectionNotMatchCandidateException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("electionNotMatchCandidate.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("electionNotMatchCandidate.msg")
-            : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomElectionAlreadyVotedException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult electionAlreadyVoted(CustomElectionAlreadyVotedException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("alreadyVoted.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("alreadyVoted.msg") : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomElectionIsNotClosedException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult electionIsNotClosed(CustomElectionIsNotClosedException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("IsNotClosedElection.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("IsNotClosedElection.msg")
-            : e.getMessage());
   }
 
   @ExceptionHandler(CustomClerkInaccessibleJobException.class)
