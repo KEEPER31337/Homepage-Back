@@ -1,33 +1,11 @@
 package keeper.project.homepage;
 
 import keeper.project.homepage.util.dto.result.CommonResult;
-import keeper.project.homepage.about.exception.CustomStaticWriteContentNotFoundException;
-import keeper.project.homepage.about.exception.CustomStaticWriteSubtitleImageNotFoundException;
-import keeper.project.homepage.about.exception.CustomStaticWriteTitleNotFoundException;
-import keeper.project.homepage.about.exception.CustomStaticWriteTypeNotFoundException;
-import keeper.project.homepage.attendance.exception.CustomAttendanceException;
-import keeper.project.homepage.attendance.exception.CustomGameIsOverException;
-import keeper.project.homepage.clerk.exception.CustomClerkInaccessibleJobException;
+import keeper.project.homepage.systemadmin.exception.CustomClerkInaccessibleJobException;
 import keeper.project.homepage.clerk.exception.CustomSeminarAttendanceFailException;
-import keeper.project.homepage.ctf.exception.CustomContestNotFoundException;
-import keeper.project.homepage.ctf.exception.CustomCtfCategoryNotFoundException;
-import keeper.project.homepage.ctf.exception.CustomCtfChallengeNotFoundException;
-import keeper.project.homepage.ctf.exception.CustomCtfTypeNotFoundException;
-import keeper.project.homepage.election.exception.CustomCloseElectionVoteException;
-import keeper.project.homepage.election.exception.CustomElectionAlreadyVotedException;
-import keeper.project.homepage.election.exception.CustomElectionIsNotClosedException;
-import keeper.project.homepage.election.exception.CustomElectionNotMatchCandidateException;
-import keeper.project.homepage.election.exception.CustomElectionVoteCountNotMatchException;
-import keeper.project.homepage.election.exception.CustomElectionCandidateExistException;
-import keeper.project.homepage.election.exception.CustomElectionCandidateNotFoundException;
-import keeper.project.homepage.election.exception.CustomElectionNotFoundException;
-import keeper.project.homepage.election.exception.CustomElectionVoteDuplicationJobException;
-import keeper.project.homepage.election.exception.CustomElectionVoterExistException;
-import keeper.project.homepage.election.exception.CustomElectionVoterNotFoundException;
 import keeper.project.homepage.util.exception.CustomNumberOverflowException;
 import keeper.project.homepage.util.exception.ExceptionAdviceUtil;
 import keeper.project.homepage.util.exception.file.CustomInvalidImageFileException;
-import keeper.project.homepage.ctf.exception.CustomCtfTeamNotFoundException;
 import keeper.project.homepage.util.exception.file.CustomFileDeleteFailedException;
 import keeper.project.homepage.util.exception.file.CustomFileEntityNotFoundException;
 import keeper.project.homepage.util.exception.file.CustomFileNotFoundException;
@@ -35,41 +13,11 @@ import keeper.project.homepage.util.exception.file.CustomFileTransferFailedExcep
 import keeper.project.homepage.util.exception.file.CustomImageFormatException;
 import keeper.project.homepage.util.exception.file.CustomImageIOException;
 import keeper.project.homepage.util.exception.file.CustomThumbnailEntityNotFoundException;
-import keeper.project.homepage.library.exception.CustomBookBorrowNotFoundException;
-import keeper.project.homepage.library.exception.CustomBookDepartmentNotFoundException;
-import keeper.project.homepage.library.exception.CustomBookNotFoundException;
-import keeper.project.homepage.library.exception.CustomBookOverTheMaxException;
-import keeper.project.homepage.member.exception.CustomAccessVirtualMemberException;
-import keeper.project.homepage.member.exception.CustomAccountDeleteFailedException;
-import keeper.project.homepage.member.exception.CustomMemberDuplicateException;
-import keeper.project.homepage.member.exception.CustomMemberEmptyFieldException;
 import keeper.project.homepage.member.exception.CustomMemberInfoNotFoundException;
 import keeper.project.homepage.member.exception.CustomMemberNotFoundException;
-import keeper.project.homepage.point.exception.CustomPointLogRequestNullException;
-import keeper.project.homepage.point.exception.CustomPointLackException;
-import keeper.project.homepage.posting.exception.CustomAccessRootCategoryException;
-import keeper.project.homepage.posting.exception.CustomCategoryNotFoundException;
-import keeper.project.homepage.posting.exception.CustomCommentEmptyFieldException;
-import keeper.project.homepage.posting.exception.CustomCommentNotFoundException;
-import keeper.project.homepage.posting.exception.CustomPostingAccessDeniedException;
-import keeper.project.homepage.posting.exception.CustomPostingIncorrectException;
-import keeper.project.homepage.posting.exception.CustomPostingNotFoundException;
-import keeper.project.homepage.posting.exception.CustomPostingTempException;
-import keeper.project.homepage.sign.exception.CustomAuthenticationEntryPointException;
-import keeper.project.homepage.sign.exception.CustomLoginIdSigninFailedException;
-import keeper.project.homepage.sign.exception.CustomSignUpFailedException;
 import keeper.project.homepage.util.service.result.ResponseService;
-import javax.servlet.http.HttpServletRequest;
-import keeper.project.homepage.study.exception.CustomIpAddressNotFoundException;
-import keeper.project.homepage.study.exception.CustomSeasonInvalidException;
-import keeper.project.homepage.study.exception.CustomStudyIsNotMineException;
-import keeper.project.homepage.study.exception.CustomStudyNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -245,22 +193,4 @@ public class ExceptionAdvice {
         Integer.parseInt(exceptionUtil.getMessage("numberOverflow.code")),
         exceptionUtil.getMessage("numberOverflow.msg"));
   }
-
-  @ExceptionHandler(CustomClerkInaccessibleJobException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult clerkInaccessibleJob(CustomClerkInaccessibleJobException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("inaccessibleJob.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("inaccessibleJob.msg") : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomSeminarAttendanceFailException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult seminarAttendanceFail(CustomSeminarAttendanceFailException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("seminarAttendanceFail.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("seminarAttendanceFail.msg")
-            : e.getMessage());
-  }
-
 }
