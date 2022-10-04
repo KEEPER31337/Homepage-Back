@@ -68,6 +68,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
@@ -147,31 +149,6 @@ public class ExceptionAdvice {
     return responseService.getFailResult(
         Integer.parseInt(exceptionUtil.getMessage("memberNotFound.code")),
         e.getMessage() == null ? exceptionUtil.getMessage("memberNotFound.msg") : e.getMessage());
-  }
-
-  // ExceptionAdvice
-  @ExceptionHandler(CustomLoginIdSigninFailedException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  protected CommonResult signInFailed(CustomLoginIdSigninFailedException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("SigninFailed.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("SigninFailed.msg") : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomAuthenticationEntryPointException.class)
-  @ResponseStatus(HttpStatus.UNAUTHORIZED)
-  public CommonResult authenticationEntryPointException(CustomAuthenticationEntryPointException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("entryPointException.code")),
-        exceptionUtil.getMessage("entryPointException.msg"));
-  }
-
-  @ExceptionHandler(CustomSignUpFailedException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  public CommonResult signUpFailedException(CustomSignUpFailedException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("signUpFailed.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("signUpFailed.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomFileNotFoundException.class)
