@@ -159,24 +159,6 @@ public class ExceptionAdvice {
         e.getMessage() == null ? exceptionUtil.getMessage("fileNotFound.msg") : e.getMessage());
   }
 
-  @ExceptionHandler(CustomBookNotFoundException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  protected CommonResult bookNotFoundException(CustomBookNotFoundException e) {
-    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("bookNotFound.code")),
-        exceptionUtil.getMessage("bookNotFound.msg"));
-  }
-
-  @ExceptionHandler(CustomBookOverTheMaxException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  protected CommonResult bookOverTheMaxException(CustomBookOverTheMaxException e) {
-    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("bookOverTheMax.code")),
-        exceptionUtil.getMessage("bookOverTheMax.msg"));
-  }
-
   @ExceptionHandler(CustomFileDeleteFailedException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult fileDeleteFailedException(CustomFileDeleteFailedException e) {
@@ -317,24 +299,6 @@ public class ExceptionAdvice {
     return responseService.getFailResult(
         Integer.parseInt(exceptionUtil.getMessage("accessRootCategory.code")),
         exceptionUtil.getMessage("accessRootCategory.msg"));
-  }
-
-  @ExceptionHandler(CustomBookBorrowNotFoundException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  protected CommonResult bookBorrowNotFoundException(CustomBookBorrowNotFoundException e) {
-    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("bookBorrowNotFound.code")),
-        exceptionUtil.getMessage("bookBorrowNotFound.msg"));
-  }
-
-  @ExceptionHandler(CustomBookDepartmentNotFoundException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  protected CommonResult bookDepartmentNotFoundException(CustomBookDepartmentNotFoundException e) {
-    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("bookDepartmentNotFound.code")),
-        exceptionUtil.getMessage("bookDepartmentNotFound.msg"));
   }
 
   @ExceptionHandler(CustomSeasonInvalidException.class)
