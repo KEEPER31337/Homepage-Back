@@ -100,7 +100,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         .description("desc_" + epochTime)
         .registerTime(LocalDateTime.now())
         .creator(creator)
-        .isJoinable(false)
+        .isJoinable(true)
         .build();
     ctfContestRepository.save(entity);
     return entity;
@@ -164,7 +164,8 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
       CtfContestEntity ctfContestEntity,
       CtfChallengeType ctfChallengeType,
       CtfChallengeCategory ctfChallengeCategory,
-      Long score) {
+      Long score,
+      boolean isSolvable) {
     final long epochTime = System.nanoTime();
     CtfChallengeTypeEntity ctfChallengeTypeEntity = ctfChallengeTypeRepository.getById(
         ctfChallengeType.getId());
@@ -175,7 +176,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         .description("desc_" + epochTime)
         .registerTime(LocalDateTime.now())
         .creator(memberRepository.getById(1L)) // Virtual Member
-        .isSolvable(false)
+        .isSolvable(isSolvable)
         .ctfChallengeTypeEntity(ctfChallengeTypeEntity)
         .ctfChallengeCategoryEntity(ctfChallengeCategoryEntity)
         .score(score)
@@ -202,6 +203,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         .minScore(minScore)
         .build();
     ctfChallengeEntity.setDynamicChallengeInfoEntity(entity);
+    ctfChallengeEntity.setScore(maxScore);
     ctfChallengeRepository.save(ctfChallengeEntity);
     return entity;
   }

@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Service
@@ -79,6 +80,7 @@ public class CtfUtilService {
         .getIsJoinable();
   }
 
+  @Transactional
   public void setAllDynamicScore() {
     List<CtfChallengeEntity> challengeEntityList = challengeRepository
         .findAllByCtfChallengeTypeEntityId(DYNAMIC.getId());
@@ -98,6 +100,7 @@ public class CtfUtilService {
         .orElseThrow(() -> new CustomCtfTeamNotFoundException("가입한 팀을 찾을 수 없습니다."));
   }
 
+  @Transactional
   public void setDynamicScore(CtfChallengeEntity challenge) {
     CtfDynamicChallengeInfoEntity dynamicInfo = challenge.getDynamicChallengeInfoEntity();
     if (isInvalidDynamicInfo(challenge, dynamicInfo)) {
@@ -105,14 +108,21 @@ public class CtfUtilService {
     }
     List<CtfFlagEntity> ctfSolvedList = flagRepository.
         findAllByCtfChallengeEntityIdAndIsCorrect(challenge.getId(), true);
-    Long originalScore = challenge.getScore();
-    long changedScore = getChangedScore(challenge, dynamicInfo, ctfSolvedList);
-    changeChallengeScore(challenge, changedScore);
-    setTeamDynamicScore(ctfSolvedList, originalScore, changedScore);
+    long changedScore = getChangedScore(challenge, ctfSolvedList);
+    this.setChallengeScore(challenge, changedScore);
   }
 
-  private long getChangedScore(CtfChallengeEntity challenge,
-      CtfDynamicChallengeInfoEntity dynamicInfo, List<CtfFlagEntity> ctfSolvedList) {
+  @Transactional
+  public void setChallengeScore(CtfChallengeEntity challenge, long changedScore) {
+    List<CtfFlagEntity> ctfSolvedList = flagRepository.
+        findAllByCtfChallengeEntityIdAndIsCorrect(challenge.getId(), true);
+    List<CtfTeamEntity> solvedTeamList = getSolvedTeamList(ctfSolvedList);
+    changeAllTeamScoreByChallenge(challenge, solvedTeamList, changedScore);
+    changeChallengeScore(challenge, changedScore);
+  }
+
+  private long getChangedScore(CtfChallengeEntity challenge, List<CtfFlagEntity> ctfSolvedList) {
+    CtfDynamicChallengeInfoEntity dynamicInfo = challenge.getDynamicChallengeInfoEntity();
     Long allTeamCount = teamRepository.countByIdIsNotAndCtfContestEntity(VIRTUAL_TEAM_ID,
         challenge.getCtfContestEntity());
     Long solvedTeamCount = (long) ctfSolvedList.size();
@@ -122,8 +132,8 @@ public class CtfUtilService {
     return changedScore;
   }
 
-  private void changeChallengeScore(CtfChallengeEntity challenge, long dynamicScore) {
-    challenge.setScore(dynamicScore);
+  private void changeChallengeScore(CtfChallengeEntity challenge, long changedScore) {
+    challenge.setScore(changedScore);
     challengeRepository.save(challenge);
   }
 
@@ -138,13 +148,16 @@ public class CtfUtilService {
         (solvedTeamCount / (double) allTeamCount) + maxScore);
   }
 
-  private void setTeamDynamicScore(List<CtfFlagEntity> ctfSolvedList, Long originalScore,
-      long dynamicScore) {
-    List<CtfTeamEntity> solvedTeamList = ctfSolvedList.stream()
+  private void changeAllTeamScoreByChallenge(CtfChallengeEntity challenge,
+      List<CtfTeamEntity> teamList, long changeScore) {
+    Long originalScore = challenge.getScore();
+    teamList.forEach(team -> team.setScore(team.getScore() - originalScore + changeScore));
+    teamRepository.saveAll(teamList);
+  }
+
+  private static List<CtfTeamEntity> getSolvedTeamList(List<CtfFlagEntity> ctfSolvedList) {
+    return ctfSolvedList.stream()
         .map(CtfFlagEntity::getCtfTeamEntity)
-        .peek(solvedTeam ->
-            solvedTeam.setScore(solvedTeam.getScore() - originalScore + dynamicScore))
         .toList();
-    teamRepository.saveAll(solvedTeamList);
   }
 }

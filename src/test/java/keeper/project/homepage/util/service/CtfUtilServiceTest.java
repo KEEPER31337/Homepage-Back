@@ -56,7 +56,7 @@ class CtfUtilServiceTest extends CtfSpringTestHelper {
 
     validChallengeList = new ArrayList<>();
     IntStream.range(0, VALID_CHALLENGE_COUNT).forEach(n -> {
-      CtfChallengeEntity challenge = generateCtfChallenge(validCtf, DYNAMIC, FORENSIC, 0L);
+      CtfChallengeEntity challenge = generateCtfChallenge(validCtf, DYNAMIC, FORENSIC, 0L, true);
       generateDynamicChallengeInfo(challenge, 1000L, 100L);
       validChallengeList.add(challenge);
     });

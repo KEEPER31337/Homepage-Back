@@ -1,6 +1,5 @@
 package keeper.project.homepage.ctf.service;
 
-import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.DYNAMIC;
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_CONTEST_ID;
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_PROBLEM_ID;
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_TEAM_ID;
@@ -109,7 +108,7 @@ public class CtfAdminService {
   @Transactional
   public CtfChallengeAdminDto createChallenge(CtfChallengeAdminDto challengeAdminDto) {
     CtfChallengeEntity newChallenge = createChallengeEntity(challengeAdminDto);
-    if (isDynamicType(challengeAdminDto)) {
+    if (ctfUtilService.isTypeDynamic(newChallenge)) {
       trySetDynamicInfoInChallenge(newChallenge, challengeAdminDto);
     }
     setFlagAllTeam(challengeAdminDto.getFlag(), newChallenge);
@@ -148,6 +147,7 @@ public class CtfAdminService {
         isNotChallengeCreator(challenge.getCreator(), requestMember)) {
       throw new AccessDeniedException("문제 생성자나 회장만 삭제할 수 있습니다.");
     }
+    ctfUtilService.setChallengeScore(challenge, 0);
     if (hasFileEntity(challenge)) {
       fileService.deleteFile(challenge.getFileEntity());
     }
@@ -232,10 +232,6 @@ public class CtfAdminService {
 
   private Long getChallengeTypeId(CtfChallengeAdminDto challengeAdminDto) {
     return challengeAdminDto.getType().getId();
-  }
-
-  private boolean isDynamicType(CtfChallengeAdminDto challengeAdminDto) {
-    return challengeAdminDto.getType().getId().equals(DYNAMIC.getId());
   }
 
   private Page<CtfContestEntity> getAllContests(Pageable pageable) {

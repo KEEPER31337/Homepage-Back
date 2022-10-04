@@ -190,7 +190,8 @@ class CtfTeamControllerTest extends CtfSpringTestHelper {
     ctfTeamHasMemberRepository.save(teamHasMemberEntity);
     team.getCtfTeamHasMemberEntityList().add(teamHasMemberEntity);
 
-    CtfChallengeEntity challenge = generateCtfChallenge(contestEntity, STANDARD, MISC, 1234L);
+    CtfChallengeEntity challenge = generateCtfChallenge(contestEntity, STANDARD, MISC, 1234L,
+        false);
     generateCtfFlag(team, challenge, true);
 
     mockMvc.perform(get("/v1/ctf/team/{teamId}", team.getId())
