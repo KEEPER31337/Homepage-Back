@@ -1,4 +1,4 @@
-package keeper.project.homepage.member.exception;
+package keeper.project.homepage.study.exception;
 
 
 import keeper.project.homepage.util.dto.result.CommonResult;
@@ -15,43 +15,43 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Log4j2
 @RequiredArgsConstructor
-@RestControllerAdvice(basePackages = {"keeper.project.homepage.member"})
+@RestControllerAdvice(basePackages = {"keeper.project.homepage.study"})
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class MemberExceptionAdvice {
+public class StudyExceptionAdvice {
 
   private final ResponseService responseService;
   private final ExceptionAdviceUtil exceptionUtil;
 
-  @ExceptionHandler(CustomMemberEmptyFieldException.class)
+  @ExceptionHandler(CustomSeasonInvalidException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult memberEmptyFieldException(CustomMemberEmptyFieldException e) {
+  protected CommonResult seasonInvalid(CustomSeasonInvalidException e) {
     return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("memberEmptyField.code")),
-        exceptionUtil.getMessage("memberEmptyField.msg"));
+        Integer.parseInt(exceptionUtil.getMessage("seasonInvalid.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("seasonInvalid.msg") : e.getMessage());
   }
 
-  @ExceptionHandler(CustomMemberDuplicateException.class)
+  @ExceptionHandler(CustomIpAddressNotFoundException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult memberDuplicateException(CustomMemberDuplicateException e) {
+  protected CommonResult ipAddressNotFound(CustomIpAddressNotFoundException e) {
     return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("memberDuplicate.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("memberDuplicate.msg") : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomAccessVirtualMemberException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult accessVirtualMember(CustomAccessVirtualMemberException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("accessVirtualMember.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("accessVirtualMember.msg")
+        Integer.parseInt(exceptionUtil.getMessage("ipAddressNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("ipAddressNotFound.msg")
             : e.getMessage());
   }
 
-  @ExceptionHandler(CustomAccountDeleteFailedException.class)
+  @ExceptionHandler(CustomStudyNotFoundException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult accountDeleteFailedException(CustomAccountDeleteFailedException e) {
+  protected CommonResult studyNotFound(CustomStudyNotFoundException e) {
     return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("accountDeleteFailed.code")),
-        exceptionUtil.getMessage("accountDeleteFailed.msg"));
+        Integer.parseInt(exceptionUtil.getMessage("studyNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("studyNotFound.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomStudyIsNotMineException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult studyNotMine(CustomStudyIsNotMineException e) {
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("studyNotMine.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("studyNotMine.msg") : e.getMessage());
   }
 }

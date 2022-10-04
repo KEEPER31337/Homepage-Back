@@ -238,39 +238,6 @@ public class ExceptionAdvice {
         exceptionUtil.getMessage("numberOverflow.msg"));
   }
 
-  @ExceptionHandler(CustomSeasonInvalidException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult seasonInvalid(CustomSeasonInvalidException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("seasonInvalid.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("seasonInvalid.msg") : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomIpAddressNotFoundException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult ipAddressNotFound(CustomIpAddressNotFoundException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("ipAddressNotFound.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("ipAddressNotFound.msg")
-            : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomStudyNotFoundException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult studyNotFound(CustomStudyNotFoundException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("studyNotFound.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("studyNotFound.msg") : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomStudyIsNotMineException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult studyNotMine(CustomStudyIsNotMineException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("studyNotMine.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("studyNotMine.msg") : e.getMessage());
-  }
-
   @ExceptionHandler(CustomStaticWriteTypeNotFoundException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult staticWriteTitleNotFound(CustomStaticWriteTypeNotFoundException e) {
