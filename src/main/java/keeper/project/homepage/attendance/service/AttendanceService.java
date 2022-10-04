@@ -264,7 +264,7 @@ public class AttendanceService {
     Long memberId = authService.getMemberIdByJWT();
     Optional<MemberEntity> member = memberRepository.findById(memberId);
     if (member.isEmpty()) {
-      throw new CustomMemberNotFoundException();
+      throw new CustomMemberNotFoundException(memberId);
     }
     return member.get();
   }

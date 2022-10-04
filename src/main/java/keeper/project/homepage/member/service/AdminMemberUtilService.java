@@ -23,11 +23,13 @@ public class AdminMemberUtilService {
   private final MemberJobRepository memberJobRepository;
 
   public MemberEntity getMemberById(Long memberId) {
-    return memberRepository.findById(memberId).orElseThrow(CustomMemberNotFoundException::new);
+    return memberRepository.findById(memberId)
+        .orElseThrow(() -> new CustomMemberNotFoundException(memberId));
   }
 
   public MemberEntity getByLoginId(String loginId) {
-    return memberRepository.findByLoginId(loginId).orElseThrow(CustomMemberNotFoundException::new);
+    return memberRepository.findByLoginId(loginId).orElseThrow(
+        () -> new CustomMemberNotFoundException("loginId가 " + loginId + " 인 회원을 찾을 수 없습니다."));
   }
 
   public MemberRankEntity getByRankName(String name) {

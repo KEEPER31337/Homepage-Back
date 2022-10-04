@@ -300,7 +300,8 @@ public class PostingService {
   public void delete(PostingEntity postingEntity) {
 
     MemberEntity memberEntity = memberRepository.findById(
-        postingEntity.getMemberId().getId()).orElseThrow(CustomMemberNotFoundException::new);
+            postingEntity.getMemberId().getId())
+        .orElseThrow(() -> new CustomMemberNotFoundException(postingEntity.getMemberId().getId()));
 
     if (!memberEntity.getId().equals(authService.getMemberEntityWithJWT().getId())) {
       throw new CustomPostingAccessDeniedException();
@@ -341,19 +342,23 @@ public class PostingService {
         .orElseThrow(CustomPostingNotFoundException::new);
     Page<PostingEntity> postingEntities = Page.empty();
     switch (type) {
-      case "T" -> postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingAndIsTempAndIsNotice(
-          categoryEntity, keyword, isNotTempPosting, isNotNoticePosting, pageable);
+      case "T" ->
+          postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingAndIsTempAndIsNotice(
+              categoryEntity, keyword, isNotTempPosting, isNotNoticePosting, pageable);
 
-      case "C" -> postingEntities = postingRepository.findAllByCategoryIdAndContentContainingAndIsTempAndIsNotice(
-          categoryEntity, keyword, isNotTempPosting, isNotNoticePosting, pageable);
+      case "C" ->
+          postingEntities = postingRepository.findAllByCategoryIdAndContentContainingAndIsTempAndIsNotice(
+              categoryEntity, keyword, isNotTempPosting, isNotNoticePosting, pageable);
 
-      case "TC" -> postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingOrCategoryIdAndContentContainingAndIsTempAndIsNotice(
-          categoryEntity, keyword, categoryEntity, keyword, isNotTempPosting, isNotNoticePosting,
-          pageable);
+      case "TC" ->
+          postingEntities = postingRepository.findAllByCategoryIdAndTitleContainingOrCategoryIdAndContentContainingAndIsTempAndIsNotice(
+              categoryEntity, keyword, categoryEntity, keyword, isNotTempPosting,
+              isNotNoticePosting, pageable);
 
       case "W" -> {
         MemberEntity memberEntity = memberRepository.findByNickName(keyword)
-            .orElseThrow(CustomMemberNotFoundException::new);
+            .orElseThrow(() -> new CustomMemberNotFoundException(
+                "Nickname이 " + keyword + "인 회원을 찾을 수 없습니다."));
         postingEntities = postingRepository.findAllByCategoryIdAndMemberIdAndIsTempAndIsNotice(
             categoryEntity, memberEntity, isNotTempPosting, isNotNoticePosting, pageable);
       }
@@ -463,12 +468,13 @@ public class PostingService {
   public PostingImageUploadResponseDto uploadPostingImage(
       Long postingId,
       MultipartFile postingImage,
-      HttpServletRequest request){
+      HttpServletRequest request) {
 
     PostingEntity postingEntity = getPostingById(postingId);
 
     ThumbnailEntity postingImageEntity = thumbnailService.save(
-        ThumbType.PostThumbnail, new ImageNoChange(), postingImage, getUserIP(request), postingEntity);
+        ThumbType.PostThumbnail, new ImageNoChange(), postingImage, getUserIP(request),
+        postingEntity);
 
     return PostingImageUploadResponseDto.from(postingImageEntity);
   }

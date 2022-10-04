@@ -36,7 +36,8 @@ public class UtilExceptionAdvice {
   protected CommonResult memberNotFoundException(CustomMemberNotFoundException e) {
     return responseService.getFailResult(
         Integer.parseInt(exceptionUtil.getMessage("memberNotFound.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("memberNotFound.msg") : e.getMessage());
+        e.getMessage() == null ? exceptionUtil.getMessage("memberNotFound.msg",
+            new Object[]{e.getNotFountMemberId()}) : e.getMessage());
   }
 
   @ExceptionHandler(CustomMemberInfoNotFoundException.class)

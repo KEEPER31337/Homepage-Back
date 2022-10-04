@@ -226,7 +226,8 @@ public class SignInControllerTest extends ApiControllerTestHelper {
     /* ==== 로그인 후 토큰 생성 End ==== */
 
     MemberEntity PrevMemberEntity = memberRepository.findByLoginId(loginId)
-        .orElseThrow(CustomMemberNotFoundException::new);
+        .orElseThrow(
+            () -> new CustomMemberNotFoundException("loginId가 " + loginId + " 인 회원을 찾을 수 없습니다."));
     String prevHashedPassword = PrevMemberEntity.getPassword();
 
     String newPassword = password + "1";
@@ -252,7 +253,8 @@ public class SignInControllerTest extends ApiControllerTestHelper {
             )));
 
     MemberEntity memberEntity = memberRepository.findByLoginId(loginId)
-        .orElseThrow(CustomMemberNotFoundException::new);
+        .orElseThrow(
+            () -> new CustomMemberNotFoundException("loginId가 " + loginId + " 인 회원을 찾을 수 없습니다."));
     String newHashedPassword = memberEntity.getPassword();
     // 비밀번호 변경 전 해쉬값과 변경 후 해쉬값이 다르면 테스트 성공.
     assertNotEquals(prevHashedPassword, newHashedPassword);

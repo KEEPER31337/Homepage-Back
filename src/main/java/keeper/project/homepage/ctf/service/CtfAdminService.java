@@ -349,6 +349,6 @@ public class CtfAdminService {
   private MemberEntity getProbMaker(CtfProbMakerDto probMakerDto) {
     return memberRepository
         .findById(probMakerDto.getMemberId())
-        .orElseThrow(CustomMemberNotFoundException::new);
+        .orElseThrow(() -> new CustomMemberNotFoundException(probMakerDto.getMemberId()));
   }
 }

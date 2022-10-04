@@ -1,20 +1,7 @@
 package keeper.project.homepage;
 
 import keeper.project.homepage.util.dto.result.CommonResult;
-import keeper.project.homepage.systemadmin.exception.CustomClerkInaccessibleJobException;
-import keeper.project.homepage.clerk.exception.CustomSeminarAttendanceFailException;
-import keeper.project.homepage.util.exception.CustomNumberOverflowException;
 import keeper.project.homepage.util.exception.ExceptionAdviceUtil;
-import keeper.project.homepage.util.exception.file.CustomInvalidImageFileException;
-import keeper.project.homepage.util.exception.file.CustomFileDeleteFailedException;
-import keeper.project.homepage.util.exception.file.CustomFileEntityNotFoundException;
-import keeper.project.homepage.util.exception.file.CustomFileNotFoundException;
-import keeper.project.homepage.util.exception.file.CustomFileTransferFailedException;
-import keeper.project.homepage.util.exception.file.CustomImageFormatException;
-import keeper.project.homepage.util.exception.file.CustomImageIOException;
-import keeper.project.homepage.util.exception.file.CustomThumbnailEntityNotFoundException;
-import keeper.project.homepage.member.exception.CustomMemberInfoNotFoundException;
-import keeper.project.homepage.member.exception.CustomMemberNotFoundException;
 import keeper.project.homepage.util.service.result.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
