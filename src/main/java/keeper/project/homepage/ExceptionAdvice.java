@@ -25,6 +25,7 @@ import keeper.project.homepage.election.exception.CustomElectionVoteDuplicationJ
 import keeper.project.homepage.election.exception.CustomElectionVoterExistException;
 import keeper.project.homepage.election.exception.CustomElectionVoterNotFoundException;
 import keeper.project.homepage.util.exception.CustomNumberOverflowException;
+import keeper.project.homepage.util.exception.ExceptionAdviceUtil;
 import keeper.project.homepage.util.exception.file.CustomInvalidImageFileException;
 import keeper.project.homepage.ctf.exception.CustomCtfTeamNotFoundException;
 import keeper.project.homepage.util.exception.file.CustomFileDeleteFailedException;
@@ -86,14 +87,14 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 public class ExceptionAdvice {
 
   private final ResponseService responseService;
-  private final MessageSource messageSource;
+  private final ExceptionAdviceUtil exceptionUtil;
 
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult defaultException(Exception e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(Integer.parseInt(getMessage("unKnown.code")),
-        e.getMessage() == null ? getMessage("unKnown.msg") : e.getMessage());
+    return responseService.getFailResult(Integer.parseInt(exceptionUtil.getMessage("unKnown.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("unKnown.msg") : e.getMessage());
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -117,15 +118,17 @@ public class ExceptionAdvice {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult methodArgumentTypeMismatchException(
       MethodArgumentTypeMismatchException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("argumentTypeMismatch.code")),
-        getMessage("argumentTypeMismatch.msg"));
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("argumentTypeMismatch.code")),
+        exceptionUtil.getMessage("argumentTypeMismatch.msg"));
   }
 
   @ExceptionHandler(AccessDeniedException.class)
   @ResponseStatus(HttpStatus.FORBIDDEN)
   public CommonResult accessDeniedException(AccessDeniedException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("accessDenied.code")),
-        e.getMessage() == null ? getMessage("accessDenied.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("accessDenied.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("accessDenied.msg") : e.getMessage());
   }
 
   @ExceptionHandler(MissingServletRequestParameterException.class)
@@ -133,108 +136,111 @@ public class ExceptionAdvice {
   protected CommonResult methodArgumentTypeMismatchException(
       MissingServletRequestParameterException e) {
     return responseService.getFailResult(
-        Integer.parseInt(getMessage("missingServletRequestParameter.code")),
-        getMessage("missingServletRequestParameter.msg"));
-  }
-
-  // code정보에 해당하는 메시지를 조회합니다.
-  public String getMessage(String code) {
-    return getMessage(code, null);
-  }
-
-  // code정보, 추가 argument로 현재 locale에 맞는 메시지를 조회합니다.
-  public String getMessage(String code, Object[] args) {
-    return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
+        Integer.parseInt(exceptionUtil.getMessage("missingServletRequestParameter.code")),
+        exceptionUtil.getMessage("missingServletRequestParameter.msg"));
   }
 
   @ExceptionHandler(CustomMemberNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult memberNotFoundException(CustomMemberNotFoundException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(Integer.parseInt(getMessage("memberNotFound.code")),
-        e.getMessage() == null ? getMessage("memberNotFound.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("memberNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("memberNotFound.msg") : e.getMessage());
   }
 
   // ExceptionAdvice
   @ExceptionHandler(CustomLoginIdSigninFailedException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult signInFailed(CustomLoginIdSigninFailedException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("SigninFailed.code")),
-        e.getMessage() == null ? getMessage("SigninFailed.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("SigninFailed.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("SigninFailed.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomAuthenticationEntryPointException.class)
   @ResponseStatus(HttpStatus.UNAUTHORIZED)
   public CommonResult authenticationEntryPointException(CustomAuthenticationEntryPointException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("entryPointException.code")),
-        getMessage("entryPointException.msg"));
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("entryPointException.code")),
+        exceptionUtil.getMessage("entryPointException.msg"));
   }
 
   @ExceptionHandler(CustomSignUpFailedException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public CommonResult signUpFailedException(CustomSignUpFailedException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("signUpFailed.code")),
-        e.getMessage() == null ? getMessage("signUpFailed.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("signUpFailed.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("signUpFailed.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomFileNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public CommonResult fileNotFoundException(CustomFileNotFoundException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("fileNotFound.code")),
-        e.getMessage() == null ? getMessage("fileNotFound.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("fileNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("fileNotFound.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomPointLackException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public CommonResult transferPointLackException(CustomPointLackException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("pointLackException.code")),
-        e.getMessage() == null ? getMessage("pointLackException.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("pointLackException.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("pointLackException.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomAttendanceException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public CommonResult attendanceException(CustomAttendanceException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("attendanceFailed.code")),
-        e.getMessage() == null ? getMessage("attendanceFailed.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("attendanceFailed.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("attendanceFailed.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomGameIsOverException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public CommonResult gameIsOverException(CustomGameIsOverException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("gameIsOver.code")),
-        e.getMessage() == null ? getMessage("gameIsOver.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("gameIsOver.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("gameIsOver.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomBookNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult bookNotFoundException(CustomBookNotFoundException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(Integer.parseInt(getMessage("bookNotFound.code")),
-        getMessage("bookNotFound.msg"));
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("bookNotFound.code")),
+        exceptionUtil.getMessage("bookNotFound.msg"));
   }
 
   @ExceptionHandler(CustomBookOverTheMaxException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult bookOverTheMaxException(CustomBookOverTheMaxException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(Integer.parseInt(getMessage("bookOverTheMax.code")),
-        getMessage("bookOverTheMax.msg"));
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("bookOverTheMax.code")),
+        exceptionUtil.getMessage("bookOverTheMax.msg"));
   }
 
   @ExceptionHandler(CustomFileDeleteFailedException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult fileDeleteFailedException(CustomFileDeleteFailedException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(Integer.parseInt(getMessage("fileDeleteFailed.code")),
-        getMessage("fileDeleteFailed.msg"));
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("fileDeleteFailed.code")),
+        exceptionUtil.getMessage("fileDeleteFailed.msg"));
   }
 
   @ExceptionHandler(CustomFileTransferFailedException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult fileTransferFailedException(CustomFileTransferFailedException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(Integer.parseInt(getMessage("fileTransferFailed.code")),
-        getMessage("fileTransferFailed.msg"));
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("fileTransferFailed.code")),
+        exceptionUtil.getMessage("fileTransferFailed.msg"));
   }
 
   @ExceptionHandler(CustomFileEntityNotFoundException.class)
@@ -242,8 +248,8 @@ public class ExceptionAdvice {
   protected CommonResult fileEntityNotFoundException(CustomFileEntityNotFoundException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(
-        Integer.parseInt(getMessage("fileEntityNotFoundFailed.code")),
-        getMessage("fileEntityNotFoundFailed.msg"));
+        Integer.parseInt(exceptionUtil.getMessage("fileEntityNotFoundFailed.code")),
+        exceptionUtil.getMessage("fileEntityNotFoundFailed.msg"));
   }
 
   @ExceptionHandler(CustomThumbnailEntityNotFoundException.class)
@@ -252,108 +258,122 @@ public class ExceptionAdvice {
       CustomThumbnailEntityNotFoundException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(
-        Integer.parseInt(getMessage("thumbnailEntityNotFoundFailed.code")),
-        getMessage("thumbnailEntityNotFoundFailed.msg"));
+        Integer.parseInt(exceptionUtil.getMessage("thumbnailEntityNotFoundFailed.code")),
+        exceptionUtil.getMessage("thumbnailEntityNotFoundFailed.msg"));
   }
 
   @ExceptionHandler(CustomImageFormatException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult imageFormatException(CustomImageFormatException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(Integer.parseInt(getMessage("imageFormat.code")),
-        getMessage("imageFormat.msg"));
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("imageFormat.code")),
+        exceptionUtil.getMessage("imageFormat.msg"));
   }
 
   @ExceptionHandler(CustomImageIOException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult imageIOException(CustomImageIOException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(Integer.parseInt(getMessage("imageIO.code")),
-        getMessage("imageIO.msg"));
+    return responseService.getFailResult(Integer.parseInt(exceptionUtil.getMessage("imageIO.code")),
+        exceptionUtil.getMessage("imageIO.msg"));
   }
 
   @ExceptionHandler(CustomInvalidImageFileException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public CommonResult invalidImageFileException(CustomInvalidImageFileException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("invalidImageFile.code")),
-        e.getMessage() == null ? getMessage("invalidImageFile.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("invalidImageFile.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("invalidImageFile.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomMemberEmptyFieldException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult memberEmptyFieldException(CustomMemberEmptyFieldException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(Integer.parseInt(getMessage("memberEmptyField.code")),
-        getMessage("memberEmptyField.msg"));
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("memberEmptyField.code")),
+        exceptionUtil.getMessage("memberEmptyField.msg"));
   }
 
   @ExceptionHandler(CustomMemberInfoNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult memberInfoNotFoundException(CustomMemberInfoNotFoundException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(Integer.parseInt(getMessage("memberInfoNotFound.code")),
-        e.getMessage() == null ? getMessage("memberInfoNotFound.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("memberInfoNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("memberInfoNotFound.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomMemberDuplicateException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult memberDuplicateException(CustomMemberDuplicateException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(Integer.parseInt(getMessage("memberDuplicate.code")),
-        e.getMessage() == null ? getMessage("memberDuplicate.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("memberDuplicate.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("memberDuplicate.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomCommentNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult commentNotFoundException(CustomCommentNotFoundException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(Integer.parseInt(getMessage("commentNotFound.code")),
-        getMessage("commentNotFound.msg"));
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("commentNotFound.code")),
+        exceptionUtil.getMessage("commentNotFound.msg"));
   }
 
   @ExceptionHandler(CustomAccountDeleteFailedException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult accountDeleteFailedException(CustomAccountDeleteFailedException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("accountDeleteFailed.code")),
-        getMessage("accountDeleteFailed.msg"));
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("accountDeleteFailed.code")),
+        exceptionUtil.getMessage("accountDeleteFailed.msg"));
   }
 
   @ExceptionHandler(CustomCommentEmptyFieldException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult commentEmptyFieldException(CustomCommentEmptyFieldException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(Integer.parseInt(getMessage("commentEmptyField.code")),
-        e.getMessage() == null ? getMessage("commentEmptyField.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("commentEmptyField.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("commentEmptyField.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomNumberOverflowException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult numberOverflowException(CustomNumberOverflowException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(Integer.parseInt(getMessage("numberOverflow.code")),
-        getMessage("numberOverflow.msg"));
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("numberOverflow.code")),
+        exceptionUtil.getMessage("numberOverflow.msg"));
   }
 
   @ExceptionHandler(CustomCategoryNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult categoryNotFoundException(CustomCategoryNotFoundException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("categoryNotFound.code")),
-        getMessage("categoryNotFound.msg"));
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("categoryNotFound.code")),
+        exceptionUtil.getMessage("categoryNotFound.msg"));
   }
 
   @ExceptionHandler(CustomAccessRootCategoryException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult accessRootCategoryException(CustomAccessRootCategoryException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("accessRootCategory.code")),
-        getMessage("accessRootCategory.msg"));
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("accessRootCategory.code")),
+        exceptionUtil.getMessage("accessRootCategory.msg"));
   }
 
   @ExceptionHandler(CustomBookBorrowNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult bookBorrowNotFoundException(CustomBookBorrowNotFoundException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(Integer.parseInt(getMessage("bookBorrowNotFound.code")),
-        getMessage("bookBorrowNotFound.msg"));
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("bookBorrowNotFound.code")),
+        exceptionUtil.getMessage("bookBorrowNotFound.msg"));
   }
 
   @ExceptionHandler(CustomPointLogRequestNullException.class)
@@ -361,8 +381,8 @@ public class ExceptionAdvice {
   protected CommonResult pointLogRequestNullException(CustomPointLogRequestNullException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(
-        Integer.parseInt(getMessage("pointLogRequestNullException.code")),
-        getMessage("pointLogRequestNullException.msg"));
+        Integer.parseInt(exceptionUtil.getMessage("pointLogRequestNullException.code")),
+        exceptionUtil.getMessage("pointLogRequestNullException.msg"));
   }
 
   @ExceptionHandler(CustomBookDepartmentNotFoundException.class)
@@ -370,94 +390,109 @@ public class ExceptionAdvice {
   protected CommonResult bookDepartmentNotFoundException(CustomBookDepartmentNotFoundException e) {
     // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(
-        Integer.parseInt(getMessage("bookDepartmentNotFound.code")),
-        getMessage("bookDepartmentNotFound.msg"));
+        Integer.parseInt(exceptionUtil.getMessage("bookDepartmentNotFound.code")),
+        exceptionUtil.getMessage("bookDepartmentNotFound.msg"));
   }
 
   @ExceptionHandler(CustomSeasonInvalidException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult seasonInvalid(CustomSeasonInvalidException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("seasonInvalid.code")),
-        e.getMessage() == null ? getMessage("seasonInvalid.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("seasonInvalid.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("seasonInvalid.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomIpAddressNotFoundException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult ipAddressNotFound(CustomIpAddressNotFoundException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("ipAddressNotFound.code")),
-        e.getMessage() == null ? getMessage("ipAddressNotFound.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("ipAddressNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("ipAddressNotFound.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomStudyNotFoundException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult studyNotFound(CustomStudyNotFoundException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("studyNotFound.code")),
-        e.getMessage() == null ? getMessage("studyNotFound.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("studyNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("studyNotFound.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomStudyIsNotMineException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult studyNotMine(CustomStudyIsNotMineException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("studyNotMine.code")),
-        e.getMessage() == null ? getMessage("studyNotMine.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("studyNotMine.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("studyNotMine.msg") : e.getMessage());
   }
 
   @ExceptionHandler(EmptyResultDataAccessException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult dataAccessException(EmptyResultDataAccessException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("dataNotFound.code")),
-        e.getMessage() == null ? getMessage("dataNotFound.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("dataNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("dataNotFound.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomAccessVirtualMemberException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult accessVirtualMember(CustomAccessVirtualMemberException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("accessVirtualMember.code")),
-        e.getMessage() == null ? getMessage("accessVirtualMember.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("accessVirtualMember.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("accessVirtualMember.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomPostingNotFoundException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult postingNotFound(CustomPostingNotFoundException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("postingNotFound.code")),
-        e.getMessage() == null ? getMessage("postingNotFound.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("postingNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("postingNotFound.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomPostingIncorrectException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult postingIncorrect(CustomPostingIncorrectException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("postingIncorrect.code")),
-        e.getMessage() == null ? getMessage("postingIncorrect.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("postingIncorrect.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("postingIncorrect.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomPostingTempException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult postingTemp(CustomPostingTempException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("postingTemp.code")),
-        e.getMessage() == null ? getMessage("postingTemp.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("postingTemp.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("postingTemp.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomPostingAccessDeniedException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult postingAccessDenied(CustomPostingAccessDeniedException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("postingAccessDenied.code")),
-        e.getMessage() == null ? getMessage("postingAccessDenied.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("postingAccessDenied.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("postingAccessDenied.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomStaticWriteTypeNotFoundException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult staticWriteTitleNotFound(CustomStaticWriteTypeNotFoundException e) {
     return responseService.getFailResult(
-        Integer.parseInt(getMessage("staticWriteTypeNotFound.code")),
-        e.getMessage() == null ? getMessage("staticWriteTypeNotFound.msg") : e.getMessage());
+        Integer.parseInt(exceptionUtil.getMessage("staticWriteTypeNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("staticWriteTypeNotFound.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomStaticWriteTitleNotFoundException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult staticWriteTitleNotFound(CustomStaticWriteTitleNotFoundException e) {
     return responseService.getFailResult(
-        Integer.parseInt(getMessage("staticWriteTitleNotFound.code")),
-        e.getMessage() == null ? getMessage("staticWriteTitleNotFound.msg") : e.getMessage());
+        Integer.parseInt(exceptionUtil.getMessage("staticWriteTitleNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("staticWriteTitleNotFound.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomStaticWriteSubtitleImageNotFoundException.class)
@@ -465,8 +500,8 @@ public class ExceptionAdvice {
   protected CommonResult staticWriteSubtitleImageNotFound(
       CustomStaticWriteSubtitleImageNotFoundException e) {
     return responseService.getFailResult(
-        Integer.parseInt(getMessage("staticWriteSubtitleImageNotFound.code")),
-        e.getMessage() == null ? getMessage("staticWriteSubtitleImageNotFound.msg")
+        Integer.parseInt(exceptionUtil.getMessage("staticWriteSubtitleImageNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("staticWriteSubtitleImageNotFound.msg")
             : e.getMessage());
   }
 
@@ -474,87 +509,103 @@ public class ExceptionAdvice {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult staticWriteContentNotFound(CustomStaticWriteContentNotFoundException e) {
     return responseService.getFailResult(
-        Integer.parseInt(getMessage("staticWriteContentNotFound.code")),
-        e.getMessage() == null ? getMessage("staticWriteContentNotFound.msg") : e.getMessage());
+        Integer.parseInt(exceptionUtil.getMessage("staticWriteContentNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("staticWriteContentNotFound.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomContestNotFoundException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult contestNotFound(CustomContestNotFoundException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("contestNotFound.code")),
-        e.getMessage() == null ? getMessage("contestNotFound.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("contestNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("contestNotFound.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomCtfCategoryNotFoundException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult ctfCategoryNotFound(CustomCtfCategoryNotFoundException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("ctfCategoryNotFound.code")),
-        e.getMessage() == null ? getMessage("ctfCategoryNotFound.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("ctfCategoryNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("ctfCategoryNotFound.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomCtfTypeNotFoundException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult ctfTypeNotFound(CustomCtfTypeNotFoundException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("ctfTypeNotFound.code")),
-        e.getMessage() == null ? getMessage("ctfTypeNotFound.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("ctfTypeNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("ctfTypeNotFound.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomCtfChallengeNotFoundException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult ctfChallengeNotFound(CustomCtfChallengeNotFoundException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("ctfChallengeNotFound.code")),
-        e.getMessage() == null ? getMessage("ctfChallengeNotFound.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("ctfChallengeNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("ctfChallengeNotFound.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomCtfTeamNotFoundException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult teamNotFound(CustomCtfTeamNotFoundException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("ctfTeamNotFound.code")),
-        e.getMessage() == null ? getMessage("ctfTeamNotFound.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("ctfTeamNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("ctfTeamNotFound.msg") : e.getMessage());
   }
 
   @ExceptionHandler(DataIntegrityViolationException.class)
   @ResponseStatus(HttpStatus.CONFLICT)
   protected CommonResult dataDuplicate(DataIntegrityViolationException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("dataDuplicate.code")),
-        e.getMessage() == null ? getMessage("dataDuplicate.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("dataDuplicate.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("dataDuplicate.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomElectionNotFoundException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult electionNotFound(CustomElectionNotFoundException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("electionNotFound.code")),
-        e.getMessage() == null ? getMessage("electionNotFound.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("electionNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("electionNotFound.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomElectionCandidateNotFoundException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult electionCandidateNotFound(CustomElectionCandidateNotFoundException e) {
     return responseService.getFailResult(
-        Integer.parseInt(getMessage("electionCandidateNotFound.code")),
-        e.getMessage() == null ? getMessage("electionCandidateNotFound.msg") : e.getMessage());
+        Integer.parseInt(exceptionUtil.getMessage("electionCandidateNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("electionCandidateNotFound.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomElectionVoterNotFoundException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult electionVoterNotFound(CustomElectionVoterNotFoundException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("electionVoterNotFound.code")),
-        e.getMessage() == null ? getMessage("electionVoterNotFound.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("electionVoterNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("electionVoterNotFound.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomElectionCandidateExistException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult electionCandidateExist(CustomElectionCandidateExistException e) {
     return responseService.getFailResult(
-        Integer.parseInt(getMessage("electionCandidateExist.code")),
-        e.getMessage() == null ? getMessage("electionCandidateExist.msg") : e.getMessage());
+        Integer.parseInt(exceptionUtil.getMessage("electionCandidateExist.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("electionCandidateExist.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomElectionVoterExistException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult electionVoterExist(CustomElectionVoterExistException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("electionVoterExist.code")),
-        e.getMessage() == null ? getMessage("electionVoterExist.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("electionVoterExist.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("electionVoterExist.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomElectionVoteCountNotMatchException.class)
@@ -562,59 +613,70 @@ public class ExceptionAdvice {
   protected CommonResult electionCandidateCountNotMatch(
       CustomElectionVoteCountNotMatchException e) {
     return responseService.getFailResult(
-        Integer.parseInt(getMessage("electionVoteCountNotMatch.code")),
-        e.getMessage() == null ? getMessage("electionVoteCountNotMatch.msg") : e.getMessage());
+        Integer.parseInt(exceptionUtil.getMessage("electionVoteCountNotMatch.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("electionVoteCountNotMatch.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomElectionVoteDuplicationJobException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult electionVoteDuplicationJob(CustomElectionVoteDuplicationJobException e) {
     return responseService.getFailResult(
-        Integer.parseInt(getMessage("electionVoteDuplicationJob.code")),
-        e.getMessage() == null ? getMessage("electionVoteDuplicationJob.msg") : e.getMessage());
+        Integer.parseInt(exceptionUtil.getMessage("electionVoteDuplicationJob.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("electionVoteDuplicationJob.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomCloseElectionVoteException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult closeElectionVote(CustomCloseElectionVoteException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("closeElectionVote.code")),
-        e.getMessage() == null ? getMessage("closeElectionVote.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("closeElectionVote.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("closeElectionVote.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomElectionNotMatchCandidateException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult electionNotMatchCandidate(CustomElectionNotMatchCandidateException e) {
     return responseService.getFailResult(
-        Integer.parseInt(getMessage("electionNotMatchCandidate.code")),
-        e.getMessage() == null ? getMessage("electionNotMatchCandidate.msg") : e.getMessage());
+        Integer.parseInt(exceptionUtil.getMessage("electionNotMatchCandidate.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("electionNotMatchCandidate.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomElectionAlreadyVotedException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult electionAlreadyVoted(CustomElectionAlreadyVotedException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("alreadyVoted.code")),
-        e.getMessage() == null ? getMessage("alreadyVoted.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("alreadyVoted.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("alreadyVoted.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomElectionIsNotClosedException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult electionIsNotClosed(CustomElectionIsNotClosedException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("IsNotClosedElection.code")),
-        e.getMessage() == null ? getMessage("IsNotClosedElection.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("IsNotClosedElection.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("IsNotClosedElection.msg")
+            : e.getMessage());
   }
 
   @ExceptionHandler(CustomClerkInaccessibleJobException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult clerkInaccessibleJob(CustomClerkInaccessibleJobException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("inaccessibleJob.code")),
-        e.getMessage() == null ? getMessage("inaccessibleJob.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("inaccessibleJob.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("inaccessibleJob.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomSeminarAttendanceFailException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult seminarAttendanceFail(CustomSeminarAttendanceFailException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("seminarAttendanceFail.code")),
-        e.getMessage() == null ? getMessage("seminarAttendanceFail.msg") : e.getMessage());
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("seminarAttendanceFail.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("seminarAttendanceFail.msg")
+            : e.getMessage());
   }
 
 }
