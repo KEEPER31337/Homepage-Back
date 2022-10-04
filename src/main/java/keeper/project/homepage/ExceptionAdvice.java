@@ -238,43 +238,6 @@ public class ExceptionAdvice {
         exceptionUtil.getMessage("numberOverflow.msg"));
   }
 
-  @ExceptionHandler(CustomStaticWriteTypeNotFoundException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult staticWriteTitleNotFound(CustomStaticWriteTypeNotFoundException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("staticWriteTypeNotFound.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("staticWriteTypeNotFound.msg")
-            : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomStaticWriteTitleNotFoundException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult staticWriteTitleNotFound(CustomStaticWriteTitleNotFoundException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("staticWriteTitleNotFound.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("staticWriteTitleNotFound.msg")
-            : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomStaticWriteSubtitleImageNotFoundException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult staticWriteSubtitleImageNotFound(
-      CustomStaticWriteSubtitleImageNotFoundException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("staticWriteSubtitleImageNotFound.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("staticWriteSubtitleImageNotFound.msg")
-            : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomStaticWriteContentNotFoundException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult staticWriteContentNotFound(CustomStaticWriteContentNotFoundException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("staticWriteContentNotFound.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("staticWriteContentNotFound.msg")
-            : e.getMessage());
-  }
-
   @ExceptionHandler(CustomContestNotFoundException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult contestNotFound(CustomContestNotFoundException e) {
