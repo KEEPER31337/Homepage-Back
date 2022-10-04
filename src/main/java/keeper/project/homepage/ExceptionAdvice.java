@@ -159,15 +159,6 @@ public class ExceptionAdvice {
         e.getMessage() == null ? exceptionUtil.getMessage("fileNotFound.msg") : e.getMessage());
   }
 
-  @ExceptionHandler(CustomPointLackException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public CommonResult transferPointLackException(CustomPointLackException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("pointLackException.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("pointLackException.msg")
-            : e.getMessage());
-  }
-
   @ExceptionHandler(CustomAttendanceException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public CommonResult attendanceException(CustomAttendanceException e) {
@@ -351,15 +342,6 @@ public class ExceptionAdvice {
     return responseService.getFailResult(
         Integer.parseInt(exceptionUtil.getMessage("bookBorrowNotFound.code")),
         exceptionUtil.getMessage("bookBorrowNotFound.msg"));
-  }
-
-  @ExceptionHandler(CustomPointLogRequestNullException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult pointLogRequestNullException(CustomPointLogRequestNullException e) {
-    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("pointLogRequestNullException.code")),
-        exceptionUtil.getMessage("pointLogRequestNullException.msg"));
   }
 
   @ExceptionHandler(CustomBookDepartmentNotFoundException.class)
