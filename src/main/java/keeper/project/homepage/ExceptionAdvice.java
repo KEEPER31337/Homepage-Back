@@ -159,22 +159,6 @@ public class ExceptionAdvice {
         e.getMessage() == null ? exceptionUtil.getMessage("fileNotFound.msg") : e.getMessage());
   }
 
-  @ExceptionHandler(CustomAttendanceException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  public CommonResult attendanceException(CustomAttendanceException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("attendanceFailed.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("attendanceFailed.msg") : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomGameIsOverException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  public CommonResult gameIsOverException(CustomGameIsOverException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("gameIsOver.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("gameIsOver.msg") : e.getMessage());
-  }
-
   @ExceptionHandler(CustomBookNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult bookNotFoundException(CustomBookNotFoundException e) {
