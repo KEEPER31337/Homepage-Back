@@ -121,6 +121,13 @@ public class ExceptionAdvice {
         getMessage("argumentTypeMismatch.msg"));
   }
 
+  @ExceptionHandler(AccessDeniedException.class)
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public CommonResult accessDeniedException(AccessDeniedException e) {
+    return responseService.getFailResult(Integer.parseInt(getMessage("accessDenied.code")),
+        e.getMessage() == null ? getMessage("accessDenied.msg") : e.getMessage());
+  }
+
   @ExceptionHandler(MissingServletRequestParameterException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult methodArgumentTypeMismatchException(
@@ -128,14 +135,6 @@ public class ExceptionAdvice {
     return responseService.getFailResult(
         Integer.parseInt(getMessage("missingServletRequestParameter.code")),
         getMessage("missingServletRequestParameter.msg"));
-  }
-
-  @ExceptionHandler(CustomMemberNotFoundException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  protected CommonResult memberNotFoundException(CustomMemberNotFoundException e) {
-    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(Integer.parseInt(getMessage("memberNotFound.code")),
-        e.getMessage() == null ? getMessage("memberNotFound.msg") : e.getMessage());
   }
 
   // code정보에 해당하는 메시지를 조회합니다.
@@ -146,6 +145,14 @@ public class ExceptionAdvice {
   // code정보, 추가 argument로 현재 locale에 맞는 메시지를 조회합니다.
   public String getMessage(String code, Object[] args) {
     return messageSource.getMessage(code, args, LocaleContextHolder.getLocale());
+  }
+
+  @ExceptionHandler(CustomMemberNotFoundException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected CommonResult memberNotFoundException(CustomMemberNotFoundException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(Integer.parseInt(getMessage("memberNotFound.code")),
+        e.getMessage() == null ? getMessage("memberNotFound.msg") : e.getMessage());
   }
 
   // ExceptionAdvice
@@ -161,13 +168,6 @@ public class ExceptionAdvice {
   public CommonResult authenticationEntryPointException(CustomAuthenticationEntryPointException e) {
     return responseService.getFailResult(Integer.parseInt(getMessage("entryPointException.code")),
         getMessage("entryPointException.msg"));
-  }
-
-  @ExceptionHandler(AccessDeniedException.class)
-  @ResponseStatus(HttpStatus.FORBIDDEN)
-  public CommonResult accessDeniedException(AccessDeniedException e) {
-    return responseService.getFailResult(Integer.parseInt(getMessage("accessDenied.code")),
-        e.getMessage() == null ? getMessage("accessDenied.msg") : e.getMessage());
   }
 
   @ExceptionHandler(CustomSignUpFailedException.class)
