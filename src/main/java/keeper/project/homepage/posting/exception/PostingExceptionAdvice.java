@@ -1,4 +1,4 @@
-package keeper.project.homepage.sign.exception;
+package keeper.project.homepage.posting.exception;
 
 
 import keeper.project.homepage.util.dto.result.CommonResult;
@@ -15,34 +15,76 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @Log4j2
 @RequiredArgsConstructor
-@RestControllerAdvice(basePackages = {"keeper.project.homepage.sign"})
+@RestControllerAdvice(basePackages = {"keeper.project.homepage.posting"})
 @Order(Ordered.HIGHEST_PRECEDENCE)
-public class SignExceptionAdvice {
+public class PostingExceptionAdvice {
 
   private final ResponseService responseService;
   private final ExceptionAdviceUtil exceptionUtil;
 
-  @ExceptionHandler(CustomLoginIdSigninFailedException.class)
+  @ExceptionHandler(CustomCommentNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  protected CommonResult signInFailed(CustomLoginIdSigninFailedException e) {
+  protected CommonResult commentNotFoundException(CustomCommentNotFoundException e) {
     return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("SigninFailed.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("SigninFailed.msg") : e.getMessage());
+        Integer.parseInt(exceptionUtil.getMessage("commentNotFound.code")),
+        exceptionUtil.getMessage("commentNotFound.msg"));
   }
 
-  @ExceptionHandler(CustomAuthenticationEntryPointException.class)
-  @ResponseStatus(HttpStatus.UNAUTHORIZED)
-  public CommonResult authenticationEntryPointException(CustomAuthenticationEntryPointException e) {
+  @ExceptionHandler(CustomCommentEmptyFieldException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult commentEmptyFieldException(CustomCommentEmptyFieldException e) {
     return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("entryPointException.code")),
-        exceptionUtil.getMessage("entryPointException.msg"));
+        Integer.parseInt(exceptionUtil.getMessage("commentEmptyField.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("commentEmptyField.msg")
+            : e.getMessage());
   }
 
-  @ExceptionHandler(CustomSignUpFailedException.class)
+  @ExceptionHandler(CustomCategoryNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  public CommonResult signUpFailedException(CustomSignUpFailedException e) {
+  protected CommonResult categoryNotFoundException(CustomCategoryNotFoundException e) {
     return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("signUpFailed.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("signUpFailed.msg") : e.getMessage());
+        Integer.parseInt(exceptionUtil.getMessage("categoryNotFound.code")),
+        exceptionUtil.getMessage("categoryNotFound.msg"));
+  }
+
+  @ExceptionHandler(CustomAccessRootCategoryException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected CommonResult accessRootCategoryException(CustomAccessRootCategoryException e) {
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("accessRootCategory.code")),
+        exceptionUtil.getMessage("accessRootCategory.msg"));
+  }
+
+  @ExceptionHandler(CustomPostingNotFoundException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult postingNotFound(CustomPostingNotFoundException e) {
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("postingNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("postingNotFound.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomPostingIncorrectException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult postingIncorrect(CustomPostingIncorrectException e) {
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("postingIncorrect.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("postingIncorrect.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomPostingTempException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult postingTemp(CustomPostingTempException e) {
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("postingTemp.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("postingTemp.msg") : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomPostingAccessDeniedException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult postingAccessDenied(CustomPostingAccessDeniedException e) {
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("postingAccessDenied.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("postingAccessDenied.msg")
+            : e.getMessage());
   }
 }

@@ -94,7 +94,6 @@ public class ExceptionAdvice {
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult defaultException(Exception e) {
-    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(Integer.parseInt(exceptionUtil.getMessage("unKnown.code")),
         e.getMessage() == null ? exceptionUtil.getMessage("unKnown.msg") : e.getMessage());
   }
@@ -142,10 +141,17 @@ public class ExceptionAdvice {
         exceptionUtil.getMessage("missingServletRequestParameter.msg"));
   }
 
+  @ExceptionHandler(EmptyResultDataAccessException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult dataAccessException(EmptyResultDataAccessException e) {
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("dataNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("dataNotFound.msg") : e.getMessage());
+  }
+
   @ExceptionHandler(CustomMemberNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult memberNotFoundException(CustomMemberNotFoundException e) {
-    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(
         Integer.parseInt(exceptionUtil.getMessage("memberNotFound.code")),
         e.getMessage() == null ? exceptionUtil.getMessage("memberNotFound.msg") : e.getMessage());
@@ -154,7 +160,6 @@ public class ExceptionAdvice {
   @ExceptionHandler(CustomMemberInfoNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult memberInfoNotFoundException(CustomMemberInfoNotFoundException e) {
-    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(
         Integer.parseInt(exceptionUtil.getMessage("memberInfoNotFound.code")),
         e.getMessage() == null ? exceptionUtil.getMessage("memberInfoNotFound.msg")
@@ -172,7 +177,6 @@ public class ExceptionAdvice {
   @ExceptionHandler(CustomFileDeleteFailedException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult fileDeleteFailedException(CustomFileDeleteFailedException e) {
-    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(
         Integer.parseInt(exceptionUtil.getMessage("fileDeleteFailed.code")),
         exceptionUtil.getMessage("fileDeleteFailed.msg"));
@@ -181,7 +185,6 @@ public class ExceptionAdvice {
   @ExceptionHandler(CustomFileTransferFailedException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult fileTransferFailedException(CustomFileTransferFailedException e) {
-    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(
         Integer.parseInt(exceptionUtil.getMessage("fileTransferFailed.code")),
         exceptionUtil.getMessage("fileTransferFailed.msg"));
@@ -190,7 +193,6 @@ public class ExceptionAdvice {
   @ExceptionHandler(CustomFileEntityNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult fileEntityNotFoundException(CustomFileEntityNotFoundException e) {
-    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(
         Integer.parseInt(exceptionUtil.getMessage("fileEntityNotFoundFailed.code")),
         exceptionUtil.getMessage("fileEntityNotFoundFailed.msg"));
@@ -200,7 +202,6 @@ public class ExceptionAdvice {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   protected CommonResult CustomThumbnailEntityNotFoundException(
       CustomThumbnailEntityNotFoundException e) {
-    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(
         Integer.parseInt(exceptionUtil.getMessage("thumbnailEntityNotFoundFailed.code")),
         exceptionUtil.getMessage("thumbnailEntityNotFoundFailed.msg"));
@@ -209,7 +210,6 @@ public class ExceptionAdvice {
   @ExceptionHandler(CustomImageFormatException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult imageFormatException(CustomImageFormatException e) {
-    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(
         Integer.parseInt(exceptionUtil.getMessage("imageFormat.code")),
         exceptionUtil.getMessage("imageFormat.msg"));
@@ -218,7 +218,6 @@ public class ExceptionAdvice {
   @ExceptionHandler(CustomImageIOException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult imageIOException(CustomImageIOException e) {
-    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(Integer.parseInt(exceptionUtil.getMessage("imageIO.code")),
         exceptionUtil.getMessage("imageIO.msg"));
   }
@@ -231,48 +230,12 @@ public class ExceptionAdvice {
         e.getMessage() == null ? exceptionUtil.getMessage("invalidImageFile.msg") : e.getMessage());
   }
 
-  @ExceptionHandler(CustomCommentNotFoundException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  protected CommonResult commentNotFoundException(CustomCommentNotFoundException e) {
-    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("commentNotFound.code")),
-        exceptionUtil.getMessage("commentNotFound.msg"));
-  }
-
-  @ExceptionHandler(CustomCommentEmptyFieldException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult commentEmptyFieldException(CustomCommentEmptyFieldException e) {
-    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("commentEmptyField.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("commentEmptyField.msg")
-            : e.getMessage());
-  }
-
   @ExceptionHandler(CustomNumberOverflowException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult numberOverflowException(CustomNumberOverflowException e) {
-    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
     return responseService.getFailResult(
         Integer.parseInt(exceptionUtil.getMessage("numberOverflow.code")),
         exceptionUtil.getMessage("numberOverflow.msg"));
-  }
-
-  @ExceptionHandler(CustomCategoryNotFoundException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  protected CommonResult categoryNotFoundException(CustomCategoryNotFoundException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("categoryNotFound.code")),
-        exceptionUtil.getMessage("categoryNotFound.msg"));
-  }
-
-  @ExceptionHandler(CustomAccessRootCategoryException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  protected CommonResult accessRootCategoryException(CustomAccessRootCategoryException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("accessRootCategory.code")),
-        exceptionUtil.getMessage("accessRootCategory.msg"));
   }
 
   @ExceptionHandler(CustomSeasonInvalidException.class)
@@ -306,47 +269,6 @@ public class ExceptionAdvice {
     return responseService.getFailResult(
         Integer.parseInt(exceptionUtil.getMessage("studyNotMine.code")),
         e.getMessage() == null ? exceptionUtil.getMessage("studyNotMine.msg") : e.getMessage());
-  }
-
-  @ExceptionHandler(EmptyResultDataAccessException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult dataAccessException(EmptyResultDataAccessException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("dataNotFound.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("dataNotFound.msg") : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomPostingNotFoundException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult postingNotFound(CustomPostingNotFoundException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("postingNotFound.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("postingNotFound.msg") : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomPostingIncorrectException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult postingIncorrect(CustomPostingIncorrectException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("postingIncorrect.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("postingIncorrect.msg") : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomPostingTempException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult postingTemp(CustomPostingTempException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("postingTemp.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("postingTemp.msg") : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomPostingAccessDeniedException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult postingAccessDenied(CustomPostingAccessDeniedException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("postingAccessDenied.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("postingAccessDenied.msg")
-            : e.getMessage());
   }
 
   @ExceptionHandler(CustomStaticWriteTypeNotFoundException.class)
