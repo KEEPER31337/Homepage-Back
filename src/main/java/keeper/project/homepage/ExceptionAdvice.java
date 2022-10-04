@@ -151,6 +151,16 @@ public class ExceptionAdvice {
         e.getMessage() == null ? exceptionUtil.getMessage("memberNotFound.msg") : e.getMessage());
   }
 
+  @ExceptionHandler(CustomMemberInfoNotFoundException.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  protected CommonResult memberInfoNotFoundException(CustomMemberInfoNotFoundException e) {
+    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("memberInfoNotFound.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("memberInfoNotFound.msg")
+            : e.getMessage());
+  }
+
   @ExceptionHandler(CustomFileNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public CommonResult fileNotFoundException(CustomFileNotFoundException e) {
@@ -221,34 +231,6 @@ public class ExceptionAdvice {
         e.getMessage() == null ? exceptionUtil.getMessage("invalidImageFile.msg") : e.getMessage());
   }
 
-  @ExceptionHandler(CustomMemberEmptyFieldException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult memberEmptyFieldException(CustomMemberEmptyFieldException e) {
-    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("memberEmptyField.code")),
-        exceptionUtil.getMessage("memberEmptyField.msg"));
-  }
-
-  @ExceptionHandler(CustomMemberInfoNotFoundException.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  protected CommonResult memberInfoNotFoundException(CustomMemberInfoNotFoundException e) {
-    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("memberInfoNotFound.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("memberInfoNotFound.msg")
-            : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomMemberDuplicateException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult memberDuplicateException(CustomMemberDuplicateException e) {
-    // 예외 처리의 메시지를 MessageSource에서 가져오도록 수정
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("memberDuplicate.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("memberDuplicate.msg") : e.getMessage());
-  }
-
   @ExceptionHandler(CustomCommentNotFoundException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   protected CommonResult commentNotFoundException(CustomCommentNotFoundException e) {
@@ -256,14 +238,6 @@ public class ExceptionAdvice {
     return responseService.getFailResult(
         Integer.parseInt(exceptionUtil.getMessage("commentNotFound.code")),
         exceptionUtil.getMessage("commentNotFound.msg"));
-  }
-
-  @ExceptionHandler(CustomAccountDeleteFailedException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult accountDeleteFailedException(CustomAccountDeleteFailedException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("accountDeleteFailed.code")),
-        exceptionUtil.getMessage("accountDeleteFailed.msg"));
   }
 
   @ExceptionHandler(CustomCommentEmptyFieldException.class)
@@ -340,15 +314,6 @@ public class ExceptionAdvice {
     return responseService.getFailResult(
         Integer.parseInt(exceptionUtil.getMessage("dataNotFound.code")),
         e.getMessage() == null ? exceptionUtil.getMessage("dataNotFound.msg") : e.getMessage());
-  }
-
-  @ExceptionHandler(CustomAccessVirtualMemberException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  protected CommonResult accessVirtualMember(CustomAccessVirtualMemberException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("accessVirtualMember.code")),
-        e.getMessage() == null ? exceptionUtil.getMessage("accessVirtualMember.msg")
-            : e.getMessage());
   }
 
   @ExceptionHandler(CustomPostingNotFoundException.class)
