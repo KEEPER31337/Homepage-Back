@@ -85,8 +85,8 @@ public class StudyControllerTest extends StudyControllerTestSetup {
   @DisplayName("스터디 목록 불러오기 성공")
   public void getAllStudyListSuccess() throws Exception {
     String docMsg = "잘못된 시즌을 입력하면 실패합니다.";
-    String docCode = "잘못된 시즌을 입력한 경우: " + exceptionAdvice.getMessage("seasonInvalid.code") + " +\n"
-        + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+    String docCode = "잘못된 시즌을 입력한 경우: " + exceptionUtil.getMessage("seasonInvalid.code") + " +\n"
+        + "그 외 에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
     mockMvc.perform(get("/v1/study/list")
             .header("Authorization", userToken1)
             .param("year", String.valueOf(VALID_YEAR))
@@ -121,7 +121,7 @@ public class StudyControllerTest extends StudyControllerTestSetup {
         .andDo(print())
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(exceptionAdvice.getMessage("seasonInvalid.code")));
+        .andExpect(jsonPath("$.code").value(exceptionUtil.getMessage("seasonInvalid.code")));
   }
 
 
@@ -129,10 +129,10 @@ public class StudyControllerTest extends StudyControllerTestSetup {
   @DisplayName("새로운 스터디 생성 성공")
   public void createStudySuccess() throws Exception {
     String docMsg = "잘못된 멤버, 잘못된 시즌을 입력하거나 IP를 공백으로 보내면 실패합니다.";
-    String docCode = "잘못된 멤버를 입력한 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-        + "잘못된 시즌을 입력한 경우: " + exceptionAdvice.getMessage("seasonInvalid.code") + " +\n"
-        + "IP를 공백으로 입력한 경우: " + exceptionAdvice.getMessage("ipAddressNotFound.code") + " +\n"
-        + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+    String docCode = "잘못된 멤버를 입력한 경우: " + exceptionUtil.getMessage("memberNotFound.code") + " +\n"
+        + "잘못된 시즌을 입력한 경우: " + exceptionUtil.getMessage("seasonInvalid.code") + " +\n"
+        + "IP를 공백으로 입력한 경우: " + exceptionUtil.getMessage("ipAddressNotFound.code") + " +\n"
+        + "그 외 에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
 
     List<MemberEntity> memberEntities = new ArrayList<>();
     memberEntities.add(memberEntity1);
@@ -233,12 +233,12 @@ public class StudyControllerTest extends StudyControllerTestSetup {
     String docMsg = "잘못된 스터디 번호, 잘못된 시즌을 입력하거나 IP를 공백으로 보내거나\n"
         + "스터디장이 아닌데 수정을 시도하면 실패합니다.";
     String docCode =
-        "잘못된 스터디 번호를 입력한 경우: " + exceptionAdvice.getMessage("studyNotFound.code") + " +\n"
-            + "잘못된 시즌을 입력한 경우: " + exceptionAdvice.getMessage("seasonInvalid.code") + " +\n"
-            + "IP를 공백으로 입력한 경우: " + exceptionAdvice.getMessage("ipAddressNotFound.code") + " +\n"
-            + "스터디장이 아닌 사람이 스터디를 수정하려는 경우: " + exceptionAdvice.getMessage("studyNotMine.code")
+        "잘못된 스터디 번호를 입력한 경우: " + exceptionUtil.getMessage("studyNotFound.code") + " +\n"
+            + "잘못된 시즌을 입력한 경우: " + exceptionUtil.getMessage("seasonInvalid.code") + " +\n"
+            + "IP를 공백으로 입력한 경우: " + exceptionUtil.getMessage("ipAddressNotFound.code") + " +\n"
+            + "스터디장이 아닌 사람이 스터디를 수정하려는 경우: " + exceptionUtil.getMessage("studyNotMine.code")
             + " +\n"
-            + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+            + "그 외 에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
 
     List<MemberEntity> memberEntities = new ArrayList<>();
     memberEntities.add(memberEntity1);
@@ -340,7 +340,7 @@ public class StudyControllerTest extends StudyControllerTestSetup {
         .andDo(print())
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(exceptionAdvice.getMessage("seasonInvalid.code")));
+        .andExpect(jsonPath("$.code").value(exceptionUtil.getMessage("seasonInvalid.code")));
   }
 
   @Test
@@ -369,7 +369,7 @@ public class StudyControllerTest extends StudyControllerTestSetup {
         .andDo(print())
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(exceptionAdvice.getMessage("ipAddressNotFound.code")));
+        .andExpect(jsonPath("$.code").value(exceptionUtil.getMessage("ipAddressNotFound.code")));
   }
 
   @Test
@@ -397,7 +397,7 @@ public class StudyControllerTest extends StudyControllerTestSetup {
         .andDo(print())
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(exceptionAdvice.getMessage("studyNotMine.code")));
+        .andExpect(jsonPath("$.code").value(exceptionUtil.getMessage("studyNotMine.code")));
   }
 
   @Test
@@ -406,10 +406,10 @@ public class StudyControllerTest extends StudyControllerTestSetup {
     Long studyMemberCount = studyHasMemberRepository.countByStudy(studyEntity);
     String docMsg = "잘못된 스터디 번호, 스터디장이 아닌데 수정을 시도하면 실패합니다.";
     String docCode =
-        "잘못된 스터디 번호를 입력한 경우: " + exceptionAdvice.getMessage("studyNotFound.code") + " +\n"
-            + "스터디장이 아닌 사람이 스터디원을 추가하려는 경우: " + exceptionAdvice.getMessage("studyNotMine.code")
+        "잘못된 스터디 번호를 입력한 경우: " + exceptionUtil.getMessage("studyNotFound.code") + " +\n"
+            + "스터디장이 아닌 사람이 스터디원을 추가하려는 경우: " + exceptionUtil.getMessage("studyNotMine.code")
             + " +\n"
-            + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+            + "그 외 에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
 
     String content = "{\n"
         + "    \"studyId\": \"" + studyEntity.getId() + "\",\n"
@@ -449,7 +449,7 @@ public class StudyControllerTest extends StudyControllerTestSetup {
         .andDo(print())
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(exceptionAdvice.getMessage("studyNotMine.code")));
+        .andExpect(jsonPath("$.code").value(exceptionUtil.getMessage("studyNotMine.code")));
   }
 
   @Test
@@ -474,10 +474,10 @@ public class StudyControllerTest extends StudyControllerTestSetup {
     Long studyMemberCount = studyHasMemberRepository.countByStudy(studyEntity);
     String docMsg = "잘못된 스터디 번호, 스터디장이 아닌데 수정을 시도하면 실패합니다.";
     String docCode =
-        "잘못된 스터디 번호를 입력한 경우: " + exceptionAdvice.getMessage("studyNotFound.code") + " +\n"
-            + "스터디장이 아닌 사람이 스터디원을 삭제하려는 경우: " + exceptionAdvice.getMessage("studyNotMine.code")
+        "잘못된 스터디 번호를 입력한 경우: " + exceptionUtil.getMessage("studyNotFound.code") + " +\n"
+            + "스터디장이 아닌 사람이 스터디원을 삭제하려는 경우: " + exceptionUtil.getMessage("studyNotMine.code")
             + " +\n"
-            + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+            + "그 외 에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
 
     String content = "{\n"
         + "    \"studyId\": \"" + studyEntity.getId() + "\",\n"
