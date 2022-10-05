@@ -69,9 +69,9 @@ public class AdminBadgeControllerTest extends ApiControllerTestHelper {
 
     String docMsg = "이미지 파일을 읽어들일 수 없는 경우 실패합니다.";
     String docCode =
-        "이미지가 정상적이지 않는 경우: " + exceptionAdvice.getMessage("invalidImageFile.code") + " or "
-            + exceptionAdvice.getMessage("invalidImageFile.code")
-            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+        "이미지가 정상적이지 않는 경우: " + exceptionUtil.getMessage("invalidImageFile.code") + " or "
+            + exceptionUtil.getMessage("invalidImageFile.code")
+            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
     resultActions.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
         .andDo(document("badge-post",
@@ -152,8 +152,8 @@ public class AdminBadgeControllerTest extends ApiControllerTestHelper {
 
     String docMsg = "수정할 이미지의 id가 존재하지 않는 경우 실패합니다.";
     String docCode =
-        "수정할 이미지가 존재하지 않을 경우: " + exceptionAdvice.getMessage("thumbnailEntityNotFoundFailed.code")
-            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+        "수정할 이미지가 존재하지 않을 경우: " + exceptionUtil.getMessage("thumbnailEntityNotFoundFailed.code")
+            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
     resultActions.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
         .andDo(document("badge-update",
@@ -255,8 +255,8 @@ public class AdminBadgeControllerTest extends ApiControllerTestHelper {
 
     String docMsg = "삭제할 뱃지의 id가 존재하지 않는 경우 실패합니다.";
     String docCode =
-        "삭제할 뱃지가 존재하지 않을 경우: " + exceptionAdvice.getMessage("thumbnailEntityNotFoundFailed.code")
-            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+        "삭제할 뱃지가 존재하지 않을 경우: " + exceptionUtil.getMessage("thumbnailEntityNotFoundFailed.code")
+            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
     resultActions.andExpect(MockMvcResultMatchers.status().isOk())
         .andDo(print())
         .andDo(document("badge-delete",

@@ -1,6 +1,12 @@
 package keeper.project.homepage.member.exception;
 
+import lombok.Getter;
+
+@Getter
 public class CustomMemberNotFoundException extends RuntimeException {
+
+  private Long notFountMemberId;
+
   public CustomMemberNotFoundException(String msg, Throwable t) {
     super(msg, t);
   }
@@ -9,7 +15,8 @@ public class CustomMemberNotFoundException extends RuntimeException {
     super(msg);
   }
 
-  public CustomMemberNotFoundException() {
+  public CustomMemberNotFoundException(Long notFountMemberId) {
     super();
+    this.notFountMemberId = notFountMemberId;
   }
 }

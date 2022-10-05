@@ -176,7 +176,7 @@ public class BookManageService {
     BookEntity bookId = bookRepository.findByTitleAndAuthor(title, author)
         .orElseThrow(() -> new CustomBookNotFoundException());
     MemberEntity memberId = memberRepository.findById(borrowMemberId)
-        .orElseThrow(() -> new CustomMemberNotFoundException());
+        .orElseThrow(() -> new CustomMemberNotFoundException(borrowMemberId));
     String borrowDate = transferFormat(new Date());
     String expireDate = getExpireDate(14);
 

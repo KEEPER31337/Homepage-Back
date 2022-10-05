@@ -65,9 +65,9 @@ public class MemberUpdateControllerTest extends ApiControllerTestHelper {
         + "}";
     String docMsg = "변경할 기수를 입력하지 않았다면 실패합니다.";
     String docCode =
-        "입력 데이터가 비어있는 경우: " + exceptionAdvice.getMessage("memberEmptyField.code") + " +\n"
-            + "존재하지 않는 회원인 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+        "입력 데이터가 비어있는 경우: " + exceptionUtil.getMessage("memberEmptyField.code") + " +\n"
+            + "존재하지 않는 회원인 경우: " + exceptionUtil.getMessage("memberNotFound.code") + " +\n"
+            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/admin/members/generation")
             .header("Authorization", adminToken)
@@ -100,10 +100,10 @@ public class MemberUpdateControllerTest extends ApiControllerTestHelper {
         + "}";
     String docMsg = "변경할 rank의 입력 데이터가 비어있거나, 입력한 rank가 존재하지 않는다면 실패합니다.";
     String docCode =
-        "입력 데이터가 비어있는 경우: " + exceptionAdvice.getMessage("memberEmptyField.code") + " +\n"
-            + "존재하지 않는 회원인 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-            + "입력한 rank가 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberInfoNotFound.code")
-            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+        "입력 데이터가 비어있는 경우: " + exceptionUtil.getMessage("memberEmptyField.code") + " +\n"
+            + "존재하지 않는 회원인 경우: " + exceptionUtil.getMessage("memberNotFound.code") + " +\n"
+            + "입력한 rank가 존재하지 않는 경우: " + exceptionUtil.getMessage("memberInfoNotFound.code")
+            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/admin/members/rank")
             .header("Authorization", adminToken)
@@ -140,10 +140,10 @@ public class MemberUpdateControllerTest extends ApiControllerTestHelper {
         + "}";
     String docMsg = "변경할 type의 입력 데이터가 비어있거나, 입력한 type이 존재하지 않는다면 실패합니다.";
     String docCode =
-        "입력 데이터가 비어있는 경우: " + exceptionAdvice.getMessage("memberEmptyField.code") + " +\n"
-            + "존재하지 않는 회원인 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-            + "입력한 type이 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberInfoNotFound.code")
-            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+        "입력 데이터가 비어있는 경우: " + exceptionUtil.getMessage("memberEmptyField.code") + " +\n"
+            + "존재하지 않는 회원인 경우: " + exceptionUtil.getMessage("memberNotFound.code") + " +\n"
+            + "입력한 type이 존재하지 않는 경우: " + exceptionUtil.getMessage("memberInfoNotFound.code")
+            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/admin/members/type")
             .header("Authorization", adminToken)
@@ -181,10 +181,10 @@ public class MemberUpdateControllerTest extends ApiControllerTestHelper {
 
     String docMsg = "변경할 job의 입력 데이터가 비어있거나, 입력한 job이 존재하지 않는다면 실패합니다.";
     String docCode =
-        "입력 데이터가 비어있는 경우: " + exceptionAdvice.getMessage("memberEmptyField.code") + " +\n"
-            + "존재하지 않는 회원인 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-            + "입력한 job이 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberInfoNotFound.code")
-            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+        "입력 데이터가 비어있는 경우: " + exceptionUtil.getMessage("memberEmptyField.code") + " +\n"
+            + "존재하지 않는 회원인 경우: " + exceptionUtil.getMessage("memberNotFound.code") + " +\n"
+            + "입력한 job이 존재하지 않는 경우: " + exceptionUtil.getMessage("memberInfoNotFound.code")
+            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/admin/members/job")
             .header("Authorization", adminToken)
@@ -231,9 +231,9 @@ public class MemberUpdateControllerTest extends ApiControllerTestHelper {
     String docMsg = "프로필에는 이름, 닉네임, 학번 요소가 포함되어 있습니다. +\n"
         + "변경할 요소의 입력 데이터가 비어있거나, 입력한 학번이 중복된다면 실패합니다.";
     String docCode =
-        "입력 데이터가 비어있는 경우: " + exceptionAdvice.getMessage("memberEmptyField.code") + " +\n"
-            + "존재하지 않는 회원인 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+        "입력 데이터가 비어있는 경우: " + exceptionUtil.getMessage("memberEmptyField.code") + " +\n"
+            + "존재하지 않는 회원인 경우: " + exceptionUtil.getMessage("memberNotFound.code") + " +\n"
+            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/members/profile")
             .header("Authorization", userToken)
@@ -294,12 +294,12 @@ public class MemberUpdateControllerTest extends ApiControllerTestHelper {
     String docMsg = "변경할 이메일 주소의 입력 데이터가 비어있는 경우, 이메일 주소가 중복되는 경우, "
         + "이메일 인증 코드가 만료된 경우, 이메일 인증 코드가 일치하지 않는 경우 실패합니다.";
     String docCode =
-        "입력 데이터가 비어있는 경우: " + exceptionAdvice.getMessage("memberEmptyField.code") + " +\n"
-            + "존재하지 않는 회원인 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-            + "이메일 주소가 중복되는 경우: " + exceptionAdvice.getMessage("memberDuplicate.code") + " +\n"
-            + "이메일 인증 코드가 민료되었거나 일치하지 않는 경우: " + exceptionAdvice.getMessage(
+        "입력 데이터가 비어있는 경우: " + exceptionUtil.getMessage("memberEmptyField.code") + " +\n"
+            + "존재하지 않는 회원인 경우: " + exceptionUtil.getMessage("memberNotFound.code") + " +\n"
+            + "이메일 주소가 중복되는 경우: " + exceptionUtil.getMessage("memberDuplicate.code") + " +\n"
+            + "이메일 인증 코드가 민료되었거나 일치하지 않는 경우: " + exceptionUtil.getMessage(
             "entryPointException.code") + " +\n"
-            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders
             .put("/v1/members/email")
             .header("Authorization", userToken)
@@ -341,7 +341,7 @@ public class MemberUpdateControllerTest extends ApiControllerTestHelper {
         .andDo(print())
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(exceptionAdvice.getMessage("memberDuplicate.code")));
+        .andExpect(jsonPath("$.code").value(exceptionUtil.getMessage("memberDuplicate.code")));
   }
 
   @Test
@@ -364,7 +364,7 @@ public class MemberUpdateControllerTest extends ApiControllerTestHelper {
         .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false))
         .andExpect(
-            jsonPath("$.code").value(exceptionAdvice.getMessage("entryPointException.code")));
+            jsonPath("$.code").value(exceptionUtil.getMessage("entryPointException.code")));
   }
 
   @Test
@@ -386,14 +386,14 @@ public class MemberUpdateControllerTest extends ApiControllerTestHelper {
         + "* 서버 내부 문제로 이미지 파일을 읽는 것을 실패하는 경우" + " +\n";
     // @formatter:off
     String docCode =
-        "기존 파일이 서버에 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-            + "기존 파일을 삭제하는 데 실패한 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-            + "새 파일을 저장하는 데 실패한 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-            + "DB에 파일 레코드가 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-            + "DB에 썸네일 레코드가 존재하지 않는 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-            + "이미지 파일 형식이 잘못된 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-            + "이미지 파일을 읽고 쓰는 것에 실패한 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-            + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+        "기존 파일이 서버에 존재하지 않는 경우: " + exceptionUtil.getMessage("memberNotFound.code") + " +\n"
+            + "기존 파일을 삭제하는 데 실패한 경우: " + exceptionUtil.getMessage("memberNotFound.code") + " +\n"
+            + "새 파일을 저장하는 데 실패한 경우: " + exceptionUtil.getMessage("memberNotFound.code") + " +\n"
+            + "DB에 파일 레코드가 존재하지 않는 경우: " + exceptionUtil.getMessage("memberNotFound.code") + " +\n"
+            + "DB에 썸네일 레코드가 존재하지 않는 경우: " + exceptionUtil.getMessage("memberNotFound.code") + " +\n"
+            + "이미지 파일 형식이 잘못된 경우: " + exceptionUtil.getMessage("memberNotFound.code") + " +\n"
+            + "이미지 파일을 읽고 쓰는 것에 실패한 경우: " + exceptionUtil.getMessage("memberNotFound.code") + " +\n"
+            + "그 외 에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
     // @formatter:on
     mockMvc.perform(RestDocumentationRequestBuilders.fileUpload("/v1/members/thumbnail")
             .file(image)
@@ -431,9 +431,9 @@ public class MemberUpdateControllerTest extends ApiControllerTestHelper {
         + "\"merit\":" + merit + "}";
     String docMsg = "변경할 상점을 입력하지 않았다면 실패합니다.";
     String docCode =
-        "입력 데이터가 비어있는 경우: " + exceptionAdvice.getMessage("memberEmptyField.code") + " +\n"
-            + "존재하지 않는 회원인 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+        "입력 데이터가 비어있는 경우: " + exceptionUtil.getMessage("memberEmptyField.code") + " +\n"
+            + "존재하지 않는 회원인 경우: " + exceptionUtil.getMessage("memberNotFound.code") + " +\n"
+            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders.put("/v1/admin/members/merit")
             .header("Authorization", adminToken)
             .content(updateContent)
@@ -462,9 +462,9 @@ public class MemberUpdateControllerTest extends ApiControllerTestHelper {
         + "\"demerit\":" + demerit + "}";
     String docMsg = "변경할 벌점을 입력하지 않았다면 실패합니다.";
     String docCode =
-        "입력 데이터가 비어있는 경우: " + exceptionAdvice.getMessage("memberEmptyField.code") + " +\n"
-            + "존재하지 않는 회원인 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+        "입력 데이터가 비어있는 경우: " + exceptionUtil.getMessage("memberEmptyField.code") + " +\n"
+            + "존재하지 않는 회원인 경우: " + exceptionUtil.getMessage("memberNotFound.code") + " +\n"
+            + " +\n" + "그 외 에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
     mockMvc.perform(MockMvcRequestBuilders.put("/v1/admin/members/demerit")
             .header("Authorization", adminToken)
             .content(updateContent)

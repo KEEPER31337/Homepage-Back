@@ -79,8 +79,8 @@ public class CommentControllerTest extends ApiControllerTestHelper {
 
     String docSuccess = "성공: true +\n실패: false";
     String docCode =
-        "댓글의 내용이 비어있는 경우: " + exceptionAdvice.getMessage("commentEmptyField.code") + " +\n"
-            + "그 외 에러가 난 경우: " + exceptionAdvice.getMessage("unKnown.code");
+        "댓글의 내용이 비어있는 경우: " + exceptionUtil.getMessage("commentEmptyField.code") + " +\n"
+            + "그 외 에러가 난 경우: " + exceptionUtil.getMessage("unKnown.code");
     String docMsg = "댓글 내용이 비어있는 경우 실패합니다.";
     mockMvc.perform(post("/v1/comment/{postId}", postId)
             .header("Authorization", userToken)
@@ -142,7 +142,7 @@ public class CommentControllerTest extends ApiControllerTestHelper {
     }
 
     String docSuccess = "성공: true +\n실패: false";
-    String docCode = "에러가 난 경우: " + exceptionAdvice.getMessage("unKnown.code");
+    String docCode = "에러가 난 경우: " + exceptionUtil.getMessage("unKnown.code");
     String docMsg = "페이지 당 댓글의 개수는 최대 10개, 댓글에 달린 대댓글의 개수는 제한 없이 조회됩니다.";
     Long postId = postingEntity.getId();
     mockMvc.perform(
@@ -242,8 +242,8 @@ public class CommentControllerTest extends ApiControllerTestHelper {
     Long commentId = replyEntity.getId();
     String docSuccess = "성공: true +\n실패: false";
     String docCode =
-        "존재하지 않는 댓글인 경우: " + exceptionAdvice.getMessage("commentNotFound.code") + " +\n"
-            + "삭제 중 에러가 난 경우: " + exceptionAdvice.getMessage("unKnown.code");
+        "존재하지 않는 댓글인 경우: " + exceptionUtil.getMessage("commentNotFound.code") + " +\n"
+            + "삭제 중 에러가 난 경우: " + exceptionUtil.getMessage("unKnown.code");
     String docMsg = "댓글 기록을 완전히 삭제하지 않고 작성자와 댓글 내용, 좋아요와 싫어요 수를 초기화합니다.";
     mockMvc.perform(RestDocumentationRequestBuilders.delete("/v1/comment/{commentId}", commentId)
             .header("Authorization", userToken))
@@ -283,9 +283,9 @@ public class CommentControllerTest extends ApiControllerTestHelper {
 
     String docSuccess = "성공: true +\n실패: false";
     String docCode =
-        "수정할 내용이 비어있는 경우: " + exceptionAdvice.getMessage("commentEmptyField.code") + " +\n"
-            + "존재하지 않는 댓글인 경우: " + exceptionAdvice.getMessage("commentNotFound.code") + " +\n"
-            + "그 외 에러가 난 경우: " + exceptionAdvice.getMessage("unKnown.code");
+        "수정할 내용이 비어있는 경우: " + exceptionUtil.getMessage("commentEmptyField.code") + " +\n"
+            + "존재하지 않는 댓글인 경우: " + exceptionUtil.getMessage("commentNotFound.code") + " +\n"
+            + "그 외 에러가 난 경우: " + exceptionUtil.getMessage("unKnown.code");
     String docMsg = "수정할 내용이 비어있거나, 수정할 댓글이 존재하지 않는 경우 실패합니다.";
     mockMvc.perform(put("/v1/comment/{commentId}", updateId)
             .header("Authorization", userToken)
@@ -328,8 +328,8 @@ public class CommentControllerTest extends ApiControllerTestHelper {
 
     String docSuccess = "성공: true +\n실패: false";
     String docCode =
-        "존재하지 않는 댓글인 경우: " + exceptionAdvice.getMessage("commentNotFound.code") + " +\n"
-            + "그 외 에러가 난 경우: " + exceptionAdvice.getMessage("unKnown.code");
+        "존재하지 않는 댓글인 경우: " + exceptionUtil.getMessage("commentNotFound.code") + " +\n"
+            + "그 외 에러가 난 경우: " + exceptionUtil.getMessage("unKnown.code");
     String docMsg = "댓글이 존재하지 않는 경우 실패합니다.";
     // 좋아요 추가
     mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/comment/like")
@@ -370,8 +370,8 @@ public class CommentControllerTest extends ApiControllerTestHelper {
 
     String docSuccess = "성공: true +\n실패: false";
     String docCode =
-        "존재하지 않는 댓글인 경우: " + exceptionAdvice.getMessage("commentNotFound.code") + " +\n"
-            + "그 외 에러가 난 경우: " + exceptionAdvice.getMessage("unKnown.code");
+        "존재하지 않는 댓글인 경우: " + exceptionUtil.getMessage("commentNotFound.code") + " +\n"
+            + "그 외 에러가 난 경우: " + exceptionUtil.getMessage("unKnown.code");
     String docMsg = "댓글이 존재하지 않는 경우 실패합니다.";
     // 싫어요 추가
     mockMvc.perform(RestDocumentationRequestBuilders.get("/v1/comment/dislike")

@@ -1,4 +1,4 @@
-package keeper.project.homepage.clerk.exception;
+package keeper.project.homepage.systemadmin.exception;
 
 public class CustomClerkInaccessibleJobException extends RuntimeException {
 

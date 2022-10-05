@@ -73,7 +73,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
             .header("Authorization", "XXXXXXXXXX"))
         .andDo(print())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(exceptionAdvice.getMessage("accessDenied.code")));
+        .andExpect(jsonPath("$.code").value(exceptionUtil.getMessage("accessDenied.code")));
   }
 
   @Test
@@ -102,7 +102,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
             .header("Authorization", userToken))
         .andDo(print())
         .andExpect(jsonPath("$.success").value(false))
-        .andExpect(jsonPath("$.code").value(exceptionAdvice.getMessage("accessDenied.code")));
+        .andExpect(jsonPath("$.code").value(exceptionUtil.getMessage("accessDenied.code")));
   }
 
   @Test
@@ -145,8 +145,8 @@ public class MemberControllerTest extends ApiControllerTestHelper {
   @DisplayName("팔로우하기")
   public void follow() throws Exception {
     String docMsg = "팔로우할 회원이 존재하지 않는다면 실패합니다.";
-    String docCode = "회원이 존재하지 않을 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-        + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+    String docCode = "회원이 존재하지 않을 경우: " + exceptionUtil.getMessage("memberNotFound.code") + " +\n"
+        + "그 외 에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
     mockMvc.perform(post("/v1/members/follow/{id}", adminEntity.getId())
             .header("Authorization", userToken))
         .andDo(print())
@@ -176,8 +176,8 @@ public class MemberControllerTest extends ApiControllerTestHelper {
 
     // unfollow
     String docMsg = "언팔로우할 회원이 존재하지 않는다면 실패합니다.";
-    String docCode = "회원이 존재하지 않을 경우: " + exceptionAdvice.getMessage("memberNotFound.code") + " +\n"
-        + "그 외 에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+    String docCode = "회원이 존재하지 않을 경우: " + exceptionUtil.getMessage("memberNotFound.code") + " +\n"
+        + "그 외 에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
     mockMvc.perform(delete("/v1/members/unfollow/{id}", adminEntity.getId())
             .header("Authorization", userToken))
         .andDo(print())
@@ -203,7 +203,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
     memberService.follow(userEntity.getId(), adminEntity.getId());
 
     String docMsg = "";
-    String docCode = "에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+    String docCode = "에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
     mockMvc.perform(get("/v1/members/followees")
             .header("Authorization", userToken))
         .andDo(print())
@@ -225,7 +225,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
     memberService.follow(adminEntity.getId(), userEntity.getId());
 
     String docMsg = "";
-    String docCode = "에러가 발생한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+    String docCode = "에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
     mockMvc.perform(get("/v1/members/followers")
             .header("Authorization", userToken))
         .andDo(print())
@@ -244,8 +244,8 @@ public class MemberControllerTest extends ApiControllerTestHelper {
   public void deleteAccount() throws Exception {
     String docMsg = "물품을 대여하고 미납한 기록이 남아있을 경우, 또는 입력한 비밀번호가 옳지 않은 경우 탈퇴가 실패합니다.";
     String docCode =
-        "물품 미납 기록이 있거나 비밀번호가 틀린 경우: " + exceptionAdvice.getMessage("accountDeleteFailed.code")
-            + " +\n" + "그 외 실패한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+        "물품 미납 기록이 있거나 비밀번호가 틀린 경우: " + exceptionUtil.getMessage("accountDeleteFailed.code")
+            + " +\n" + "그 외 실패한 경우: " + exceptionUtil.getMessage("unKnown.code");
     mockMvc.perform(delete("/v1/members")
             .param("password", memberPassword)
             .header("Authorization", deleteToken))
@@ -283,7 +283,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
 
     // TODO : 예외 처리 & doc 메세지 채우기 (회원 관리 전체적으로 예외 수정할 예정)
     String docMsg = "";
-    String docCode = "실패한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+    String docCode = "실패한 경우: " + exceptionUtil.getMessage("unKnown.code");
     mockMvc.perform(get("/v1/members/follow-number")
             .header("Authorization", userToken))
         .andDo(print())

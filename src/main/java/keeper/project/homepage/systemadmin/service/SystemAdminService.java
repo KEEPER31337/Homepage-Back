@@ -1,7 +1,7 @@
 package keeper.project.homepage.systemadmin.service;
 
 import java.util.List;
-import keeper.project.homepage.clerk.exception.CustomClerkInaccessibleJobException;
+import keeper.project.homepage.systemadmin.exception.CustomClerkInaccessibleJobException;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.member.entity.MemberHasMemberJobEntity;
 import keeper.project.homepage.member.entity.MemberJobEntity;

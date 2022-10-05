@@ -21,6 +21,7 @@ import keeper.project.homepage.member.repository.MemberTypeRepository;
 import keeper.project.homepage.point.repository.PointLogRepository;
 import keeper.project.homepage.posting.repository.CategoryRepository;
 import keeper.project.homepage.posting.repository.CommentRepository;
+import keeper.project.homepage.util.exception.ExceptionAdviceUtil;
 import keeper.project.homepage.util.repository.FileRepository;
 import keeper.project.homepage.posting.repository.PostingRepository;
 import keeper.project.homepage.util.repository.ThumbnailRepository;
@@ -174,6 +175,9 @@ public abstract class ApiControllerTestSetUp {
 
   @Autowired
   protected ExceptionAdvice exceptionAdvice;
+
+  @Autowired
+  protected ExceptionAdviceUtil exceptionUtil;
 
   @Autowired
   protected JwtTokenProvider jwtTokenProvider;
