@@ -2,6 +2,7 @@ package keeper.project.homepage.util.exception;
 
 import keeper.project.homepage.member.exception.CustomMemberInfoNotFoundException;
 import keeper.project.homepage.member.exception.CustomMemberNotFoundException;
+import keeper.project.homepage.sign.exception.CustomAuthenticationEntryPointException;
 import keeper.project.homepage.util.dto.result.CommonResult;
 import keeper.project.homepage.util.exception.file.CustomFileDeleteFailedException;
 import keeper.project.homepage.util.exception.file.CustomFileEntityNotFoundException;
@@ -47,6 +48,14 @@ public class UtilExceptionAdvice {
         Integer.parseInt(exceptionUtil.getMessage("memberInfoNotFound.code")),
         e.getMessage() == null ? exceptionUtil.getMessage("memberInfoNotFound.msg")
             : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomAuthenticationEntryPointException.class)
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  public CommonResult authenticationEntryPointException(CustomAuthenticationEntryPointException e) {
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("entryPointException.code")),
+        exceptionUtil.getMessage("entryPointException.msg"));
   }
 
   @ExceptionHandler(CustomFileNotFoundException.class)

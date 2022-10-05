@@ -30,14 +30,6 @@ public class SignExceptionAdvice {
         e.getMessage() == null ? exceptionUtil.getMessage("SigninFailed.msg") : e.getMessage());
   }
 
-  @ExceptionHandler(CustomAuthenticationEntryPointException.class)
-  @ResponseStatus(HttpStatus.UNAUTHORIZED)
-  public CommonResult authenticationEntryPointException(CustomAuthenticationEntryPointException e) {
-    return responseService.getFailResult(
-        Integer.parseInt(exceptionUtil.getMessage("entryPointException.code")),
-        exceptionUtil.getMessage("entryPointException.msg"));
-  }
-
   @ExceptionHandler(CustomSignUpFailedException.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
   public CommonResult signUpFailedException(CustomSignUpFailedException e) {
