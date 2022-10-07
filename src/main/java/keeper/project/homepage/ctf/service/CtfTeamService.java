@@ -187,7 +187,6 @@ public class CtfTeamService {
     return getCtfTeamDetailDto(leftTeam, Collections.emptyList());
   }
 
-  // TODO: 팀을 나가는 메서드와 나갈 팀을 가져오는 메서드 분리
   private CtfTeamEntity leaveTeam(Long ctfId) {
     MemberEntity leaveMember = getMemberEntityByJWT();
     CtfTeamHasMemberEntity leaveTeamHasMemberEntity = ctfUtilService

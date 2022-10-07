@@ -100,12 +100,11 @@ public class CtfAdminService {
     return contestEntities.map(CtfContestAdminDto::toDto);
   }
 
-  // TODO: designateMemberAJob() 메서드 대신 probMaker.addMemberJob(probMakerJob) 으로 변경
   @Transactional
   public CtfProbMakerDto designateProbMaker(CtfProbMakerDto probMakerDto) {
     MemberEntity probMaker = getProbMaker(probMakerDto);
     MemberJobEntity probMakerJob = getProbMakerJob();
-    designateMemberAJob(probMaker, probMakerJob);
+    probMaker.addMemberJob(probMakerJob);
     return CtfProbMakerDto.toDto(probMaker);
   }
 
