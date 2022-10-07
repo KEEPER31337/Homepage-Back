@@ -84,7 +84,7 @@ public class CtfAdminService {
     ctfUtilService.checkVirtualContest(ctfId);
     CtfContestEntity contestEntity = getCtfContestEntity(ctfId);
     contestEntity.setIsJoinable(true);
-    return CtfContestAdminDto.toDto(ctfContestRepository.save(contestEntity));
+    return CtfContestAdminDto.toDto(contestEntity);
   }
 
   @Transactional
@@ -92,7 +92,7 @@ public class CtfAdminService {
     ctfUtilService.checkVirtualContest(ctfId);
     CtfContestEntity contestEntity = getCtfContestEntity(ctfId);
     contestEntity.setIsJoinable(false);
-    return CtfContestAdminDto.toDto(ctfContestRepository.save(contestEntity));
+    return CtfContestAdminDto.toDto(contestEntity);
   }
 
   public Page<CtfContestAdminDto> getContests(Pageable pageable) {
@@ -100,6 +100,7 @@ public class CtfAdminService {
     return contestEntities.map(CtfContestAdminDto::toDto);
   }
 
+  // TODO: designateMemberAJob() 메서드 대신 probMaker.addMemberJob(probMakerJob) 으로 변경
   @Transactional
   public CtfProbMakerDto designateProbMaker(CtfProbMakerDto probMakerDto) {
     MemberEntity probMaker = getProbMaker(probMakerDto);
@@ -131,7 +132,6 @@ public class CtfAdminService {
     ctfUtilService.checkVirtualProblem(problemId);
     CtfChallengeEntity challenge = getChallengeById(problemId);
     challenge.setIsSolvable(true);
-    challengeRepository.save(challenge);
     return CtfChallengeAdminDto.toDto(challenge);
   }
 
@@ -140,7 +140,6 @@ public class CtfAdminService {
     ctfUtilService.checkVirtualProblem(problemId);
     CtfChallengeEntity challenge = getChallengeById(problemId);
     challenge.setIsSolvable(false);
-    challengeRepository.save(challenge);
     return CtfChallengeAdminDto.toDto(challenge);
   }
 
@@ -266,7 +265,6 @@ public class CtfAdminService {
   private void fileRegisterInChallenge(Long challengeId, FileEntity saveFile) {
     CtfChallengeEntity challenge = getChallengeById(challengeId);
     challenge.setFileEntity(saveFile);
-    challengeRepository.save(challenge);
   }
 
   private CtfChallengeEntity getChallengeById(Long challengeId) {
