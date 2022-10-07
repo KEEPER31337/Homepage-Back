@@ -78,6 +78,7 @@ public class CtfTeamService {
     ctfUtilService.checkJoinable(contestId);
   }
 
+  @Transactional
   public CtfTeamDetailDto modifyTeam(Long teamId, CtfTeamDto ctfTeamDto) {
     checkTeamAndCtfIsValid(teamId);
     checkTeamIsMine(teamId);
@@ -121,6 +122,7 @@ public class CtfTeamService {
     ctfUtilService.checkVirtualTeam(teamId);
   }
 
+  @Transactional
   public CtfTeamHasMemberDto tryJoinTeam(CtfJoinTeamRequestDto joinTeamRequestDto) {
     checkJoinTeamRequestIsValid(joinTeamRequestDto);
     return joinTeamAndGetJoinTeamDto(joinTeamRequestDto);

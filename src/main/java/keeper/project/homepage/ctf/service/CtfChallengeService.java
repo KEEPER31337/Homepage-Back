@@ -138,6 +138,7 @@ public class CtfChallengeService {
     return CtfChallengeDto.toDto(challengeEntity, solvedTeamCount, isAlreadySolved);
   }
 
+  @Transactional
   public CtfSubmitLogEntity setLog(Long probId, CtfFlagDto submitFlag) {
     MemberEntity submitter = authService.getMemberEntityWithJWT();
     CtfChallengeEntity submitChallenge = getChallenge(probId);

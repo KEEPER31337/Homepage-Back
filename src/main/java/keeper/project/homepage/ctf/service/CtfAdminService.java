@@ -79,6 +79,7 @@ public class CtfAdminService {
     return CtfContestAdminDto.toDto(ctfContestRepository.save(contestDto.toEntity(creator)));
   }
 
+  @Transactional
   public CtfContestAdminDto openContest(Long ctfId) {
     ctfUtilService.checkVirtualContest(ctfId);
     CtfContestEntity contestEntity = getCtfContestEntity(ctfId);
@@ -86,6 +87,7 @@ public class CtfAdminService {
     return CtfContestAdminDto.toDto(ctfContestRepository.save(contestEntity));
   }
 
+  @Transactional
   public CtfContestAdminDto closeContest(Long ctfId) {
     ctfUtilService.checkVirtualContest(ctfId);
     CtfContestEntity contestEntity = getCtfContestEntity(ctfId);
@@ -116,6 +118,7 @@ public class CtfAdminService {
     return CtfChallengeAdminDto.toDto(newChallenge);
   }
 
+  @Transactional
   public FileDto saveFileAndRegisterInChallenge(Long challengeId, HttpServletRequest request,
       MultipartFile file) {
     FileEntity saveFile = saveFileAndGetEntity(request, file);
@@ -123,6 +126,7 @@ public class CtfAdminService {
     return FileDto.toDto(saveFile);
   }
 
+  @Transactional
   public CtfChallengeAdminDto openProblem(Long problemId) {
     ctfUtilService.checkVirtualProblem(problemId);
     CtfChallengeEntity challenge = getChallengeById(problemId);
@@ -131,6 +135,7 @@ public class CtfAdminService {
     return CtfChallengeAdminDto.toDto(challenge);
   }
 
+  @Transactional
   public CtfChallengeAdminDto closeProblem(Long problemId) {
     ctfUtilService.checkVirtualProblem(problemId);
     CtfChallengeEntity challenge = getChallengeById(problemId);
@@ -184,6 +189,7 @@ public class CtfAdminService {
         .map(CtfSubmitLogDto::toDto);
   }
 
+  @Transactional
   public void disqualifyProbMaker(CtfProbMakerDto probMakerDto) {
     MemberEntity probMaker = getProbMaker(probMakerDto);
     MemberJobEntity probMakerJob = getProbMakerJob();
