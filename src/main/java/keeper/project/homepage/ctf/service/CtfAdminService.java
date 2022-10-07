@@ -54,6 +54,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Log4j2
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CtfAdminService {
 
   private final AuthService authService;

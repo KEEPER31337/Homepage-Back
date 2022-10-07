@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CtfTeamService {
 
   private final CtfTeamRepository teamRepository;
