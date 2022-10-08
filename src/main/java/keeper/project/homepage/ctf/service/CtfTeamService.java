@@ -34,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CtfTeamService {
 
   private final CtfTeamRepository teamRepository;
@@ -77,6 +78,7 @@ public class CtfTeamService {
     ctfUtilService.checkJoinable(contestId);
   }
 
+  @Transactional
   public CtfTeamDetailDto modifyTeam(Long teamId, CtfTeamDto ctfTeamDto) {
     checkTeamAndCtfIsValid(teamId);
     checkTeamIsMine(teamId);
@@ -98,8 +100,7 @@ public class CtfTeamService {
     CtfTeamEntity teamEntity = getTeamEntity(teamId);
     teamEntity.setName(ctfTeamDto.getName());
     teamEntity.setDescription(ctfTeamDto.getDescription());
-    CtfTeamEntity modifiedTeamEntity = saveTeam(teamEntity);
-    return modifiedTeamEntity;
+    return teamEntity;
   }
 
   private void checkTeamIsMine(Long teamId) {
@@ -120,6 +121,7 @@ public class CtfTeamService {
     ctfUtilService.checkVirtualTeam(teamId);
   }
 
+  @Transactional
   public CtfTeamHasMemberDto tryJoinTeam(CtfJoinTeamRequestDto joinTeamRequestDto) {
     checkJoinTeamRequestIsValid(joinTeamRequestDto);
     return joinTeamAndGetJoinTeamDto(joinTeamRequestDto);

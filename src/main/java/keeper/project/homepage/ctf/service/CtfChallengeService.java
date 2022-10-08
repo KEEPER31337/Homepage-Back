@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Log4j2
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CtfChallengeService {
 
   private final CtfChallengeRepository challengeRepository;
@@ -137,6 +138,7 @@ public class CtfChallengeService {
     return CtfChallengeDto.toDto(challengeEntity, solvedTeamCount, isAlreadySolved);
   }
 
+  @Transactional
   public CtfSubmitLogEntity setLog(Long probId, CtfFlagDto submitFlag) {
     MemberEntity submitter = authService.getMemberEntityWithJWT();
     CtfChallengeEntity submitChallenge = getChallenge(probId);
