@@ -29,6 +29,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
@@ -38,6 +40,8 @@ import org.hibernate.annotations.NotFoundAction;
 @NoArgsConstructor          // 인자없는 생성자를 자동으로 생성합니다.
 @AllArgsConstructor         // 인자를 모두 갖춘 생성자를 자동으로 생성합니다.
 @Table(name = "member")     // 'member' 테이블과 매핑됨을 명시
+@DynamicInsert
+@DynamicUpdate
 public class MemberEntity implements Serializable {
 
   @Id // pk
@@ -99,6 +103,9 @@ public class MemberEntity implements Serializable {
 
   @Column(name = "generation")
   private Float generation;
+
+  @Column(name = "total_attendance", nullable = false)
+  private Integer totalAttendance;
 
   @ManyToOne
   @JoinColumn(name = "thumbnail_id")
