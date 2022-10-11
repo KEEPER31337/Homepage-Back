@@ -100,6 +100,9 @@ public class MemberEntity implements Serializable {
   @Column(name = "generation")
   private Float generation;
 
+  @Column(name = "total_attendance", nullable = false)
+  private Integer totalAttendance;
+
   @ManyToOne
   @JoinColumn(name = "thumbnail_id")
   private ThumbnailEntity thumbnail;
