@@ -12,6 +12,10 @@
 
 <br/>
 
+<a href="./CONTRIBUTING.md">
+  <h3>🤝 How to contribute? 🤝</h3>
+</a>
+
 ## 🛠️ Code Reviewers 🛠️
 
 <table>
