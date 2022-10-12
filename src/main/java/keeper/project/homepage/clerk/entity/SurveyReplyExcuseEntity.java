@@ -2,6 +2,7 @@ package keeper.project.homepage.clerk.entity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.MapsId;
@@ -26,7 +27,7 @@ public class SurveyReplyExcuseEntity {
   @Column(name = "survey_member_reply_id")
   private Long id;
 
-  @OneToOne
+  @OneToOne(fetch = FetchType.LAZY)
   @MapsId
   @JoinColumn(name = "survey_member_reply_id")
   @Setter

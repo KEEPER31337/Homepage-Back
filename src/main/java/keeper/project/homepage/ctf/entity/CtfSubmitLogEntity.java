@@ -3,6 +3,7 @@ package keeper.project.homepage.ctf.entity;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -50,7 +51,7 @@ public class CtfSubmitLogEntity {
   @Column(nullable = false, length = 45)
   String contestName;
 
-  @OneToOne
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "ctf_contest_id")
   CtfContestEntity contest;
 }

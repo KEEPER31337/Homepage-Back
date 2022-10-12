@@ -3,6 +3,7 @@ package keeper.project.homepage.about.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -33,7 +34,7 @@ public class StaticWriteContentEntity {
   @Column(name = "display_order", nullable = false)
   private Integer displayOrder;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "static_write_subtitle_image_id", nullable = false)
   @JsonBackReference
   private StaticWriteSubtitleImageEntity staticWriteSubtitleImage;

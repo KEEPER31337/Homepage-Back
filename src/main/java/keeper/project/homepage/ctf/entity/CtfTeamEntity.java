@@ -55,7 +55,7 @@ public class CtfTeamEntity {
   @Setter
   Long score;
 
-  @OneToOne
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "contest_id")
   CtfContestEntity ctfContestEntity;
 

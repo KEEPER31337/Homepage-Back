@@ -1,5 +1,6 @@
 package keeper.project.homepage.member.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -17,12 +18,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
-import keeper.project.homepage.util.entity.ThumbnailEntity;
 import keeper.project.homepage.clerk.entity.SeminarAttendanceEntity;
+import keeper.project.homepage.member.dto.MultiMemberResponseDto;
 import keeper.project.homepage.posting.entity.PostingEntity;
 import keeper.project.homepage.study.entity.StudyHasMemberEntity;
-import keeper.project.homepage.member.dto.MultiMemberResponseDto;
 import keeper.project.homepage.util.EnvironmentProperty;
+import keeper.project.homepage.util.entity.ThumbnailEntity;
 import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -77,13 +78,13 @@ public class MemberEntity implements Serializable {
   @Column(name = "register_date")
   private Date registerDate;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "member_type_id")
   @NotFound(action = NotFoundAction.IGNORE)
   // DEFAULT 1
   private MemberTypeEntity memberType;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "member_rank_id")
   @NotFound(action = NotFoundAction.IGNORE)
   // DEFAULT 1
@@ -107,7 +108,7 @@ public class MemberEntity implements Serializable {
   @Column(name = "total_attendance", nullable = false)
   private Integer totalAttendance;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "thumbnail_id")
   private ThumbnailEntity thumbnail;
 
@@ -119,7 +120,7 @@ public class MemberEntity implements Serializable {
   @Builder.Default
   private List<FriendEntity> followee = new ArrayList<>();
 
-  @OneToMany(mappedBy = "member", orphanRemoval = true, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "member", orphanRemoval = true)
   @Builder.Default
   private List<StudyHasMemberEntity> studyHasMemberEntities = new ArrayList<>();
 
@@ -156,10 +157,11 @@ public class MemberEntity implements Serializable {
   }
 
   @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.PERSIST, orphanRemoval = true)
+  @JsonBackReference
   @Builder.Default
   private List<MemberHasMemberJobEntity> memberJobs = new ArrayList<>();
 
-  @OneToMany(targetEntity = PostingEntity.class, mappedBy = "memberId", fetch = FetchType.LAZY)
+  @OneToMany(targetEntity = PostingEntity.class, mappedBy = "memberId")
   @Builder.Default
   private List<PostingEntity> posting = new ArrayList<>();
 
@@ -225,7 +227,6 @@ public class MemberEntity implements Serializable {
         .memberJobEntity(job)
         .build();
     getMemberJobs().add(memberHasMemberJobEntity);
-    job.getMembers().add(memberHasMemberJobEntity);
   }
 
   public void removeMemberJob(MemberJobEntity job) {
