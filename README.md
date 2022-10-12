@@ -13,7 +13,7 @@
 <br/>
 
 <a href="./CONTRIBUTING.md">
-  <h3>🤝 How to contribute? 🤝</h3>
+  🤝 How to contribute? 🤝
 </a>
 
 ## 🛠️ Code Reviewers 🛠️
@@ -67,6 +67,7 @@
         <li>로그인 / 회원가입 <code>sign</code></li>
         <li>회원관리 <code>member</code></li>
         <li>포인트 <code>point</code></li>
+        <li>선거 <code>election</code></li>
         <li>활동상태 <code>clerk.clerk</code></li>
         <li>세미나 <code>clerk.seminar</code></li>
       </ul>
