@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import keeper.project.homepage.member.entity.MemberHasMemberJobEntity;
 import keeper.project.homepage.util.dto.result.SingleResult;
 import keeper.project.homepage.sign.dto.SignInDto;
 import keeper.project.homepage.util.entity.FileEntity;
@@ -274,10 +275,9 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
         .point(1000)
         .thumbnail(thumbnailEntity)
         .build();
-    memberType.getMembers().add(memberEntity);
-    memberRank.getMembers().add(memberEntity);
     memberEntity.addMemberJob(memberJob);
     memberRepository.save(memberEntity);
+
     return memberEntity;
   }
 
