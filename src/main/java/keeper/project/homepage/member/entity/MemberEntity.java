@@ -157,7 +157,6 @@ public class MemberEntity implements Serializable {
   }
 
   @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.PERSIST, orphanRemoval = true)
-  @JsonBackReference
   @Builder.Default
   private List<MemberHasMemberJobEntity> memberJobs = new ArrayList<>();
 
