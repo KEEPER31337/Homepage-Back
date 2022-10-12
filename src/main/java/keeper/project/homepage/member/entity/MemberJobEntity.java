@@ -33,7 +33,7 @@ public class MemberJobEntity implements Serializable {
   @JoinColumn(name = "badge_thumbnail_id")
   private ThumbnailEntity badge;
 
-  @OneToMany(mappedBy = "memberJobEntity", fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "memberJobEntity")
   @JsonBackReference(value = "member-jobs")
   @Builder.Default
   private List<MemberHasMemberJobEntity> members = new ArrayList<>();

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -37,11 +38,11 @@ public class StaticWriteSubtitleImageEntity {
   @Column(name = "display_order", nullable = false)
   private Integer displayOrder;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "static_write_title_id", nullable = false)
   private StaticWriteTitleEntity staticWriteTitle;
 
-  @ManyToOne(cascade = CascadeType.REMOVE)
+  @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
   @JoinColumn(name = "thumbnail_id")
   private ThumbnailEntity thumbnail;
 

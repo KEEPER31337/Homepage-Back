@@ -31,7 +31,7 @@ public class GameEntity {
   @Column(name = "id", nullable = false)
   private Long id;
 
-  @OneToOne(targetEntity = MemberEntity.class, fetch = FetchType.EAGER)
+  @OneToOne(targetEntity = MemberEntity.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "member_id", nullable = false)
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private MemberEntity member;

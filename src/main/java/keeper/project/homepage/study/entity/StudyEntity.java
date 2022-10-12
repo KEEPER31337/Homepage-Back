@@ -75,16 +75,16 @@ public class StudyEntity {
   private String etcLink;
 
   @Setter
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "thumbnail_id")
   private ThumbnailEntity thumbnail;
 
   @Setter
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "head_member_id")
   private MemberEntity headMember;
 
-  @OneToMany(mappedBy = "study", orphanRemoval = true, fetch = FetchType.LAZY)
+  @OneToMany(mappedBy = "study", orphanRemoval = true)
   @Builder.Default
   private List<StudyHasMemberEntity> studyHasMemberEntities = new ArrayList<>();
 

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,12 +28,15 @@ public class FriendEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private Long id;
-  @ManyToOne
+
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "follower")
   private MemberEntity follower;
-  @ManyToOne
+
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "followee")
   private MemberEntity followee;
+
   @Column
   private LocalDate registerDate;
 

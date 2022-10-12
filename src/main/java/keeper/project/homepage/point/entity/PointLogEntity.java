@@ -29,7 +29,7 @@ public class PointLogEntity {
   @Column(name = "id", nullable = false)
   private Long id;
 
-  @ManyToOne(targetEntity = MemberEntity.class, fetch = FetchType.EAGER)
+  @ManyToOne(targetEntity = MemberEntity.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "member_id", nullable = false)
   private MemberEntity member;
 
@@ -42,7 +42,7 @@ public class PointLogEntity {
   @Column(name = "detail", length = 45)
   private String detail;
 
-  @ManyToOne(targetEntity = MemberEntity.class, fetch = FetchType.EAGER)
+  @ManyToOne(targetEntity = MemberEntity.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "presented")
   private MemberEntity presentedMember;
 

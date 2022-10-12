@@ -69,7 +69,7 @@ public class CtfChallengeEntity {
   @JoinColumn(name = "contest_id", nullable = false)
   CtfContestEntity ctfContestEntity;
 
-  @OneToOne
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "file_id", nullable = true)
   @Setter
   FileEntity fileEntity;
@@ -81,7 +81,9 @@ public class CtfChallengeEntity {
 
   @OneToOne(
       mappedBy = "ctfChallengeEntity",
-      cascade = CascadeType.ALL)
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY
+  )
   @PrimaryKeyJoinColumn
   @Setter
   CtfDynamicChallengeInfoEntity dynamicChallengeInfoEntity;

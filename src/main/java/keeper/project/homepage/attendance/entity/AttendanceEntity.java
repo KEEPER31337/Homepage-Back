@@ -67,7 +67,7 @@ public class AttendanceEntity {
   @Column(name = "`rank`")
   private Integer rank;
 
-  @ManyToOne(targetEntity = MemberEntity.class, fetch = FetchType.EAGER)
+  @ManyToOne(targetEntity = MemberEntity.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "member_id", nullable = false)
 //  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private MemberEntity member;
