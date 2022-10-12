@@ -1,6 +1,5 @@
 # Homepage-Back
 
-
 <div align="center">
   <img style="width:50%"src="https://keeper.or.kr/static/media/keeper_logo.95fc99d7fb9d9db8b162.png"/>
   
@@ -16,10 +15,10 @@
 
 ### 🤝 How to contribute?
 
-- KEEPER 홈페이지의 발전에 기여해주세요!
-- KEEPER 홈페이지 백엔드 프로젝트는 2022학년도 1학기 이후, 오픈소스로 운영됩니다.
+-   KEEPER 홈페이지의 발전에 기여해주세요!
+-   KEEPER 홈페이지 백엔드 프로젝트는 2022학년도 1학기 이후, 오픈소스로 운영됩니다.
 
-- 아래 3개의 문서를 읽고 Pull request를 하실 때 기능별로 지정된 Reviewer를 등록해주시면 됩니다!
+-   아래 3개의 문서를 읽고 Pull request를 하실 때 기능별로 지정된 Reviewer를 등록해주시면 됩니다!
 
 ---
 
@@ -58,6 +57,7 @@
         <li>출석부 <code>attendance</code></li>
         <li>스터디 <code>study</code></li>
         <li>CTF <code>ctf</code></li>
+        <li>활동상태/직책임명 <code>clerk.clerk</code></li>
       </ul>
     </td>
   </tr>
@@ -91,6 +91,8 @@
         <li>로그인 / 회원가입 <code>sign</code></li>
         <li>회원관리 <code>member</code></li>
         <li>포인트 <code>point</code></li>
+        <li>활동상태 <code>clerk.clerk</code></li>
+        <li>세미나 <code>clerk.seminar</code></li>
       </ul>
     </td>
   </tr>
@@ -135,10 +137,25 @@
     <td>
       <ul>
         <li>출석부 <code>attendance</code></li>
+        <li>상벌점 부여 <code>clerk.merit</code></li>
+        <li>세미나 <code>clerk.seminar</code></li>
       </ul>
     </td>
   </tr>
 
+  <tr>
+    <td align="center">
+      <a href="https://github.com/shkisme">
+        <img src="https://github.com/shkisme.png" width="100px;" alt=""/>
+        <br/><b>@shkisme</b>
+      </a>
+    </td>
+    <td>
+      <ul>
+        <li>활동조사 <code>clerk.survey</code></li>
+      </ul>
+    </td>
+  </tr>
 </table>
 
 ---
