@@ -51,12 +51,6 @@ public class AttendanceService {
   private static final String DEFAULT_GREETINGS = "자동 출석입니다.";
   private List<Integer> DAY_OF_MONTH = new ArrayList<>();
 
-  public static boolean isLeapYear(int year) {
-    Calendar cal = Calendar.getInstance();
-    cal.set(Calendar.YEAR, year);
-    return cal.getActualMaximum(Calendar.DAY_OF_YEAR) > 365;
-  }
-
   public void save(AttendanceDto attendanceDto) {
 
     if (isAlreadyAttendance()) {
@@ -67,7 +61,7 @@ public class AttendanceService {
     int point = 0;
     int continuousDay = getContinuousDay();
     int continuousPoint = getContinuousPoint(continuousDay);
-    int randomPoint = (int) (Math.random() * 900 + 100);
+    int randomPoint = getRandomPointBetween(100, 1000);
     point = continuousPoint + DAILY_ATTENDANCE_POINT + randomPoint;
 
     MemberEntity memberEntity = getMemberEntityWithJWT();
@@ -111,10 +105,17 @@ public class AttendanceService {
         new PointLogRequestDto(LocalDateTime.now(), point, "출석 포인트"));
   }
 
-  private int getContinuousPoint(int continuousDay) {
-    LocalDateTime date = LocalDateTime.now();
+  private int getRandomPointBetween(int min, int max) {
+    if (max < min) {
+      throw new IllegalArgumentException("min값인 " + min + "은 max값인 " + max + "보다 클 수 없습니다.");
+    }
+    return (int) (Math.random() * (max - min) + min);
+  }
 
-    if (isLeapYear(date.getYear())) {
+  private int getContinuousPoint(int continuousDay) {
+    LocalDateTime now = LocalDateTime.now();
+
+    if (isLeapYear(now.getYear())) {
       DAY_OF_MONTH.addAll(List.of(0, 31, 29, 31, 30, 31, 30, 31, 31, 30,
           31, 30, 31));
     } else {
@@ -123,19 +124,37 @@ public class AttendanceService {
     }
 
     int continuousPoint = 0;
-    if (date.getDayOfWeek() == DayOfWeek.SATURDAY && continuousDay >= WEEK_ATTENDANCE) {
+    if (isWeekPerfectAttendance(continuousDay, now)) {
       continuousPoint += WEEK_ATTENDANCE_POINT;
     }
-    if (date.getDayOfMonth() == DAY_OF_MONTH.get(date.getMonthValue())
-        && continuousDay >= DAY_OF_MONTH.get(date.getMonthValue())) {
+    if (isMonthPerfectAttendance(continuousDay, now)) {
       continuousPoint += MONTH_ATTENDANCE_POINT;
     }
-    if (date.getMonthValue() == 12 && date.getDayOfMonth() == 31
-        && continuousDay >= DAY_OF_MONTH.stream().mapToInt(Integer::intValue).sum()) {
+    if (isYearPerfectAttendance(continuousDay, now)) {
       continuousPoint += YEAR_ATTENDANCE_POINT;
     }
 
     return continuousPoint;
+  }
+
+  private boolean isWeekPerfectAttendance(int continuousDay, LocalDateTime now) {
+    return now.getDayOfWeek() == DayOfWeek.SATURDAY && continuousDay >= WEEK_ATTENDANCE;
+  }
+
+  private boolean isMonthPerfectAttendance(int continuousDay, LocalDateTime now) {
+    return now.getDayOfMonth() == DAY_OF_MONTH.get(now.getMonthValue())
+        && continuousDay >= DAY_OF_MONTH.get(now.getMonthValue());
+  }
+
+  private boolean isYearPerfectAttendance(int continuousDay, LocalDateTime now) {
+    return now.getMonthValue() == 12 && now.getDayOfMonth() == 31
+        && continuousDay >= DAY_OF_MONTH.stream().mapToInt(Integer::intValue).sum();
+  }
+
+  private static boolean isLeapYear(int year) {
+    Calendar cal = Calendar.getInstance();
+    cal.set(Calendar.YEAR, year);
+    return cal.getActualMaximum(Calendar.DAY_OF_YEAR) > 365;
   }
 
   private int getMyTodayRank(LocalDateTime now, MemberEntity memberEntity) {
@@ -276,11 +295,15 @@ public class AttendanceService {
     }
 
     int continuousDay = 1;
-    if (recentAttendanceEntity.getTime().plusDays(1).getDayOfMonth() == LocalDate.now()
-        .getDayOfMonth()) {
+    if (isConsecutiveAttendance(recentAttendanceEntity.getTime())) {
       continuousDay = recentAttendanceEntity.getContinuousDay() + 1;
     }
     return continuousDay;
+  }
+
+  private static boolean isConsecutiveAttendance(LocalDateTime recentAttendanceTime) {
+    return recentAttendanceTime.plusDays(1).getDayOfMonth() == LocalDate.now()
+        .getDayOfMonth();
   }
 
   private boolean isAlreadyAttendance() {
