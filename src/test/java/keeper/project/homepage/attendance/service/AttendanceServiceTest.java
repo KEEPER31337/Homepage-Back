@@ -3,6 +3,7 @@ package keeper.project.homepage.attendance.service;
 
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberTypeName.정회원;
+import static keeper.project.homepage.member.service.MemberUtilService.VIRTUAL_MEMBER_ID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
@@ -75,6 +76,7 @@ public class AttendanceServiceTest {
 
     // then
     attendanceRepository.deleteAll();
+    memberRepository.deleteAllByIdIsNot(VIRTUAL_MEMBER_ID);
     assertThat(distinctRankCount).isEqualTo(numberOfThreads * memberCountPerThread);
   }
 

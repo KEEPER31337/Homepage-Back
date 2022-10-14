@@ -31,4 +31,6 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
   boolean existsByEmailAddress(String emailAddress);
 
   boolean existsByStudentId(String studentId);
+
+  void deleteAllByIdIsNot(Long id);
 }
