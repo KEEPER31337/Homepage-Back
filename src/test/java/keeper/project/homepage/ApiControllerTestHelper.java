@@ -435,7 +435,7 @@ public class ApiControllerTestHelper extends ApiControllerTestSetUp {
             .ipAddress("127.0.0.1")
             .greetings("hi")
             .continuousDay(1)
-            .rank(3)
+            .rank(3L)
             .member(memberEntity)
             .build());
   }

@@ -34,11 +34,11 @@ import keeper.project.homepage.attendance.exception.CustomAttendanceException;
 import keeper.project.homepage.member.exception.CustomMemberNotFoundException;
 import keeper.project.homepage.attendance.repository.AttendanceRepository;
 import keeper.project.homepage.member.repository.MemberRepository;
+import keeper.project.homepage.util.redis.RedisUtil;
 import keeper.project.homepage.util.service.auth.AuthService;
 import keeper.project.homepage.point.service.PointLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
@@ -50,6 +50,7 @@ public class AttendanceService {
   private final MemberRepository memberRepository;
   private final AuthService authService;
   private final PointLogService pointLogService;
+  private final RedisUtil redisUtil;
 
   private static final String DEFAULT_GREETINGS = "자동 출석입니다.";
   private List<Integer> DAY_OF_MONTH = new ArrayList<>();
@@ -70,33 +71,12 @@ public class AttendanceService {
   int saveAttendance(AttendanceDto attendanceDto, MemberEntity memberEntity) {
     LocalDateTime now = LocalDateTime.now();
 
-    int point = 0;
-    int continuousDay = getContinuousDay();
-    int continuousPoint = getContinuousPoint(continuousDay);
-    int randomPoint = getRandomPointBetween(100, 1000);
-    point = continuousPoint + DAILY_ATTENDANCE_POINT + randomPoint;
-
     String greeting = attendanceDto.getGreetings();
     if (greeting == "" || greeting == null) {
       greeting = DEFAULT_GREETINGS;
     }
 
-    AttendanceEntity attendanceEntity = AttendanceEntity.builder()
-        .point(point)
-        .rankPoint(0)
-        .continuousPoint(continuousPoint)
-        .continuousDay(continuousDay)
-        .greetings(greeting)
-        .ipAddress(attendanceDto.getIpAddress())
-        .time(now)
-        .date(now.toLocalDate())
-        .member(memberEntity)
-        .randomPoint(randomPoint)
-        .rank(0)
-        .build();
-    attendanceRepository.saveAndFlush(attendanceEntity);
-
-    int rank = getMyTodayRank(now, memberEntity);
+    long rank = getMyTodayRank(now, memberEntity);
     int rankPoint = 0;
     if (rank == 1) {
       rankPoint += FIRST_PLACE_POINT;
@@ -106,12 +86,25 @@ public class AttendanceService {
       rankPoint += THIRD_PLACE_POINT;
     }
 
-    point = attendanceEntity.getPoint() + rankPoint;
-    attendanceEntity.setRank(rank);
-    attendanceEntity.setRankPoint(rankPoint);
-    attendanceEntity.setPoint(point);
-    attendanceRepository.save(attendanceEntity);
-    return point;
+    int continuousDay = getContinuousDay();
+    int continuousPoint = getContinuousPoint(continuousDay);
+    int randomPoint = getRandomPointBetween(100, 1000);
+    int totalPoint = continuousPoint + DAILY_ATTENDANCE_POINT + randomPoint + rankPoint;
+    attendanceRepository.save(AttendanceEntity.builder()
+        .point(totalPoint)
+        .rankPoint(0)
+        .continuousPoint(continuousPoint)
+        .continuousDay(continuousDay)
+        .greetings(greeting)
+        .ipAddress(attendanceDto.getIpAddress())
+        .time(now)
+        .date(now.toLocalDate())
+        .member(memberEntity)
+        .randomPoint(randomPoint)
+        .rankPoint(rankPoint)
+        .rank(rank)
+        .build());
+    return totalPoint;
   }
 
   private void createPointSaveLog(int point, MemberEntity memberEntity) {
@@ -171,10 +164,9 @@ public class AttendanceService {
     return cal.getActualMaximum(Calendar.DAY_OF_YEAR) > 365;
   }
 
-  private int getMyTodayRank(LocalDateTime now, MemberEntity memberEntity) {
-    List<AttendanceEntity> attendanceEntitiesByDate = attendanceRepository
-        .findAllByTimeBetweenAndMemberNotLike(now.toLocalDate().atStartOfDay(), now, memberEntity);
-    return attendanceEntitiesByDate.size() + 1;
+  private long getMyTodayRank(LocalDateTime now, MemberEntity memberEntity) {
+    String todayKey = "attendance:" + now.toLocalDate().toString();
+    return redisUtil.increaseAndGet(todayKey);
   }
 
   @Transactional

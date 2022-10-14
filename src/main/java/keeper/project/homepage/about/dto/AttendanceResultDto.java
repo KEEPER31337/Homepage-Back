@@ -20,7 +20,7 @@ public class AttendanceResultDto {
   private String thumbnailPath;
   private String greetings;
   private Integer continuousDay;
-  private Integer rank;
+  private Long rank;
   private Integer point;
   private Integer rankPoint;
   private Integer continuousPoint;

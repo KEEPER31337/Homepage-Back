@@ -13,6 +13,11 @@ public class RedisUtil {
 
   private final StringRedisTemplate redisTemplate;
 
+  public Long increaseAndGet(String key) {
+    ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+    return valueOperations.increment(key);
+  }
+
   public String getData(String key) { // key를 통해 value(데이터)를 얻는다.
     ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
     return valueOperations.get(key);
