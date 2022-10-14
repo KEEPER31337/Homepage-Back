@@ -38,6 +38,7 @@ import keeper.project.homepage.util.service.auth.AuthService;
 import keeper.project.homepage.point.service.PointLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
@@ -59,6 +60,14 @@ public class AttendanceService {
     if (isAlreadyAttendance()) {
       throw new CustomAttendanceException("이미 출석을 완료했습니다.");
     }
+    MemberEntity memberEntity = getMemberEntityWithJWT();
+
+    int point = saveAttendance(attendanceDto, memberEntity);
+    createPointSaveLog(point, memberEntity);
+  }
+
+  @Transactional
+  int saveAttendance(AttendanceDto attendanceDto, MemberEntity memberEntity) {
     LocalDateTime now = LocalDateTime.now();
 
     int point = 0;
@@ -67,7 +76,6 @@ public class AttendanceService {
     int randomPoint = getRandomPointBetween(100, 1000);
     point = continuousPoint + DAILY_ATTENDANCE_POINT + randomPoint;
 
-    MemberEntity memberEntity = getMemberEntityWithJWT();
     String greeting = attendanceDto.getGreetings();
     if (greeting == "" || greeting == null) {
       greeting = DEFAULT_GREETINGS;
@@ -103,7 +111,10 @@ public class AttendanceService {
     attendanceEntity.setRankPoint(rankPoint);
     attendanceEntity.setPoint(point);
     attendanceRepository.save(attendanceEntity);
+    return point;
+  }
 
+  private void createPointSaveLog(int point, MemberEntity memberEntity) {
     pointLogService.createPointSaveLog(memberEntity,
         new PointLogRequestDto(LocalDateTime.now(), point, "출석 포인트"));
   }
