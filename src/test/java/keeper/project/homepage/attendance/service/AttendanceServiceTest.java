@@ -67,13 +67,6 @@ public class AttendanceServiceTest {
       });
     }
     latch.await();
-
-    System.out.println(attendanceRepository.findAll()
-        .stream()
-        .map(AttendanceEntity::getRank).toList());
-    System.out.println(attendanceRepository.findAll()
-        .stream()
-        .map(AttendanceEntity::getId).toList());
     long distinctRankCount = attendanceRepository.findAll()
         .stream()
         .map(AttendanceEntity::getRank)
