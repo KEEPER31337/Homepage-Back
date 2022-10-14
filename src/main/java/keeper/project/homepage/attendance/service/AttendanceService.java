@@ -38,9 +38,11 @@ import keeper.project.homepage.util.service.auth.AuthService;
 import keeper.project.homepage.point.service.PointLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class AttendanceService {
 
   private final AttendanceRepository attendanceRepository;
@@ -51,6 +53,7 @@ public class AttendanceService {
   private static final String DEFAULT_GREETINGS = "자동 출석입니다.";
   private List<Integer> DAY_OF_MONTH = new ArrayList<>();
 
+  @Transactional
   public void save(AttendanceDto attendanceDto) {
 
     if (isAlreadyAttendance()) {
@@ -163,6 +166,7 @@ public class AttendanceService {
     return attendanceEntitiesByDate.size() + 1;
   }
 
+  @Transactional
   public void updateGreeting(AttendanceDto attendanceDto) {
     AttendanceEntity attendanceEntity = getMostRecentlyAttendance();
 
