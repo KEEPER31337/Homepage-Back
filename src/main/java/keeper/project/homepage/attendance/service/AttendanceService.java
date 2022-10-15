@@ -52,6 +52,8 @@ public class AttendanceService {
   private final PointLogService pointLogService;
   private final RedisUtil redisUtil;
 
+  private static final int MIN_POINT = 100;
+  private static final int MAX_POINT = 1000;
   private static final String DEFAULT_GREETINGS = "자동 출석입니다.";
   private List<Integer> DAY_OF_MONTH = new ArrayList<>();
 
@@ -88,7 +90,7 @@ public class AttendanceService {
 
     int continuousDay = getContinuousDay();
     int continuousPoint = getContinuousPoint(continuousDay);
-    int randomPoint = getRandomPointBetween(100, 1000);
+    int randomPoint = getRandomPointBetween(MIN_POINT, MAX_POINT);
     int totalPoint = continuousPoint + DAILY_ATTENDANCE_POINT + randomPoint + rankPoint;
     attendanceRepository.save(AttendanceEntity.builder()
         .point(totalPoint)
