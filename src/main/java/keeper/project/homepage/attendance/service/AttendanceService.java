@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import javax.persistence.criteria.CriteriaBuilder.In;
 import keeper.project.homepage.point.dto.request.PointLogRequestDto;
 import keeper.project.homepage.about.dto.AttendanceDto;
 import keeper.project.homepage.about.dto.AttendancePointDto;
@@ -55,7 +56,10 @@ public class AttendanceService {
   private static final int MIN_POINT = 100;
   private static final int MAX_POINT = 1000;
   private static final String DEFAULT_GREETINGS = "자동 출석입니다.";
-  private List<Integer> DAY_OF_MONTH = new ArrayList<>();
+  private static final List<Integer> LEAP_YEAR_DAY_OF_MONTH = List.of(0, 31, 29, 31, 30, 31, 30,
+      31, 31, 30, 31, 30, 31);
+  private static final List<Integer> NON_LEAP_YEAR_DAY_OF_MONTH = List.of(0, 31, 28, 31, 30, 31, 30,
+      31, 31, 30, 31, 30, 31);
 
   @Transactional
   public void save(AttendanceDto attendanceDto) {
@@ -89,7 +93,7 @@ public class AttendanceService {
     }
 
     int continuousDay = getContinuousDay();
-    int continuousPoint = getContinuousPoint(continuousDay);
+    int continuousPoint = getContinuousPoint(continuousDay, now);
     int randomPoint = getRandomPointBetween(MIN_POINT, MAX_POINT);
     int totalPoint = continuousPoint + DAILY_ATTENDANCE_POINT + randomPoint + rankPoint;
     attendanceRepository.save(AttendanceEntity.builder()
@@ -121,25 +125,22 @@ public class AttendanceService {
     return (int) (Math.random() * (max - min) + min);
   }
 
-  private int getContinuousPoint(int continuousDay) {
-    LocalDateTime now = LocalDateTime.now();
-
+  private int getContinuousPoint(int continuousDay, LocalDateTime now) {
+    List<Integer> dayOfMonth;
     if (isLeapYear(now.getYear())) {
-      DAY_OF_MONTH.addAll(List.of(0, 31, 29, 31, 30, 31, 30, 31, 31, 30,
-          31, 30, 31));
+      dayOfMonth = LEAP_YEAR_DAY_OF_MONTH;
     } else {
-      DAY_OF_MONTH.addAll(List.of(0, 31, 28, 31, 30, 31, 30, 31, 31, 30,
-          31, 30, 31));
+      dayOfMonth = NON_LEAP_YEAR_DAY_OF_MONTH;
     }
 
     int continuousPoint = 0;
     if (isWeekPerfectAttendance(continuousDay, now)) {
       continuousPoint += WEEK_ATTENDANCE_POINT;
     }
-    if (isMonthPerfectAttendance(continuousDay, now)) {
+    if (isMonthPerfectAttendance(continuousDay, now, dayOfMonth)) {
       continuousPoint += MONTH_ATTENDANCE_POINT;
     }
-    if (isYearPerfectAttendance(continuousDay, now)) {
+    if (isYearPerfectAttendance(continuousDay, now, dayOfMonth)) {
       continuousPoint += YEAR_ATTENDANCE_POINT;
     }
 
@@ -150,14 +151,16 @@ public class AttendanceService {
     return now.getDayOfWeek() == DayOfWeek.SATURDAY && continuousDay >= WEEK_ATTENDANCE;
   }
 
-  private boolean isMonthPerfectAttendance(int continuousDay, LocalDateTime now) {
-    return now.getDayOfMonth() == DAY_OF_MONTH.get(now.getMonthValue())
-        && continuousDay >= DAY_OF_MONTH.get(now.getMonthValue());
+  private boolean isMonthPerfectAttendance(int continuousDay, LocalDateTime now,
+      List<Integer> dayOfMonth) {
+    return now.getDayOfMonth() == dayOfMonth.get(now.getMonthValue())
+        && continuousDay >= dayOfMonth.get(now.getMonthValue());
   }
 
-  private boolean isYearPerfectAttendance(int continuousDay, LocalDateTime now) {
+  private boolean isYearPerfectAttendance(int continuousDay, LocalDateTime now,
+      List<Integer> dayOfMonth) {
     return now.getMonthValue() == 12 && now.getDayOfMonth() == 31
-        && continuousDay >= DAY_OF_MONTH.stream().mapToInt(Integer::intValue).sum();
+        && continuousDay >= dayOfMonth.stream().mapToInt(Integer::intValue).sum();
   }
 
   private static boolean isLeapYear(int year) {
