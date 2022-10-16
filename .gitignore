@@ -84,3 +84,5 @@ src/main/generated
 application
 dependencies
 spring-boot-loader
+
+init.sql
