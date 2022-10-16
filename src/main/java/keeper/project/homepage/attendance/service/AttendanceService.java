@@ -53,6 +53,7 @@ public class AttendanceService {
   private final PointLogService pointLogService;
   private final RedisUtil redisUtil;
 
+  private static final long rankDataExpireDuration = 60 * 60 * 24; // 60s * 60m * 24h로 하루를 의미함.
   private static final int MIN_POINT = 100;
   private static final int MAX_POINT = 1000;
   private static final String DEFAULT_GREETINGS = "자동 출석입니다.";
@@ -171,7 +172,7 @@ public class AttendanceService {
 
   private long getMyTodayRank(LocalDateTime now, MemberEntity memberEntity) {
     String todayKey = "attendance:" + now.toLocalDate().toString();
-    return redisUtil.increaseAndGet(todayKey);
+    return redisUtil.increaseAndGetWithExpire(todayKey, rankDataExpireDuration);
   }
 
   @Transactional
