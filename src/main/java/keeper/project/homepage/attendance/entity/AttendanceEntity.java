@@ -65,7 +65,7 @@ public class AttendanceEntity {
   // 위와 같은 경우는 ``로 감싸준다.
   @Setter
   @Column(name = "`rank`")
-  private Integer rank;
+  private Long rank;
 
   @ManyToOne(targetEntity = MemberEntity.class, fetch = FetchType.LAZY)
   @JoinColumn(name = "member_id", nullable = false)

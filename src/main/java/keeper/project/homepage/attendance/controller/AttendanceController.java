@@ -45,6 +45,10 @@ public class AttendanceController {
   }
 
   @Secured("ROLE_회원")
+  // TODO: request로 AttendanceDto를 받아 모든 greeting을 업데이트 할 것이라면 PutMapping이 Restful 하다.
+  // TODO: 모든 AttendanceDto를 받을 것이 아니라면, greeting message만 받도록 API를 수정하자.
+  // TODO: 또한 url에 "/{attendanceId}"를 pathVariable로 받아 해당 출석을 수정해주도록 하자.
+  // TODO: *API 스펙이 변경되는 것이기 때문에 FE와 협업이 필요하다.*
   @PatchMapping(value = "")
   public CommonResult updateMessage(@RequestBody AttendanceDto attendanceDto,
       HttpServletRequest httpServletRequest) {
