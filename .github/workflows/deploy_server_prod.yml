@@ -1,0 +1,161 @@
+name: Deploy Server Production
+
+on:
+  push:
+    branches: [main]
+
+env:
+  LANG: "ko_KR.UTF-8"
+  LANGUAGE: "ko_KR.UTF-8"
+  LC_ALL: "ko_KR.UTF-8"
+
+jobs:
+  deploy_production:
+    runs-on: ubuntu-20.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set Locale
+        run: |
+          sudo locale-gen ko_KR.UTF-8
+          sudo update-locale LANG=ko_KR.UTF-8
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Login to ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: temurin
+
+      - name: Create Cache Docker Image Directory
+        run: mkdir -p ~/db-docker-image
+
+      - name: Check Gradle Cache
+        id: cache
+        run: |
+          RESULT=$(curl \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.TOKEN }}" \
+            'https://api.github.com/repos/redundant4u/git-test/actions/caches?key=Linux-gradle-1')
+
+          if [[ $RESULT == *"created_at"* ]]
+          then
+            echo "new=2" >> $GITHUB_OUTPUT
+            echo "old=1" >> $GITHUB_OUTPUT
+          else
+            echo "new=1" >> $GITHUB_OUTPUT
+            echo "old=2" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Cache DB Docker Image
+        id: db-docker-image
+        uses: actions/cache@v3
+        with:
+          path: ~/db-docker-image
+          key: db-docker-image-${{ runner.os }}
+
+      - name: Cache DB Docker Image
+        id: db-docker-image
+        uses: actions/cache@v3
+        with:
+          path: ~/db-docker-image
+          key: db-docker-image-${{ runner.os }}
+
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ steps.cache.outputs.new }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Pull DB Image From ECR
+        if: steps.db-docker-image.outputs.cache-hit != 'true'
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        run: |
+          docker pull $ECR_REGISTRY/keeper-homepage-db:${{ secrets.KEEPER_DB_TAG }}
+          docker save -o \
+            ~/db-docker-image/keeper-homepage-db.tar \
+            $ECR_REGISTRY/keeper-homepage-db:${{ secrets.KEEPER_DB_TAG }}
+
+      - name: Create Env File
+        working-directory: ./docker
+        run: |
+          touch .env
+          echo "${{ secrets.DOCKER_ENV }}" >> .env
+          echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> .env
+
+      - name: Create application.properties
+        working-directory: ./src/main/resources
+        run: |
+          touch application.properties
+          echo '${{ secrets.APPLICATION_PROPERTIES }}' >> application.properties
+          echo '${{ secrets.APPLICATION_PROPERTIES_DEPLOY }}' >> application-deploy.properties
+
+      - name: Start Containers
+        working-directory: ./docker
+        run: docker-compose -p keeper up -d
+
+      - name: Build
+        run: |
+          ./gradlew build --daemon --build-cache --parallel
+          java -Djarmode=layertools -jar build/libs/homepage-0.0.1-SNAPSHOT.jar extract
+
+      - name: Compress
+        run: |
+          tar -zcvf ${GITHUB_SHA::8}.tar.gz \
+            dependencies \
+            snapshot-dependencies \
+            spring-boot-loader \
+            application
+
+      - name: Upload to S3
+        run: |
+          aws s3 mv --region ap-northeast-2 \
+          ${GITHUB_SHA::8}.tar.gz \
+          ${{ secrets.S3_PROD_BACK_LOCATION }}/${GITHUB_SHA::8}.tar.gz
+
+      - name: Update Test Result
+        if: failure()
+        run: |
+          aws s3 cp --region ap-northeast-2 --recursive \
+          build/reports/tests/test \
+          ${{ secrets.S3_TEST_REPORT }} --recursive
+
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST_PROD }}
+          username: ${{ secrets.USERNAME_PROD }}
+          port: ${{ secrets.PORT_PROD }}
+          key: ${{ secrets.KEY_PROD }}
+          envs: GITHUB_SHA
+          script: |
+            cd ~/keeper/deploy
+            ./deploy_server.sh ${GITHUB_SHA::8}
+
+      - name: Notify Slack
+        if: always()
+        uses: 8398a7/action-slack@v3
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        with:
+          status: ${{ job.status }}
+          author_name: Keeper Production Backend CICD
+          fields: repo, commit, message, author, action, took
