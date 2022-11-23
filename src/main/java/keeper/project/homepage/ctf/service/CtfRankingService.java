@@ -2,9 +2,9 @@ package keeper.project.homepage.ctf.service;
 
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_TEAM_ID;
 
+import keeper.project.homepage.ctf.dto.CtfRankingDto;
 import keeper.project.homepage.ctf.entity.CtfTeamEntity;
 import keeper.project.homepage.ctf.repository.CtfTeamRepository;
-import keeper.project.homepage.ctf.dto.CtfRankingDto;
 import keeper.project.homepage.util.service.CtfUtilService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -33,8 +33,7 @@ public class CtfRankingService {
   }
 
   private Page<CtfTeamEntity> getAllTeamEntityInRange(Long ctfId, Pageable pageable) {
-    return teamRepository.findAllByIdIsNotAndCtfContestEntity_Id(
-        VIRTUAL_TEAM_ID, ctfId, pageable);
+    return teamRepository.findAllByIdIsNotAndCtfContestEntity_Id(VIRTUAL_TEAM_ID, ctfId, pageable);
   }
 
   private Page<CtfRankingDto> getCtfRankingDtoPageAndSetRank(Page<CtfTeamEntity> teamEntityPage) {
