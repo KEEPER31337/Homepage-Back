@@ -128,7 +128,7 @@ public class AdminSeminarService {
     MemberEntity member = attendance.getMemberEntity();
     String beforeStatus = attendance.getSeminarAttendanceStatusEntity().getType();
     String afterStatus = afterStatusEntity.getType();
-    LocalDate attendDate = attendance.getSeminarAttendTime().toLocalDate();
+
     validateNoChange(beforeStatus, afterStatus);
     initAttendTime(attendance, beforeStatus);
 
