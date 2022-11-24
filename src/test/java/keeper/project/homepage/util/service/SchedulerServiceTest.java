@@ -1,7 +1,7 @@
 package keeper.project.homepage.util.service;
 
-import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ABSENCE;
-import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.BEFORE_ATTENDANCE;
+import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.ABSENCE;
+import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.BEFORE_ATTENDANCE;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;

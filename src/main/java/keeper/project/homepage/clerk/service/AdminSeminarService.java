@@ -1,10 +1,10 @@
 package keeper.project.homepage.clerk.service;
 
-import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ABSENCE;
-import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ATTENDANCE;
-import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.BEFORE_ATTENDANCE;
-import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.LATENESS;
-import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.PERSONAL;
+import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.ABSENCE;
+import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.ATTENDANCE;
+import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.BEFORE_ATTENDANCE;
+import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.LATENESS;
+import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.PERSONAL;
 import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.REGULAR_MEMBER;
 
 import java.time.LocalDate;
@@ -14,6 +14,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 import keeper.project.homepage.clerk.dto.request.AttendanceStartRequestDto;
@@ -127,11 +128,10 @@ public class AdminSeminarService {
     MemberEntity member = attendance.getMemberEntity();
     String beforeStatus = attendance.getSeminarAttendanceStatusEntity().getType();
     String afterStatus = afterStatusEntity.getType();
-    LocalDate attendDate = attendance.getSeminarAttendTime().toLocalDate();
 
-    if (beforeStatus.equals(afterStatus) && !afterStatus.equals(PERSONAL.getType())) {
-      return;
-    }
+    validateNoChange(beforeStatus, afterStatus);
+    initAttendTime(attendance, beforeStatus);
+
     // 이전 출석에 결석 처리를 했으면 해당 결석 처리 내역 삭제
     if (beforeStatus.equals(ABSENCE.getType()) || (beforeStatus.equals(LATENESS.getType()) &&
         getLatenessCount(member) % 2 == 0)) {
@@ -141,13 +141,24 @@ public class AdminSeminarService {
       processPersonal(attendance, absenceExcuse);
     }
     if (afterStatus.equals(LATENESS.getType())) {
-      processLateness(member, attendDate);
+      processLateness(member, attendance);
     }
     if (afterStatus.equals(ABSENCE.getType())) {
-      processAbsence(member, attendDate);
+      processAbsence(member, attendance);
     }
     attendance.setSeminarAttendanceStatusEntity(afterStatusEntity);
-    attendance.setSeminarAttendTime(LocalDateTime.now());
+  }
+
+  private static void validateNoChange(String beforeStatus, String afterStatus) {
+    if (beforeStatus.equals(afterStatus) && !afterStatus.equals(PERSONAL.getType())) {
+      throw new IllegalArgumentException();
+    }
+  }
+
+  private static void initAttendTime(SeminarAttendanceEntity attendance, String beforeStatus) {
+    if (Objects.equals(beforeStatus, BEFORE_ATTENDANCE.getType())) {
+      attendance.setSeminarAttendTime(LocalDateTime.now());
+    }
   }
 
   @Transactional
@@ -157,17 +168,18 @@ public class AdminSeminarService {
   }
 
   @Transactional
-  void processLateness(MemberEntity member, LocalDate attendDate) {
+  void processLateness(MemberEntity member, SeminarAttendanceEntity attendance) {
     // 지각 2회는 결석 처리
     if (getLatenessCount(member) % 2 == 1) {
-      processAbsence(member, attendDate);
+      processAbsence(member, attendance);
     }
   }
 
   @Transactional
-  void processAbsence(MemberEntity member, LocalDate attendDate) {
+  void processAbsence(MemberEntity member, SeminarAttendanceEntity attendance) {
     MeritTypeEntity absence = meritTypeRepository.findByDetail(ABSENCE.getType())
         .orElseThrow(CustomMeritTypeNotFoundException::new);
+    LocalDate attendDate = attendance.getSeminarAttendTime().toLocalDate();
     MeritAddRequestDto meritLogCreateRequestDto = getMeritAddRequestDto(
         member, absence, attendDate);
     meritService.addMeritWithLog(meritLogCreateRequestDto);
@@ -287,12 +299,14 @@ public class AdminSeminarService {
 
   private void autoAttendanceAfterDeadline(SeminarEntity seminar, MemberEntity host) {
     SeminarAttendanceStatusEntity beforeAttendance = seminarAttendanceStatusRepository.findById(
-        BEFORE_ATTENDANCE.getId()).orElseThrow(CustomSeminarAttendanceStatusNotFoundException::new);
+            BEFORE_ATTENDANCE.getId())
+        .orElseThrow(CustomSeminarAttendanceStatusNotFoundException::new);
     SeminarAttendanceStatusEntity absence = seminarAttendanceStatusRepository.findById(
         ABSENCE.getId()).orElseThrow(CustomSeminarAttendanceStatusNotFoundException::new);
     Date date = Date.from(
         //* 테스트 진행 시 추가되는 시간을 30 -> 1초로 변경
-        seminar.getLatenessCloseTime().plusSeconds(30).atZone(ZoneId.of("Asia/Seoul")).toInstant());
+        seminar.getLatenessCloseTime().plusSeconds(30).atZone(ZoneId.of("Asia/Seoul"))
+            .toInstant());
     List<String> jobs = host.getJobs();
     Runnable task = new Runnable() {
       @Override
@@ -304,7 +318,8 @@ public class AdminSeminarService {
             context.setAuthentication(
                 //* AdminSeminarControllerTest [SUCCESS] 세미나 출석 시작 - 자동 출석 확인
                 //* 테스트 결과 확인을 위해서는 host.getId() -> 1L
-                new UsernamePasswordAuthenticationToken(host.getId(), host.getPassword(),
+                new UsernamePasswordAuthenticationToken(host.getId(),
+                    host.getPassword(),
                     jobs.stream().map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList())));
             List<SeminarAttendanceEntity> notAttendances = seminarAttendanceRepository.findAllBySeminarEntityAndSeminarAttendanceStatusEntity(

@@ -19,4 +19,7 @@ public interface MeritLogRepository extends JpaRepository<MeritLogEntity, Long> 
   // 결석일 때만 사용해야 함
   List<MeritLogEntity> findByAwarderAndMeritTypeAndDate(MemberEntity awarder, MeritTypeEntity meritType,
       LocalDate date);
+
+  boolean existsByAwarderAndMeritTypeAndDate(MemberEntity awarder, MeritTypeEntity meritType,
+      LocalDate date);
 }

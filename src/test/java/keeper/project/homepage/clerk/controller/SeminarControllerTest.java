@@ -3,7 +3,7 @@ package keeper.project.homepage.clerk.controller;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.우수회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberTypeName.정회원;
-import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.BEFORE_ATTENDANCE;
+import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.BEFORE_ATTENDANCE;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
