@@ -69,4 +69,8 @@ public class CtfTeamEntity {
   @Builder.Default
   @OneToMany(mappedBy = "team", cascade = CascadeType.REMOVE)
   List<CtfTeamHasMemberEntity> ctfTeamHasMemberEntityList = new ArrayList<>();
+
+  public void changeLastSolveTime(LocalDateTime solveTime) {
+    lastSolveTime = solveTime;
+  }
 }

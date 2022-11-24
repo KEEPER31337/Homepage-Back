@@ -89,7 +89,7 @@ public class CtfChallengeService {
     }
     if (isFlagCorrect(submitFlag, flagEntity)) {
       LocalDateTime solvedTime = LocalDateTime.now();
-      setCorrect(flagEntity, solvedTime);
+      setCorrect(flagEntity, submitTeam, solvedTime);
       updateTeamScore(submitChallenge, submitTeam);
       if (ctfUtilService.isTypeDynamic(submitChallenge)) {
         ctfUtilService.setDynamicScore(submitChallenge);
@@ -196,9 +196,11 @@ public class CtfChallengeService {
     teamRepository.save(submitTeam);
   }
 
-  private void setCorrect(CtfFlagEntity flagEntity, LocalDateTime solvedTime) {
+  private void setCorrect(CtfFlagEntity flagEntity, CtfTeamEntity submitTeam,
+      LocalDateTime solvedTime) {
     flagEntity.setIsCorrect(true);
     flagEntity.setSolvedTime(solvedTime);
+    submitTeam.changeLastSolveTime(solvedTime);
     flagRepository.save(flagEntity);
   }
 

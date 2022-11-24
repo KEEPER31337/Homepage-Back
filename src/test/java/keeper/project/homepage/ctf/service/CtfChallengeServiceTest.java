@@ -80,6 +80,32 @@ class CtfChallengeServiceTest extends CtfSpringTestHelper {
   }
 
   @Test
+  @DisplayName("플래그 체크 - 맞췄을 때 제출 팀의 마지막 문제 푼 시간이 갱신되는지 테스트")
+  void checkFlag_success_lastSolvedTime() {
+    // given
+    LocalDateTime beforeSubmit = LocalDateTime.now();
+    Long probId = dynamicChallenge.getId();
+    CtfFlagDto submitFlag = generateFlag(flagEntity.getContent());
+    checkInitLastSolveTimeIsBeforeThanNow();
+
+    // when
+    CtfFlagDto result = ctfChallengeService.checkFlag(probId, submitFlag);
+
+    // then
+    assertThat(result).isNotNull();
+    assertThat(result.getSolvedTime()).isNotNull();
+    assertThat(result.getSolvedTime()).isBefore(LocalDateTime.now());
+    assertThat(result.getSolvedTime()).isAfter(beforeSubmit);
+    assertThat(result.getIsCorrect()).isTrue();
+    assertThat(teamEntity.getLastSolveTime()).isBefore(LocalDateTime.now());
+    assertThat(teamEntity.getLastSolveTime()).isAfter(beforeSubmit);
+  }
+
+  private void checkInitLastSolveTimeIsBeforeThanNow() {
+    assertThat(teamEntity.getLastSolveTime()).isBefore(LocalDateTime.now());
+  }
+
+  @Test
   @DisplayName("플래그 체크 - 실패")
   void checkFlag_fail() {
     // given

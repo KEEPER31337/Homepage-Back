@@ -6,10 +6,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.time.LocalDateTime;
 import java.util.List;
-import keeper.project.homepage.member.dto.CommonMemberDto;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfTeamEntity;
+import keeper.project.homepage.member.dto.CommonMemberDto;
 import keeper.project.homepage.member.entity.MemberEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -43,6 +43,7 @@ public class CtfTeamDetailDto extends CtfTeamDto {
         .creatorId(team.getCreator().getId())
         .score(team.getScore())
         .contestId(team.getCtfContestEntity().getId())
+        .lastSolvedTime(team.getLastSolveTime())
         .teamMembers(
             team.getCtfTeamHasMemberEntityList().stream()
                 .map(ctfTeamHasMember -> CommonMemberDto.toDto(ctfTeamHasMember.getMember()))
@@ -61,6 +62,7 @@ public class CtfTeamDetailDto extends CtfTeamDto {
         .creator(creator)
         .score(0L)
         .ctfContestEntity(contest)
+        .lastSolveTime(LocalDateTime.now())
         .build();
   }
 }
