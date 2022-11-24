@@ -96,12 +96,11 @@ public class AdminMeritService {
   }
 
   private void checkExistSeminarAbsenceLog(MeritLogEntity meritLog) {
-    if (meritLogRepository.findByAwarderAndMeritTypeAndDate(meritLog.getAwarder(),
-        meritLog.getMeritType(), meritLog.getDate()).size() > 0) {
+    if (meritLogRepository.existsByAwarderAndMeritTypeAndDate(meritLog.getAwarder(),
+        meritLog.getMeritType(), meritLog.getDate())) {
       throw new CustomDuplicateAbsenceLogException();
     }
   }
-
   private static MeritLogEntity getMeritLog(LocalDate date,
       MeritTypeEntity meritType, MemberEntity awarder, MemberEntity giver) {
     return MeritLogEntity.builder()
