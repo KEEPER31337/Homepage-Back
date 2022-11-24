@@ -201,7 +201,6 @@ public class CtfChallengeService {
     flagEntity.setIsCorrect(true);
     flagEntity.setSolvedTime(solvedTime);
     submitTeam.changeLastSolveTime(solvedTime);
-    flagRepository.save(flagEntity);
   }
 
   private Boolean isAlreadySolved(CtfFlagEntity flagEntity) {
