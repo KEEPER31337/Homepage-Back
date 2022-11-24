@@ -1,6 +1,6 @@
 package keeper.project.homepage.clerk.service;
 
-import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ABSENCE;
+import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.ABSENCE;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

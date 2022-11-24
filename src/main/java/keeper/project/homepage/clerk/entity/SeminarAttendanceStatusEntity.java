@@ -29,7 +29,7 @@ public class SeminarAttendanceStatusEntity {
 
   @Getter
   @RequiredArgsConstructor
-  public enum seminarAttendanceStatus {
+  public enum SeminarAttendanceStatus {
     ATTENDANCE(1L, "출석"),
     LATENESS(2L, "지각"),
     ABSENCE(3L, "결석"),
