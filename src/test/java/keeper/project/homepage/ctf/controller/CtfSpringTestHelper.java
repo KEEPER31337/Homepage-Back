@@ -146,6 +146,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         .creator(creator)
         .score(score)
         .ctfContestEntity(ctfContestEntity)
+        .lastSolveTime(LocalDateTime.now())
         .build();
     ctfTeamRepository.save(entity);
 
@@ -446,7 +447,8 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".id").description("team Id"),
         fieldWithPath(prefix + ".name").description("team 이름"),
         fieldWithPath(prefix + ".description").description("team 설명"),
-        fieldWithPath(prefix + ".score").description("team score")
+        fieldWithPath(prefix + ".score").description("team score"),
+        fieldWithPath(prefix + ".lastSolvedTime").description("마지막으로 푼 문제 시간")
     ));
     if (type.equals(ResponseType.PAGE)) {
       commonFields.addAll(Arrays.asList(
