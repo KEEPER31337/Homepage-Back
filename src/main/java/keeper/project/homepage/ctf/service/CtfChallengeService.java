@@ -85,19 +85,17 @@ public class CtfChallengeService {
     // 이미 맞췄으면 제출한 flag 정답 유무만 체크하고 DB 갱신 안함.
     if (isAlreadySolved(flagEntity)) {
       setSubmitFlagIsCorrect(submitFlag, flagEntity);
-      return submitFlag;
+      return CtfFlagDto.toDto(flagEntity);
     }
     if (isFlagCorrect(submitFlag, flagEntity)) {
-      submitFlag.setIsCorrect(true);
-      setCorrect(flagEntity);
+      LocalDateTime solvedTime = LocalDateTime.now();
+      setCorrect(flagEntity, submitTeam, solvedTime);
       updateTeamScore(submitChallenge, submitTeam);
       if (ctfUtilService.isTypeDynamic(submitChallenge)) {
         ctfUtilService.setDynamicScore(submitChallenge);
       }
-      return submitFlag;
     }
-    submitFlag.setIsCorrect(false);
-    return submitFlag;
+    return CtfFlagDto.toDto(flagEntity);
   }
 
   private void setSubmitFlagIsCorrect(CtfFlagDto submitFlag, CtfFlagEntity flagEntity) {
@@ -198,9 +196,11 @@ public class CtfChallengeService {
     teamRepository.save(submitTeam);
   }
 
-  private void setCorrect(CtfFlagEntity flagEntity) {
+  private void setCorrect(CtfFlagEntity flagEntity, CtfTeamEntity submitTeam,
+      LocalDateTime solvedTime) {
     flagEntity.setIsCorrect(true);
-    flagRepository.save(flagEntity);
+    flagEntity.setSolvedTime(solvedTime);
+    submitTeam.changeLastSolveTime(solvedTime);
   }
 
   private Boolean isAlreadySolved(CtfFlagEntity flagEntity) {

@@ -9,19 +9,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
-import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType;
-import keeper.project.homepage.util.entity.FileEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfDynamicChallengeInfoEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;
 import keeper.project.homepage.ctf.entity.CtfSubmitLogEntity;
 import keeper.project.homepage.ctf.entity.CtfTeamEntity;
 import keeper.project.homepage.ctf.entity.CtfTeamHasMemberEntity;
-import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.ctf.repository.CtfChallengeCategoryRepository;
 import keeper.project.homepage.ctf.repository.CtfChallengeRepository;
 import keeper.project.homepage.ctf.repository.CtfChallengeTypeRepository;
@@ -31,9 +29,9 @@ import keeper.project.homepage.ctf.repository.CtfFlagRepository;
 import keeper.project.homepage.ctf.repository.CtfSubmitLogRepository;
 import keeper.project.homepage.ctf.repository.CtfTeamHasMemberRepository;
 import keeper.project.homepage.ctf.repository.CtfTeamRepository;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.util.entity.FileEntity;
 import keeper.project.homepage.util.service.CtfUtilService;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.restdocs.payload.FieldDescriptor;
@@ -148,6 +146,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         .creator(creator)
         .score(score)
         .ctfContestEntity(ctfContestEntity)
+        .lastSolveTime(LocalDateTime.now())
         .build();
     ctfTeamRepository.save(entity);
 
@@ -362,7 +361,8 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
     commonFields.addAll(generateCommonResponseFields(success, code, msg));
     commonFields.addAll(Arrays.asList(
         fieldWithPath(prefix + ".isCorrect").description("맞췄는지 여부"),
-        fieldWithPath(prefix + ".content").description("제출한 Flag")
+        fieldWithPath(prefix + ".content").description("제출한 Flag"),
+        fieldWithPath(prefix + ".solvedTime").description("문제를 맞춘 시간 (못맞췄다면 null을 반환합니다)")
     ));
     if (addDescriptors.length > 0) {
       commonFields.addAll(Arrays.asList(addDescriptors));
@@ -447,7 +447,8 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".id").description("team Id"),
         fieldWithPath(prefix + ".name").description("team 이름"),
         fieldWithPath(prefix + ".description").description("team 설명"),
-        fieldWithPath(prefix + ".score").description("team score")
+        fieldWithPath(prefix + ".score").description("team score"),
+        fieldWithPath(prefix + ".lastSolvedTime").description("마지막으로 푼 문제 시간")
     ));
     if (type.equals(ResponseType.PAGE)) {
       commonFields.addAll(Arrays.asList(

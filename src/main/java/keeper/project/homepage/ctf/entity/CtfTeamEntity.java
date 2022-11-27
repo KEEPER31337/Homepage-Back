@@ -22,6 +22,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Builder
 @Getter
@@ -30,6 +32,8 @@ import lombok.Setter;
 @Entity
 @Table(name = "ctf_team",
     uniqueConstraints = @UniqueConstraint(columnNames = {"name", "contest_id"}))
+@DynamicInsert
+@DynamicUpdate
 public class CtfTeamEntity {
 
   @Id
@@ -59,7 +63,14 @@ public class CtfTeamEntity {
   @JoinColumn(name = "contest_id")
   CtfContestEntity ctfContestEntity;
 
+  @Column(name = "last_solve_time", nullable = false)
+  LocalDateTime lastSolveTime;
+
   @Builder.Default
   @OneToMany(mappedBy = "team", cascade = CascadeType.REMOVE)
   List<CtfTeamHasMemberEntity> ctfTeamHasMemberEntityList = new ArrayList<>();
+
+  public void changeLastSolveTime(LocalDateTime solveTime) {
+    lastSolveTime = solveTime;
+  }
 }

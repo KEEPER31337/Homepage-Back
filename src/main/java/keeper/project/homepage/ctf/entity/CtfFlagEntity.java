@@ -1,5 +1,6 @@
 package keeper.project.homepage.ctf.entity;
 
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -41,4 +42,8 @@ public class CtfFlagEntity {
   @Column(nullable = false)
   @Setter
   Boolean isCorrect;
+
+  @Column(name = "solved_time")
+  @Setter
+  LocalDateTime solvedTime;
 }
