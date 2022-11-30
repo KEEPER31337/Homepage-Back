@@ -1,5 +1,6 @@
 package keeper.project.homepage.ctf.service;
 
+import static java.time.LocalDateTime.now;
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_CONTEST_ID;
 
 import java.time.LocalDateTime;
@@ -60,7 +61,7 @@ public class CtfTeamService {
     Long contestId = ctfTeamDetailDto.getContestId();
     MemberEntity creator = getMemberEntityByJWT();
     CtfContestEntity contest = getContestEntity(contestId);
-    ctfTeamDetailDto.setRegisterTime(LocalDateTime.now());
+    ctfTeamDetailDto.setRegisterTime(now());
     CtfTeamEntity newTeamEntity = saveTeam(ctfTeamDetailDto.toEntity(contest, creator));
     return newTeamEntity;
   }
@@ -245,6 +246,7 @@ public class CtfTeamService {
           .ctfTeamEntity(newTeamEntity)
           .ctfChallengeEntity(challenge)
           .isCorrect(false)
+          .lastTryTime(now())
           .build();
       flagRepository.save(flagEntity);
     });

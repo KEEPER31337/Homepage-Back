@@ -15,6 +15,7 @@ import keeper.project.homepage.ctf.entity.CtfTeamEntity;
 import keeper.project.homepage.ctf.exception.CustomContestNotFoundException;
 import keeper.project.homepage.ctf.exception.CustomCtfChallengeNotFoundException;
 import keeper.project.homepage.ctf.exception.CustomSubmitCountNotEnoughException;
+import keeper.project.homepage.ctf.exception.CustomTooFastRetryException;
 import keeper.project.homepage.ctf.repository.CtfChallengeRepository;
 import keeper.project.homepage.ctf.repository.CtfContestRepository;
 import keeper.project.homepage.ctf.repository.CtfFlagRepository;
@@ -35,6 +36,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CtfChallengeService {
+
+  static final long RETRY_SECONDS = 5;
 
   private final CtfChallengeRepository challengeRepository;
   private final CtfTeamHasMemberRepository teamHasMemberRepository;
@@ -85,9 +88,13 @@ public class CtfChallengeService {
     Long submitterId = authService.getMemberIdByJWT();
     CtfTeamEntity submitTeam = getTeamEntity(getCtfIdByChallenge(submitChallenge), submitterId);
     CtfFlagEntity flagEntity = getFlagEntity(probId, submitTeam);
+    if (flagEntity.getLastTryTime().isAfter(LocalDateTime.now().minusSeconds(RETRY_SECONDS))) {
+      throw new CustomTooFastRetryException(RETRY_SECONDS);
+    }
     if (flagEntity.getRemainedSubmitCount() <= 0) {
       throw new CustomSubmitCountNotEnoughException();
     }
+    flagEntity.updateLastTryTime();
     flagEntity.decreaseSubmitCount();
     // 이미 맞췄으면 제출한 flag 정답 유무만 체크하고 DB 갱신 안함.
     if (isAlreadySolved(flagEntity)) {

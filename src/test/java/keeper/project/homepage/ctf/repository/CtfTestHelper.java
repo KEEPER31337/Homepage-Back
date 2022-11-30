@@ -1,5 +1,7 @@
 package keeper.project.homepage.ctf.repository;
 
+import static java.time.LocalDateTime.now;
+
 import java.time.LocalDateTime;
 import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
@@ -78,6 +80,7 @@ public class CtfTestHelper {
         .ctfTeamEntity(ctfTeam)
         .ctfChallengeEntity(ctfChallenge)
         .isCorrect(false)
+        .lastTryTime(now())
         .build();
     ctfFlagRepository.save(entity);
     return entity;

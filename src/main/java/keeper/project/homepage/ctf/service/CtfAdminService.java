@@ -1,5 +1,6 @@
 package keeper.project.homepage.ctf.service;
 
+import static java.time.LocalDateTime.now;
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_CONTEST_ID;
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_PROBLEM_ID;
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_TEAM_ID;
@@ -298,6 +299,7 @@ public class CtfAdminService {
           .ctfChallengeEntity(challenge)
           .isCorrect(false)
           .remainedSubmitCount(maxSubmitCount)
+          .lastTryTime(now())
           .build();
       ctfFlagRepository.save(flagEntity);
       challenge.getCtfFlagEntity().add(flagEntity);

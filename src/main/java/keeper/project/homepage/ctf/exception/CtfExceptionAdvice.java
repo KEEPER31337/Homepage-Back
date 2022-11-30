@@ -72,4 +72,13 @@ public class CtfExceptionAdvice {
         e.getMessage() == null ? exceptionUtil.getMessage("ctfSubmitCountNotEnough.msg")
             : e.getMessage());
   }
+
+  @ExceptionHandler(CustomTooFastRetryException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult ctfTooFastRetry(CustomTooFastRetryException e) {
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("ctfTooFastRetry.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("ctfTooFastRetry.msg",
+            new Object[]{e.getRetrySeconds()}) : e.getMessage());
+  }
 }

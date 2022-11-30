@@ -1,5 +1,6 @@
 package keeper.project.homepage.ctf.service;
 
+import static java.time.LocalDateTime.now;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.회장;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.우수회원;
@@ -7,6 +8,7 @@ import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.일
 import static keeper.project.homepage.ApiControllerTestHelper.MemberTypeName.정회원;
 import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.FORENSIC;
 import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.DYNAMIC;
+import static keeper.project.homepage.ctf.service.CtfChallengeService.RETRY_SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -19,6 +21,7 @@ import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;
 import keeper.project.homepage.ctf.entity.CtfTeamEntity;
 import keeper.project.homepage.ctf.exception.CustomSubmitCountNotEnoughException;
+import keeper.project.homepage.ctf.exception.CustomTooFastRetryException;
 import keeper.project.homepage.member.entity.MemberEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -64,7 +67,7 @@ class CtfChallengeServiceTest extends CtfSpringTestHelper {
   @DisplayName("플래그 체크 - 맞춤")
   void checkFlag_success() {
     // given
-    LocalDateTime beforeSubmit = LocalDateTime.now();
+    LocalDateTime beforeSubmit = now();
     CtfFlagEntity flagEntity = generateCtfFlag(teamEntity, dynamicChallenge, false);
     Long probId = dynamicChallenge.getId();
     CtfFlagDto submitFlag = generateFlag(flagEntity.getContent());
@@ -75,7 +78,7 @@ class CtfChallengeServiceTest extends CtfSpringTestHelper {
     // then
     assertThat(result).isNotNull();
     assertThat(result.getSolvedTime()).isNotNull();
-    assertThat(result.getSolvedTime()).isBefore(LocalDateTime.now());
+    assertThat(result.getSolvedTime()).isBefore(now());
     assertThat(result.getSolvedTime()).isAfter(beforeSubmit);
     assertThat(result.getIsCorrect()).isTrue();
   }
@@ -84,7 +87,7 @@ class CtfChallengeServiceTest extends CtfSpringTestHelper {
   @DisplayName("플래그 체크 - 맞췄을 때 제출 팀의 마지막 문제 푼 시간이 갱신되는지 테스트")
   void checkFlag_success_lastSolvedTime() {
     // given
-    LocalDateTime beforeSubmit = LocalDateTime.now();
+    LocalDateTime beforeSubmit = now();
     Long probId = dynamicChallenge.getId();
     CtfFlagEntity flagEntity = generateCtfFlag(teamEntity, dynamicChallenge, false);
     CtfFlagDto submitFlag = generateFlag(flagEntity.getContent());
@@ -96,10 +99,10 @@ class CtfChallengeServiceTest extends CtfSpringTestHelper {
     // then
     assertThat(result).isNotNull();
     assertThat(result.getSolvedTime()).isNotNull();
-    assertThat(result.getSolvedTime()).isBefore(LocalDateTime.now());
+    assertThat(result.getSolvedTime()).isBefore(now());
     assertThat(result.getSolvedTime()).isAfter(beforeSubmit);
     assertThat(result.getIsCorrect()).isTrue();
-    assertThat(teamEntity.getLastSolveTime()).isBefore(LocalDateTime.now());
+    assertThat(teamEntity.getLastSolveTime()).isBefore(now());
     assertThat(teamEntity.getLastSolveTime()).isAfter(beforeSubmit);
   }
 
@@ -126,7 +129,7 @@ class CtfChallengeServiceTest extends CtfSpringTestHelper {
   }
 
   private void checkInitLastSolveTimeIsBeforeThanNow() {
-    assertThat(teamEntity.getLastSolveTime()).isBefore(LocalDateTime.now());
+    assertThat(teamEntity.getLastSolveTime()).isBefore(now());
   }
 
 
@@ -145,6 +148,47 @@ class CtfChallengeServiceTest extends CtfSpringTestHelper {
     assertThatThrownBy(() -> ctfChallengeService.checkFlag(probId, submitFlag))
         .isInstanceOf(CustomSubmitCountNotEnoughException.class);
   }
+
+
+  @Test
+  @DisplayName("플래그 체크 - 마지막 제출 시간이 제대로 갱신되는지 확인")
+  void checkFlag_success_isUpdateLastTryTime() {
+    // given
+    CtfFlagEntity flagEntity = generateCtfFlag(teamEntity, dynamicChallenge, false,
+        now().minusSeconds(RETRY_SECONDS));
+    Long probId = dynamicChallenge.getId();
+    CtfFlagDto submitFlag = generateFlag(flagEntity.getContent());
+
+    // when
+    LocalDateTime before = now();
+    ctfChallengeService.checkFlag(probId, submitFlag);
+    LocalDateTime lastTryTime = ctfFlagRepository.findByCtfChallengeEntityIdAndCtfTeamEntityId(
+            probId, teamEntity.getId())
+        .orElseThrow()
+        .getLastTryTime();
+    LocalDateTime after = now();
+
+    // then
+    assertThat(lastTryTime).isAfter(before);
+    assertThat(lastTryTime).isBefore(after);
+  }
+
+
+  @Test
+  @DisplayName("플래그 체크 - 마지막 제출 시간보다 허용 재시도 시간이 짧으면 오류 반환")
+  void checkFlag_fail_isTooFastRetry() {
+    // given
+    CtfFlagEntity flagEntity = generateCtfFlag(teamEntity, dynamicChallenge, false,
+        now());
+    Long probId = dynamicChallenge.getId();
+    CtfFlagDto submitFlag = generateFlag(flagEntity.getContent());
+
+    // when
+    // then
+    assertThatThrownBy(() -> ctfChallengeService.checkFlag(probId, submitFlag))
+        .isInstanceOf(CustomTooFastRetryException.class);
+  }
+
 
   @Test
   @DisplayName("플래그 체크 - 실패")

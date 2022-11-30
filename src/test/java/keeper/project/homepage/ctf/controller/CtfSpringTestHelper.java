@@ -105,7 +105,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
   }
 
   protected CtfFlagEntity generateCtfFlag(CtfTeamEntity ctfTeam, CtfChallengeEntity ctfChallenge,
-      Boolean isCorrect, Long remainedSubmitCount) {
+      Boolean isCorrect, Long remainedSubmitCount, LocalDateTime lastTryTime) {
     final long epochTime = System.nanoTime();
     CtfFlagEntity entity = CtfFlagEntity.builder()
         .content("flag_" + epochTime)
@@ -113,6 +113,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         .ctfChallengeEntity(ctfChallenge)
         .isCorrect(isCorrect)
         .remainedSubmitCount(remainedSubmitCount)
+        .lastTryTime(lastTryTime)
         .build();
     ctfFlagRepository.save(entity);
     ctfChallenge.getCtfFlagEntity().add(entity);
@@ -121,7 +122,19 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
 
   protected CtfFlagEntity generateCtfFlag(CtfTeamEntity ctfTeam, CtfChallengeEntity ctfChallenge,
       Boolean isCorrect) {
-    return generateCtfFlag(ctfTeam, ctfChallenge, isCorrect, 123L);
+    return generateCtfFlag(ctfTeam, ctfChallenge, isCorrect, 123L,
+        LocalDateTime.now().minusDays(1));
+  }
+
+  protected CtfFlagEntity generateCtfFlag(CtfTeamEntity ctfTeam, CtfChallengeEntity ctfChallenge,
+      Boolean isCorrect, Long remainedSubmitCount) {
+    return generateCtfFlag(ctfTeam, ctfChallenge, isCorrect, remainedSubmitCount,
+        LocalDateTime.now().minusDays(1));
+  }
+
+  protected CtfFlagEntity generateCtfFlag(CtfTeamEntity ctfTeam, CtfChallengeEntity ctfChallenge,
+      Boolean isCorrect, LocalDateTime lastTryTime) {
+    return generateCtfFlag(ctfTeam, ctfChallenge, isCorrect, 123L, lastTryTime);
   }
 
   protected CtfSubmitLogEntity generateCtfSubmitLog(CtfTeamEntity ctfTeam, MemberEntity submitter,
