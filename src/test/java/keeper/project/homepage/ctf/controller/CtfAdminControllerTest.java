@@ -289,7 +289,7 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
         .score(score)
         .dynamicInfo(dynamicInfo)
         .flag(flag)
-        .submitCount(123L)
+        .remainingSubmitCount(123L)
         .build();
 
     mockMvc.perform(post("/v1/admin/ctf/prob")
@@ -328,7 +328,7 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
                         "TYPE이 DYNAMIC일 경우 minScore")
                     .optional(),
                 fieldWithPath("flag").description("문제의 flag"),
-                fieldWithPath("submitCount").description("각 팀당 가능한 최대 제출 횟수")
+                fieldWithPath("remainingSubmitCount").description("각 팀당 가능한 최대 제출 횟수")
             ),
             responseFields(
                 generateChallengeAdminDtoResponseFields(ResponseType.SINGLE,
@@ -364,7 +364,7 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
         .creatorName(creator.getNickName())
         .score(score)
         .flag(flag)
-        .submitCount(123L)
+        .remainingSubmitCount(123L)
         .build();
 
     mockMvc.perform(post("/v1/admin/ctf/prob")

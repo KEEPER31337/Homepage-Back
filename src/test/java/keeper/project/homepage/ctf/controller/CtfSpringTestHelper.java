@@ -268,6 +268,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".category.name").description("문제가 속한 카테고리의 이름"),
         fieldWithPath(prefix + ".score").description("문제의 점수"),
         fieldWithPath(prefix + ".isSolved").description("내가 풀었는 지"),
+        fieldWithPath(prefix + ".remainingSubmitCount").description("남은 제출 횟수"),
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id")
     ));
     if (addDescriptors.length > 0) {
@@ -295,7 +296,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id"),
         fieldWithPath(prefix + ".registerTime").description("문제의 등록 시간"),
         fieldWithPath(prefix + ".isSolvable").description("현재 풀 수 있는 지 여부"),
-        fieldWithPath(prefix + ".submitCount").description("남은 제출 횟수"),
+        fieldWithPath(prefix + ".remainingSubmitCount").description("남은 제출 횟수"),
         subsectionWithPath(prefix + ".dynamicInfo").description("TYPE이 STANDARD일 경우 null")
             .optional(),
         subsectionWithPath(prefix + ".file").description("문제에 해당하는 파일 정보").optional()
@@ -335,6 +336,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id"),
         fieldWithPath(prefix + ".solvedTeamCount").description("푼 팀 수"),
         fieldWithPath(prefix + ".isSolved").description("내가 풀었는 지"),
+        fieldWithPath(prefix + ".remainingSubmitCount").description("남은 제출 횟수"),
         subsectionWithPath(prefix + ".file").description("문제에 해당하는 파일 정보").optional()
     ));
     if (type.equals(ResponseType.PAGE)) {
@@ -496,7 +498,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".creatorId").description("team 생성자 Id"),
         fieldWithPath(prefix + ".contestId").description("team이 속한 contest Id"),
         subsectionWithPath(prefix + ".teamMembers").description("team에 속한 팀원 정보"),
-        subsectionWithPath(prefix + ".solvedChallengeList").description("team이 푼 문제들 정보")
+        subsectionWithPath(prefix + ".solvedChallengeList").description("team이 푼 문제들 정보 (푼 문제이므로 남은 제출 횟수가 0으로 표기되어 나갑니다.)")
     ));
     commonFields.addAll(generateTeamDtoResponseFields(type, success, code, msg));
     if (addDescriptors.length > 0) {

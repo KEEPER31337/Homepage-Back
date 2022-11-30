@@ -61,7 +61,9 @@ public class CtfChallengeService {
         .map(solvableChallenge -> {
           CtfFlagEntity ctfFlagEntity = getCtfFlagEntity(solvableChallenge, myTeam);
           Boolean isMyTeamSolved = isAlreadySolved(ctfFlagEntity);
-          return CtfCommonChallengeDto.toDto(solvableChallenge, isMyTeamSolved);
+          Long remainingSubmitCount = ctfFlagEntity.getRemainingSubmitCount();
+          return CtfCommonChallengeDto.toDto(solvableChallenge, isMyTeamSolved,
+              remainingSubmitCount);
         }).toList();
   }
 
@@ -132,8 +134,11 @@ public class CtfChallengeService {
     Long solvedTeamCount = getSolvedTeamCount(probId);
     CtfTeamEntity myTeam = getTeamEntity(getCtfIdByChallenge(challengeEntity),
         authService.getMemberIdByJWT());
-    Boolean isAlreadySolved = isAlreadySolved(getCtfFlagEntity(challengeEntity, myTeam));
-    return CtfChallengeDto.toDto(challengeEntity, solvedTeamCount, isAlreadySolved);
+    CtfFlagEntity ctfFlagEntity = getCtfFlagEntity(challengeEntity, myTeam);
+    Boolean isAlreadySolved = isAlreadySolved(ctfFlagEntity);
+    Long remainingSubmitCount = ctfFlagEntity.getRemainingSubmitCount();
+    return CtfChallengeDto.toDto(challengeEntity, solvedTeamCount, isAlreadySolved,
+        remainingSubmitCount);
   }
 
   @Transactional

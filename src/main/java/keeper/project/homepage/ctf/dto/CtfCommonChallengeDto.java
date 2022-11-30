@@ -23,13 +23,15 @@ public class CtfCommonChallengeDto {
   protected Long score;
   protected CtfChallengeCategoryDto category;
   protected Long contestId;
+  protected Long remainingSubmitCount;
 
   @JsonProperty(access = Access.READ_ONLY)
   protected Long challengeId;
   @JsonProperty(access = Access.READ_ONLY)
   protected Boolean isSolved;
 
-  public static CtfCommonChallengeDto toDto(CtfChallengeEntity challenge, Boolean isSolved) {
+  public static CtfCommonChallengeDto toDto(CtfChallengeEntity challenge, Boolean isSolved,
+      Long remainingSubmitCount) {
     CtfChallengeCategoryDto category = CtfChallengeCategoryDto.toDto(
         challenge.getCtfChallengeCategoryEntity());
 
@@ -40,6 +42,7 @@ public class CtfCommonChallengeDto {
         .category(category)
         .score(challenge.getScore())
         .isSolved(isSolved)
+        .remainingSubmitCount(remainingSubmitCount)
         .build();
   }
 }

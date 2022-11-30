@@ -50,7 +50,8 @@ public class CtfTeamDetailDto extends CtfTeamDto {
                 .toList())
         .solvedChallengeList(
             solvedChallengeList.stream()
-                .map(challenge -> CtfCommonChallengeDto.toDto(challenge, true)).toList())
+                .map(challenge -> CtfCommonChallengeDto.toDto(challenge, true, 0L))
+                .toList())
         .build();
   }
 
