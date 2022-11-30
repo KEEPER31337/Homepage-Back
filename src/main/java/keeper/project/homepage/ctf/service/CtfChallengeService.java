@@ -14,6 +14,7 @@ import keeper.project.homepage.ctf.entity.CtfSubmitLogEntity;
 import keeper.project.homepage.ctf.entity.CtfTeamEntity;
 import keeper.project.homepage.ctf.exception.CustomContestNotFoundException;
 import keeper.project.homepage.ctf.exception.CustomCtfChallengeNotFoundException;
+import keeper.project.homepage.ctf.exception.CustomSubmitCountNotEnoughException;
 import keeper.project.homepage.ctf.repository.CtfChallengeRepository;
 import keeper.project.homepage.ctf.repository.CtfContestRepository;
 import keeper.project.homepage.ctf.repository.CtfFlagRepository;
@@ -84,6 +85,10 @@ public class CtfChallengeService {
     Long submitterId = authService.getMemberIdByJWT();
     CtfTeamEntity submitTeam = getTeamEntity(getCtfIdByChallenge(submitChallenge), submitterId);
     CtfFlagEntity flagEntity = getFlagEntity(probId, submitTeam);
+    if (flagEntity.getRemainingSubmitCount() <= 0) {
+      throw new CustomSubmitCountNotEnoughException();
+    }
+    flagEntity.decreaseSubmitCount();
     // 이미 맞췄으면 제출한 flag 정답 유무만 체크하고 DB 갱신 안함.
     if (isAlreadySolved(flagEntity)) {
       setSubmitFlagIsCorrect(submitFlag, flagEntity);

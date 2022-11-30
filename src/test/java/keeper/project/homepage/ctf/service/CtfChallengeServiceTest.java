@@ -8,6 +8,7 @@ import static keeper.project.homepage.ApiControllerTestHelper.MemberTypeName.정
 import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.FORENSIC;
 import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.DYNAMIC;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,6 +18,7 @@ import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;
 import keeper.project.homepage.ctf.entity.CtfTeamEntity;
+import keeper.project.homepage.ctf.exception.CustomSubmitCountNotEnoughException;
 import keeper.project.homepage.member.entity.MemberEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -35,7 +37,6 @@ class CtfChallengeServiceTest extends CtfSpringTestHelper {
   CtfChallengeService ctfChallengeService;
 
   private CtfTeamEntity teamEntity;
-  private CtfFlagEntity flagEntity;
   private CtfChallengeEntity dynamicChallenge;
 
   @BeforeEach
@@ -49,7 +50,6 @@ class CtfChallengeServiceTest extends CtfSpringTestHelper {
     dynamicChallenge = generateCtfChallenge(contest, DYNAMIC, FORENSIC, score, true);
     generateDynamicChallengeInfo(dynamicChallenge, maxScore, minScore);
     teamEntity = generateCtfTeam(contest, userEntity, 0L);
-    flagEntity = generateCtfFlag(teamEntity, dynamicChallenge, false);
     setAuthentication(userEntity, "ROLE_회원");
   }
 
@@ -65,6 +65,7 @@ class CtfChallengeServiceTest extends CtfSpringTestHelper {
   void checkFlag_success() {
     // given
     LocalDateTime beforeSubmit = LocalDateTime.now();
+    CtfFlagEntity flagEntity = generateCtfFlag(teamEntity, dynamicChallenge, false);
     Long probId = dynamicChallenge.getId();
     CtfFlagDto submitFlag = generateFlag(flagEntity.getContent());
 
@@ -85,6 +86,7 @@ class CtfChallengeServiceTest extends CtfSpringTestHelper {
     // given
     LocalDateTime beforeSubmit = LocalDateTime.now();
     Long probId = dynamicChallenge.getId();
+    CtfFlagEntity flagEntity = generateCtfFlag(teamEntity, dynamicChallenge, false);
     CtfFlagDto submitFlag = generateFlag(flagEntity.getContent());
     checkInitLastSolveTimeIsBeforeThanNow();
 
@@ -101,8 +103,47 @@ class CtfChallengeServiceTest extends CtfSpringTestHelper {
     assertThat(teamEntity.getLastSolveTime()).isAfter(beforeSubmit);
   }
 
+  @Test
+  @DisplayName("플래그 체크 - 남은 제출 횟수가 1 이상일 때 제출 팀의 제출 횟수가 차감되는지 확인")
+  void checkFlag_success_isDecreaseRemainingSubmitCount() {
+    // given
+    long remainingSubmitCount = 123L;
+    CtfFlagEntity flagEntity = generateCtfFlag(teamEntity, dynamicChallenge, false,
+        remainingSubmitCount);
+    Long probId = dynamicChallenge.getId();
+    CtfFlagDto submitFlag = generateFlag(flagEntity.getContent());
+
+    // when
+    ctfChallengeService.checkFlag(probId, submitFlag);
+
+    // then
+    Long afterRemainingSubmitCount = ctfFlagRepository.findByCtfChallengeEntityIdAndCtfTeamEntityId(
+            probId, teamEntity.getId())
+        .orElseThrow()
+        .getRemainingSubmitCount();
+    assertThat(afterRemainingSubmitCount).isNotNull();
+    assertThat(afterRemainingSubmitCount).isEqualTo(remainingSubmitCount - 1);
+  }
+
   private void checkInitLastSolveTimeIsBeforeThanNow() {
     assertThat(teamEntity.getLastSolveTime()).isBefore(LocalDateTime.now());
+  }
+
+
+  @Test
+  @DisplayName("플래그 체크 - 남은 제출 횟수가 0 일 때 제출 팀의 제출 횟수가 차감되는지 확인")
+  void checkFlag_fail_isDecreaseRemainingSubmitCount0() {
+    // given
+    long remainingSubmitCount = 0L;
+    CtfFlagEntity flagEntity = generateCtfFlag(teamEntity, dynamicChallenge, false,
+        remainingSubmitCount);
+    Long probId = dynamicChallenge.getId();
+    CtfFlagDto submitFlag = generateFlag(flagEntity.getContent());
+
+    // when
+    // then
+    assertThatThrownBy(() -> ctfChallengeService.checkFlag(probId, submitFlag))
+        .isInstanceOf(CustomSubmitCountNotEnoughException.class);
   }
 
   @Test
@@ -110,6 +151,7 @@ class CtfChallengeServiceTest extends CtfSpringTestHelper {
   void checkFlag_fail() {
     // given
     Long probId = dynamicChallenge.getId();
+    CtfFlagEntity flagEntity = generateCtfFlag(teamEntity, dynamicChallenge, false);
     CtfFlagDto submitFlag = generateFlag(flagEntity.getContent() + "wrong!");
 
     // when

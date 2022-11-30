@@ -105,18 +105,23 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
   }
 
   protected CtfFlagEntity generateCtfFlag(CtfTeamEntity ctfTeam, CtfChallengeEntity ctfChallenge,
-      Boolean isCorrect) {
+      Boolean isCorrect, Long remainingSubmitCount) {
     final long epochTime = System.nanoTime();
     CtfFlagEntity entity = CtfFlagEntity.builder()
         .content("flag_" + epochTime)
         .ctfTeamEntity(ctfTeam)
         .ctfChallengeEntity(ctfChallenge)
         .isCorrect(isCorrect)
-        .remainingSubmitCount(123L)
+        .remainingSubmitCount(remainingSubmitCount)
         .build();
     ctfFlagRepository.save(entity);
     ctfChallenge.getCtfFlagEntity().add(entity);
     return entity;
+  }
+
+  protected CtfFlagEntity generateCtfFlag(CtfTeamEntity ctfTeam, CtfChallengeEntity ctfChallenge,
+      Boolean isCorrect) {
+    return generateCtfFlag(ctfTeam, ctfChallenge, isCorrect, 123L);
   }
 
   protected CtfSubmitLogEntity generateCtfSubmitLog(CtfTeamEntity ctfTeam, MemberEntity submitter,
