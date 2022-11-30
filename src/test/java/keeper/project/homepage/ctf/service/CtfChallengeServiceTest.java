@@ -105,11 +105,11 @@ class CtfChallengeServiceTest extends CtfSpringTestHelper {
 
   @Test
   @DisplayName("플래그 체크 - 남은 제출 횟수가 1 이상일 때 제출 팀의 제출 횟수가 차감되는지 확인")
-  void checkFlag_success_isDecreaseRemainingSubmitCount() {
+  void checkFlag_success_isDecreaseRemainedSubmitCount() {
     // given
-    long remainingSubmitCount = 123L;
+    long remainedSubmitCount = 123L;
     CtfFlagEntity flagEntity = generateCtfFlag(teamEntity, dynamicChallenge, false,
-        remainingSubmitCount);
+        remainedSubmitCount);
     Long probId = dynamicChallenge.getId();
     CtfFlagDto submitFlag = generateFlag(flagEntity.getContent());
 
@@ -117,12 +117,12 @@ class CtfChallengeServiceTest extends CtfSpringTestHelper {
     ctfChallengeService.checkFlag(probId, submitFlag);
 
     // then
-    Long afterRemainingSubmitCount = ctfFlagRepository.findByCtfChallengeEntityIdAndCtfTeamEntityId(
+    Long afterRemainedSubmitCount = ctfFlagRepository.findByCtfChallengeEntityIdAndCtfTeamEntityId(
             probId, teamEntity.getId())
         .orElseThrow()
-        .getRemainingSubmitCount();
-    assertThat(afterRemainingSubmitCount).isNotNull();
-    assertThat(afterRemainingSubmitCount).isEqualTo(remainingSubmitCount - 1);
+        .getRemainedSubmitCount();
+    assertThat(afterRemainedSubmitCount).isNotNull();
+    assertThat(afterRemainedSubmitCount).isEqualTo(remainedSubmitCount - 1);
   }
 
   private void checkInitLastSolveTimeIsBeforeThanNow() {
@@ -132,11 +132,11 @@ class CtfChallengeServiceTest extends CtfSpringTestHelper {
 
   @Test
   @DisplayName("플래그 체크 - 남은 제출 횟수가 0 일 때 제출 팀의 제출 횟수가 차감되는지 확인")
-  void checkFlag_fail_isDecreaseRemainingSubmitCount0() {
+  void checkFlag_fail_isDecreaseRemainedSubmitCount0() {
     // given
-    long remainingSubmitCount = 0L;
+    long remainedSubmitCount = 0L;
     CtfFlagEntity flagEntity = generateCtfFlag(teamEntity, dynamicChallenge, false,
-        remainingSubmitCount);
+        remainedSubmitCount);
     Long probId = dynamicChallenge.getId();
     CtfFlagDto submitFlag = generateFlag(flagEntity.getContent());
 

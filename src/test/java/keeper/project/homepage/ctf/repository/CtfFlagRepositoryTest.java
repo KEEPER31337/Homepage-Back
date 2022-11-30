@@ -20,7 +20,7 @@ class CtfFlagRepositoryTest extends CtfTestHelper {
     return generateFlag(100L);
   }
 
-  private CtfFlagEntity generateFlag(long remainingSubmitCount) {
+  private CtfFlagEntity generateFlag(long remainedSubmitCount) {
     final long epochTime = System.nanoTime();
     String content = "content_" + epochTime;
     boolean isCorrect = true;
@@ -34,8 +34,8 @@ class CtfFlagRepositoryTest extends CtfTestHelper {
         .ctfTeamEntity(ctfTeam)
         .ctfChallengeEntity(ctfChallenge)
         .isCorrect(isCorrect)
-        .lastSubmitTime(now)
-        .remainingSubmitCount(remainingSubmitCount)
+        .lastTryTime(now)
+        .remainedSubmitCount(remainedSubmitCount)
         .build();
   }
 
@@ -55,8 +55,8 @@ class CtfFlagRepositoryTest extends CtfTestHelper {
     assertThat(findFlag.getCtfChallengeEntity().getId()).isEqualTo(
         flag.getCtfChallengeEntity().getId());
     assertThat(findFlag.getIsCorrect()).isEqualTo(flag.getIsCorrect());
-    assertThat(findFlag.getLastSubmitTime()).isEqualTo(flag.getLastSubmitTime());
-    assertThat(findFlag.getRemainingSubmitCount()).isEqualTo(flag.getRemainingSubmitCount());
+    assertThat(findFlag.getLastTryTime()).isEqualTo(flag.getLastTryTime());
+    assertThat(findFlag.getRemainedSubmitCount()).isEqualTo(flag.getRemainedSubmitCount());
   }
 
   @Test
@@ -64,7 +64,7 @@ class CtfFlagRepositoryTest extends CtfTestHelper {
   void decreaseRemainingCount100Test() {
     CtfFlagEntity flag = generateFlag(100L);
     flag.decreaseSubmitCount();
-    assertThat(flag.getRemainingSubmitCount()).isEqualTo(99);
+    assertThat(flag.getRemainedSubmitCount()).isEqualTo(99);
   }
 
   @Test
@@ -72,7 +72,7 @@ class CtfFlagRepositoryTest extends CtfTestHelper {
   void decreaseRemainingCount2Test() {
     CtfFlagEntity flag = generateFlag(2L);
     flag.decreaseSubmitCount();
-    assertThat(flag.getRemainingSubmitCount()).isEqualTo(1);
+    assertThat(flag.getRemainedSubmitCount()).isEqualTo(1);
   }
 
   @Test
@@ -80,7 +80,7 @@ class CtfFlagRepositoryTest extends CtfTestHelper {
   void decreaseRemainingCount1Test() {
     CtfFlagEntity flag = generateFlag(1);
     flag.decreaseSubmitCount();
-    assertThat(flag.getRemainingSubmitCount()).isEqualTo(0);
+    assertThat(flag.getRemainedSubmitCount()).isEqualTo(0);
   }
 
   @Test

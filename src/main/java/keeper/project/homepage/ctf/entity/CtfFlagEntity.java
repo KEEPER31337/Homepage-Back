@@ -51,20 +51,20 @@ public class CtfFlagEntity {
   @Setter
   LocalDateTime solvedTime;
 
-  @Column(name = "last_submit_time")
-  LocalDateTime lastSubmitTime;
+  @Column(name = "last_try_time")
+  LocalDateTime lastTryTime;
 
-  @Column(name = "remaining_submit_count")
-  Long remainingSubmitCount;
+  @Column(name = "remained_submit_count")
+  Long remainedSubmitCount;
 
-  public void updateLastSubmitTime() {
-    lastSubmitTime = LocalDateTime.now();
+  public void updateLastTryTime() {
+    lastTryTime = LocalDateTime.now();
   }
 
   public void decreaseSubmitCount() {
-    if (remainingSubmitCount <= 0) {
+    if (remainedSubmitCount <= 0) {
       throw new IllegalStateException("제출 횟수가 0이하이기 때문에 제출 횟수를 감소시킬 수 없습니다.");
     }
-    --remainingSubmitCount;
+    --remainedSubmitCount;
   }
 }

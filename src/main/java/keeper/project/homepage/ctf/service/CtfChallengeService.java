@@ -62,9 +62,9 @@ public class CtfChallengeService {
         .map(solvableChallenge -> {
           CtfFlagEntity ctfFlagEntity = getCtfFlagEntity(solvableChallenge, myTeam);
           Boolean isMyTeamSolved = isAlreadySolved(ctfFlagEntity);
-          Long remainingSubmitCount = ctfFlagEntity.getRemainingSubmitCount();
+          Long remainedSubmitCount = ctfFlagEntity.getRemainedSubmitCount();
           return CtfCommonChallengeDto.toDto(solvableChallenge, isMyTeamSolved,
-              remainingSubmitCount);
+              remainedSubmitCount);
         }).toList();
   }
 
@@ -85,7 +85,7 @@ public class CtfChallengeService {
     Long submitterId = authService.getMemberIdByJWT();
     CtfTeamEntity submitTeam = getTeamEntity(getCtfIdByChallenge(submitChallenge), submitterId);
     CtfFlagEntity flagEntity = getFlagEntity(probId, submitTeam);
-    if (flagEntity.getRemainingSubmitCount() <= 0) {
+    if (flagEntity.getRemainedSubmitCount() <= 0) {
       throw new CustomSubmitCountNotEnoughException();
     }
     flagEntity.decreaseSubmitCount();
@@ -141,9 +141,9 @@ public class CtfChallengeService {
         authService.getMemberIdByJWT());
     CtfFlagEntity ctfFlagEntity = getCtfFlagEntity(challengeEntity, myTeam);
     Boolean isAlreadySolved = isAlreadySolved(ctfFlagEntity);
-    Long remainingSubmitCount = ctfFlagEntity.getRemainingSubmitCount();
+    Long remainedSubmitCount = ctfFlagEntity.getRemainedSubmitCount();
     return CtfChallengeDto.toDto(challengeEntity, solvedTeamCount, isAlreadySolved,
-        remainingSubmitCount);
+        remainedSubmitCount);
   }
 
   @Transactional

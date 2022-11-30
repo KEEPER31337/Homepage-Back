@@ -55,7 +55,7 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
     CtfChallengeAdminDto challengeAdminDto = CtfChallengeAdminDto.builder()
         .isSolvable(true)
         .flag("flag")
-        .remainingSubmitCount(123L)
+        .remainedSubmitCount(123L)
         .type(getStandardType())
         .dynamicInfo(null)
         .content("content")
@@ -70,7 +70,7 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
         result.getChallengeId(), CtfUtilService.VIRTUAL_TEAM_ID).orElseThrow();
 
     assertThat(result.getFlag()).isEqualTo("flag");
-    assertThat(result.getRemainingSubmitCount()).isEqualTo(123L);
+    assertThat(result.getRemainedSubmitCount()).isEqualTo(123L);
     assertThat(result.getType().getId()).isEqualTo(getStandardType().getId());
     assertThat(result.getDynamicInfo().getMaxScore()).isNull();
     assertThat(result.getDynamicInfo().getMinScore()).isNull();
@@ -79,7 +79,7 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
     assertThat(result.getScore()).isEqualTo(1234L);
     assertThat(result.getCategory().getId()).isEqualTo(getWebCategory().getId());
     assertThat(result.getContestId()).isEqualTo(ctfContestEntity.getId());
-    assertThat(flag.getRemainingSubmitCount()).isEqualTo(123L);
+    assertThat(flag.getRemainedSubmitCount()).isEqualTo(123L);
     assertThat(flag.getIsCorrect()).isEqualTo(false);
 
 

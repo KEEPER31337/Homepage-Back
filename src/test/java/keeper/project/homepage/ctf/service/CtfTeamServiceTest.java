@@ -184,7 +184,7 @@ class CtfTeamServiceTest extends CtfSpringTestHelper {
             CtfChallengeCategoryDto.builder().id(SYSTEM.getId()).build())
         .title(testTitle)
         .score(testScore)
-        .remainingSubmitCount(123L)
+        .remainedSubmitCount(123L)
         .build();
     ctfAdminService.createChallenge(createChallengeInfo);
 

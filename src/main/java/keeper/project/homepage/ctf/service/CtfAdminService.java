@@ -115,7 +115,7 @@ public class CtfAdminService {
       trySetDynamicInfoInChallenge(newChallenge, challengeAdminDto);
     }
     setFlagAllTeam(challengeAdminDto.getFlag(), newChallenge,
-        challengeAdminDto.getRemainingSubmitCount());
+        challengeAdminDto.getRemainedSubmitCount());
     return CtfChallengeAdminDto.toDto(newChallenge);
   }
 
@@ -297,7 +297,7 @@ public class CtfAdminService {
           .ctfTeamEntity(ctfTeam)
           .ctfChallengeEntity(challenge)
           .isCorrect(false)
-          .remainingSubmitCount(maxSubmitCount)
+          .remainedSubmitCount(maxSubmitCount)
           .build();
       ctfFlagRepository.save(flagEntity);
       challenge.getCtfFlagEntity().add(flagEntity);
