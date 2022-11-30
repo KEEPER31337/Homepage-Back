@@ -5,17 +5,13 @@ import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChall
 
 import java.time.LocalDateTime;
 import java.util.List;
-import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
-import keeper.project.homepage.ctf.service.CtfAdminService;
 import keeper.project.homepage.ctf.controller.CtfSpringTestHelper;
-import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
-import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity;
-import keeper.project.homepage.ctf.entity.CtfContestEntity;
-import keeper.project.homepage.ctf.service.CtfTeamService;
-import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
 import keeper.project.homepage.ctf.dto.CtfChallengeCategoryDto;
 import keeper.project.homepage.ctf.dto.CtfChallengeTypeDto;
 import keeper.project.homepage.ctf.dto.CtfTeamDetailDto;
+import keeper.project.homepage.ctf.entity.CtfContestEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -188,6 +184,7 @@ class CtfTeamServiceTest extends CtfSpringTestHelper {
             CtfChallengeCategoryDto.builder().id(SYSTEM.getId()).build())
         .title(testTitle)
         .score(testScore)
+        .submitCount(123L)
         .build();
     ctfAdminService.createChallenge(createChallengeInfo);
 

@@ -8,13 +8,13 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import keeper.project.homepage.util.entity.FileEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.util.dto.FileDto;
+import keeper.project.homepage.util.entity.FileEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,6 +31,7 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
 
   private Boolean isSolvable;
   private String flag;
+  private Long submitCount;
   protected CtfChallengeTypeDto type;
 
   @JsonProperty(access = Access.READ_ONLY)
@@ -80,6 +81,7 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
         .score(challenge.getScore())
         .file(file)
         .dynamicInfo(dynamicInfo)
+        .submitCount(challenge.getCtfFlagEntity().get(0).getRemainingSubmitCount())
         .build();
   }
 }
