@@ -13,6 +13,8 @@ import keeper.project.homepage.ctf.entity.CtfTeamEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 class CtfFlagRepositoryTest extends CtfTestHelper {
 
@@ -59,34 +61,20 @@ class CtfFlagRepositoryTest extends CtfTestHelper {
     assertThat(findFlag.getRemainedSubmitCount()).isEqualTo(flag.getRemainedSubmitCount());
   }
 
-  @Test
-  @DisplayName("남은 제출 횟수가 100일 때 정상적으로 줄어드는지 테스트")
-  void decreaseRemainingCount100Test() {
-    CtfFlagEntity flag = generateFlag(100L);
+  @ParameterizedTest
+  @ValueSource(ints = {100, 2, 1})
+  @DisplayName("남은 제출 횟수가 정상적으로 줄어드는지 테스트")
+  void decreaseRemainingCount(int count) {
+    CtfFlagEntity flag = generateFlag(count);
     flag.decreaseSubmitCount();
-    assertThat(flag.getRemainedSubmitCount()).isEqualTo(99);
+    assertThat(flag.getRemainedSubmitCount()).isEqualTo(count - 1);
   }
 
-  @Test
-  @DisplayName("남은 제출 횟수가 2일 때 정상적으로 줄어드는지 테스트")
-  void decreaseRemainingCount2Test() {
-    CtfFlagEntity flag = generateFlag(2L);
-    flag.decreaseSubmitCount();
-    assertThat(flag.getRemainedSubmitCount()).isEqualTo(1);
-  }
-
-  @Test
-  @DisplayName("남은 제출 횟수가 1일 때 정상적으로 줄어드는지 테스트")
-  void decreaseRemainingCount1Test() {
-    CtfFlagEntity flag = generateFlag(1);
-    flag.decreaseSubmitCount();
-    assertThat(flag.getRemainedSubmitCount()).isEqualTo(0);
-  }
-
-  @Test
-  @DisplayName("남은 제출 횟수가 0일 때 오류를 발생시키는지 테스트")
-  void decreaseRemainingCount0Test() {
-    CtfFlagEntity flag = generateFlag(0);
+  @ParameterizedTest
+  @ValueSource(ints = {0, -1, -1234})
+  @DisplayName("남은 제출 횟수가 0 이하일 때 오류를 발생시키는지 테스트")
+  void decreaseRemainingCount0Test(int count) {
+    CtfFlagEntity flag = generateFlag(count);
     assertThatThrownBy(flag::decreaseSubmitCount)
         .isInstanceOf(IllegalStateException.class);
   }
