@@ -44,6 +44,7 @@ class CtfChallengeRepositoryTest extends CtfTestHelper {
         .score(score)
         .ctfContestEntity(contest)
         .ctfFlagEntity(new ArrayList<>())
+        .maxSubmitCount(123L)
         .build();
     ctfChallengeRepository.save(challenge);
     CtfChallengeEntity findChallenge = ctfChallengeRepository.getById(challenge.getId());
@@ -87,6 +88,7 @@ class CtfChallengeRepositoryTest extends CtfTestHelper {
         .score(score)
         .ctfContestEntity(contest)
         .ctfFlagEntity(new ArrayList<>())
+        .maxSubmitCount(123L)
         .build();
     ctfChallengeRepository.save(challenge);
     CtfChallengeEntity findChallenge = ctfChallengeRepository.getById(challenge.getId());

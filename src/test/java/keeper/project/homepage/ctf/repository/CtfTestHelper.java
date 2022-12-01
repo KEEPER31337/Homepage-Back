@@ -12,17 +12,8 @@ import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;
 import keeper.project.homepage.ctf.entity.CtfSubmitLogEntity;
 import keeper.project.homepage.ctf.entity.CtfTeamEntity;
-import keeper.project.homepage.ctf.repository.CtfChallengeCategoryRepository;
-import keeper.project.homepage.ctf.repository.CtfChallengeRepository;
-import keeper.project.homepage.ctf.repository.CtfChallengeTypeRepository;
-import keeper.project.homepage.ctf.repository.CtfContestRepository;
-import keeper.project.homepage.ctf.repository.CtfFlagRepository;
-import keeper.project.homepage.ctf.repository.CtfSubmitLogRepository;
-import keeper.project.homepage.ctf.repository.CtfTeamRepository;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.member.repository.MemberRepository;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -137,6 +128,7 @@ public class CtfTestHelper {
         .ctfChallengeCategoryEntity(ctfChallengeCategoryEntity)
         .score(score)
         .ctfContestEntity(ctfContestEntity)
+        .maxSubmitCount(123L)
         .build();
     ctfChallengeRepository.save(entity);
     return entity;

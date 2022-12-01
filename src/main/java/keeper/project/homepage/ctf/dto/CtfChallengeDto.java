@@ -50,6 +50,7 @@ public class CtfChallengeDto extends CtfCommonChallengeDto {
         .file(file)
         .remainedSubmitCount(ctfFlagEntity.getRemainedSubmitCount())
         .lastTryTime(ctfFlagEntity.getLastTryTime())
+        .maxSubmitCount(challenge.getMaxSubmitCount())
         .build();
   }
 }

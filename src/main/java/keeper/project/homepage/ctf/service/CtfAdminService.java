@@ -116,7 +116,7 @@ public class CtfAdminService {
       trySetDynamicInfoInChallenge(newChallenge, challengeAdminDto);
     }
     setFlagAllTeam(challengeAdminDto.getFlag(), newChallenge,
-        challengeAdminDto.getRemainedSubmitCount());
+        challengeAdminDto.getMaxSubmitCount());
     return CtfChallengeAdminDto.toDto(newChallenge);
   }
 

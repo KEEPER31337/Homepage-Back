@@ -201,6 +201,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         .score(score)
         .ctfContestEntity(ctfContestEntity)
         .ctfFlagEntity(new ArrayList<>())
+        .maxSubmitCount(100L)
         .build();
     ctfChallengeRepository.save(entity);
     return entity;
@@ -287,6 +288,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".category.name").description("문제가 속한 카테고리의 이름"),
         fieldWithPath(prefix + ".score").description("문제의 점수"),
         fieldWithPath(prefix + ".isSolved").description("내가 풀었는 지"),
+        fieldWithPath(prefix + ".maxSubmitCount").description("최대 제출 횟수"),
         fieldWithPath(prefix + ".remainedSubmitCount").description("남은 제출 횟수"),
         fieldWithPath(prefix + ".lastTryTime").description("각 팀별 마지막 제출 시간입니다. 만약 " + RETRY_SECONDS
             + "초 내에 다시 시도할 경우 프론트에서 API 호출을 막아주는게 좋습니다. "),
@@ -317,6 +319,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id"),
         fieldWithPath(prefix + ".registerTime").description("문제의 등록 시간"),
         fieldWithPath(prefix + ".isSolvable").description("현재 풀 수 있는 지 여부"),
+        fieldWithPath(prefix + ".maxSubmitCount").description("최대 제출 횟수"),
         fieldWithPath(prefix + ".remainedSubmitCount").description("남은 제출 횟수"),
         fieldWithPath(prefix + ".lastTryTime").description("각 팀별 마지막 제출 시간입니다. 만약 " + RETRY_SECONDS
             + "초 내에 다시 시도할 경우 프론트에서 API 호출을 막아주는게 좋습니다."),
@@ -359,6 +362,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id"),
         fieldWithPath(prefix + ".solvedTeamCount").description("푼 팀 수"),
         fieldWithPath(prefix + ".isSolved").description("내가 풀었는 지"),
+        fieldWithPath(prefix + ".maxSubmitCount").description("최대 제출 횟수"),
         fieldWithPath(prefix + ".remainedSubmitCount").description("남은 제출 횟수"),
         fieldWithPath(prefix + ".lastTryTime").description("각 팀별 마지막 제출 시간입니다. 만약 " + RETRY_SECONDS
             + "초 내에 다시 시도할 경우 프론트에서 API 호출을 막아주는게 좋습니다."),

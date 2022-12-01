@@ -16,8 +16,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
-import keeper.project.homepage.util.entity.FileEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.util.entity.FileEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -64,6 +64,9 @@ public class CtfChallengeEntity {
   @Column(nullable = false)
   @Setter
   Long score;
+
+  @Column(name = "max_submit_count", nullable = false)
+  Long maxSubmitCount;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "contest_id", nullable = false)

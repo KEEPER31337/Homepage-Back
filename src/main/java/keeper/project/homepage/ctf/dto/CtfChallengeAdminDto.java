@@ -54,6 +54,7 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
         .score(score)
         .fileEntity(fileEntity)
         .ctfFlagEntity(new ArrayList<>())
+        .maxSubmitCount(maxSubmitCount)
         .build();
   }
 
@@ -83,6 +84,7 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
         .dynamicInfo(dynamicInfo)
         .remainedSubmitCount(getVirtualTeamFlag(challenge).getRemainedSubmitCount())
         .lastTryTime(getVirtualTeamFlag(challenge).getLastTryTime())
+        .maxSubmitCount(challenge.getMaxSubmitCount())
         .build();
   }
 

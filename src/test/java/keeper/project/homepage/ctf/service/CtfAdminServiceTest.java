@@ -55,7 +55,6 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
     CtfChallengeAdminDto challengeAdminDto = CtfChallengeAdminDto.builder()
         .isSolvable(true)
         .flag("flag")
-        .remainedSubmitCount(123L)
         .type(getStandardType())
         .dynamicInfo(null)
         .content("content")
@@ -63,6 +62,7 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
         .score(1234L)
         .category(getWebCategory())
         .contestId(ctfContestEntity.getId())
+        .maxSubmitCount(123L)
         .build();
 
     CtfChallengeAdminDto result = ctfAdminService.createChallenge(challengeAdminDto);

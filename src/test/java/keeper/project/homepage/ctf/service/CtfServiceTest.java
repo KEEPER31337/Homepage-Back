@@ -168,7 +168,7 @@ public class CtfServiceTest extends CtfSpringTestHelper {
         .category(CtfChallengeCategoryDto.builder()
             .id(MISC.getId())
             .build())
-        .remainedSubmitCount(100L)
+        .maxSubmitCount(100L)
         .build();
     return ctfAdminService.createChallenge(createChallenge);
   }
