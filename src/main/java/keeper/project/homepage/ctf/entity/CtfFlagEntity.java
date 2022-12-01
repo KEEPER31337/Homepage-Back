@@ -63,7 +63,7 @@ public class CtfFlagEntity {
 
   public void decreaseSubmitCount() {
     if (remainedSubmitCount <= 0) {
-      throw new IllegalStateException("제출 횟수가 0이하이기 때문에 제출 횟수를 감소시킬 수 없습니다.");
+      throw new IllegalStateException("제출 횟수를 모두 소진하셨기 때문에 제출 횟수를 감소시킬 수 없습니다.");
     }
     --remainedSubmitCount;
   }
