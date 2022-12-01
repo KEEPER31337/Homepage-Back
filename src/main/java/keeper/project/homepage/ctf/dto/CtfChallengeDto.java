@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
+import keeper.project.homepage.ctf.entity.CtfFlagEntity;
 import keeper.project.homepage.util.dto.FileDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,7 +32,7 @@ public class CtfChallengeDto extends CtfCommonChallengeDto {
   protected FileDto file;
 
   public static CtfChallengeDto toDto(CtfChallengeEntity challenge, Long solvedTeamCount,
-      Boolean isSolved, Long remainedSubmitCount) {
+      Boolean isSolved, CtfFlagEntity ctfFlagEntity) {
     CtfChallengeCategoryDto category = CtfChallengeCategoryDto.toDto(
         challenge.getCtfChallengeCategoryEntity());
     FileDto file = FileDto.toDto(challenge.getFileEntity());
@@ -47,7 +48,8 @@ public class CtfChallengeDto extends CtfCommonChallengeDto {
         .solvedTeamCount(solvedTeamCount)
         .isSolved(isSolved)
         .file(file)
-        .remainedSubmitCount(remainedSubmitCount)
+        .remainedSubmitCount(ctfFlagEntity.getRemainedSubmitCount())
+        .lastTryTime(ctfFlagEntity.getLastTryTime())
         .build();
   }
 }

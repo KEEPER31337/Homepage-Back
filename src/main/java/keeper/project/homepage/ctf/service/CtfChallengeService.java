@@ -37,7 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CtfChallengeService {
 
-  static final long RETRY_SECONDS = 5;
+  public static final long RETRY_SECONDS = 5;
 
   private final CtfChallengeRepository challengeRepository;
   private final CtfTeamHasMemberRepository teamHasMemberRepository;
@@ -65,9 +65,8 @@ public class CtfChallengeService {
         .map(solvableChallenge -> {
           CtfFlagEntity ctfFlagEntity = getCtfFlagEntity(solvableChallenge, myTeam);
           Boolean isMyTeamSolved = isAlreadySolved(ctfFlagEntity);
-          Long remainedSubmitCount = ctfFlagEntity.getRemainedSubmitCount();
           return CtfCommonChallengeDto.toDto(solvableChallenge, isMyTeamSolved,
-              remainedSubmitCount);
+              ctfFlagEntity);
         }).toList();
   }
 
@@ -88,7 +87,8 @@ public class CtfChallengeService {
     Long submitterId = authService.getMemberIdByJWT();
     CtfTeamEntity submitTeam = getTeamEntity(getCtfIdByChallenge(submitChallenge), submitterId);
     CtfFlagEntity flagEntity = getFlagEntity(probId, submitTeam);
-    if (flagEntity.getLastTryTime().isAfter(LocalDateTime.now().minusSeconds(RETRY_SECONDS))) {
+    if (flagEntity.getLastTryTime() != null &&
+        flagEntity.getLastTryTime().isAfter(LocalDateTime.now().minusSeconds(RETRY_SECONDS))) {
       throw new CustomTooFastRetryException(RETRY_SECONDS);
     }
     if (flagEntity.getRemainedSubmitCount() <= 0) {
@@ -148,9 +148,8 @@ public class CtfChallengeService {
         authService.getMemberIdByJWT());
     CtfFlagEntity ctfFlagEntity = getCtfFlagEntity(challengeEntity, myTeam);
     Boolean isAlreadySolved = isAlreadySolved(ctfFlagEntity);
-    Long remainedSubmitCount = ctfFlagEntity.getRemainedSubmitCount();
     return CtfChallengeDto.toDto(challengeEntity, solvedTeamCount, isAlreadySolved,
-        remainedSubmitCount);
+        ctfFlagEntity);
   }
 
   @Transactional

@@ -6,9 +6,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.time.LocalDateTime;
 import java.util.List;
-import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfTeamEntity;
+import keeper.project.homepage.ctf.service.CtfTeamService.TeamSolvedChallengeInfo;
 import keeper.project.homepage.member.dto.CommonMemberDto;
 import keeper.project.homepage.member.entity.MemberEntity;
 import lombok.AllArgsConstructor;
@@ -34,7 +34,7 @@ public class CtfTeamDetailDto extends CtfTeamDto {
   List<CtfCommonChallengeDto> solvedChallengeList;
 
   public static CtfTeamDetailDto toDto(CtfTeamEntity team,
-      List<CtfChallengeEntity> solvedChallengeList) {
+      List<TeamSolvedChallengeInfo> solvedChallengeList) {
     return CtfTeamDetailDto.builder()
         .id(team.getId())
         .name(team.getName())
@@ -50,9 +50,15 @@ public class CtfTeamDetailDto extends CtfTeamDto {
                 .toList())
         .solvedChallengeList(
             solvedChallengeList.stream()
-                .map(challenge -> CtfCommonChallengeDto.toDto(challenge, true, 0L))
+                .map(CtfTeamDetailDto::getCtfCommonChallengeDto)
                 .toList())
         .build();
+  }
+
+  private static CtfCommonChallengeDto getCtfCommonChallengeDto(
+      TeamSolvedChallengeInfo challengeInfo) {
+    return CtfCommonChallengeDto.toDto(challengeInfo.getChallengeEntity(), true,
+        challengeInfo.getCtfFlagEntity());
   }
 
   public CtfTeamEntity toEntity(CtfContestEntity contest, MemberEntity creator) {

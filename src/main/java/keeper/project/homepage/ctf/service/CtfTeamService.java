@@ -3,16 +3,17 @@ package keeper.project.homepage.ctf.service;
 import static java.time.LocalDateTime.now;
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_CONTEST_ID;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import keeper.project.homepage.util.service.auth.AuthService;
+import keeper.project.homepage.ctf.dto.CtfJoinTeamRequestDto;
+import keeper.project.homepage.ctf.dto.CtfTeamDetailDto;
+import keeper.project.homepage.ctf.dto.CtfTeamDto;
+import keeper.project.homepage.ctf.dto.CtfTeamHasMemberDto;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;
 import keeper.project.homepage.ctf.entity.CtfTeamEntity;
 import keeper.project.homepage.ctf.entity.CtfTeamHasMemberEntity;
-import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.ctf.exception.CustomContestNotFoundException;
 import keeper.project.homepage.ctf.exception.CustomCtfTeamNotFoundException;
 import keeper.project.homepage.ctf.repository.CtfChallengeRepository;
@@ -20,11 +21,14 @@ import keeper.project.homepage.ctf.repository.CtfContestRepository;
 import keeper.project.homepage.ctf.repository.CtfFlagRepository;
 import keeper.project.homepage.ctf.repository.CtfTeamHasMemberRepository;
 import keeper.project.homepage.ctf.repository.CtfTeamRepository;
-import keeper.project.homepage.ctf.dto.CtfJoinTeamRequestDto;
-import keeper.project.homepage.ctf.dto.CtfTeamDetailDto;
-import keeper.project.homepage.ctf.dto.CtfTeamDto;
-import keeper.project.homepage.ctf.dto.CtfTeamHasMemberDto;
+import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.util.service.CtfUtilService;
+import keeper.project.homepage.util.service.auth.AuthService;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -88,12 +92,12 @@ public class CtfTeamService {
   }
 
   private CtfTeamDetailDto getCtfTeamDetailDto(CtfTeamEntity teamEntity,
-      List<CtfChallengeEntity> solvedChallengeList) {
+      List<TeamSolvedChallengeInfo> solvedChallengeList) {
     return CtfTeamDetailDto.toDto(teamEntity, solvedChallengeList);
   }
 
   private CtfTeamDetailDto getCtfTeamDetailDto(Long teamId, CtfTeamEntity teamEntity) {
-    List<CtfChallengeEntity> solvedChallengeList = getSolvedChallengeListByTeamId(teamId);
+    List<TeamSolvedChallengeInfo> solvedChallengeList = getSolvedChallengeListByTeamId(teamId);
     return getCtfTeamDetailDto(teamEntity, solvedChallengeList);
   }
 
@@ -246,7 +250,6 @@ public class CtfTeamService {
           .ctfTeamEntity(newTeamEntity)
           .ctfChallengeEntity(challenge)
           .isCorrect(false)
-          .lastTryTime(now())
           .build();
       flagRepository.save(flagEntity);
     });
@@ -282,9 +285,18 @@ public class CtfTeamService {
     );
   }
 
-  private List<CtfChallengeEntity> getSolvedChallengeListByTeamId(Long teamId) {
-    return flagRepository.findAllByCtfTeamEntityIdAndIsCorrectTrue(
-        teamId).stream().map(CtfFlagEntity::getCtfChallengeEntity).toList();
+  private List<TeamSolvedChallengeInfo> getSolvedChallengeListByTeamId(Long teamId) {
+    return flagRepository.findAllByCtfTeamEntityIdAndIsCorrectTrue(teamId)
+        .stream()
+        .map(CtfTeamService::getTeamSolvedChallengeInfo)
+        .toList();
+  }
+
+  private static TeamSolvedChallengeInfo getTeamSolvedChallengeInfo(CtfFlagEntity flag) {
+    return TeamSolvedChallengeInfo.builder()
+        .challengeEntity(flag.getCtfChallengeEntity())
+        .ctfFlagEntity(flag)
+        .build();
   }
 
   private void removeTeam(CtfTeamEntity leftTeam) {
@@ -295,5 +307,15 @@ public class CtfTeamService {
 
   private boolean isTeamCreator(MemberEntity leaveMember, CtfTeamEntity leftTeam) {
     return leftTeam.getCreator().getId().equals(leaveMember.getId());
+  }
+
+  @Getter
+  @Builder
+  @AllArgsConstructor(access = AccessLevel.PROTECTED)
+  @NoArgsConstructor(access = AccessLevel.PROTECTED)
+  public static class TeamSolvedChallengeInfo {
+
+    CtfChallengeEntity challengeEntity;
+    CtfFlagEntity ctfFlagEntity;
   }
 }

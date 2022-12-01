@@ -1,5 +1,6 @@
 package keeper.project.homepage.ctf.controller;
 
+import static keeper.project.homepage.ctf.service.CtfChallengeService.RETRY_SECONDS;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 
@@ -287,6 +288,8 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".score").description("문제의 점수"),
         fieldWithPath(prefix + ".isSolved").description("내가 풀었는 지"),
         fieldWithPath(prefix + ".remainedSubmitCount").description("남은 제출 횟수"),
+        fieldWithPath(prefix + ".lastTryTime").description("각 팀별 마지막 제출 시간입니다. 만약 " + RETRY_SECONDS
+            + "초 내에 다시 시도할 경우 프론트에서 API 호출을 막아주는게 좋습니다. "),
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id")
     ));
     if (addDescriptors.length > 0) {
@@ -315,6 +318,8 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".registerTime").description("문제의 등록 시간"),
         fieldWithPath(prefix + ".isSolvable").description("현재 풀 수 있는 지 여부"),
         fieldWithPath(prefix + ".remainedSubmitCount").description("남은 제출 횟수"),
+        fieldWithPath(prefix + ".lastTryTime").description("각 팀별 마지막 제출 시간입니다. 만약 " + RETRY_SECONDS
+            + "초 내에 다시 시도할 경우 프론트에서 API 호출을 막아주는게 좋습니다."),
         subsectionWithPath(prefix + ".dynamicInfo").description("TYPE이 STANDARD일 경우 null")
             .optional(),
         subsectionWithPath(prefix + ".file").description("문제에 해당하는 파일 정보").optional()
@@ -355,6 +360,8 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".solvedTeamCount").description("푼 팀 수"),
         fieldWithPath(prefix + ".isSolved").description("내가 풀었는 지"),
         fieldWithPath(prefix + ".remainedSubmitCount").description("남은 제출 횟수"),
+        fieldWithPath(prefix + ".lastTryTime").description("각 팀별 마지막 제출 시간입니다. 만약 " + RETRY_SECONDS
+            + "초 내에 다시 시도할 경우 프론트에서 API 호출을 막아주는게 좋습니다."),
         subsectionWithPath(prefix + ".file").description("문제에 해당하는 파일 정보").optional()
     ));
     if (type.equals(ResponseType.PAGE)) {

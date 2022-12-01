@@ -1,11 +1,11 @@
 package keeper.project.homepage.ctf.service;
 
-import static java.time.LocalDateTime.now;
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_CONTEST_ID;
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_PROBLEM_ID;
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_TEAM_ID;
 
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
@@ -299,7 +299,7 @@ public class CtfAdminService {
           .ctfChallengeEntity(challenge)
           .isCorrect(false)
           .remainedSubmitCount(maxSubmitCount)
-          .lastTryTime(now())
+          .lastTryTime(LocalDateTime.now())
           .build();
       ctfFlagRepository.save(flagEntity);
       challenge.getCtfFlagEntity().add(flagEntity);
