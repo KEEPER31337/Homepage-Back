@@ -165,7 +165,8 @@ class CtfChallengeServiceTest extends CtfSpringTestHelper {
     LocalDateTime lastTryTime = ctfFlagRepository.findByCtfChallengeEntityIdAndCtfTeamEntityId(
             probId, teamEntity.getId())
         .orElseThrow()
-        .getLastTryTime();
+        .getLastTryTime()
+        .get();
     LocalDateTime after = now();
 
     // then

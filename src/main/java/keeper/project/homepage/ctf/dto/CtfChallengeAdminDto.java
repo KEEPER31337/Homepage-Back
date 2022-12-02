@@ -83,7 +83,7 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
         .file(file)
         .dynamicInfo(dynamicInfo)
         .remainedSubmitCount(getVirtualTeamFlag(challenge).getRemainedSubmitCount())
-        .lastTryTime(getVirtualTeamFlag(challenge).getLastTryTime())
+        .lastTryTime(getVirtualTeamFlag(challenge).getLastTryTime().orElseGet(null))
         .maxSubmitCount(challenge.getMaxSubmitCount())
         .build();
   }

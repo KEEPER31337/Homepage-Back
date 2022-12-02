@@ -1,6 +1,7 @@
 package keeper.project.homepage.ctf.entity;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -66,5 +67,9 @@ public class CtfFlagEntity {
       throw new IllegalStateException("제출 횟수를 모두 소진하셨기 때문에 제출 횟수를 감소시킬 수 없습니다.");
     }
     --remainedSubmitCount;
+  }
+
+  public Optional<LocalDateTime> getLastTryTime() {
+    return Optional.ofNullable(lastTryTime);
   }
 }

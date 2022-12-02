@@ -49,7 +49,7 @@ public class CtfCommonChallengeDto {
         .score(challenge.getScore())
         .isSolved(isSolved)
         .remainedSubmitCount(ctfFlagEntity.getRemainedSubmitCount())
-        .lastTryTime(ctfFlagEntity.getLastTryTime())
+        .lastTryTime(ctfFlagEntity.getLastTryTime().orElseGet(null))
         .maxSubmitCount(challenge.getMaxSubmitCount())
         .build();
   }
