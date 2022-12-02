@@ -63,4 +63,22 @@ public class CtfExceptionAdvice {
         Integer.parseInt(exceptionUtil.getMessage("ctfTeamNotFound.code")),
         e.getMessage() == null ? exceptionUtil.getMessage("ctfTeamNotFound.msg") : e.getMessage());
   }
+
+  @ExceptionHandler(CustomSubmitCountNotEnoughException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult ctfSubmitCountNotEnough(CustomSubmitCountNotEnoughException e) {
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("ctfSubmitCountNotEnough.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("ctfSubmitCountNotEnough.msg")
+            : e.getMessage());
+  }
+
+  @ExceptionHandler(CustomTooFastRetryException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult ctfTooFastRetry(CustomTooFastRetryException e) {
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("ctfTooFastRetry.code")),
+        e.getMessage() == null ? exceptionUtil.getMessage("ctfTooFastRetry.msg",
+            new Object[]{e.getRetrySeconds()}) : e.getMessage());
+  }
 }

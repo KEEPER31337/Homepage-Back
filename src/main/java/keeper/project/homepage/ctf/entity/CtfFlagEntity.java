@@ -15,12 +15,16 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Builder
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@DynamicUpdate
+@DynamicInsert
 @Table(name = "ctf_flag")
 public class CtfFlagEntity {
 
@@ -46,4 +50,26 @@ public class CtfFlagEntity {
   @Column(name = "solved_time")
   @Setter
   LocalDateTime solvedTime;
+
+  @Column(name = "last_try_time")
+  LocalDateTime lastTryTime;
+
+  @Column(name = "remained_submit_count")
+  Long remainedSubmitCount;
+
+  public void updateLastTryTime() {
+    lastTryTime = LocalDateTime.now();
+  }
+
+  public void decreaseSubmitCount() {
+    if (remainedSubmitCount <= 0) {
+      throw new IllegalStateException("제출 횟수를 모두 소진하셨기 때문에 제출 횟수를 감소시킬 수 없습니다.");
+    }
+    --remainedSubmitCount;
+  }
+
+  public boolean isTooFastRetry(final long maxRetrySeconds) {
+    return lastTryTime != null &&
+        lastTryTime.isAfter(LocalDateTime.now().minusSeconds(maxRetrySeconds));
+  }
 }

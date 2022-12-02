@@ -23,13 +23,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import javax.persistence.EntityManager;
 import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
+import keeper.project.homepage.ctf.dto.CtfChallengeCategoryDto;
+import keeper.project.homepage.ctf.dto.CtfChallengeTypeDto;
 import keeper.project.homepage.ctf.dto.CtfContestAdminDto;
+import keeper.project.homepage.ctf.dto.CtfDynamicChallengeInfoDto;
 import keeper.project.homepage.ctf.dto.CtfProbMakerDto;
-import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
-import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;
 import keeper.project.homepage.ctf.entity.CtfSubmitLogEntity;
@@ -37,9 +37,6 @@ import keeper.project.homepage.ctf.entity.CtfTeamEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.member.entity.MemberHasMemberJobEntity;
 import keeper.project.homepage.member.entity.MemberJobEntity;
-import keeper.project.homepage.ctf.dto.CtfChallengeCategoryDto;
-import keeper.project.homepage.ctf.dto.CtfChallengeTypeDto;
-import keeper.project.homepage.ctf.dto.CtfDynamicChallengeInfoDto;
 import keeper.project.homepage.util.service.CtfUtilService;
 import lombok.extern.log4j.Log4j2;
 import org.assertj.core.api.Assertions;
@@ -292,6 +289,7 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
         .score(score)
         .dynamicInfo(dynamicInfo)
         .flag(flag)
+        .maxSubmitCount(123L)
         .build();
 
     mockMvc.perform(post("/v1/admin/ctf/prob")
@@ -329,7 +327,8 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
                 fieldWithPath("dynamicInfo.minScore").description(
                         "TYPE이 DYNAMIC일 경우 minScore")
                     .optional(),
-                fieldWithPath("flag").description("문제의 flag")
+                fieldWithPath("flag").description("문제의 flag"),
+                fieldWithPath("maxSubmitCount").description("각 팀당 가능한 최대 제출 횟수")
             ),
             responseFields(
                 generateChallengeAdminDtoResponseFields(ResponseType.SINGLE,
@@ -365,6 +364,7 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
         .creatorName(creator.getNickName())
         .score(score)
         .flag(flag)
+        .maxSubmitCount(123L)
         .build();
 
     mockMvc.perform(post("/v1/admin/ctf/prob")

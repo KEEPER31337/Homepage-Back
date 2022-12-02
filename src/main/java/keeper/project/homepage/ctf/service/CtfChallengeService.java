@@ -14,6 +14,8 @@ import keeper.project.homepage.ctf.entity.CtfSubmitLogEntity;
 import keeper.project.homepage.ctf.entity.CtfTeamEntity;
 import keeper.project.homepage.ctf.exception.CustomContestNotFoundException;
 import keeper.project.homepage.ctf.exception.CustomCtfChallengeNotFoundException;
+import keeper.project.homepage.ctf.exception.CustomSubmitCountNotEnoughException;
+import keeper.project.homepage.ctf.exception.CustomTooFastRetryException;
 import keeper.project.homepage.ctf.repository.CtfChallengeRepository;
 import keeper.project.homepage.ctf.repository.CtfContestRepository;
 import keeper.project.homepage.ctf.repository.CtfFlagRepository;
@@ -34,6 +36,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class CtfChallengeService {
+
+  public static final long RETRY_SECONDS = 5;
 
   private final CtfChallengeRepository challengeRepository;
   private final CtfTeamHasMemberRepository teamHasMemberRepository;
@@ -61,7 +65,8 @@ public class CtfChallengeService {
         .map(solvableChallenge -> {
           CtfFlagEntity ctfFlagEntity = getCtfFlagEntity(solvableChallenge, myTeam);
           Boolean isMyTeamSolved = isAlreadySolved(ctfFlagEntity);
-          return CtfCommonChallengeDto.toDto(solvableChallenge, isMyTeamSolved);
+          return CtfCommonChallengeDto.toDto(solvableChallenge, isMyTeamSolved,
+              ctfFlagEntity);
         }).toList();
   }
 
@@ -82,6 +87,11 @@ public class CtfChallengeService {
     Long submitterId = authService.getMemberIdByJWT();
     CtfTeamEntity submitTeam = getTeamEntity(getCtfIdByChallenge(submitChallenge), submitterId);
     CtfFlagEntity flagEntity = getFlagEntity(probId, submitTeam);
+    if (flagEntity.isTooFastRetry(RETRY_SECONDS)) {
+      throw new CustomTooFastRetryException(RETRY_SECONDS);
+    }
+    flagEntity.updateLastTryTime();
+    tryDecreaseSubmitCount(flagEntity);
     // 이미 맞췄으면 제출한 flag 정답 유무만 체크하고 DB 갱신 안함.
     if (isAlreadySolved(flagEntity)) {
       setSubmitFlagIsCorrect(submitFlag, flagEntity);
@@ -96,6 +106,14 @@ public class CtfChallengeService {
       }
     }
     return CtfFlagDto.toDto(flagEntity);
+  }
+
+  private static void tryDecreaseSubmitCount(CtfFlagEntity flagEntity) {
+    try {
+      flagEntity.decreaseSubmitCount();
+    } catch (IllegalStateException e) {
+      throw new CustomSubmitCountNotEnoughException(e.getCause());
+    }
   }
 
   private void setSubmitFlagIsCorrect(CtfFlagDto submitFlag, CtfFlagEntity flagEntity) {
@@ -132,8 +150,10 @@ public class CtfChallengeService {
     Long solvedTeamCount = getSolvedTeamCount(probId);
     CtfTeamEntity myTeam = getTeamEntity(getCtfIdByChallenge(challengeEntity),
         authService.getMemberIdByJWT());
-    Boolean isAlreadySolved = isAlreadySolved(getCtfFlagEntity(challengeEntity, myTeam));
-    return CtfChallengeDto.toDto(challengeEntity, solvedTeamCount, isAlreadySolved);
+    CtfFlagEntity ctfFlagEntity = getCtfFlagEntity(challengeEntity, myTeam);
+    Boolean isAlreadySolved = isAlreadySolved(ctfFlagEntity);
+    return CtfChallengeDto.toDto(challengeEntity, solvedTeamCount, isAlreadySolved,
+        ctfFlagEntity);
   }
 
   @Transactional

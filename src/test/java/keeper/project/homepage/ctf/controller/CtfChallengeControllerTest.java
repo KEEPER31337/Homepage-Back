@@ -6,8 +6,8 @@ import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfC
 import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.DYNAMIC;
 import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.STANDARD;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
+import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.requestFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
@@ -18,12 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import keeper.project.homepage.ctf.controller.CtfSpringTestHelper;
-import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
-import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
-import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity;
-import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;
 import keeper.project.homepage.ctf.entity.CtfTeamEntity;
@@ -158,6 +153,35 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
             )));
 
     Assertions.assertThat(team.getScore()).isEqualTo(minScore);
+  }
+
+  @Test
+  @DisplayName("플래그 체크 - 제출 횟수 소진으로 실패")
+  public void checkFlagFailedByNotEnoughSubmitCount() throws Exception {
+    CtfContestEntity contest = generateCtfContest(adminEntity, true);
+
+    Long score = 1000L;
+    Long maxScore = 1234L;
+    Long minScore = 567L;
+
+    CtfChallengeEntity dynamicChallenge = generateCtfChallenge(
+        contest, DYNAMIC, FORENSIC, score, true);
+    generateDynamicChallengeInfo(dynamicChallenge, maxScore, minScore);
+    CtfTeamEntity team = generateCtfTeam(contest, userEntity, 0L);
+    CtfFlagEntity flag = generateCtfFlag(team, dynamicChallenge, false, 0L);
+
+    String content = "{\n"
+        + "    \"content\": \"" + flag.getContent() + "\"\n"
+        + "}";
+    mockMvc.perform(post("/v1/ctf/prob/{pid}/submit/flag", String.valueOf(dynamicChallenge.getId()))
+            .header("Authorization", userToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(content))
+        .andDo(print())
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.success").value(false))
+        .andExpect(jsonPath("$.code").value(-13005))
+        .andExpect(jsonPath("$.msg").value("제출 횟수를 모두 소진하셨습니다."));
   }
 
   @Test

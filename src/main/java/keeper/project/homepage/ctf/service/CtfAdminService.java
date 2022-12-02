@@ -5,6 +5,7 @@ import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_PROBLE
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_TEAM_ID;
 
 import java.nio.file.AccessDeniedException;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
@@ -114,7 +115,8 @@ public class CtfAdminService {
     if (ctfUtilService.isTypeDynamic(newChallenge)) {
       trySetDynamicInfoInChallenge(newChallenge, challengeAdminDto);
     }
-    setFlagAllTeam(challengeAdminDto.getFlag(), newChallenge);
+    setFlagAllTeam(challengeAdminDto.getFlag(), newChallenge,
+        challengeAdminDto.getMaxSubmitCount());
     return CtfChallengeAdminDto.toDto(newChallenge);
   }
 
@@ -286,7 +288,7 @@ public class CtfAdminService {
     return dynamicInfo.toEntity(challenge);
   }
 
-  private void setFlagAllTeam(String flag, CtfChallengeEntity challenge) {
+  private void setFlagAllTeam(String flag, CtfChallengeEntity challenge, long maxSubmitCount) {
     // team이 하나도 없을 때 flag가 유실되는 것을 방지하기 위해 VIRTUAL TEAM을 이용해 flag를 저장합니다.
     List<CtfTeamEntity> allCtfTeamList = ctfTeamRepository
         .findAllByIdOrCtfContestEntityId(VIRTUAL_TEAM_ID, getCtfId(challenge));
@@ -296,6 +298,8 @@ public class CtfAdminService {
           .ctfTeamEntity(ctfTeam)
           .ctfChallengeEntity(challenge)
           .isCorrect(false)
+          .remainedSubmitCount(maxSubmitCount)
+          .lastTryTime(LocalDateTime.now())
           .build();
       ctfFlagRepository.save(flagEntity);
       challenge.getCtfFlagEntity().add(flagEntity);

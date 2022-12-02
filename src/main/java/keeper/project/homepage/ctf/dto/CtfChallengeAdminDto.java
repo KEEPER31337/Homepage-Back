@@ -8,13 +8,14 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import keeper.project.homepage.util.entity.FileEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
+import keeper.project.homepage.ctf.entity.CtfFlagEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.util.dto.FileDto;
+import keeper.project.homepage.util.entity.FileEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,6 +54,7 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
         .score(score)
         .fileEntity(fileEntity)
         .ctfFlagEntity(new ArrayList<>())
+        .maxSubmitCount(maxSubmitCount)
         .build();
   }
 
@@ -73,13 +75,20 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
         .contestId(challenge.getCtfContestEntity().getId())
         .category(category)
         .type(type)
-        .flag(challenge.getCtfFlagEntity().get(0).getContent())
+        .flag(getVirtualTeamFlag(challenge).getContent())
         .isSolvable(challenge.getIsSolvable())
         .registerTime(challenge.getRegisterTime())
         .creatorName(challenge.getCreator().getNickName())
         .score(challenge.getScore())
         .file(file)
         .dynamicInfo(dynamicInfo)
+        .remainedSubmitCount(getVirtualTeamFlag(challenge).getRemainedSubmitCount())
+        .lastTryTime(getVirtualTeamFlag(challenge).getLastTryTime())
+        .maxSubmitCount(challenge.getMaxSubmitCount())
         .build();
+  }
+
+  static CtfFlagEntity getVirtualTeamFlag(CtfChallengeEntity challenge) {
+    return challenge.getCtfFlagEntity().get(0);
   }
 }

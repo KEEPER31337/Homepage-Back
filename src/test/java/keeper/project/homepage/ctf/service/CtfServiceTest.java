@@ -17,9 +17,6 @@ import keeper.project.homepage.ctf.dto.CtfTeamDetailDto;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;
 import keeper.project.homepage.ctf.entity.CtfSubmitLogEntity;
-import keeper.project.homepage.ctf.service.CtfAdminService;
-import keeper.project.homepage.ctf.service.CtfChallengeService;
-import keeper.project.homepage.ctf.service.CtfTeamService;
 import keeper.project.homepage.member.entity.MemberEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -171,6 +168,7 @@ public class CtfServiceTest extends CtfSpringTestHelper {
         .category(CtfChallengeCategoryDto.builder()
             .id(MISC.getId())
             .build())
+        .maxSubmitCount(100L)
         .build();
     return ctfAdminService.createChallenge(createChallenge);
   }
