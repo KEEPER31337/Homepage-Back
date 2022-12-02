@@ -91,11 +91,8 @@ public class CtfChallengeService {
         flagEntity.getLastTryTime().isAfter(LocalDateTime.now().minusSeconds(RETRY_SECONDS))) {
       throw new CustomTooFastRetryException(RETRY_SECONDS);
     }
-    if (flagEntity.getRemainedSubmitCount() <= 0) {
-      throw new CustomSubmitCountNotEnoughException();
-    }
     flagEntity.updateLastTryTime();
-    flagEntity.decreaseSubmitCount();
+    tryDecreaseSubmitCount(flagEntity);
     // 이미 맞췄으면 제출한 flag 정답 유무만 체크하고 DB 갱신 안함.
     if (isAlreadySolved(flagEntity)) {
       setSubmitFlagIsCorrect(submitFlag, flagEntity);
@@ -110,6 +107,14 @@ public class CtfChallengeService {
       }
     }
     return CtfFlagDto.toDto(flagEntity);
+  }
+
+  private static void tryDecreaseSubmitCount(CtfFlagEntity flagEntity) {
+    try {
+      flagEntity.decreaseSubmitCount();
+    } catch (IllegalStateException e) {
+      throw new CustomSubmitCountNotEnoughException(e.getCause());
+    }
   }
 
   private void setSubmitFlagIsCorrect(CtfFlagDto submitFlag, CtfFlagEntity flagEntity) {

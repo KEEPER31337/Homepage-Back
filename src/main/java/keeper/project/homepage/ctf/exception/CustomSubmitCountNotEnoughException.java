@@ -10,6 +10,10 @@ public class CustomSubmitCountNotEnoughException extends RuntimeException {
     super(msg);
   }
 
+  public CustomSubmitCountNotEnoughException(Throwable cause) {
+    super(cause);
+  }
+
   public CustomSubmitCountNotEnoughException() {
     super();
   }
