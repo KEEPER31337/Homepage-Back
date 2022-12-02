@@ -1,7 +1,6 @@
 package keeper.project.homepage.ctf.entity;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -69,7 +68,8 @@ public class CtfFlagEntity {
     --remainedSubmitCount;
   }
 
-  public Optional<LocalDateTime> getLastTryTime() {
-    return Optional.ofNullable(lastTryTime);
+  public boolean isTooFastRetry(final long maxRetrySeconds) {
+    return lastTryTime != null &&
+        lastTryTime.isAfter(LocalDateTime.now().minusSeconds(maxRetrySeconds));
   }
 }

@@ -4,7 +4,6 @@ import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_PROBLE
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import keeper.project.homepage.ctf.dto.CtfChallengeDto;
 import keeper.project.homepage.ctf.dto.CtfCommonChallengeDto;
 import keeper.project.homepage.ctf.dto.CtfFlagDto;
@@ -88,7 +87,7 @@ public class CtfChallengeService {
     Long submitterId = authService.getMemberIdByJWT();
     CtfTeamEntity submitTeam = getTeamEntity(getCtfIdByChallenge(submitChallenge), submitterId);
     CtfFlagEntity flagEntity = getFlagEntity(probId, submitTeam);
-    if (isTooFastRetry(flagEntity)) {
+    if (flagEntity.isTooFastRetry(RETRY_SECONDS)) {
       throw new CustomTooFastRetryException(RETRY_SECONDS);
     }
     flagEntity.updateLastTryTime();
@@ -107,12 +106,6 @@ public class CtfChallengeService {
       }
     }
     return CtfFlagDto.toDto(flagEntity);
-  }
-
-  private static boolean isTooFastRetry(CtfFlagEntity flagEntity) {
-    Optional<LocalDateTime> lastTryTime = flagEntity.getLastTryTime();
-    return lastTryTime.isPresent() &&
-        lastTryTime.get().isAfter(LocalDateTime.now().minusSeconds(RETRY_SECONDS));
   }
 
   private static void tryDecreaseSubmitCount(CtfFlagEntity flagEntity) {
