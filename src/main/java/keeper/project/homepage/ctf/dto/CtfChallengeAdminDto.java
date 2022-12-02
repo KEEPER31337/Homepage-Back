@@ -88,7 +88,7 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
         .build();
   }
 
-  private static CtfFlagEntity getVirtualTeamFlag(CtfChallengeEntity challenge) {
+  static CtfFlagEntity getVirtualTeamFlag(CtfChallengeEntity challenge) {
     return challenge.getCtfFlagEntity().get(0);
   }
 }
