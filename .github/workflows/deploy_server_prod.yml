@@ -158,4 +158,4 @@ jobs:
         with:
           status: ${{ job.status }}
           author_name: Keeper Production Backend CICD
-          fields: repo, commit, message, author, action, took
+          fields: repo, commit, message, author, job, took
