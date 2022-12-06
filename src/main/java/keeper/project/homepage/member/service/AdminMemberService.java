@@ -18,7 +18,9 @@ import keeper.project.homepage.member.exception.CustomMemberEmptyFieldException;
 import keeper.project.homepage.member.repository.MemberHasMemberJobRepository;
 import keeper.project.homepage.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -170,4 +172,13 @@ public class AdminMemberService {
     return result;
   }
 
+  // 회원의 상벌점은 매년 학기 시작일인 3, 9월 1일에 초기화 됩니다.
+  @Scheduled(cron = "0 0 0 1 3,9 ?")
+  @Transactional
+  public void initMembersMerit() {
+    memberRepository.findAll().forEach(member -> {
+      member.changeDemerit(0);
+      member.changeMerit(0);
+    });
+  }
 }
