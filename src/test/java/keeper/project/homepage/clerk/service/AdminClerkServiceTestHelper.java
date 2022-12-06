@@ -2,7 +2,20 @@ package keeper.project.homepage.clerk.service;
 
 import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.DORMANT_MEMBER;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import javax.persistence.EntityManager;
+import keeper.project.homepage.clerk.entity.MeritLogEntity;
+import keeper.project.homepage.clerk.entity.MeritTypeEntity;
+import keeper.project.homepage.clerk.entity.SeminarAttendanceEntity;
+import keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity;
+import keeper.project.homepage.clerk.entity.SeminarEntity;
+import keeper.project.homepage.clerk.repository.MeritLogRepository;
+import keeper.project.homepage.clerk.repository.MeritTypeRepository;
+import keeper.project.homepage.clerk.repository.SeminarAttendanceRepository;
+import keeper.project.homepage.clerk.repository.SeminarAttendanceStatusRepository;
+import keeper.project.homepage.clerk.repository.SeminarRepository;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.member.entity.MemberTypeEntity;
 import keeper.project.homepage.member.repository.MemberRepository;
@@ -21,14 +34,30 @@ import org.springframework.transaction.annotation.Transactional;
 public class AdminClerkServiceTestHelper {
 
   @Autowired
-  AdminMeritService adminMeritService;
+  EntityManager em;
+  @Autowired
+  AdminSeminarService adminSeminarService;
 
+  @Autowired
+  SeminarAttendanceStatusRepository seminarAttendanceStatusRepository;
+  @Autowired
+  MemberRepository memberRepository;
+  @Autowired
+  SeminarRepository seminarRepository;
   @Autowired
   MemberTypeRepository memberTypeRepository;
 
   @Autowired
-  MemberRepository memberRepository;
-  private MemberEntity clerk;
+  MeritTypeRepository meritTypeRepository;
+  @Autowired
+  SeminarAttendanceRepository seminarAttendanceRepository;
+  @Autowired
+  AdminMeritService adminMeritService;
+
+  @Autowired
+  MeritLogRepository meritLogRepository;
+
+  MemberEntity clerk;
 
   @BeforeEach
   void beforeEach() {
@@ -53,5 +82,27 @@ public class AdminClerkServiceTestHelper {
             .generation(generation)
             .memberType(type)
             .build());
+  }
+
+  MeritLogEntity generateMeritLog(MemberEntity member, MeritTypeEntity meritType) {
+    return meritLogRepository.save(
+        MeritLogEntity.builder()
+            .meritType(meritType)
+            .awarder(member)
+            .giver(clerk)
+            .date(LocalDate.now())
+            .build());
+  }
+
+  SeminarAttendanceEntity generateSeminarAttendance(MemberEntity member, SeminarEntity seminar,
+      SeminarAttendanceStatusEntity status, LocalDateTime seminarInitTime) {
+    return seminarAttendanceRepository.save(
+        SeminarAttendanceEntity.builder()
+            .memberEntity(member)
+            .seminarEntity(seminar)
+            .seminarAttendanceStatusEntity(status)
+            .seminarAttendTime(seminarInitTime)
+            .build()
+    );
   }
 }

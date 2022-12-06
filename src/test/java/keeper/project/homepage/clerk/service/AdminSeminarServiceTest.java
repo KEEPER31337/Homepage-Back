@@ -49,38 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @SpringBootTest
-public class AdminSeminarServiceTest {
-
-  @Autowired
-  EntityManager em;
-  @Autowired
-  AdminSeminarService adminSeminarService;
-  @Autowired
-  SeminarAttendanceRepository seminarAttendanceRepository;
-  @Autowired
-  SeminarAttendanceStatusRepository seminarAttendanceStatusRepository;
-  @Autowired
-  MemberRepository memberRepository;
-  @Autowired
-  SeminarRepository seminarRepository;
-  @Autowired
-  MemberTypeRepository memberTypeRepository;
-  @Autowired
-  MeritLogRepository meritLogRepository;
-  @Autowired
-  MeritTypeRepository meritTypeRepository;
-
-  private MemberEntity clerk;
-
-  @BeforeEach
-  void beforeEach() {
-    MemberTypeEntity dormantMember = memberTypeRepository.getById(DORMANT_MEMBER.getId());
-    clerk = generateMember("서기", 12F, dormantMember);
-    SecurityContext context = SecurityContextHolder.getContext();
-    context.setAuthentication(
-        new UsernamePasswordAuthenticationToken(clerk.getId(), clerk.getPassword(),
-            List.of(new SimpleGrantedAuthority("ROLE_서기"))));
-  }
+public class AdminSeminarServiceTest extends AdminClerkServiceTestHelper {
 
   @Test
   @DisplayName("[SUCCESS] 세미나 생성 테스트")
@@ -449,42 +418,6 @@ public class AdminSeminarServiceTest {
     assertThat(meritLogRepository.existsById(afterMeritLog.getId())).isTrue();
   }
 
-  MemberEntity generateMember(String name, Float generation, MemberTypeEntity type) {
-    final long epochTime = System.nanoTime();
-    return memberRepository.save(
-        MemberEntity.builder()
-            .loginId("abcd1234" + epochTime)
-            .emailAddress("test1234@keeper.co.kr" + epochTime)
-            .password("1234")
-            .studentId("1234" + epochTime)
-            .nickName("nick" + epochTime)
-            .realName(name)
-            .generation(generation)
-            .memberType(type)
-            .build());
-  }
-
-  private MeritLogEntity generateMeritLog(MemberEntity member, MeritTypeEntity meritType) {
-    return meritLogRepository.save(
-        MeritLogEntity.builder()
-            .meritType(meritType)
-            .awarder(member)
-            .giver(clerk)
-            .date(LocalDate.now())
-            .build());
-  }
-
-  SeminarAttendanceEntity generateSeminarAttendance(MemberEntity member, SeminarEntity seminar,
-      SeminarAttendanceStatusEntity status, LocalDateTime seminarInitTime) {
-    return seminarAttendanceRepository.save(
-        SeminarAttendanceEntity.builder()
-            .memberEntity(member)
-            .seminarEntity(seminar)
-            .seminarAttendanceStatusEntity(status)
-            .seminarAttendTime(seminarInitTime)
-            .build()
-    );
-  }
 
   SeminarAttendanceStatusEntity getSeminarAttendanceStatus(SeminarAttendanceStatus status) {
     return seminarAttendanceStatusRepository.getById(status.getId());
