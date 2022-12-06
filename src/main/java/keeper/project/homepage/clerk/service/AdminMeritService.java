@@ -70,7 +70,7 @@ public class AdminMeritService {
   }
 
   public List<MemberTotalMeritLogsResponseDto> getMemberTotalMeritLogs() {
-    List<MeritLogEntity> meritLogs = meritLogRepository.findAll();
+    List<MeritLogEntity> meritLogs = meritLogRepository.findAllByYear(LocalDate.now().getYear());
     Map<MemberEntity, List<MeritLogEntity>> meritLogMap = meritLogs.stream()
         .collect(Collectors.groupingBy(MeritLogEntity::getAwarder));
     return meritLogMap.entrySet()
