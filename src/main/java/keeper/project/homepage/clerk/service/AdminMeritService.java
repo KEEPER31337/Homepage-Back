@@ -101,6 +101,7 @@ public class AdminMeritService {
       throw new CustomDuplicateAbsenceLogException();
     }
   }
+
   private static MeritLogEntity getMeritLog(LocalDate date,
       MeritTypeEntity meritType, MemberEntity awarder, MemberEntity giver) {
     return MeritLogEntity.builder()
@@ -208,7 +209,14 @@ public class AdminMeritService {
   public Long deleteMeritType(Long typeId) {
     MeritTypeEntity meritTypeEntity = meritTypeRepository.findById(typeId)
         .orElseThrow(CustomMeritTypeNotFoundException::new);
+    checkUsedMeritType(meritTypeEntity);
     meritTypeRepository.delete(meritTypeEntity);
     return meritTypeEntity.getId();
+  }
+
+  private void checkUsedMeritType(MeritTypeEntity meritTypeEntity) {
+    if (meritLogRepository.existsByMeritType(meritTypeEntity)) {
+      throw new IllegalArgumentException();
+    }
   }
 }

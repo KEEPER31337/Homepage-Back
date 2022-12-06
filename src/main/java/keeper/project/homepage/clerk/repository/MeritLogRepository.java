@@ -22,4 +22,6 @@ public interface MeritLogRepository extends JpaRepository<MeritLogEntity, Long> 
 
   boolean existsByAwarderAndMeritTypeAndDate(MemberEntity awarder, MeritTypeEntity meritType,
       LocalDate date);
+
+  boolean existsByMeritType(MeritTypeEntity meritType);
 }
