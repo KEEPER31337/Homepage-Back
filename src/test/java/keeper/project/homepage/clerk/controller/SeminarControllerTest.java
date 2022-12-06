@@ -200,7 +200,7 @@ public class SeminarControllerTest extends ClerkControllerTestHelper {
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonDateString(request)))
         .andDo(print())
-        .andExpect(status().is5xxServerError())
+        .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false));
   }
 
