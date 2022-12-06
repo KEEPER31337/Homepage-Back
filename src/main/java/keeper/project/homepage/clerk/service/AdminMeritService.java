@@ -2,6 +2,7 @@ package keeper.project.homepage.clerk.service;
 
 import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.ABSENCE;
 
+import io.netty.channel.local.LocalAddress;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,6 +24,7 @@ import keeper.project.homepage.clerk.exception.CustomMeritTypeNotFoundException;
 import keeper.project.homepage.clerk.repository.MeritLogRepository;
 import keeper.project.homepage.clerk.repository.MeritTypeRepository;
 import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.member.repository.MemberRepository;
 import keeper.project.homepage.member.service.MemberUtilService;
 import keeper.project.homepage.util.service.auth.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class AdminMeritService {
 
+  private final MemberRepository memberRepository;
   private final MeritLogRepository meritLogRepository;
 
   private final MeritTypeRepository meritTypeRepository;
@@ -46,9 +49,11 @@ public class AdminMeritService {
 
   public List<Integer> getYears() {
     try {
-      MeritLogEntity meritLog = meritLogRepository.findFirstByOrderByDate()
-          .orElseThrow(CustomMeritLogNotFoundException::new);
-      return IntStream.range(meritLog.getDate().getYear(), LocalDate.now().getYear() + 1)
+      int recentYear = meritLogRepository.findFirstByOrderByDateDesc()
+          .orElseThrow(CustomMeritLogNotFoundException::new).getDate().getYear();
+      int oldestYear = meritLogRepository.findFirstByOrderByDate()
+          .orElseThrow(CustomMeritLogNotFoundException::new).getDate().getYear();
+      return IntStream.range(oldestYear, recentYear+ 1)
           .boxed()
           .toList();
     } catch (Exception e) {
