@@ -176,9 +176,12 @@ public class AdminMemberService {
   @Scheduled(cron = "0 0 0 1 3,9 ?")
   @Transactional
   public void initMembersMerit() {
-    memberRepository.findAll().forEach(member -> {
-      member.changeDemerit(0);
-      member.changeMerit(0);
-    });
+    memberRepository.findAll()
+        .forEach(AdminMemberService::initMemberMerit);
+  }
+
+  private static void initMemberMerit(MemberEntity member) {
+    member.changeDemerit(0);
+    member.changeMerit(0);
   }
 }
