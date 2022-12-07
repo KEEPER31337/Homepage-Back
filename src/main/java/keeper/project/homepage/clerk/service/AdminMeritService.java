@@ -214,12 +214,12 @@ public class AdminMeritService {
   public Long deleteMeritType(Long typeId) {
     MeritTypeEntity meritTypeEntity = meritTypeRepository.findById(typeId)
         .orElseThrow(CustomMeritTypeNotFoundException::new);
-    checkUsedMeritType(meritTypeEntity);
+    validateUsedMeritType(meritTypeEntity);
     meritTypeRepository.delete(meritTypeEntity);
     return meritTypeEntity.getId();
   }
 
-  private void checkUsedMeritType(MeritTypeEntity meritTypeEntity) {
+  private void validateUsedMeritType(MeritTypeEntity meritTypeEntity) {
     if (meritLogRepository.existsByMeritType(meritTypeEntity)) {
       throw new IllegalArgumentException();
     }
