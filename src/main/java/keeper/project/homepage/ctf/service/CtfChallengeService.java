@@ -92,16 +92,16 @@ public class CtfChallengeService {
     Long submitterId = authService.getMemberIdByJWT();
     CtfTeamEntity submitTeam = getTeamEntity(getCtfIdByChallenge(submitChallenge), submitterId);
     CtfFlagEntity flagEntity = getFlagEntity(probId, submitTeam);
-    if (flagEntity.isTooFastRetry(RETRY_SECONDS)) {
-      throw new CustomTooFastRetryException(RETRY_SECONDS);
-    }
-    flagEntity.updateLastTryTime();
-    tryDecreaseSubmitCount(flagEntity);
     // 이미 맞췄으면 제출한 flag 정답 유무만 체크하고 DB 갱신 안함.
     if (isAlreadySolved(flagEntity)) {
       setSubmitFlagIsCorrect(submitFlag, flagEntity);
       return CtfFlagDto.toDto(flagEntity);
     }
+    if (flagEntity.isTooFastRetry(RETRY_SECONDS)) {
+      throw new CustomTooFastRetryException(RETRY_SECONDS);
+    }
+    flagEntity.updateLastTryTime();
+    tryDecreaseSubmitCount(flagEntity);
     if (isFlagCorrect(submitFlag, flagEntity)) {
       LocalDateTime solvedTime = LocalDateTime.now();
       setCorrect(flagEntity, submitTeam, solvedTime);
