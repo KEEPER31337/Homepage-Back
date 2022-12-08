@@ -2,6 +2,7 @@ package keeper.project.homepage.clerk.service;
 
 import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.ABSENCE;
 
+import io.netty.channel.local.LocalAddress;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,6 +24,7 @@ import keeper.project.homepage.clerk.exception.CustomMeritTypeNotFoundException;
 import keeper.project.homepage.clerk.repository.MeritLogRepository;
 import keeper.project.homepage.clerk.repository.MeritTypeRepository;
 import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.member.repository.MemberRepository;
 import keeper.project.homepage.member.service.MemberUtilService;
 import keeper.project.homepage.util.service.auth.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class AdminMeritService {
 
+  private final MemberRepository memberRepository;
   private final MeritLogRepository meritLogRepository;
 
   private final MeritTypeRepository meritTypeRepository;
@@ -46,9 +49,11 @@ public class AdminMeritService {
 
   public List<Integer> getYears() {
     try {
-      MeritLogEntity meritLog = meritLogRepository.findFirstByOrderByDate()
-          .orElseThrow(CustomMeritLogNotFoundException::new);
-      return IntStream.range(meritLog.getDate().getYear(), LocalDate.now().getYear() + 1)
+      int recentYear = meritLogRepository.findFirstByOrderByDateDesc()
+          .orElseThrow(CustomMeritLogNotFoundException::new).getDate().getYear();
+      int oldestYear = meritLogRepository.findFirstByOrderByDate()
+          .orElseThrow(CustomMeritLogNotFoundException::new).getDate().getYear();
+      return IntStream.range(oldestYear, recentYear+ 1)
           .boxed()
           .toList();
     } catch (Exception e) {
@@ -65,7 +70,7 @@ public class AdminMeritService {
   }
 
   public List<MemberTotalMeritLogsResponseDto> getMemberTotalMeritLogs() {
-    List<MeritLogEntity> meritLogs = meritLogRepository.findAll();
+    List<MeritLogEntity> meritLogs = meritLogRepository.findAllByYear(LocalDate.now().getYear());
     Map<MemberEntity, List<MeritLogEntity>> meritLogMap = meritLogs.stream()
         .collect(Collectors.groupingBy(MeritLogEntity::getAwarder));
     return meritLogMap.entrySet()
@@ -101,6 +106,7 @@ public class AdminMeritService {
       throw new CustomDuplicateAbsenceLogException();
     }
   }
+
   private static MeritLogEntity getMeritLog(LocalDate date,
       MeritTypeEntity meritType, MemberEntity awarder, MemberEntity giver) {
     return MeritLogEntity.builder()
@@ -208,7 +214,14 @@ public class AdminMeritService {
   public Long deleteMeritType(Long typeId) {
     MeritTypeEntity meritTypeEntity = meritTypeRepository.findById(typeId)
         .orElseThrow(CustomMeritTypeNotFoundException::new);
+    validateUsedMeritType(meritTypeEntity);
     meritTypeRepository.delete(meritTypeEntity);
     return meritTypeEntity.getId();
+  }
+
+  private void validateUsedMeritType(MeritTypeEntity meritTypeEntity) {
+    if (meritLogRepository.existsByMeritType(meritTypeEntity)) {
+      throw new IllegalArgumentException();
+    }
   }
 }
