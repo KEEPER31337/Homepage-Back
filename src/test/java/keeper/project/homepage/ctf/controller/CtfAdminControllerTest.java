@@ -1,5 +1,8 @@
 package keeper.project.homepage.ctf.controller;
 
+import static keeper.project.homepage.ctf.dto.CtfCommonChallengeDto.DEFAULT_SUBMIT_COUNT;
+import static keeper.project.homepage.ctf.dto.CtfCommonChallengeDto.MAX_SUBMIT_COUNT;
+import static keeper.project.homepage.ctf.dto.CtfCommonChallengeDto.MIN_SUBMIT_COUNT;
 import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.FORENSIC;
 import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.MISC;
 import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.DYNAMIC;
@@ -43,6 +46,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
@@ -289,7 +294,7 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
         .score(score)
         .dynamicInfo(dynamicInfo)
         .flag(flag)
-        .maxSubmitCount(123L)
+        .maxSubmitCount(35L)
         .build();
 
     mockMvc.perform(post("/v1/admin/ctf/prob")
@@ -364,7 +369,7 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
         .creatorName(creator.getNickName())
         .score(score)
         .flag(flag)
-        .maxSubmitCount(123L)
+        .maxSubmitCount(35L)
         .build();
 
     mockMvc.perform(post("/v1/admin/ctf/prob")
@@ -384,6 +389,117 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
         .andExpect(jsonPath("$.data.creatorName").value(adminEntity.getNickName()))
         .andExpect(jsonPath("$.data.score").value(score))
         .andExpect(jsonPath("$.data.flag").value(flag));
+  }
+
+  @Test
+  @DisplayName("문제 생성 시 maxSubmitCount를 넣지 않을 경우 default value가 들어가야 한다.")
+  public void createProblem_maxSubmitCount_defaultValue() throws Exception {
+    CtfChallengeCategoryDto category = CtfChallengeCategoryDto.toDto(
+        ctfChallengeCategoryRepository.getById(FORENSIC.getId()));
+    CtfChallengeTypeDto type = CtfChallengeTypeDto.toDto(
+        ctfChallengeTypeRepository.getById(STANDARD.getId()));
+    MemberEntity creator = generateMemberEntity(MemberJobName.출제자, MemberTypeName.정회원,
+        MemberRankName.일반회원);
+    Long teamScore = 0L;
+    generateCtfTeam(contestEntity, creator, teamScore);
+
+    String title = "test_title";
+    String content = "test_content";
+    Boolean isSolvable = true;
+    Long score = 1234L;
+    String flag = "flag{keeper}";
+    CtfChallengeAdminDto challenge = CtfChallengeAdminDto.builder()
+        .title(title)
+        .content(content)
+        .contestId(contestEntity.getId())
+        .category(category)
+        .type(type)
+        .isSolvable(isSolvable)
+        .creatorName(creator.getNickName())
+        .score(score)
+        .flag(flag)
+        .build();
+
+    mockMvc.perform(post("/v1/admin/ctf/prob")
+            .header("Authorization", adminToken)
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonString(challenge)))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.data.title").value(title))
+        .andExpect(jsonPath("$.data.content").value(content))
+        .andExpect(jsonPath("$.data.contestId").value(contestEntity.getId()))
+        .andExpect(jsonPath("$.data.category.id").value(category.getId()))
+        .andExpect(jsonPath("$.data.type.id").value(type.getId()))
+        .andExpect(jsonPath("$.data.isSolvable").value(isSolvable))
+        .andExpect(jsonPath("$.data.creatorName").value(adminEntity.getNickName()))
+        .andExpect(jsonPath("$.data.score").value(score))
+        .andExpect(jsonPath("$.data.flag").value(flag))
+        .andExpect(jsonPath("$.data.maxSubmitCount").value(DEFAULT_SUBMIT_COUNT));
+  }
+
+  @ParameterizedTest
+  @ValueSource(longs = {-10, 0, 1, 3, 15, 45, 50, 51, 123, Integer.MAX_VALUE})
+  @DisplayName("회장 권한으로 STANDARD 문제 생성 - 성공")
+  public void createProblem_maxSubmitCount_validValue(long maxSubmitCount) throws Exception {
+    CtfChallengeCategoryDto category = CtfChallengeCategoryDto.toDto(
+        ctfChallengeCategoryRepository.getById(FORENSIC.getId()));
+    CtfChallengeTypeDto type = CtfChallengeTypeDto.toDto(
+        ctfChallengeTypeRepository.getById(STANDARD.getId()));
+    MemberEntity creator = generateMemberEntity(MemberJobName.출제자, MemberTypeName.정회원,
+        MemberRankName.일반회원);
+    Long teamScore = 0L;
+    generateCtfTeam(contestEntity, creator, teamScore);
+
+    String title = "test_title";
+    String content = "test_content";
+    Boolean isSolvable = true;
+    Long score = 1234L;
+    String flag = "flag{keeper}";
+    CtfChallengeAdminDto challenge = CtfChallengeAdminDto.builder()
+        .title(title)
+        .content(content)
+        .contestId(contestEntity.getId())
+        .category(category)
+        .type(type)
+        .isSolvable(isSolvable)
+        .creatorName(creator.getNickName())
+        .score(score)
+        .flag(flag)
+        .maxSubmitCount(maxSubmitCount)
+        .build();
+
+    if (MIN_SUBMIT_COUNT <= maxSubmitCount && maxSubmitCount <= MAX_SUBMIT_COUNT) {
+      mockMvc.perform(post("/v1/admin/ctf/prob")
+              .header("Authorization", adminToken)
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(asJsonString(challenge)))
+          .andDo(print())
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.success").value(true))
+          .andExpect(jsonPath("$.code").value(0))
+          .andExpect(jsonPath("$.data.title").value(title))
+          .andExpect(jsonPath("$.data.content").value(content))
+          .andExpect(jsonPath("$.data.contestId").value(contestEntity.getId()))
+          .andExpect(jsonPath("$.data.category.id").value(category.getId()))
+          .andExpect(jsonPath("$.data.type.id").value(type.getId()))
+          .andExpect(jsonPath("$.data.isSolvable").value(isSolvable))
+          .andExpect(jsonPath("$.data.creatorName").value(adminEntity.getNickName()))
+          .andExpect(jsonPath("$.data.score").value(score))
+          .andExpect(jsonPath("$.data.flag").value(flag));
+    } else {
+      mockMvc.perform(post("/v1/admin/ctf/prob")
+              .header("Authorization", adminToken)
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(asJsonString(challenge)))
+          .andDo(print())
+          .andExpect(status().isBadRequest())
+          .andExpect(jsonPath("$.success").value(false))
+          .andExpect(jsonPath("$.code").value(400));
+    }
+
   }
 
   @Test

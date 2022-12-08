@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.time.LocalDateTime;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;
 import lombok.AllArgsConstructor;
@@ -21,11 +23,17 @@ import lombok.experimental.SuperBuilder;
 @JsonInclude(Include.NON_NULL)
 public class CtfCommonChallengeDto {
 
+  public static final long MAX_SUBMIT_COUNT = 50;
+  public static final long MIN_SUBMIT_COUNT = 1;
+  public static final long DEFAULT_SUBMIT_COUNT = 15;
+
   protected String title;
   protected Long score;
   protected CtfChallengeCategoryDto category;
   protected Long contestId;
-  protected Long maxSubmitCount;
+  @Max(MAX_SUBMIT_COUNT)
+  @Min(MIN_SUBMIT_COUNT)
+  protected Long maxSubmitCount = DEFAULT_SUBMIT_COUNT;
 
   @JsonProperty(access = Access.READ_ONLY)
   protected Long remainedSubmitCount;
