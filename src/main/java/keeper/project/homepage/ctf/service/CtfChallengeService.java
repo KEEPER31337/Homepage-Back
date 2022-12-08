@@ -100,11 +100,11 @@ public class CtfChallengeService {
     if (flagEntity.isTooFastRetry(RETRY_SECONDS)) {
       throw new CustomTooFastRetryException(RETRY_SECONDS);
     }
-    flagEntity.updateLastTryTime();
+    LocalDateTime now = LocalDateTime.now();
+    flagEntity.updateLastTryTime(now);
     tryDecreaseSubmitCount(flagEntity);
     if (isFlagCorrect(submitFlag, flagEntity)) {
-      LocalDateTime solvedTime = LocalDateTime.now();
-      setCorrect(flagEntity, submitTeam, solvedTime);
+      setCorrect(flagEntity, submitTeam, now);
       updateTeamScore(submitChallenge, submitTeam);
       if (ctfUtilService.isTypeDynamic(submitChallenge)) {
         ctfUtilService.setDynamicScore(submitChallenge);
