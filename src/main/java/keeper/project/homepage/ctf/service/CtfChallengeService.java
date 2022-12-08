@@ -37,6 +37,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CtfChallengeService {
 
+  /**
+   * 재전송 시간을 바꿀 경우 반드시 FE에 알려주어야 합니다.
+   * <p>
+   * RETRY_SECONDS가 바뀔 경우가 적다고 판단해서 API를 만드는 대신 FE와 함께 하드코딩 해놓았습니다.
+   */
   public static final long RETRY_SECONDS = 5;
 
   private final CtfChallengeRepository challengeRepository;
