@@ -1,7 +1,5 @@
 package keeper.project.homepage.ctf.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.time.LocalDateTime;
@@ -20,7 +18,6 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-@JsonInclude(Include.NON_NULL)
 public class CtfCommonChallengeDto {
 
   public static final long MAX_SUBMIT_COUNT = 50;

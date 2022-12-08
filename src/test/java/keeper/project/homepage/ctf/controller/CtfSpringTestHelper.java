@@ -291,7 +291,9 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".maxSubmitCount").description("최대 제출 횟수"),
         fieldWithPath(prefix + ".remainedSubmitCount").description("남은 제출 횟수"),
         fieldWithPath(prefix + ".lastTryTime").description("각 팀별 마지막 제출 시간입니다. 만약 " + RETRY_SECONDS
-            + "초 내에 다시 시도할 경우 프론트에서 API 호출을 막아주는게 좋습니다. "),
+            + "초 내에 다시 시도할 경우 프론트에서 API 호출을 막아주는게 좋습니다. \n\n"
+            + "해당 필드가 만들어지기 전의 문제들은 null값을 보냅니다.")
+            .optional(),
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id")
     ));
     if (addDescriptors.length > 0) {
