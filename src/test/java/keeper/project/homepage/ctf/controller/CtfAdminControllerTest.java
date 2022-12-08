@@ -326,7 +326,12 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
                         "TYPE이 DYNAMIC일 경우 minScore")
                     .optional(),
                 fieldWithPath("flag").description("문제의 flag"),
-                fieldWithPath("maxSubmitCount").description("각 팀당 가능한 최대 제출 횟수")
+                fieldWithPath("maxSubmitCount").description(
+                        String.format(
+                            "각 팀당 가능한 최대 제출 횟수 (%d이상 %d이하)%n%n만약 null로 보낸다면 DEFAULT 값(%d)이 들어갑니다.%n%n"
+                                + "최대, 최소값을 벗어나는 제출 횟수를 입력할 경우 success:false, code:400과 함께 msg에 에러 메시지가 담겨 나갑니다.",
+                            MIN_SUBMIT_COUNT, MAX_SUBMIT_COUNT, DEFAULT_SUBMIT_COUNT))
+                    .optional()
             ),
             responseFields(
                 generateChallengeAdminDtoResponseFields(ResponseType.SINGLE,
