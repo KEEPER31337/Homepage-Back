@@ -1,10 +1,12 @@
 package keeper.project.homepage.ctf.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import java.time.LocalDateTime;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;
 import lombok.AllArgsConstructor;
@@ -18,19 +20,27 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-@JsonInclude(Include.NON_NULL)
 public class CtfCommonChallengeDto {
+
+  public static final long MAX_SUBMIT_COUNT = 50;
+  public static final long MIN_SUBMIT_COUNT = 1;
+  public static final long DEFAULT_SUBMIT_COUNT = 15;
 
   protected String title;
   protected Long score;
   protected CtfChallengeCategoryDto category;
   protected Long contestId;
-  protected Long maxSubmitCount;
+  @Max(MAX_SUBMIT_COUNT)
+  @Min(MIN_SUBMIT_COUNT)
+  @JsonSetter(nulls = Nulls.SKIP)
+  protected Long maxSubmitCount = DEFAULT_SUBMIT_COUNT;
 
   @JsonProperty(access = Access.READ_ONLY)
   protected Long remainedSubmitCount;
   @JsonProperty(access = Access.READ_ONLY)
   protected LocalDateTime lastTryTime;
+  @JsonProperty(access = Access.READ_ONLY)
+  protected LocalDateTime solvedTime;
   @JsonProperty(access = Access.READ_ONLY)
   protected Long challengeId;
   @JsonProperty(access = Access.READ_ONLY)
@@ -50,6 +60,7 @@ public class CtfCommonChallengeDto {
         .isSolved(isSolved)
         .remainedSubmitCount(ctfFlagEntity.getRemainedSubmitCount())
         .lastTryTime(ctfFlagEntity.getLastTryTime())
+        .solvedTime(ctfFlagEntity.getSolvedTime())
         .maxSubmitCount(challenge.getMaxSubmitCount())
         .build();
   }

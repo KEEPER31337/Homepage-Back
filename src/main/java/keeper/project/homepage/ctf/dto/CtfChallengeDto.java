@@ -18,7 +18,6 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-@JsonInclude(Include.NON_NULL)
 public class CtfChallengeDto extends CtfCommonChallengeDto {
 
   protected String content;
@@ -50,6 +49,7 @@ public class CtfChallengeDto extends CtfCommonChallengeDto {
         .file(file)
         .remainedSubmitCount(ctfFlagEntity.getRemainedSubmitCount())
         .lastTryTime(ctfFlagEntity.getLastTryTime())
+        .solvedTime(ctfFlagEntity.getSolvedTime())
         .maxSubmitCount(challenge.getMaxSubmitCount())
         .build();
   }

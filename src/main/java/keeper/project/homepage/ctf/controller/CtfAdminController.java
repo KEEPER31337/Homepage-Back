@@ -2,6 +2,7 @@ package keeper.project.homepage.ctf.controller;
 
 import java.nio.file.AccessDeniedException;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
 import keeper.project.homepage.ctf.dto.CtfContestAdminDto;
 import keeper.project.homepage.ctf.dto.CtfProbMakerDto;
@@ -90,7 +91,7 @@ public class CtfAdminController {
   @Secured({"ROLE_회장", "ROLE_출제자"})
   @PostMapping(value = "/prob")
   public SingleResult<CtfChallengeAdminDto> createProblem(
-      @RequestBody CtfChallengeAdminDto challengeAdminDto
+      @Valid @RequestBody CtfChallengeAdminDto challengeAdminDto
   ) {
     return responseService.getSuccessSingleResult(
         ctfAdminService.createChallenge(challengeAdminDto));

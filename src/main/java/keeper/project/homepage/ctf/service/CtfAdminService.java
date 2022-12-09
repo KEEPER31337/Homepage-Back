@@ -117,7 +117,7 @@ public class CtfAdminService {
     }
     setFlagAllTeam(challengeAdminDto.getFlag(), newChallenge,
         challengeAdminDto.getMaxSubmitCount());
-    return CtfChallengeAdminDto.toDto(newChallenge);
+    return CtfChallengeAdminDto.toDto(newChallenge, 0L);
   }
 
   @Transactional
@@ -133,7 +133,7 @@ public class CtfAdminService {
     ctfUtilService.checkVirtualProblem(problemId);
     CtfChallengeEntity challenge = getChallengeById(problemId);
     challenge.setIsSolvable(true);
-    return CtfChallengeAdminDto.toDto(challenge);
+    return CtfChallengeAdminDto.toDto(challenge, getSolvedTeamCount(problemId));
   }
 
   @Transactional
@@ -141,7 +141,7 @@ public class CtfAdminService {
     ctfUtilService.checkVirtualProblem(problemId);
     CtfChallengeEntity challenge = getChallengeById(problemId);
     challenge.setIsSolvable(false);
-    return CtfChallengeAdminDto.toDto(challenge);
+    return CtfChallengeAdminDto.toDto(challenge, getSolvedTeamCount(problemId));
   }
 
   @Transactional
@@ -158,7 +158,7 @@ public class CtfAdminService {
       fileService.deleteFile(challenge.getFileEntity());
     }
     challengeRepository.delete(challenge);
-    return CtfChallengeAdminDto.toDto(challenge);
+    return CtfChallengeAdminDto.toDto(challenge, 0L);
   }
 
   private boolean hasFileEntity(CtfChallengeEntity challenge) {
@@ -174,7 +174,12 @@ public class CtfAdminService {
     CtfContestEntity contest = getContest(ctfId);
     return challengeRepository
         .findAllByIdIsNotAndCtfContestEntity(VIRTUAL_PROBLEM_ID, contest, pageable)
-        .map(CtfChallengeAdminDto::toDto);
+        .map((challenge) -> CtfChallengeAdminDto.toDto(challenge,
+            getSolvedTeamCount(challenge.getId())));
+  }
+
+  private Long getSolvedTeamCount(Long challenge) {
+    return ctfFlagRepository.countByCtfChallengeEntityIdAndIsCorrect(challenge, true);
   }
 
   private CtfContestEntity getContest(Long ctfId) {

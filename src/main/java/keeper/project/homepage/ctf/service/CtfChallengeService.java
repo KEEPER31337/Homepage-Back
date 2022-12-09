@@ -37,6 +37,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class CtfChallengeService {
 
+  /**
+   * 재전송 시간을 바꿀 경우 반드시 FE에 알려주어야 합니다.
+   * <p>
+   * RETRY_SECONDS가 바뀔 경우가 적다고 판단해서 API를 만드는 대신 FE와 함께 하드코딩 해놓았습니다.
+   */
   public static final long RETRY_SECONDS = 5;
 
   private final CtfChallengeRepository challengeRepository;
@@ -87,19 +92,19 @@ public class CtfChallengeService {
     Long submitterId = authService.getMemberIdByJWT();
     CtfTeamEntity submitTeam = getTeamEntity(getCtfIdByChallenge(submitChallenge), submitterId);
     CtfFlagEntity flagEntity = getFlagEntity(probId, submitTeam);
-    if (flagEntity.isTooFastRetry(RETRY_SECONDS)) {
-      throw new CustomTooFastRetryException(RETRY_SECONDS);
-    }
-    flagEntity.updateLastTryTime();
-    tryDecreaseSubmitCount(flagEntity);
     // 이미 맞췄으면 제출한 flag 정답 유무만 체크하고 DB 갱신 안함.
     if (isAlreadySolved(flagEntity)) {
       setSubmitFlagIsCorrect(submitFlag, flagEntity);
       return CtfFlagDto.toDto(flagEntity);
     }
+    if (flagEntity.isTooFastRetry(RETRY_SECONDS)) {
+      throw new CustomTooFastRetryException(RETRY_SECONDS);
+    }
+    LocalDateTime now = LocalDateTime.now();
+    flagEntity.updateLastTryTime(now);
+    tryDecreaseSubmitCount(flagEntity);
     if (isFlagCorrect(submitFlag, flagEntity)) {
-      LocalDateTime solvedTime = LocalDateTime.now();
-      setCorrect(flagEntity, submitTeam, solvedTime);
+      setCorrect(flagEntity, submitTeam, now);
       updateTeamScore(submitChallenge, submitTeam);
       if (ctfUtilService.isTypeDynamic(submitChallenge)) {
         ctfUtilService.setDynamicScore(submitChallenge);

@@ -57,8 +57,8 @@ public class CtfFlagEntity {
   @Column(name = "remained_submit_count")
   Long remainedSubmitCount;
 
-  public void updateLastTryTime() {
-    lastTryTime = LocalDateTime.now();
+  public void updateLastTryTime(LocalDateTime now) {
+    lastTryTime = now;
   }
 
   public void decreaseSubmitCount() {

@@ -18,6 +18,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.time.LocalDateTime;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;
@@ -107,6 +108,35 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
                     "성공: true +\n실패: false", "성공 시 0을 반환",
                     "성공: 성공하였습니다 +\n실패: 에러 메세지 반환")
             )));
+  }
+
+  @Test
+  @DisplayName("문제 목록 보기 - 마지막 제출 시간이 null로 반환되어야 합니다.")
+  public void getProblemListSuccess_lastTryTimeNullable() throws Exception {
+    CtfContestEntity contest = generateCtfContest(adminEntity, true);
+
+    Long score = 1000L;
+
+    CtfChallengeEntity dynamicChallenge = generateCtfChallenge(
+        contest, DYNAMIC, FORENSIC, score, true);
+    CtfChallengeEntity standardChallenge = generateCtfChallenge(
+        contest, STANDARD, MISC, score, true);
+
+    CtfTeamEntity team = generateCtfTeam(contest, userEntity, 0L);
+
+    LocalDateTime lastTryTime = LocalDateTime.now().minusDays(1);
+    generateCtfFlag(team, dynamicChallenge, false, (LocalDateTime) null);
+    generateCtfFlag(team, standardChallenge, true, lastTryTime);
+
+    mockMvc.perform(get("/v1/ctf/prob")
+            .header("Authorization", userToken)
+            .param("cid", String.valueOf(contest.getId())))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.success").value(true))
+        .andExpect(jsonPath("$.code").value(0))
+        .andExpect(jsonPath("$.list[0].lastTryTime").isEmpty())
+        .andExpect(jsonPath("$.list[1].lastTryTime").value(lastTryTime.toString()));
   }
 
   @Test
