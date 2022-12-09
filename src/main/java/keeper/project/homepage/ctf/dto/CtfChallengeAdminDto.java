@@ -39,7 +39,6 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
 
   public CtfChallengeEntity toEntity(CtfContestEntity contest, CtfChallengeTypeEntity type,
       CtfChallengeCategoryEntity category, FileEntity fileEntity, MemberEntity creator) {
-    System.out.println("maxSubmitCount = " + maxSubmitCount);
     return CtfChallengeEntity.builder()
         .name(title)
         .description(content)
