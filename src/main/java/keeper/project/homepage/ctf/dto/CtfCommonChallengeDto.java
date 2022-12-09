@@ -2,6 +2,8 @@ package keeper.project.homepage.ctf.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.annotation.Nulls;
 import java.time.LocalDateTime;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -30,6 +32,7 @@ public class CtfCommonChallengeDto {
   protected Long contestId;
   @Max(MAX_SUBMIT_COUNT)
   @Min(MIN_SUBMIT_COUNT)
+  @JsonSetter(nulls = Nulls.SKIP)
   protected Long maxSubmitCount = DEFAULT_SUBMIT_COUNT;
 
   @JsonProperty(access = Access.READ_ONLY)
