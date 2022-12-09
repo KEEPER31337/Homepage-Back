@@ -56,7 +56,7 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
         .build();
   }
 
-  public static CtfChallengeAdminDto toDto(CtfChallengeEntity challenge) {
+  public static CtfChallengeAdminDto toDto(CtfChallengeEntity challenge, Long solvedTeamCount) {
     CtfChallengeCategoryDto category = CtfChallengeCategoryDto.toDto(
         challenge.getCtfChallengeCategoryEntity());
     CtfChallengeTypeDto type = CtfChallengeTypeDto.toDto(
@@ -77,6 +77,7 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
         .isSolvable(challenge.getIsSolvable())
         .registerTime(challenge.getRegisterTime())
         .creatorName(challenge.getCreator().getNickName())
+        .solvedTeamCount(solvedTeamCount)
         .score(challenge.getScore())
         .file(file)
         .dynamicInfo(dynamicInfo)

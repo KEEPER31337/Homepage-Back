@@ -335,6 +335,9 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
                 "각 팀별 문제를 해결한 시간입니다. 만약 해결하지 않았다면 null 값을 보냅니다. \n\n"
                     + "해당 필드가 만들어지기 전의 문제들은 해결이 되었어도 null값을 보냅니다.")
             .optional(),
+        fieldWithPath(prefix + ".isSolved").description("관리자 권한의 isSolved는 항상 null로 주어집니다.")
+            .optional(),
+        fieldWithPath(prefix + ".solvedTeamCount").description("문제를 푼 팀의 수"),
         subsectionWithPath(prefix + ".dynamicInfo").description("TYPE이 STANDARD일 경우 null")
             .optional(),
         subsectionWithPath(prefix + ".file").description("문제에 해당하는 파일 정보").optional()
