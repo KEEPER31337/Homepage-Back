@@ -291,8 +291,12 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".maxSubmitCount").description("최대 제출 횟수"),
         fieldWithPath(prefix + ".remainedSubmitCount").description("남은 제출 횟수"),
         fieldWithPath(prefix + ".lastTryTime").description("각 팀별 마지막 제출 시간입니다. 만약 " + RETRY_SECONDS
-            + "초 내에 다시 시도할 경우 프론트에서 API 호출을 막아주는게 좋습니다. \n\n"
-            + "해당 필드가 만들어지기 전의 문제들은 null값을 보냅니다.")
+                + "초 내에 다시 시도할 경우 프론트에서 API 호출을 막아주는게 좋습니다. \n\n"
+                + "해당 필드가 만들어지기 전의 문제들은 null값을 보냅니다.")
+            .optional(),
+        fieldWithPath(prefix + ".solvedTime").description(
+                "각 팀별 문제를 해결한 시간입니다. 만약 해결하지 않았다면 null 값을 보냅니다. \n\n"
+                    + "해당 필드가 만들어지기 전의 문제들은 해결이 되었어도 null값을 보냅니다.")
             .optional(),
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id")
     ));
@@ -324,7 +328,13 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".maxSubmitCount").description("최대 제출 횟수"),
         fieldWithPath(prefix + ".remainedSubmitCount").description("남은 제출 횟수"),
         fieldWithPath(prefix + ".lastTryTime").description("각 팀별 마지막 제출 시간입니다. 만약 " + RETRY_SECONDS
-            + "초 내에 다시 시도할 경우 프론트에서 API 호출을 막아주는게 좋습니다."),
+                + "초 내에 다시 시도할 경우 프론트에서 API 호출을 막아주는게 좋습니다. \n\n"
+                + "해당 필드가 만들어지기 전의 문제들은 null값을 보냅니다.")
+            .optional(),
+        fieldWithPath(prefix + ".solvedTime").description(
+                "각 팀별 문제를 해결한 시간입니다. 만약 해결하지 않았다면 null 값을 보냅니다. \n\n"
+                    + "해당 필드가 만들어지기 전의 문제들은 해결이 되었어도 null값을 보냅니다.")
+            .optional(),
         subsectionWithPath(prefix + ".dynamicInfo").description("TYPE이 STANDARD일 경우 null")
             .optional(),
         subsectionWithPath(prefix + ".file").description("문제에 해당하는 파일 정보").optional()
@@ -367,7 +377,13 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".maxSubmitCount").description("최대 제출 횟수"),
         fieldWithPath(prefix + ".remainedSubmitCount").description("남은 제출 횟수"),
         fieldWithPath(prefix + ".lastTryTime").description("각 팀별 마지막 제출 시간입니다. 만약 " + RETRY_SECONDS
-            + "초 내에 다시 시도할 경우 프론트에서 API 호출을 막아주는게 좋습니다."),
+                + "초 내에 다시 시도할 경우 프론트에서 API 호출을 막아주는게 좋습니다. \n\n"
+                + "해당 필드가 만들어지기 전의 문제들은 null값을 보냅니다.")
+            .optional(),
+        fieldWithPath(prefix + ".solvedTime").description(
+                "각 팀별 문제를 해결한 시간입니다. 만약 해결하지 않았다면 null 값을 보냅니다. \n\n"
+                    + "해당 필드가 만들어지기 전의 문제들은 해결이 되었어도 null값을 보냅니다.")
+            .optional(),
         subsectionWithPath(prefix + ".file").description("문제에 해당하는 파일 정보").optional()
     ));
     if (type.equals(ResponseType.PAGE)) {

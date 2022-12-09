@@ -40,6 +40,8 @@ public class CtfCommonChallengeDto {
   @JsonProperty(access = Access.READ_ONLY)
   protected LocalDateTime lastTryTime;
   @JsonProperty(access = Access.READ_ONLY)
+  protected LocalDateTime solvedTime;
+  @JsonProperty(access = Access.READ_ONLY)
   protected Long challengeId;
   @JsonProperty(access = Access.READ_ONLY)
   protected Boolean isSolved;
@@ -58,6 +60,7 @@ public class CtfCommonChallengeDto {
         .isSolved(isSolved)
         .remainedSubmitCount(ctfFlagEntity.getRemainedSubmitCount())
         .lastTryTime(ctfFlagEntity.getLastTryTime())
+        .solvedTime(ctfFlagEntity.getSolvedTime())
         .maxSubmitCount(challenge.getMaxSubmitCount())
         .build();
   }

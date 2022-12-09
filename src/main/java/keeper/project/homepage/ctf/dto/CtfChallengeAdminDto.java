@@ -1,7 +1,5 @@
 package keeper.project.homepage.ctf.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -27,7 +25,6 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-@JsonInclude(Include.NON_NULL)
 public class CtfChallengeAdminDto extends CtfChallengeDto {
 
   private Boolean isSolvable;
@@ -42,6 +39,7 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
 
   public CtfChallengeEntity toEntity(CtfContestEntity contest, CtfChallengeTypeEntity type,
       CtfChallengeCategoryEntity category, FileEntity fileEntity, MemberEntity creator) {
+    System.out.println("maxSubmitCount = " + maxSubmitCount);
     return CtfChallengeEntity.builder()
         .name(title)
         .description(content)
@@ -84,6 +82,7 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
         .dynamicInfo(dynamicInfo)
         .remainedSubmitCount(getVirtualTeamFlag(challenge).getRemainedSubmitCount())
         .lastTryTime(getVirtualTeamFlag(challenge).getLastTryTime())
+        .solvedTime(getVirtualTeamFlag(challenge).getSolvedTime())
         .maxSubmitCount(challenge.getMaxSubmitCount())
         .build();
   }
