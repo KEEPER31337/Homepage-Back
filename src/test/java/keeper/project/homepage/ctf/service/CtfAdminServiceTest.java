@@ -5,6 +5,7 @@ import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.회�
 import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.일반회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberTypeName.정회원;
 import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.WEB;
+import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.DYNAMIC;
 import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.STANDARD;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,6 +17,7 @@ import keeper.project.homepage.ctf.controller.CtfSpringTestHelper;
 import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
 import keeper.project.homepage.ctf.dto.CtfChallengeCategoryDto;
 import keeper.project.homepage.ctf.dto.CtfChallengeTypeDto;
+import keeper.project.homepage.ctf.dto.CtfDynamicChallengeInfoDto;
 import keeper.project.homepage.ctf.dto.CtfFlagDto;
 import keeper.project.homepage.ctf.dto.CtfTeamDetailDto;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
@@ -106,6 +108,30 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
     return ctfAdminService.createChallenge(challengeAdminDto);
   }
 
+  private CtfChallengeAdminDto createDynamicChallenge(CtfDynamicChallengeInfoDto dynamicScore) {
+    return createDynamicChallenge(dynamicScore, getRandomUUID(), getRandomUUID(), getRandomUUID(),
+        15L);
+  }
+
+  private CtfChallengeAdminDto createDynamicChallenge(CtfDynamicChallengeInfoDto dynamicScore,
+      String flag, String content, String title, long maxSubmitCount) {
+    setAuthentication(contestCreator, 회장);
+    CtfChallengeAdminDto challengeAdminDto = CtfChallengeAdminDto.builder()
+        .isSolvable(true)
+        .flag(flag)
+        .type(getDynamicType())
+        .dynamicInfo(dynamicScore)
+        .content(content)
+        .title(title)
+        .score(0L)
+        .category(getWebCategory())
+        .contestId(ctfContestEntity.getId())
+        .maxSubmitCount(maxSubmitCount)
+        .build();
+
+    return ctfAdminService.createChallenge(challengeAdminDto);
+  }
+
   private static CtfChallengeCategoryDto getWebCategory() {
     return CtfChallengeCategoryDto.builder()
         .id(WEB.getId())
@@ -117,6 +143,13 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
     return CtfChallengeTypeDto.builder()
         .id(STANDARD.getId())
         .name(STANDARD.getName())
+        .build();
+  }
+
+  private static CtfChallengeTypeDto getDynamicType() {
+    return CtfChallengeTypeDto.builder()
+        .id(DYNAMIC.getId())
+        .name(DYNAMIC.getName())
         .build();
   }
 
@@ -180,6 +213,81 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
     assertThat(ctfTeamRepository.getById(team1.getId()).getScore()).isEqualTo(0L);
     assertThat(ctfTeamRepository.getById(team2.getId()).getScore()).isEqualTo(0L);
     assertThat(ctfTeamRepository.getById(team3.getId()).getScore()).isEqualTo(0L);
+  }
+
+  @Test
+  @DisplayName("[시나리오2] DYNAMIC 문제 삭제 시 점수 반영 제대로 되는지 테스트")
+  void deleteProblem_scenario2() {
+    CtfChallengeAdminDto challenge1 = createDynamicChallenge(getDynamicScore(0L, 1000L));
+    CtfChallengeAdminDto challenge2 = createDynamicChallenge(getDynamicScore(0L, 2000L));
+    CtfChallengeAdminDto challenge3 = createDynamicChallenge(getDynamicScore(0L, 4000L));
+
+    MemberEntity user1 = generateMemberEntity(회원, 정회원, 일반회원);
+    CtfTeamDetailDto team1 = createCtfTeam(user1); // 1번, 2번 문제 해결
+    MemberEntity user2 = generateMemberEntity(회원, 정회원, 일반회원);
+    CtfTeamDetailDto team2 = createCtfTeam(user2); // 2번, 3번 문제 해결
+    MemberEntity user3 = generateMemberEntity(회원, 정회원, 일반회원);
+    CtfTeamDetailDto team3 = createCtfTeam(user3); // 1번, 2번, 3번 모두 해결
+    MemberEntity user4 = generateMemberEntity(회원, 정회원, 일반회원);
+    CtfTeamDetailDto team4 = createCtfTeam(user4); // 문제 해결 안함
+
+    assertThat(solveChallenge(challenge1, user1)).isTrue();
+    assertThat(solveChallenge(challenge2, user1)).isTrue();
+    assertThat(solveChallenge(challenge2, user2)).isTrue();
+    assertThat(solveChallenge(challenge3, user2)).isTrue();
+    assertThat(solveChallenge(challenge1, user3)).isTrue();
+    assertThat(solveChallenge(challenge2, user3)).isTrue();
+    assertThat(solveChallenge(challenge3, user3)).isTrue();
+
+    assertThat(getChallengeScore(challenge1)).isEqualTo(750L);
+    assertThat(getChallengeScore(challenge2)).isEqualTo(875L);
+    assertThat(getChallengeScore(challenge3)).isEqualTo(3000L);
+    assertThat(ctfTeamRepository.getById(team1.getId()).getScore()).isEqualTo(1625L);
+    assertThat(ctfTeamRepository.getById(team2.getId()).getScore()).isEqualTo(3875L);
+    assertThat(ctfTeamRepository.getById(team3.getId()).getScore()).isEqualTo(4625L);
+    assertThat(ctfTeamRepository.getById(team4.getId()).getScore()).isEqualTo(0L);
+
+    em.flush();
+    em.clear();
+
+    System.out.println(team1.getSolvedChallengeList());
+    System.out.println(team2.getSolvedChallengeList());
+    System.out.println(team3.getSolvedChallengeList());
+    System.out.println(team4.getSolvedChallengeList());
+    System.out.println();
+
+    deleteCtfChallenge(challenge1.getChallengeId());
+    assertThat(ctfTeamRepository.getById(team1.getId()).getScore()).isEqualTo(875L);
+    assertThat(ctfTeamRepository.getById(team2.getId()).getScore()).isEqualTo(3875L);
+    assertThat(ctfTeamRepository.getById(team3.getId()).getScore()).isEqualTo(3875L);
+
+    System.out.println(team1.getSolvedChallengeList());
+    System.out.println(team2.getSolvedChallengeList());
+    System.out.println(team3.getSolvedChallengeList());
+    System.out.println(team4.getSolvedChallengeList());
+    System.out.println();
+
+    deleteCtfChallenge(challenge2.getChallengeId());
+    assertThat(ctfTeamRepository.getById(team1.getId()).getScore()).isEqualTo(0L);
+    assertThat(ctfTeamRepository.getById(team2.getId()).getScore()).isEqualTo(3000L);
+    assertThat(ctfTeamRepository.getById(team3.getId()).getScore()).isEqualTo(3000L);
+
+    System.out.println(team1.getSolvedChallengeList());
+    System.out.println(team2.getSolvedChallengeList());
+    System.out.println(team3.getSolvedChallengeList());
+    System.out.println(team4.getSolvedChallengeList());
+    System.out.println();
+  }
+
+  private Long getChallengeScore(CtfChallengeAdminDto challenge1) {
+    return ctfChallengeRepository.getById(challenge1.getChallengeId()).getScore();
+  }
+
+  private static CtfDynamicChallengeInfoDto getDynamicScore(long minScore, long maxScore) {
+    return CtfDynamicChallengeInfoDto.builder()
+        .minScore(minScore)
+        .maxScore(maxScore)
+        .build();
   }
 
   private void deleteCtfChallenge(long challengeId) {
