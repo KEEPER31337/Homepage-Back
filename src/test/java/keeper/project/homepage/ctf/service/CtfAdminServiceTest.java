@@ -52,20 +52,7 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
   @Test
   @DisplayName("문제 생성 테스트")
   void createChallenge() {
-    CtfChallengeAdminDto challengeAdminDto = CtfChallengeAdminDto.builder()
-        .isSolvable(true)
-        .flag("flag")
-        .type(getStandardType())
-        .dynamicInfo(null)
-        .content("content")
-        .title("title")
-        .score(1234L)
-        .category(getWebCategory())
-        .contestId(ctfContestEntity.getId())
-        .maxSubmitCount(123L)
-        .build();
-
-    CtfChallengeAdminDto result = ctfAdminService.createChallenge(challengeAdminDto);
+    CtfChallengeAdminDto result = createStandardChallenge(1234L);
     CtfFlagEntity flag = ctfFlagRepository.findByCtfChallengeEntityIdAndCtfTeamEntityId(
         result.getChallengeId(), CtfUtilService.VIRTUAL_TEAM_ID).orElseThrow();
 
@@ -83,6 +70,23 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
     assertThat(flag.getIsCorrect()).isEqualTo(false);
 
 
+  }
+
+  private CtfChallengeAdminDto createStandardChallenge(long score) {
+    CtfChallengeAdminDto challengeAdminDto = CtfChallengeAdminDto.builder()
+        .isSolvable(true)
+        .flag("flag")
+        .type(getStandardType())
+        .dynamicInfo(null)
+        .content("content")
+        .title("title")
+        .score(score)
+        .category(getWebCategory())
+        .contestId(ctfContestEntity.getId())
+        .maxSubmitCount(123L)
+        .build();
+
+    return ctfAdminService.createChallenge(challengeAdminDto);
   }
 
   private static CtfChallengeCategoryDto getWebCategory() {
