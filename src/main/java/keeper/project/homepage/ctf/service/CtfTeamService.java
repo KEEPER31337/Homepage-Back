@@ -250,6 +250,7 @@ public class CtfTeamService {
           .ctfTeamEntity(newTeamEntity)
           .ctfChallengeEntity(challenge)
           .isCorrect(false)
+          .remainedSubmitCount(challenge.getMaxSubmitCount())
           .build();
       flagRepository.save(flagEntity);
     });
