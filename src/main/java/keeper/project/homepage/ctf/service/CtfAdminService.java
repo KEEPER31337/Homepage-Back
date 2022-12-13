@@ -5,7 +5,6 @@ import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_PROBLE
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_TEAM_ID;
 
 import java.nio.file.AccessDeniedException;
-import java.time.LocalDateTime;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
@@ -304,7 +303,7 @@ public class CtfAdminService {
           .ctfChallengeEntity(challenge)
           .isCorrect(false)
           .remainedSubmitCount(maxSubmitCount)
-          .lastTryTime(LocalDateTime.now())
+          .lastTryTime(null)
           .build();
       ctfFlagRepository.save(flagEntity);
       challenge.getCtfFlagEntity().add(flagEntity);
