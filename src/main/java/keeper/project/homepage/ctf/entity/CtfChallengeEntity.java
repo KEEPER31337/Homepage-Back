@@ -57,10 +57,9 @@ public class CtfChallengeEntity {
   @JoinColumn(name = "type_id", nullable = false)
   CtfChallengeTypeEntity ctfChallengeTypeEntity;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "category_id", nullable = false)
-  CtfChallengeCategoryEntity ctfChallengeCategoryEntity;
-
+  @Builder.Default
+  @OneToMany(mappedBy = "challenge", cascade = CascadeType.REMOVE)
+  List<CtfChallengeHasCtfChallengeCategoryEntity> ctfChallengeHasCtfChallengeCategoryList = new ArrayList<>();
   @Column(nullable = false)
   @Setter
   Long score;
