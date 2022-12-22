@@ -40,7 +40,7 @@ import keeper.project.homepage.ctf.dto.CtfChallengeTypeDto;
 import keeper.project.homepage.ctf.dto.CtfContestAdminDto;
 import keeper.project.homepage.ctf.dto.CtfDynamicChallengeInfoDto;
 import keeper.project.homepage.ctf.dto.CtfProbMakerDto;
-import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;
@@ -270,15 +270,9 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
   @Test
   @DisplayName("출제자 권한으로 문제 생성 - 성공")
   public void createProblemSuccess() throws Exception {
-    List<CtfChallengeCategoryDto> category = new ArrayList<>();
-    category.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
-        .id(FORENSIC.getId())
-        .name(FORENSIC.getName())
-        .build()));
-    category.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
-        .id(MISC.getId())
-        .name(MISC.getName())
-        .build()));
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+    categories.add(FORENSIC);
+    categories.add(MISC);
 
     CtfChallengeTypeDto type = CtfChallengeTypeDto.toDto(
         ctfChallengeTypeRepository.getById(DYNAMIC.getId()));
@@ -299,7 +293,7 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
     Long score = 1234L;
     String flag = "flag{keeper}";
     CtfChallengeAdminDto challenge = generateCtfChallengeAdminDto(35L,
-        category, type, creator, title, content, isSolvable, score, flag, dynamicInfo);
+        categories, type, creator, title, content, isSolvable, score, flag, dynamicInfo);
 
     mockMvc.perform(post("/v1/admin/ctf/prob")
             .header("Authorization", creatorToken)
@@ -312,8 +306,8 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
         .andExpect(jsonPath("$.data.title").value(title))
         .andExpect(jsonPath("$.data.content").value(content))
         .andExpect(jsonPath("$.data.contestId").value(contestEntity.getId()))
-        .andExpect(jsonPath("$.data.category[0].id").value(category.get(0).getId()))
-        .andExpect(jsonPath("$.data.category[1].id").value(category.get(1).getId()))
+        .andExpect(jsonPath("$.data.categories[0].id").value(categories.get(0).getId()))
+        .andExpect(jsonPath("$.data.categories[1].id").value(categories.get(1).getId()))
         .andExpect(jsonPath("$.data.type.id").value(type.getId()))
         .andExpect(jsonPath("$.data.isSolvable").value(isSolvable))
         .andExpect(jsonPath("$.data.creatorName").value(creator.getNickName()))
@@ -326,7 +320,7 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
                 fieldWithPath("title").description("문제 제목"),
                 fieldWithPath("content").description("문제 내용"),
                 fieldWithPath("contestId").description("문제가 등록 될 CTF id"),
-                fieldWithPath("category[].id").description("문제 카테고리 Id"),
+                fieldWithPath("categories[].id").description("문제 카테고리 Id"),
                 fieldWithPath("type.id").description("문제 Type Id"),
                 fieldWithPath("isSolvable").description("현재 풀 수 있는 지 여부"),
                 fieldWithPath("score").description(
@@ -356,11 +350,8 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
   @DisplayName("회장 권한으로 STANDARD 문제 생성 - 성공")
   public void createStandardProblemSuccess() throws Exception {
 
-    List<CtfChallengeCategoryDto> category = new ArrayList<>();
-    category.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
-        .id(FORENSIC.getId())
-        .name(FORENSIC.getName())
-        .build()));
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+    categories.add(FORENSIC);
 
     CtfChallengeTypeDto type = CtfChallengeTypeDto.toDto(
         ctfChallengeTypeRepository.getById(STANDARD.getId()));
@@ -374,7 +365,7 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
     Long score = 1234L;
     String flag = "flag{keeper}";
     CtfChallengeAdminDto challenge = generateCtfChallengeAdminDto(35L,
-        category, type, creator, title, content, isSolvable, score, flag);
+        categories, type, creator, title, content, isSolvable, score, flag);
 
     createChallengeControllerTest(challenge)
         .andExpect(status().isOk())
@@ -383,7 +374,7 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
         .andExpect(jsonPath("$.data.title").value(title))
         .andExpect(jsonPath("$.data.content").value(content))
         .andExpect(jsonPath("$.data.contestId").value(contestEntity.getId()))
-        .andExpect(jsonPath("$.data.category[0].id").value(category.get(0).getId()))
+        .andExpect(jsonPath("$.data.categories[0].id").value(categories.get(0).getId()))
         .andExpect(jsonPath("$.data.type.id").value(type.getId()))
         .andExpect(jsonPath("$.data.isSolvable").value(isSolvable))
         .andExpect(jsonPath("$.data.creatorName").value(adminEntity.getNickName()))
@@ -394,11 +385,8 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
   @Test
   @DisplayName("문제 생성 시 maxSubmitCount를 넣지 않을 경우 default value가 들어가야 한다.")
   public void createProblem_maxSubmitCount_defaultValue() throws Exception {
-    List<CtfChallengeCategoryDto> category = new ArrayList<>();
-    category.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
-        .id(FORENSIC.getId())
-        .name(FORENSIC.getName())
-        .build()));
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+    categories.add(FORENSIC);
 
     CtfChallengeTypeDto type = CtfChallengeTypeDto.toDto(
         ctfChallengeTypeRepository.getById(STANDARD.getId()));
@@ -413,7 +401,7 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
     String flag = "flag{keeper}";
 
     CtfChallengeAdminDto challenge = generateCtfChallengeAdminDto(
-        null, category, type, creator, title, content, isSolvable, score, flag);
+        null, categories, type, creator, title, content, isSolvable, score, flag);
 
     createChallengeControllerTest(challenge)
         .andExpect(status().isOk())
@@ -422,7 +410,7 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
         .andExpect(jsonPath("$.data.title").value(title))
         .andExpect(jsonPath("$.data.content").value(content))
         .andExpect(jsonPath("$.data.contestId").value(contestEntity.getId()))
-        .andExpect(jsonPath("$.data.category[0].id").value(category.get(0).getId()))
+        .andExpect(jsonPath("$.data.categories[0].id").value(categories.get(0).getId()))
         .andExpect(jsonPath("$.data.type.id").value(type.getId()))
         .andExpect(jsonPath("$.data.isSolvable").value(isSolvable))
         .andExpect(jsonPath("$.data.creatorName").value(adminEntity.getNickName()))
@@ -445,12 +433,8 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
   @DisplayName("회장 권한으로 STANDARD 문제 생성 - 성공")
   public void createProblem_maxSubmitCount_validValue(long maxSubmitCount) throws Exception {
 
-    List<CtfChallengeCategoryDto> category = new ArrayList<>();
-    category.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
-        .id(FORENSIC.getId())
-        .name(FORENSIC.getName())
-        .build()));
-
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+    categories.add(FORENSIC);
 
     CtfChallengeTypeDto type = CtfChallengeTypeDto.toDto(
         ctfChallengeTypeRepository.getById(STANDARD.getId()));
@@ -464,7 +448,7 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
     Long score = 1234L;
     String flag = "flag{keeper}";
     CtfChallengeAdminDto challenge = generateCtfChallengeAdminDto(
-        maxSubmitCount, category, type, creator, title, content, isSolvable, score, flag);
+        maxSubmitCount, categories, type, creator, title, content, isSolvable, score, flag);
 
     if (MIN_SUBMIT_COUNT <= maxSubmitCount && maxSubmitCount <= MAX_SUBMIT_COUNT) {
       createChallengeControllerTest(challenge)
@@ -474,7 +458,7 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
           .andExpect(jsonPath("$.data.title").value(title))
           .andExpect(jsonPath("$.data.content").value(content))
           .andExpect(jsonPath("$.data.contestId").value(contestEntity.getId()))
-          .andExpect(jsonPath("$.data.category[0].id").value(category.get(0).getId()))
+          .andExpect(jsonPath("$.data.categories[0].id").value(categories.get(0).getId()))
           .andExpect(jsonPath("$.data.type.id").value(type.getId()))
           .andExpect(jsonPath("$.data.isSolvable").value(isSolvable))
           .andExpect(jsonPath("$.data.creatorName").value(adminEntity.getNickName()))
@@ -490,21 +474,30 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
   }
 
   private CtfChallengeAdminDto generateCtfChallengeAdminDto(Long maxSubmitCount,
-      List<CtfChallengeCategoryDto> category, CtfChallengeTypeDto type, MemberEntity creator,
+      List<CtfChallengeCategory> categories, CtfChallengeTypeDto type, MemberEntity creator,
       String title, String content, Boolean isSolvable, Long score, String flag) {
     return generateCtfChallengeAdminDto(
-        maxSubmitCount, category, type, creator, title, content, isSolvable, score, flag, null);
+        maxSubmitCount, categories, type, creator, title, content, isSolvable, score, flag, null);
   }
 
   private CtfChallengeAdminDto generateCtfChallengeAdminDto(Long maxSubmitCount,
-      List<CtfChallengeCategoryDto> category, CtfChallengeTypeDto type, MemberEntity creator,
+      List<CtfChallengeCategory> categories, CtfChallengeTypeDto type, MemberEntity creator,
       String title, String content, Boolean isSolvable, Long score, String flag,
       CtfDynamicChallengeInfoDto dynamicInfo) {
+
+    List<CtfChallengeCategoryDto> categoryDtos = categories
+        .stream()
+        .map(ctfChallengeCategory -> CtfChallengeCategoryDto
+            .builder()
+            .id(ctfChallengeCategory.getId())
+            .name(ctfChallengeCategory.getName()).build())
+        .toList();
+
     CtfChallengeAdminDto challenge = CtfChallengeAdminDto.builder()
         .title(title)
         .content(content)
         .contestId(contestEntity.getId())
-        .category(category)
+        .categories(categoryDtos)
         .type(type)
         .isSolvable(isSolvable)
         .creatorName(creator.getNickName())
@@ -522,13 +515,12 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
     MockMultipartFile file = new MockMultipartFile("file", "image.png", "image/png",
         "<<png data>>".getBytes());
     Long score = 1234L;
-    List<CtfChallengeCategoryDto> category = new ArrayList<>();
-    category.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
-        .id(FORENSIC.getId())
-        .name(FORENSIC.getName())
-        .build()));
+
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+    categories.add(FORENSIC);
+
     CtfChallengeEntity challenge = generateCtfChallenge(
-        contestEntity, DYNAMIC, category, score, true);
+        contestEntity, DYNAMIC, categories, score, true);
     mockMvc.perform(multipart("/v1/admin/ctf/prob/file")
             .file(file)
             .param("challengeId", String.valueOf(challenge.getId()))
@@ -555,17 +547,14 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
   @Test
   @DisplayName("문제 오픈 - 성공")
   public void openProblemSuccess() throws Exception {
-    List<CtfChallengeCategoryDto> category = new ArrayList<>();
-    category.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
-        .id(FORENSIC.getId())
-        .name(FORENSIC.getName())
-        .build()));
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+    categories.add(FORENSIC);
     MemberEntity creator = generateMemberEntity(출제자, 정회원, 일반회원);
     Long teamScore = 0L;
     Long score = 1234L;
     CtfTeamEntity team = generateCtfTeam(contestEntity, creator, teamScore);
     CtfChallengeEntity challenge = generateCtfChallenge(
-        contestEntity, STANDARD, category, score, false);
+        contestEntity, STANDARD, categories, score, false);
     generateCtfFlag(team, challenge, false);
 
     mockMvc.perform(patch("/v1/admin/ctf/prob/{pid}/open", challenge.getId())
@@ -597,13 +586,10 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
     Long teamScore = 0L;
     Long score = 1234L;
     CtfTeamEntity team = generateCtfTeam(contestEntity, creator, teamScore);
-    List<CtfChallengeCategoryDto> category = new ArrayList<>();
-    category.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
-        .id(MISC.getId())
-        .name(MISC.getName())
-        .build()));
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+    categories.add(MISC);
     CtfChallengeEntity challenge = generateCtfChallenge(
-        contestEntity, STANDARD, category, score, false);
+        contestEntity, STANDARD, categories, score, false);
     generateCtfFlag(team, challenge, false);
 
     mockMvc.perform(patch("/v1/admin/ctf/prob/{pid}/close", challenge.getId())
@@ -636,12 +622,9 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
     Long teamScore = 0L;
     Long score = 1234L;
     CtfTeamEntity team = generateCtfTeam(contestEntity, creator, teamScore);
-    List<CtfChallengeCategoryDto> category = new ArrayList<>();
-    category.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
-        .id(MISC.getId())
-        .name(MISC.getName())
-        .build()));
-    CtfChallengeEntity challenge = generateCtfChallenge(contestEntity, STANDARD, category, score, true);
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+    categories.add(MISC);
+    CtfChallengeEntity challenge = generateCtfChallenge(contestEntity, STANDARD, categories, score, true);
     generateCtfFlag(team, challenge, false);
 
     // when
@@ -680,14 +663,11 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
     Long score = 1234L;
     CtfTeamEntity team = generateCtfTeam(contestEntity, creator, teamScore);
 
-    List<CtfChallengeCategoryDto> category = new ArrayList<>();
-    category.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
-        .id(MISC.getId())
-        .name(MISC.getName())
-        .build()));
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+    categories.add(MISC);
 
     CtfChallengeEntity challenge = generateCtfChallenge(
-        contestEntity, STANDARD, category, score, true);
+        contestEntity, STANDARD, categories, score, true);
     CtfFlagEntity flag = generateCtfFlag(team, challenge, false);
 
     // when
@@ -725,14 +705,11 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
     Long score = 1234L;
     CtfTeamEntity team = generateCtfTeam(contestEntity, creator, teamScore);
 
-    List<CtfChallengeCategoryDto> category = new ArrayList<>();
-    category.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
-        .id(MISC.getId())
-        .name(MISC.getName())
-        .build()));
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+    categories.add(MISC);
 
     CtfChallengeEntity challenge = generateCtfChallenge(contestEntity,
-        DYNAMIC, category, score, true);
+        DYNAMIC, categories, score, true);
     Long maxScore = 2000L;
     Long minScore = 100L;
     generateDynamicChallengeInfo(challenge, maxScore, minScore);
@@ -796,32 +773,27 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
     Long score = 1234L;
     CtfTeamEntity team = generateCtfTeam(contestEntity, creator, teamScore);
 
-    List<CtfChallengeCategoryDto> category1 = new ArrayList<>();
-    category1.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
-        .id(MISC.getId())
-        .name(MISC.getName())
-        .build()));
+    List<CtfChallengeCategory> categories1 = new ArrayList<>();
+    categories1.add(MISC);
 
-    CtfChallengeEntity challenge = generateCtfChallenge(
-        contestEntity, STANDARD, category1, score, false);
+    CtfChallengeEntity challenge1 = generateCtfChallenge(
+        contestEntity, STANDARD, categories1, score, false);
 
-    List<CtfChallengeCategoryDto> category2 = new ArrayList<>();
-    category2.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
-        .id(FORENSIC.getId())
-        .name(FORENSIC.getName())
-        .build()));
+    List<CtfChallengeCategory> categories2 = new ArrayList<>();
+    categories2.add(FORENSIC);
+
     CtfChallengeEntity challenge2 = generateCtfChallenge(
-        contestEntity, DYNAMIC, category2, score, false);
+        contestEntity, DYNAMIC, categories2, score, false);
     generateDynamicChallengeInfo(challenge2, 1000L, 100L);
     generateCtfFlag(team, challenge2, false);
-    generateCtfFlag(team, challenge, false);
+    generateCtfFlag(team, challenge1, false);
 
     // when
     MockMultipartFile file = new MockMultipartFile("file", "image.png", "image/png",
         "<<png data>>".getBytes());
     mockMvc.perform(multipart("/v1/admin/ctf/prob/file")
         .file(file)
-        .param("challengeId", String.valueOf(challenge.getId()))
+        .param("challengeId", String.valueOf(challenge1.getId()))
         .param("page", "0")
         .param("size", "10")
         .header("Authorization", adminToken)
@@ -855,22 +827,16 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
     Long teamScore = 0L;
     Long score = 1234L;
     CtfTeamEntity team = generateCtfTeam(contestEntity, creator, teamScore);
-    List<CtfChallengeCategoryDto> category1 = new ArrayList<>();
-    category1.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
-        .id(MISC.getId())
-        .name(MISC.getName())
-        .build()));
+    List<CtfChallengeCategory> categories1 = new ArrayList<>();
+    categories1.add(MISC);
 
     CtfChallengeEntity challenge = generateCtfChallenge(
-        contestEntity, STANDARD, category1, score, false);
+        contestEntity, STANDARD, categories1, score, false);
 
-    List<CtfChallengeCategoryDto> category2 = new ArrayList<>();
-    category2.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
-        .id(FORENSIC.getId())
-        .name(FORENSIC.getName())
-        .build()));
+    List<CtfChallengeCategory> categories2 = new ArrayList<>();
+    categories2.add(FORENSIC);
     CtfChallengeEntity challenge2 = generateCtfChallenge(
-        contestEntity, DYNAMIC, category2, score, false);
+        contestEntity, DYNAMIC, categories2, score, false);
     generateDynamicChallengeInfo(challenge2, 1000L, 100L);
     generateCtfFlag(team, challenge2, false);
     generateCtfFlag(team, challenge, false);

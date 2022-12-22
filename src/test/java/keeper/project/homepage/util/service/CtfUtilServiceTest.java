@@ -12,6 +12,7 @@ import java.util.stream.IntStream;
 import keeper.project.homepage.ctf.controller.CtfSpringTestHelper;
 import keeper.project.homepage.ctf.dto.CtfChallengeCategoryDto;
 import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;
@@ -57,13 +58,10 @@ class CtfUtilServiceTest extends CtfSpringTestHelper {
         validTeamList.add(generateCtfTeam(validCtf, generateMemberEntity(회원, 정회원, 일반회원), 0L)));
 
     validChallengeList = new ArrayList<>();
-    List<CtfChallengeCategoryDto> category = new ArrayList<>();
-    category.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
-        .id(FORENSIC.getId())
-        .name(FORENSIC.getName())
-        .build()));
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+    categories.add(FORENSIC);
     IntStream.range(0, VALID_CHALLENGE_COUNT).forEach(n -> {
-      CtfChallengeEntity challenge = generateCtfChallenge(validCtf, DYNAMIC, category, 0L, true);
+      CtfChallengeEntity challenge = generateCtfChallenge(validCtf, DYNAMIC, categories, 0L, true);
       generateDynamicChallengeInfo(challenge, 1000L, 100L);
       validChallengeList.add(challenge);
     });

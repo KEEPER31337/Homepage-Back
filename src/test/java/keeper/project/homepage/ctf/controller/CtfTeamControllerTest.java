@@ -20,9 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.ArrayList;
 import java.util.List;
-import keeper.project.homepage.ctf.controller.CtfSpringTestHelper;
-import keeper.project.homepage.ctf.dto.CtfChallengeCategoryDto;
-import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfTeamEntity;
@@ -194,12 +192,9 @@ class CtfTeamControllerTest extends CtfSpringTestHelper {
         .build();
     ctfTeamHasMemberRepository.save(teamHasMemberEntity);
     team.getCtfTeamHasMemberEntityList().add(teamHasMemberEntity);
-    List<CtfChallengeCategoryDto> category = new ArrayList<>();
-    category.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
-        .id(MISC.getId())
-        .name(MISC.getName())
-        .build()));
-    CtfChallengeEntity challenge = generateCtfChallenge(contestEntity, STANDARD, category, 1234L,
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+    categories.add(MISC);
+    CtfChallengeEntity challenge = generateCtfChallenge(contestEntity, STANDARD, categories, 1234L,
         false);
     generateCtfFlag(team, challenge, true);
 

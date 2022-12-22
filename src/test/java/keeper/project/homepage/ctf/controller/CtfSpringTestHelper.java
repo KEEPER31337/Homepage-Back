@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.ctf.dto.CtfChallengeCategoryDto;
 import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeHasCtfChallengeCategoryEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity;
@@ -188,7 +188,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
   protected CtfChallengeEntity generateCtfChallenge(
       CtfContestEntity ctfContestEntity,
       CtfChallengeType ctfChallengeType,
-      List<CtfChallengeCategoryDto> category,
+      List<CtfChallengeCategory> category,
       Long score,
       boolean isSolvable) {
     final long epochTime = System.nanoTime();
@@ -210,8 +210,14 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         .build();
     ctfChallengeRepository.save(entity);
 
-    List<CtfChallengeCategoryEntity> ctfChallengeCategoryEntityList = category.stream()
-        .map(CtfChallengeCategoryDto::toEntity).toList();
+    List<CtfChallengeCategoryEntity> ctfChallengeCategoryEntityList = category
+        .stream()
+        .map(ctfChallengeCategory -> CtfChallengeCategoryEntity
+            .builder()
+            .id(ctfChallengeCategory.getId())
+            .name(ctfChallengeCategory.getName())
+            .build())
+        .toList();
 
     for (CtfChallengeCategoryEntity ctfChallengeCategory : ctfChallengeCategoryEntityList) {
       CtfChallengeHasCtfChallengeCategoryEntity save = ctfChallengeHasCtfChallengeCategoryRepository.save(
@@ -302,8 +308,8 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
     commonFields.addAll(Arrays.asList(
         fieldWithPath(prefix + ".challengeId").description("해당 문제의 Id"),
         fieldWithPath(prefix + ".title").description("문제 제목"),
-        fieldWithPath(prefix + ".category[].id").description("문제가 속한 카테고리의 id"),
-        fieldWithPath(prefix + ".category[].name").description("문제가 속한 카테고리의 이름"),
+        fieldWithPath(prefix + ".categories[].id").description("문제가 속한 카테고리의 id"),
+        fieldWithPath(prefix + ".categories[].name").description("문제가 속한 카테고리의 이름"),
         fieldWithPath(prefix + ".score").description("문제의 점수"),
         fieldWithPath(prefix + ".isSolved").description("내가 풀었는 지"),
         fieldWithPath(prefix + ".maxSubmitCount").description("최대 제출 횟수"),
@@ -333,8 +339,8 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".challengeId").description("해당 문제의 Id"),
         fieldWithPath(prefix + ".title").description("문제 제목"),
         fieldWithPath(prefix + ".content").description("문제 설명"),
-        fieldWithPath(prefix + ".category[].id").description("문제가 속한 카테고리의 id"),
-        fieldWithPath(prefix + ".category[].name").description("문제가 속한 카테고리의 이름"),
+        fieldWithPath(prefix + ".categories[].id").description("문제가 속한 카테고리의 id"),
+        fieldWithPath(prefix + ".categories[].name").description("문제가 속한 카테고리의 이름"),
         fieldWithPath(prefix + ".type.id").description("문제가 속한 타입의 id"),
         fieldWithPath(prefix + ".type.name").description("문제가 속한 타입의 이름"),
         fieldWithPath(prefix + ".flag").description("문제에 설정 된 flag (현재는 모든 팀이 동일한 flag를 가집니다."),
@@ -388,8 +394,8 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".challengeId").description("해당 문제의 Id"),
         fieldWithPath(prefix + ".title").description("문제 제목"),
         fieldWithPath(prefix + ".content").description("문제 설명"),
-        fieldWithPath(prefix + ".category[].id").description("문제가 속한 카테고리의 id"),
-        fieldWithPath(prefix + ".category[].name").description("문제가 속한 카테고리의 이름"),
+        fieldWithPath(prefix + ".categories[].id").description("문제가 속한 카테고리의 id"),
+        fieldWithPath(prefix + ".categories[].name").description("문제가 속한 카테고리의 이름"),
         fieldWithPath(prefix + ".score").description("문제의 점수"),
         fieldWithPath(prefix + ".creatorName").description("문제 생성자 이름"),
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id"),

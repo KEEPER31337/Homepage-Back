@@ -8,7 +8,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
@@ -70,7 +69,7 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
         .title(challenge.getName())
         .content(challenge.getDescription())
         .contestId(challenge.getCtfContestEntity().getId())
-        .category(challenge.getCtfChallengeHasCtfChallengeCategoryList().stream()
+        .categories(challenge.getCtfChallengeHasCtfChallengeCategoryList().stream()
             .map(CtfChallengeCategoryDto::toDto)
             .collect(toList()))
         .type(type)

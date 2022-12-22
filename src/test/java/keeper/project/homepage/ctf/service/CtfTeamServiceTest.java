@@ -1,6 +1,5 @@
 package keeper.project.homepage.ctf.service;
 
-import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.MISC;
 import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.SYSTEM;
 import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.STANDARD;
 
@@ -12,7 +11,7 @@ import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
 import keeper.project.homepage.ctf.dto.CtfChallengeCategoryDto;
 import keeper.project.homepage.ctf.dto.CtfChallengeTypeDto;
 import keeper.project.homepage.ctf.dto.CtfTeamDetailDto;
-import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
 import org.assertj.core.api.Assertions;
@@ -177,11 +176,16 @@ class CtfTeamServiceTest extends CtfSpringTestHelper {
     String testFlag = "testFlag";
     Long testScore = 1234L;
 
-    List<CtfChallengeCategoryDto> category = new ArrayList<>();
-    category.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
-        .id(SYSTEM.getId())
-        .name(SYSTEM.getName())
-        .build()));
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+    categories.add(SYSTEM);
+
+    List<CtfChallengeCategoryDto> categoryDtos = categories
+        .stream()
+        .map(ctfChallengeCategory -> CtfChallengeCategoryDto
+            .builder()
+            .id(ctfChallengeCategory.getId())
+            .name(ctfChallengeCategory.getName()).build())
+        .toList();
 
     CtfChallengeAdminDto createChallengeInfo = CtfChallengeAdminDto.builder()
         .content(testContent)
@@ -189,7 +193,7 @@ class CtfTeamServiceTest extends CtfSpringTestHelper {
         .flag(testFlag)
         .isSolvable(true)
         .type(CtfChallengeTypeDto.builder().id(STANDARD.getId()).build())
-        .category(category)
+        .categories(categoryDtos)
         .title(testTitle)
         .score(testScore)
         .maxSubmitCount(123L)

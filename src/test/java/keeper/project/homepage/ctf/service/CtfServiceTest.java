@@ -4,7 +4,6 @@ import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.회�
 import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.우수회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberTypeName.정회원;
 import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.MISC;
-import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.WEB;
 import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.STANDARD;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,7 +15,7 @@ import keeper.project.homepage.ctf.dto.CtfChallengeCategoryDto;
 import keeper.project.homepage.ctf.dto.CtfChallengeTypeDto;
 import keeper.project.homepage.ctf.dto.CtfFlagDto;
 import keeper.project.homepage.ctf.dto.CtfTeamDetailDto;
-import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;
 import keeper.project.homepage.ctf.entity.CtfSubmitLogEntity;
@@ -159,11 +158,12 @@ public class CtfServiceTest extends CtfSpringTestHelper {
             List.of(new SimpleGrantedAuthority("ROLE_회원"))));
     final long epochTime = System.nanoTime();
 
-    List<CtfChallengeCategoryDto> category = new ArrayList<>();
-    category.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
-        .id(MISC.getId())
-        .name(MISC.getName())
-        .build()));
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+    categories.add(MISC);
+
+    List<CtfChallengeCategoryDto> categoryDtos = categories.stream().map(
+        ctfChallengeCategory -> CtfChallengeCategoryDto.builder().id(ctfChallengeCategory.getId())
+            .name(ctfChallengeCategory.getName()).build()).toList();
 
     CtfChallengeAdminDto createChallenge = CtfChallengeAdminDto.builder()
         .title("TITLE_" + epochTime)
@@ -175,7 +175,7 @@ public class CtfServiceTest extends CtfSpringTestHelper {
         .type(CtfChallengeTypeDto.builder()
             .id(STANDARD.getId())
             .build())
-        .category(category)
+        .categories(categoryDtos)
         .maxSubmitCount(100L)
         .build();
     return ctfAdminService.createChallenge(createChallenge);

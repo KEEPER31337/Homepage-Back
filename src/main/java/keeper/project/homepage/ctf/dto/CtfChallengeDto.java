@@ -3,7 +3,6 @@ package keeper.project.homepage.ctf.dto;
 import static java.util.stream.Collectors.toList;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
@@ -41,7 +40,7 @@ public class CtfChallengeDto extends CtfCommonChallengeDto {
         .title(challenge.getName())
         .content(challenge.getDescription())
         .contestId(challenge.getCtfContestEntity().getId())
-        .category(challenge.getCtfChallengeHasCtfChallengeCategoryList()
+        .categories(challenge.getCtfChallengeHasCtfChallengeCategoryList()
             .stream()
             .map(CtfChallengeCategoryDto::toDto)
             .collect(toList()))

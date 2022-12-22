@@ -8,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
@@ -32,7 +31,7 @@ public class CtfCommonChallengeDto {
 
   protected String title;
   protected Long score;
-  protected List<CtfChallengeCategoryDto> category;
+  protected List<CtfChallengeCategoryDto> categories;
   protected Long contestId;
   @Max(MAX_SUBMIT_COUNT)
   @Min(MIN_SUBMIT_COUNT)
@@ -57,7 +56,7 @@ public class CtfCommonChallengeDto {
         .challengeId(challenge.getId())
         .title(challenge.getName())
         .contestId(challenge.getCtfContestEntity().getId())
-        .category(challenge.getCtfChallengeHasCtfChallengeCategoryList()
+        .categories(challenge.getCtfChallengeHasCtfChallengeCategoryList()
             .stream()
             .map(CtfChallengeCategoryDto::toDto)
             .collect(toList()))
