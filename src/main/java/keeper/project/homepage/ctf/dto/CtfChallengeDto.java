@@ -1,5 +1,7 @@
 package keeper.project.homepage.ctf.dto;
 
+import static java.util.stream.Collectors.toList;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -32,8 +34,6 @@ public class CtfChallengeDto extends CtfCommonChallengeDto {
 
   public static CtfChallengeDto toDto(CtfChallengeEntity challenge, Long solvedTeamCount,
       Boolean isSolved, CtfFlagEntity ctfFlagEntity) {
-    CtfChallengeCategoryDto category = CtfChallengeCategoryDto.toDto(
-        challenge.getCtfChallengeCategoryEntity());
     FileDto file = FileDto.toDto(challenge.getFileEntity());
 
     return CtfChallengeDto.builder()
@@ -41,7 +41,10 @@ public class CtfChallengeDto extends CtfCommonChallengeDto {
         .title(challenge.getName())
         .content(challenge.getDescription())
         .contestId(challenge.getCtfContestEntity().getId())
-        .category(category)
+        .category(challenge.getCtfChallengeHasCtfChallengeCategoryList()
+            .stream()
+            .map(CtfChallengeCategoryDto::toDto)
+            .collect(toList()))
         .creatorName(challenge.getCreator().getNickName())
         .score(challenge.getScore())
         .solvedTeamCount(solvedTeamCount)

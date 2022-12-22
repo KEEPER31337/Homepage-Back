@@ -1,5 +1,7 @@
 package keeper.project.homepage.ctf.dto;
 
+import static java.util.stream.Collectors.toList;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -38,12 +40,12 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
   private CtfDynamicChallengeInfoDto dynamicInfo;
 
   public CtfChallengeEntity toEntity(CtfContestEntity contest, CtfChallengeTypeEntity type,
-      CtfChallengeCategoryEntity category, FileEntity fileEntity, MemberEntity creator) {
+      FileEntity fileEntity, MemberEntity creator) {
     return CtfChallengeEntity.builder()
         .name(title)
         .description(content)
         .ctfContestEntity(contest)
-        .ctfChallengeCategoryEntity(category)
+        .ctfChallengeHasCtfChallengeCategoryList(new ArrayList<>())
         .ctfChallengeTypeEntity(type)
         .isSolvable(isSolvable)
         .registerTime(LocalDateTime.now())
@@ -56,8 +58,6 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
   }
 
   public static CtfChallengeAdminDto toDto(CtfChallengeEntity challenge, Long solvedTeamCount) {
-    CtfChallengeCategoryDto category = CtfChallengeCategoryDto.toDto(
-        challenge.getCtfChallengeCategoryEntity());
     CtfChallengeTypeDto type = CtfChallengeTypeDto.toDto(
         challenge.getCtfChallengeTypeEntity());
     FileDto file = FileDto.toDto(
@@ -70,7 +70,9 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
         .title(challenge.getName())
         .content(challenge.getDescription())
         .contestId(challenge.getCtfContestEntity().getId())
-        .category(category)
+        .category(challenge.getCtfChallengeHasCtfChallengeCategoryList().stream()
+            .map(CtfChallengeCategoryDto::toDto).collect(
+                toList()))
         .type(type)
         .flag(getVirtualTeamFlag(challenge).getContent())
         .isSolvable(challenge.getIsSolvable())
