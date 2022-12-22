@@ -3,6 +3,8 @@ package keeper.project.homepage.ctf.repository;
 import static java.time.LocalDateTime.now;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
@@ -111,13 +113,12 @@ public class CtfTestHelper {
   protected CtfChallengeEntity generateCtfChallenge(
       CtfContestEntity ctfContestEntity,
       CtfChallengeType ctfChallengeType,
-      CtfChallengeCategory ctfChallengeCategory,
       Long score) {
     final long epochTime = System.nanoTime();
     CtfChallengeTypeEntity ctfChallengeTypeEntity = ctfChallengeTypeRepository.getById(
         ctfChallengeType.getId());
-    CtfChallengeCategoryEntity ctfChallengeCategoryEntity = ctfChallengeCategoryRepository.getById(
-        ctfChallengeCategory.getId());
+
+
     CtfChallengeEntity entity = CtfChallengeEntity.builder()
         .name("name_" + epochTime)
         .description("desc_" + epochTime)
@@ -125,11 +126,12 @@ public class CtfTestHelper {
         .creator(memberRepository.getById(1L)) // Virtual Member
         .isSolvable(false)
         .ctfChallengeTypeEntity(ctfChallengeTypeEntity)
-        .ctfChallengeCategoryEntity(ctfChallengeCategoryEntity)
+        .ctfChallengeHasCtfChallengeCategoryList(new ArrayList<>())
         .score(score)
         .ctfContestEntity(ctfContestEntity)
         .maxSubmitCount(123L)
         .build();
+
     ctfChallengeRepository.save(entity);
     return entity;
   }

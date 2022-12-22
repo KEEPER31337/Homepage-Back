@@ -6,7 +6,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeHasCtfChallengeCategoryEntity;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;
 import keeper.project.homepage.ctf.entity.CtfTeamEntity;
@@ -30,7 +35,8 @@ class CtfFlagRepositoryTest extends CtfTestHelper {
     MemberEntity member = memberRepository.getById(1L);
     CtfContestEntity contest = generateCtfContest(member);
     CtfTeamEntity ctfTeam = generateCtfTeam(contest, member, 0L);
-    CtfChallengeEntity ctfChallenge = generateCtfChallenge(contest, STANDARD, MISC, 1000L);
+
+    CtfChallengeEntity ctfChallenge = generateCtfChallenge(contest, STANDARD, 1000L);
     return CtfFlagEntity.builder()
         .content(content)
         .ctfTeamEntity(ctfTeam)
