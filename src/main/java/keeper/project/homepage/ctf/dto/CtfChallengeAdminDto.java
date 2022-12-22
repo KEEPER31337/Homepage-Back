@@ -71,8 +71,8 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
         .content(challenge.getDescription())
         .contestId(challenge.getCtfContestEntity().getId())
         .category(challenge.getCtfChallengeHasCtfChallengeCategoryList().stream()
-            .map(CtfChallengeCategoryDto::toDto).collect(
-                toList()))
+            .map(CtfChallengeCategoryDto::toDto)
+            .collect(toList()))
         .type(type)
         .flag(getVirtualTeamFlag(challenge).getContent())
         .isSolvable(challenge.getIsSolvable())
