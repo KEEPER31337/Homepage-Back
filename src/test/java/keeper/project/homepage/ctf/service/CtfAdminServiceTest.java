@@ -75,7 +75,8 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
         .id(WEB.getId())
         .name(WEB.getName())
         .build()));
-    CtfChallengeAdminDto result = createStandardChallenge(1234L, "flag", "content", "title", category, 123L);
+    CtfChallengeAdminDto result = createStandardChallenge(1234L, "flag", "content", "title",
+        category, 123L);
     CtfFlagEntity flag = ctfFlagRepository.findByCtfChallengeEntityIdAndCtfTeamEntityId(
         result.getChallengeId(), CtfUtilService.VIRTUAL_TEAM_ID).orElseThrow();
 
@@ -87,7 +88,6 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
     assertThat(result.getContent()).isEqualTo("content");
     assertThat(result.getTitle()).isEqualTo("title");
     assertThat(result.getScore()).isEqualTo(1234L);
-    assertThat(result.getCategory().size()).isEqualTo(1);
     assertThat(result.getCategory().get(0).getId()).isEqualTo(category.get(0).getId());
     assertThat(result.getCategory().size()).isEqualTo(1);
     assertThat(result.getContestId()).isEqualTo(ctfContestEntity.getId());
@@ -107,7 +107,8 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
         .id(FORENSIC.getId())
         .name(FORENSIC.getName())
         .build()));
-    CtfChallengeAdminDto result = createStandardChallenge(1234L, "flag", "content", "title", category, 123L);
+    CtfChallengeAdminDto result = createStandardChallenge(1234L, "flag", "content", "title",
+        category, 123L);
     CtfFlagEntity flag = ctfFlagRepository.findByCtfChallengeEntityIdAndCtfTeamEntityId(
         result.getChallengeId(), CtfUtilService.VIRTUAL_TEAM_ID).orElseThrow();
 
@@ -127,8 +128,10 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
     assertThat(flag.getIsCorrect()).isEqualTo(false);
   }
 
-  private CtfChallengeAdminDto createStandardChallenge(long score, List<CtfChallengeCategoryDto> category) {
-    return createStandardChallenge(score, getRandomUUID(), getRandomUUID(), getRandomUUID(), category, 15L);
+  private CtfChallengeAdminDto createStandardChallenge(long score,
+      List<CtfChallengeCategoryDto> category) {
+    return createStandardChallenge(score, getRandomUUID(), getRandomUUID(), getRandomUUID(),
+        category, 15L);
   }
 
   private CtfChallengeAdminDto createStandardChallenge(long score, String flag, String content,
