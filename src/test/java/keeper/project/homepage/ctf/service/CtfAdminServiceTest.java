@@ -4,12 +4,14 @@ import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.회�
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.회장;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.일반회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberTypeName.정회원;
+import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.FORENSIC;
 import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.WEB;
 import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.DYNAMIC;
 import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.STANDARD;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.AccessDeniedException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import javax.persistence.EntityManager;
@@ -20,6 +22,7 @@ import keeper.project.homepage.ctf.dto.CtfChallengeTypeDto;
 import keeper.project.homepage.ctf.dto.CtfDynamicChallengeInfoDto;
 import keeper.project.homepage.ctf.dto.CtfFlagDto;
 import keeper.project.homepage.ctf.dto.CtfTeamDetailDto;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
@@ -65,9 +68,14 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
   }
 
   @Test
-  @DisplayName("문제 생성 테스트")
+  @DisplayName("문제 생성 테스트 - 카테고리 1개")
   void createChallenge() {
-    CtfChallengeAdminDto result = createStandardChallenge(1234L, "flag", "content", "title", 123L);
+    List<CtfChallengeCategoryDto> category = new ArrayList<>();
+    category.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
+        .id(WEB.getId())
+        .name(WEB.getName())
+        .build()));
+    CtfChallengeAdminDto result = createStandardChallenge(1234L, "flag", "content", "title", category, 123L);
     CtfFlagEntity flag = ctfFlagRepository.findByCtfChallengeEntityIdAndCtfTeamEntityId(
         result.getChallengeId(), CtfUtilService.VIRTUAL_TEAM_ID).orElseThrow();
 
@@ -79,19 +87,54 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
     assertThat(result.getContent()).isEqualTo("content");
     assertThat(result.getTitle()).isEqualTo("title");
     assertThat(result.getScore()).isEqualTo(1234L);
-    assertThat(result.getCategory().getId()).isEqualTo(getWebCategory().getId());
+    assertThat(result.getCategory().size()).isEqualTo(1);
+    assertThat(result.getCategory().get(0).getId()).isEqualTo(category.get(0).getId());
+    assertThat(result.getCategory().size()).isEqualTo(1);
     assertThat(result.getContestId()).isEqualTo(ctfContestEntity.getId());
     assertThat(flag.getRemainedSubmitCount()).isEqualTo(123L);
     assertThat(flag.getIsCorrect()).isEqualTo(false);
   }
 
-  private CtfChallengeAdminDto createStandardChallenge(long score) {
-    return createStandardChallenge(score, getRandomUUID(), getRandomUUID(), getRandomUUID(), 15L);
+  @Test
+  @DisplayName("문제 생성 테스트 - 카테고리 2개이상")
+  void createChallengeHasManyCategory() {
+    List<CtfChallengeCategoryDto> category = new ArrayList<>();
+    category.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
+        .id(WEB.getId())
+        .name(WEB.getName())
+        .build()));
+    category.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
+        .id(FORENSIC.getId())
+        .name(FORENSIC.getName())
+        .build()));
+    CtfChallengeAdminDto result = createStandardChallenge(1234L, "flag", "content", "title", category, 123L);
+    CtfFlagEntity flag = ctfFlagRepository.findByCtfChallengeEntityIdAndCtfTeamEntityId(
+        result.getChallengeId(), CtfUtilService.VIRTUAL_TEAM_ID).orElseThrow();
+
+    assertThat(result.getFlag()).isEqualTo("flag");
+    assertThat(result.getRemainedSubmitCount()).isEqualTo(123L);
+    assertThat(result.getType().getId()).isEqualTo(getStandardType().getId());
+    assertThat(result.getDynamicInfo().getMaxScore()).isNull();
+    assertThat(result.getDynamicInfo().getMinScore()).isNull();
+    assertThat(result.getContent()).isEqualTo("content");
+    assertThat(result.getTitle()).isEqualTo("title");
+    assertThat(result.getScore()).isEqualTo(1234L);
+    assertThat(result.getCategory().get(0).getId()).isEqualTo(category.get(0).getId());
+    assertThat(result.getCategory().get(1).getId()).isEqualTo(category.get(1).getId());
+    assertThat(result.getCategory().size()).isEqualTo(2);
+    assertThat(result.getContestId()).isEqualTo(ctfContestEntity.getId());
+    assertThat(flag.getRemainedSubmitCount()).isEqualTo(123L);
+    assertThat(flag.getIsCorrect()).isEqualTo(false);
+  }
+
+  private CtfChallengeAdminDto createStandardChallenge(long score, List<CtfChallengeCategoryDto> category) {
+    return createStandardChallenge(score, getRandomUUID(), getRandomUUID(), getRandomUUID(), category, 15L);
   }
 
   private CtfChallengeAdminDto createStandardChallenge(long score, String flag, String content,
-      String title, long maxSubmitCount) {
+      String title, List<CtfChallengeCategoryDto> category, long maxSubmitCount) {
     setAuthentication(contestCreator, 회장);
+
     CtfChallengeAdminDto challengeAdminDto = CtfChallengeAdminDto.builder()
         .isSolvable(true)
         .flag(flag)
@@ -100,7 +143,7 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
         .content(content)
         .title(title)
         .score(score)
-        .category(getWebCategory())
+        .category(category)
         .contestId(ctfContestEntity.getId())
         .maxSubmitCount(maxSubmitCount)
         .build();
@@ -116,6 +159,13 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
   private CtfChallengeAdminDto createDynamicChallenge(CtfDynamicChallengeInfoDto dynamicScore,
       String flag, String content, String title, long maxSubmitCount) {
     setAuthentication(contestCreator, 회장);
+
+    List<CtfChallengeCategoryDto> category = new ArrayList<>();
+    category.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
+        .id(WEB.getId())
+        .name(WEB.getName())
+        .build()));
+
     CtfChallengeAdminDto challengeAdminDto = CtfChallengeAdminDto.builder()
         .isSolvable(true)
         .flag(flag)
@@ -124,7 +174,7 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
         .content(content)
         .title(title)
         .score(0L)
-        .category(getWebCategory())
+        .category(category)
         .contestId(ctfContestEntity.getId())
         .maxSubmitCount(maxSubmitCount)
         .build();
@@ -156,9 +206,14 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
   @Test
   @DisplayName("[시나리오1] STANDRAD 문제 삭제 시 점수 반영 제대로 되는지 테스트")
   void deleteProblem_scenario1() {
-    CtfChallengeAdminDto challenge1 = createStandardChallenge(100L);
-    CtfChallengeAdminDto challenge2 = createStandardChallenge(200L);
-    CtfChallengeAdminDto challenge3 = createStandardChallenge(400L);
+    List<CtfChallengeCategoryDto> category = new ArrayList<>();
+    category.add(CtfChallengeCategoryDto.toDto(CtfChallengeCategoryEntity.builder()
+        .id(WEB.getId())
+        .name(WEB.getName())
+        .build()));
+    CtfChallengeAdminDto challenge1 = createStandardChallenge(100L, category);
+    CtfChallengeAdminDto challenge2 = createStandardChallenge(200L, category);
+    CtfChallengeAdminDto challenge3 = createStandardChallenge(400L, category);
 
     MemberEntity user1 = generateMemberEntity(회원, 정회원, 일반회원);
     CtfTeamDetailDto team1 = createCtfTeam(user1); // 1번, 2번 문제 해결
@@ -192,7 +247,7 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
     assertThat(ctfTeamRepository.getById(team2.getId()).getScore()).isEqualTo(400L);
     assertThat(ctfTeamRepository.getById(team3.getId()).getScore()).isEqualTo(400L);
 
-    CtfChallengeAdminDto challenge4 = createStandardChallenge(800L);
+    CtfChallengeAdminDto challenge4 = createStandardChallenge(800L, category);
 
     assertThat(solveChallenge(challenge4, user1)).isTrue();
     assertThat(solveChallenge(challenge4, user2)).isTrue();
