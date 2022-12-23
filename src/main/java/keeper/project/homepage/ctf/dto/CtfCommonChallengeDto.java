@@ -1,10 +1,13 @@
 package keeper.project.homepage.ctf.dto;
 
+import static java.util.stream.Collectors.toList;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.Nulls;
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
@@ -28,7 +31,7 @@ public class CtfCommonChallengeDto {
 
   protected String title;
   protected Long score;
-  protected CtfChallengeCategoryDto category;
+  protected List<CtfChallengeCategoryDto> categories;
   protected Long contestId;
   @Max(MAX_SUBMIT_COUNT)
   @Min(MIN_SUBMIT_COUNT)
@@ -48,14 +51,15 @@ public class CtfCommonChallengeDto {
 
   public static CtfCommonChallengeDto toDto(CtfChallengeEntity challenge, Boolean isSolved,
       CtfFlagEntity ctfFlagEntity) {
-    CtfChallengeCategoryDto category = CtfChallengeCategoryDto.toDto(
-        challenge.getCtfChallengeCategoryEntity());
 
     return CtfCommonChallengeDto.builder()
         .challengeId(challenge.getId())
         .title(challenge.getName())
         .contestId(challenge.getCtfContestEntity().getId())
-        .category(category)
+        .categories(challenge.getCtfChallengeHasCtfChallengeCategoryList()
+            .stream()
+            .map(CtfChallengeCategoryDto::toDto)
+            .collect(toList()))
         .score(challenge.getScore())
         .isSolved(isSolved)
         .remainedSubmitCount(ctfFlagEntity.getRemainedSubmitCount())

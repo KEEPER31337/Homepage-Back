@@ -8,12 +8,14 @@ import java.nio.file.AccessDeniedException;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
+import keeper.project.homepage.ctf.dto.CtfChallengeCategoryDto;
 import keeper.project.homepage.ctf.dto.CtfContestAdminDto;
 import keeper.project.homepage.ctf.dto.CtfDynamicChallengeInfoDto;
 import keeper.project.homepage.ctf.dto.CtfProbMakerDto;
 import keeper.project.homepage.ctf.dto.CtfSubmitLogDto;
 import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeHasCtfChallengeCategoryEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfDynamicChallengeInfoEntity;
@@ -24,6 +26,7 @@ import keeper.project.homepage.ctf.exception.CustomCtfCategoryNotFoundException;
 import keeper.project.homepage.ctf.exception.CustomCtfChallengeNotFoundException;
 import keeper.project.homepage.ctf.exception.CustomCtfTypeNotFoundException;
 import keeper.project.homepage.ctf.repository.CtfChallengeCategoryRepository;
+import keeper.project.homepage.ctf.repository.CtfChallengeHasCtfChallengeCategoryRepository;
 import keeper.project.homepage.ctf.repository.CtfChallengeRepository;
 import keeper.project.homepage.ctf.repository.CtfChallengeTypeRepository;
 import keeper.project.homepage.ctf.repository.CtfContestRepository;
@@ -63,6 +66,8 @@ public class CtfAdminService {
   private final CtfContestRepository ctfContestRepository;
   private final CtfTeamRepository ctfTeamRepository;
   private final CtfChallengeCategoryRepository ctfChallengeCategoryRepository;
+
+  private final CtfChallengeHasCtfChallengeCategoryRepository ctfChallengeHasCtfChallengeCategoryRepository;
   private final CtfSubmitLogRepository ctfSubmitLogRepository;
   private final CtfChallengeTypeRepository ctfChallengeTypeRepository;
   private final CtfChallengeRepository challengeRepository;
@@ -111,6 +116,8 @@ public class CtfAdminService {
   @Transactional
   public CtfChallengeAdminDto createChallenge(CtfChallengeAdminDto challengeAdminDto) {
     CtfChallengeEntity newChallenge = createChallengeEntity(challengeAdminDto);
+
+    setChallengeCategory(newChallenge, challengeAdminDto);
     if (ctfUtilService.isTypeDynamic(newChallenge)) {
       trySetDynamicInfoInChallenge(newChallenge, challengeAdminDto);
     }
@@ -317,12 +324,30 @@ public class CtfAdminService {
   private CtfChallengeEntity createChallengeEntityWithFileEntity(
       CtfChallengeAdminDto challengeAdminDto, FileEntity fileEntity) {
     CtfContestEntity contest = getCtfContestEntity(challengeAdminDto.getContestId());
-    CtfChallengeCategoryEntity category = getCategoryEntity(challengeAdminDto);
+
     CtfChallengeTypeEntity type = getTypeEntity(challengeAdminDto);
     MemberEntity creator = authService.getMemberEntityWithJWT();
+
     CtfChallengeEntity challenge = challengeAdminDto
-        .toEntity(contest, type, category, fileEntity, creator);
+        .toEntity(contest, type, fileEntity, creator);
+
     return challengeRepository.save(challenge);
+  }
+
+  private void setChallengeCategory(CtfChallengeEntity challenge,
+      CtfChallengeAdminDto challengeAdminDto) {
+    List<CtfChallengeCategoryEntity> ctfChallengeCategoryEntityList = challengeAdminDto.getCategories()
+        .stream()
+        .map(CtfChallengeCategoryDto::toEntity).toList();
+
+    for (CtfChallengeCategoryEntity ctfChallengeCategory : ctfChallengeCategoryEntityList) {
+      challenge.addCtfChallengeHasCtfChallengeCategory(ctfChallengeHasCtfChallengeCategoryRepository
+          .save(CtfChallengeHasCtfChallengeCategoryEntity
+              .builder()
+              .challenge(challenge)
+              .category(ctfChallengeCategory)
+              .build()));
+    }
   }
 
   private CtfChallengeEntity createChallengeEntity(CtfChallengeAdminDto challengeAdminDto) {
@@ -335,9 +360,10 @@ public class CtfAdminService {
         .orElseThrow(CustomCtfTypeNotFoundException::new);
   }
 
-  private CtfChallengeCategoryEntity getCategoryEntity(CtfChallengeAdminDto challengeAdminDto) {
+  private CtfChallengeCategoryEntity getCategoryEntity(
+      CtfChallengeCategoryDto ctfChallengeCategoryDto) {
     return ctfChallengeCategoryRepository
-        .findById(challengeAdminDto.getCategory().getId())
+        .findById(ctfChallengeCategoryDto.getId())
         .orElseThrow(CustomCtfCategoryNotFoundException::new);
   }
 

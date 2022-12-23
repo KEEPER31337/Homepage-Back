@@ -19,6 +19,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;
@@ -54,13 +58,14 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
     CtfContestEntity contest = generateCtfContest(adminEntity, true);
 
     Long score = 1000L;
-
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+    categories.add(MISC);
     CtfChallengeEntity dynamicChallenge = generateCtfChallenge(
-        contest, DYNAMIC, FORENSIC, score, true);
+        contest, DYNAMIC, categories, score, true);
     CtfChallengeEntity standardChallenge = generateCtfChallenge(
-        contest, STANDARD, MISC, score, true);
+        contest, STANDARD, categories, score, true);
     CtfChallengeEntity notSolvable = generateCtfChallenge(
-        contest, DYNAMIC, WEB, score, false);
+        contest, DYNAMIC, categories, score, false);
 
     CtfTeamEntity team = generateCtfTeam(contest, userEntity, 0L);
 
@@ -79,8 +84,8 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
         .andExpect(jsonPath("$.list[0].content").doesNotExist())
         .andExpect(jsonPath("$.list[0].contestId")
             .value(dynamicChallenge.getCtfContestEntity().getId()))
-        .andExpect(jsonPath("$.list[0].category.id")
-            .value(dynamicChallenge.getCtfChallengeCategoryEntity().getId()))
+        .andExpect(jsonPath("$.list[0].categories[0].id")
+            .value(categories.get(0).getId()))
         .andExpect(jsonPath("$.list[0].type.id").doesNotExist())
         .andExpect(jsonPath("$.list[0].isSolvable").doesNotExist())
         .andExpect(jsonPath("$.list[0].score").value(dynamicChallenge.getScore()))
@@ -91,8 +96,8 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
         .andExpect(jsonPath("$.list[1].content").doesNotExist())
         .andExpect(jsonPath("$.list[1].contestId")
             .value(standardChallenge.getCtfContestEntity().getId()))
-        .andExpect(jsonPath("$.list[1].category.id")
-            .value(standardChallenge.getCtfChallengeCategoryEntity().getId()))
+        .andExpect(jsonPath("$.list[1].categories[0].id")
+            .value(categories.get(0).getId()))
         .andExpect(jsonPath("$.list[1].type.id").doesNotExist())
         .andExpect(jsonPath("$.list[1].isSolvable").doesNotExist())
         .andExpect(jsonPath("$.list[1].score").value(standardChallenge.getScore()))
@@ -116,11 +121,14 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
     CtfContestEntity contest = generateCtfContest(adminEntity, true);
 
     Long score = 1000L;
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+
+    categories.add(FORENSIC);
 
     CtfChallengeEntity dynamicChallenge = generateCtfChallenge(
-        contest, DYNAMIC, FORENSIC, score, true);
+        contest, DYNAMIC, categories, score, true);
     CtfChallengeEntity standardChallenge = generateCtfChallenge(
-        contest, STANDARD, MISC, score, true);
+        contest, STANDARD, categories, score, true);
 
     CtfTeamEntity team = generateCtfTeam(contest, userEntity, 0L);
 
@@ -148,8 +156,11 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
     Long maxScore = 1234L;
     Long minScore = 567L;
 
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+    categories.add(FORENSIC);
+
     CtfChallengeEntity dynamicChallenge = generateCtfChallenge(
-        contest, DYNAMIC, FORENSIC, score, true);
+        contest, DYNAMIC, categories, score, true);
     generateDynamicChallengeInfo(dynamicChallenge, maxScore, minScore);
 
     CtfTeamEntity team = generateCtfTeam(contest, userEntity, 0L);
@@ -193,9 +204,10 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
     Long score = 1000L;
     Long maxScore = 1234L;
     Long minScore = 567L;
-
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+    categories.add(FORENSIC);
     CtfChallengeEntity dynamicChallenge = generateCtfChallenge(
-        contest, DYNAMIC, FORENSIC, score, true);
+        contest, DYNAMIC, categories, score, true);
     generateDynamicChallengeInfo(dynamicChallenge, maxScore, minScore);
     CtfTeamEntity team = generateCtfTeam(contest, userEntity, 0L);
     CtfFlagEntity flag = generateCtfFlag(team, dynamicChallenge, false, 0L);
@@ -220,9 +232,10 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
     CtfContestEntity contest = generateCtfContest(adminEntity, true);
 
     Long score = 1000L;
-
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+    categories.add(FORENSIC);
     CtfChallengeEntity dynamicChallenge = generateCtfChallenge(
-        contest, DYNAMIC, FORENSIC, score, true);
+        contest, DYNAMIC, categories, score, true);
     generateFileInChallenge(dynamicChallenge);
 
     CtfTeamEntity team = generateCtfTeam(contest, userEntity, 0L);
@@ -239,8 +252,8 @@ class CtfChallengeControllerTest extends CtfSpringTestHelper {
         .andExpect(jsonPath("$.data.content").value(dynamicChallenge.getDescription()))
         .andExpect(jsonPath("$.data.contestId")
             .value(dynamicChallenge.getCtfContestEntity().getId()))
-        .andExpect(jsonPath("$.data.category.id")
-            .value(dynamicChallenge.getCtfChallengeCategoryEntity().getId()))
+        .andExpect(jsonPath("$.data.categories[0].id")
+            .value(categories.get(0).getId()))
         .andExpect(jsonPath("$.data.type.id").doesNotExist())
         .andExpect(jsonPath("$.data.isSolvable").doesNotExist())
         .andExpect(

@@ -4,12 +4,14 @@ import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfC
 import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.STANDARD;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.ctf.controller.CtfSpringTestHelper;
 import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
 import keeper.project.homepage.ctf.dto.CtfChallengeCategoryDto;
 import keeper.project.homepage.ctf.dto.CtfChallengeTypeDto;
 import keeper.project.homepage.ctf.dto.CtfTeamDetailDto;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
 import org.assertj.core.api.Assertions;
@@ -174,14 +176,24 @@ class CtfTeamServiceTest extends CtfSpringTestHelper {
     String testFlag = "testFlag";
     Long testScore = 1234L;
 
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+    categories.add(SYSTEM);
+
+    List<CtfChallengeCategoryDto> categoryDtos = categories
+        .stream()
+        .map(ctfChallengeCategory -> CtfChallengeCategoryDto
+            .builder()
+            .id(ctfChallengeCategory.getId())
+            .name(ctfChallengeCategory.getName()).build())
+        .toList();
+
     CtfChallengeAdminDto createChallengeInfo = CtfChallengeAdminDto.builder()
         .content(testContent)
         .contestId(contest.getId())
         .flag(testFlag)
         .isSolvable(true)
         .type(CtfChallengeTypeDto.builder().id(STANDARD.getId()).build())
-        .category(
-            CtfChallengeCategoryDto.builder().id(SYSTEM.getId()).build())
+        .categories(categoryDtos)
         .title(testTitle)
         .score(testScore)
         .maxSubmitCount(123L)

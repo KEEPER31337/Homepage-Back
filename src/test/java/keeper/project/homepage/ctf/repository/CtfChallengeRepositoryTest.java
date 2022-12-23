@@ -27,8 +27,6 @@ class CtfChallengeRepositoryTest extends CtfTestHelper {
     boolean isSolvable = true;
     CtfChallengeTypeEntity ctfChallengeTypeEntity = ctfChallengeTypeRepository.getById(
         STANDARD.getId());
-    CtfChallengeCategoryEntity ctfChallengeCategoryEntity = ctfChallengeCategoryRepository.getById(
-        SYSTEM.getId());
     Long score = 1000L;
     CtfContestEntity contest = generateCtfContest(member);
 
@@ -40,7 +38,7 @@ class CtfChallengeRepositoryTest extends CtfTestHelper {
         .creator(member) // Virtual Member
         .isSolvable(isSolvable)
         .ctfChallengeTypeEntity(ctfChallengeTypeEntity)
-        .ctfChallengeCategoryEntity(ctfChallengeCategoryEntity)
+        .ctfChallengeHasCtfChallengeCategoryList(new ArrayList<>())
         .score(score)
         .ctfContestEntity(contest)
         .ctfFlagEntity(new ArrayList<>())
@@ -55,7 +53,6 @@ class CtfChallengeRepositoryTest extends CtfTestHelper {
     assertThat(findChallenge.getCreator()).isEqualTo(member);
     assertThat(findChallenge.getIsSolvable()).isEqualTo(isSolvable);
     assertThat(findChallenge.getCtfChallengeTypeEntity()).isEqualTo(ctfChallengeTypeEntity);
-    assertThat(findChallenge.getCtfChallengeCategoryEntity()).isEqualTo(ctfChallengeCategoryEntity);
     assertThat(findChallenge.getScore()).isEqualTo(score);
     assertThat(findChallenge.getCtfContestEntity()).isEqualTo(contest);
   }
@@ -71,8 +68,6 @@ class CtfChallengeRepositoryTest extends CtfTestHelper {
     boolean isSolvable = true;
     CtfChallengeTypeEntity ctfChallengeTypeEntity = ctfChallengeTypeRepository.getById(
         STANDARD.getId());
-    CtfChallengeCategoryEntity ctfChallengeCategoryEntity = ctfChallengeCategoryRepository.getById(
-        SYSTEM.getId());
     Long score = 1000L;
     CtfContestEntity contest = generateCtfContest(member);
 
@@ -84,7 +79,7 @@ class CtfChallengeRepositoryTest extends CtfTestHelper {
         .creator(member) // Virtual Member
         .isSolvable(isSolvable)
         .ctfChallengeTypeEntity(ctfChallengeTypeEntity)
-        .ctfChallengeCategoryEntity(ctfChallengeCategoryEntity)
+        .ctfChallengeHasCtfChallengeCategoryList(new ArrayList<>())
         .score(score)
         .ctfContestEntity(contest)
         .ctfFlagEntity(new ArrayList<>())
@@ -99,7 +94,6 @@ class CtfChallengeRepositoryTest extends CtfTestHelper {
     assertThat(findChallenge.getCreator()).isEqualTo(member);
     assertThat(findChallenge.getIsSolvable()).isEqualTo(isSolvable);
     assertThat(findChallenge.getCtfChallengeTypeEntity()).isEqualTo(ctfChallengeTypeEntity);
-    assertThat(findChallenge.getCtfChallengeCategoryEntity()).isEqualTo(ctfChallengeCategoryEntity);
     assertThat(findChallenge.getScore()).isEqualTo(score);
     assertThat(findChallenge.getCtfContestEntity()).isEqualTo(contest);
   }

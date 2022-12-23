@@ -13,9 +13,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.ctf.controller.CtfSpringTestHelper;
 import keeper.project.homepage.ctf.dto.CtfFlagDto;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;
@@ -50,7 +53,9 @@ class CtfChallengeServiceTest extends CtfSpringTestHelper {
     Long score = 1000L;
     Long maxScore = 1234L;
     Long minScore = 567L;
-    dynamicChallenge = generateCtfChallenge(contest, DYNAMIC, FORENSIC, score, true);
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+    categories.add(FORENSIC);
+    dynamicChallenge = generateCtfChallenge(contest, DYNAMIC, categories, score, true);
     generateDynamicChallengeInfo(dynamicChallenge, maxScore, minScore);
     teamEntity = generateCtfTeam(contest, userEntity, 0L);
     setAuthentication(userEntity, "ROLE_회원");
