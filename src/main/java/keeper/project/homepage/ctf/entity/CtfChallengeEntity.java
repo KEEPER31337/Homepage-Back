@@ -60,6 +60,7 @@ public class CtfChallengeEntity {
   @Builder.Default
   @OneToMany(mappedBy = "challenge", cascade = CascadeType.REMOVE)
   List<CtfChallengeHasCtfChallengeCategoryEntity> ctfChallengeHasCtfChallengeCategoryList = new ArrayList<>();
+
   @Column(nullable = false)
   @Setter
   Long score;
@@ -89,4 +90,8 @@ public class CtfChallengeEntity {
   @PrimaryKeyJoinColumn
   @Setter
   CtfDynamicChallengeInfoEntity dynamicChallengeInfoEntity;
+
+  public void addCtfChallengeHasCtfChallengeCategory(CtfChallengeHasCtfChallengeCategoryEntity ctfChallengeHasCtfChallengeCategoryEntity) {
+    this.getCtfChallengeHasCtfChallengeCategoryList().add(ctfChallengeHasCtfChallengeCategoryEntity);
+  }
 }

@@ -5,9 +5,7 @@ import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_PROBLE
 import static keeper.project.homepage.util.service.CtfUtilService.VIRTUAL_TEAM_ID;
 
 import java.nio.file.AccessDeniedException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
 import keeper.project.homepage.ctf.dto.CtfChallengeCategoryDto;
@@ -338,17 +336,17 @@ public class CtfAdminService {
 
   private void setChallengeCategory(CtfChallengeEntity challenge,
       CtfChallengeAdminDto challengeAdminDto) {
-    List<CtfChallengeCategoryEntity> ctfChallengeCategoryEntityList = challengeAdminDto.getCategory()
+    List<CtfChallengeCategoryEntity> ctfChallengeCategoryEntityList = challengeAdminDto.getCategories()
         .stream()
         .map(CtfChallengeCategoryDto::toEntity).toList();
 
     for (CtfChallengeCategoryEntity ctfChallengeCategory : ctfChallengeCategoryEntityList) {
-      CtfChallengeHasCtfChallengeCategoryEntity save = ctfChallengeHasCtfChallengeCategoryRepository.save(
-          CtfChallengeHasCtfChallengeCategoryEntity.builder()
+      challenge.addCtfChallengeHasCtfChallengeCategory(ctfChallengeHasCtfChallengeCategoryRepository
+          .save(CtfChallengeHasCtfChallengeCategoryEntity
+              .builder()
               .challenge(challenge)
               .category(ctfChallengeCategory)
-              .build());
-      challenge.getCtfChallengeHasCtfChallengeCategoryList().add(save);
+              .build()));
     }
   }
 
