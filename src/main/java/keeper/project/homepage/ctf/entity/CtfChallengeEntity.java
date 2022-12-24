@@ -16,8 +16,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
-import keeper.project.homepage.util.entity.FileEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.util.entity.FileEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -57,19 +57,22 @@ public class CtfChallengeEntity {
   @JoinColumn(name = "type_id", nullable = false)
   CtfChallengeTypeEntity ctfChallengeTypeEntity;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "category_id", nullable = false)
-  CtfChallengeCategoryEntity ctfChallengeCategoryEntity;
+  @Builder.Default
+  @OneToMany(mappedBy = "challenge", cascade = CascadeType.REMOVE)
+  List<CtfChallengeHasCtfChallengeCategoryEntity> ctfChallengeHasCtfChallengeCategoryList = new ArrayList<>();
 
   @Column(nullable = false)
   @Setter
   Long score;
 
+  @Column(name = "max_submit_count", nullable = false)
+  Long maxSubmitCount;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "contest_id", nullable = false)
   CtfContestEntity ctfContestEntity;
 
-  @OneToOne
+  @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "file_id", nullable = true)
   @Setter
   FileEntity fileEntity;
@@ -81,8 +84,14 @@ public class CtfChallengeEntity {
 
   @OneToOne(
       mappedBy = "ctfChallengeEntity",
-      cascade = CascadeType.ALL)
+      cascade = CascadeType.ALL,
+      fetch = FetchType.LAZY
+  )
   @PrimaryKeyJoinColumn
   @Setter
   CtfDynamicChallengeInfoEntity dynamicChallengeInfoEntity;
+
+  public void addCtfChallengeHasCtfChallengeCategory(CtfChallengeHasCtfChallengeCategoryEntity ctfChallengeHasCtfChallengeCategoryEntity) {
+    this.getCtfChallengeHasCtfChallengeCategoryList().add(ctfChallengeHasCtfChallengeCategoryEntity);
+  }
 }

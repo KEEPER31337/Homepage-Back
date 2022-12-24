@@ -1,5 +1,6 @@
 package keeper.project.homepage.util.redis;
 
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
@@ -12,6 +13,17 @@ import java.time.Duration;
 public class RedisUtil {
 
   private final StringRedisTemplate redisTemplate;
+
+  public Long increaseAndGet(String key) {
+    ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+    return valueOperations.increment(key);
+  }
+
+  public Long increaseAndGetWithExpire(String key, long timeToLiveSeconds) {
+    ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();
+    redisTemplate.expire(key, timeToLiveSeconds, TimeUnit.SECONDS);
+    return valueOperations.increment(key);
+  }
 
   public String getData(String key) { // key를 통해 value(데이터)를 얻는다.
     ValueOperations<String, String> valueOperations = redisTemplate.opsForValue();

@@ -28,6 +28,7 @@ public class CtfRankingDto extends CtfTeamDto {
         .name(team.getName())
         .description(team.getDescription())
         .score(team.getScore())
+        .lastSolvedTime(team.getLastSolveTime())
         .rank(rank)
         .build();
   }

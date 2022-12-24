@@ -26,7 +26,7 @@ public class MemberRankEntity implements Serializable {
   @Column(name = "name", length = 45)
   private String name;
 
-  @OneToMany(mappedBy = "memberRank", fetch = FetchType.EAGER)
+  @OneToMany(mappedBy = "memberRank")
   @JsonBackReference(value = "member-rank")
   @Builder.Default
   private List<MemberEntity> members = new ArrayList<>();

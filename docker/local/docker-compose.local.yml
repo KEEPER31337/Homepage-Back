@@ -1,0 +1,21 @@
+version: "3.5"
+
+services:
+  db:
+    container_name: db
+    image: keeper-homepage-db:local
+    environment:
+      - MYSQL_DATABASE=keeper
+      - MYSQL_ROOT_PASSWORD=keeper
+      - MYSQL_USER=keeper
+      - MYSQL_PASSWORD=keeper
+    ports:
+      - 3306:3306
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+  redis:
+    container_name: redis
+    image: redis:6.2
+    ports:
+      - 6379:6379

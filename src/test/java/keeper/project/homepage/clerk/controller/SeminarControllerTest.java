@@ -3,7 +3,7 @@ package keeper.project.homepage.clerk.controller;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.우수회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberTypeName.정회원;
-import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.BEFORE_ATTENDANCE;
+import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.BEFORE_ATTENDANCE;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.get;
 import static org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders.post;
@@ -200,7 +200,7 @@ public class SeminarControllerTest extends ClerkControllerTestHelper {
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonDateString(request)))
         .andDo(print())
-        .andExpect(status().is5xxServerError())
+        .andExpect(status().is4xxClientError())
         .andExpect(jsonPath("$.success").value(false));
   }
 

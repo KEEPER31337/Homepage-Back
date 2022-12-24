@@ -24,7 +24,8 @@ public class AdminPostingService {
   public void deleteByAdmin(PostingEntity postingEntity) {
 
     MemberEntity memberEntity = memberRepository.findById(
-        postingEntity.getMemberId().getId()).orElseThrow(CustomMemberNotFoundException::new);
+            postingEntity.getMemberId().getId())
+        .orElseThrow(() -> new CustomMemberNotFoundException(postingEntity.getMemberId().getId()));
 
     // Foreign Key로 연결 된 file 제거
     List<FileEntity> fileEntities = fileRepository.findAllByPostingId(postingEntity);

@@ -262,7 +262,7 @@ public class MemberServiceTestSetup extends ApiControllerTestHelper {
             .ipAddress("111.111.111.111")
             .greetings("hi")
             .continuousDay(1)
-            .rank(3)
+            .rank(3L)
             .rankPoint(30)
             .randomPoint((int) (Math.random() * 900 + 100))
             .member(deletedMember)
@@ -281,7 +281,7 @@ public class MemberServiceTestSetup extends ApiControllerTestHelper {
             .time(LocalDateTime.now())
             .date(LocalDate.now())
             .member(otherMember)
-            .rank(3)
+            .rank(3L)
             .rankPoint(30)
             .randomPoint((int) (Math.random() * 900 + 100)).build());
   }

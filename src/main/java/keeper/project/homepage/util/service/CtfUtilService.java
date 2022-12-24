@@ -1,6 +1,6 @@
 package keeper.project.homepage.util.service;
 
-import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.DYNAMIC;
+import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.DYNAMIC;
 
 import java.util.List;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @Service
@@ -79,59 +80,84 @@ public class CtfUtilService {
         .getIsJoinable();
   }
 
+  @Transactional
   public void setAllDynamicScore() {
     List<CtfChallengeEntity> challengeEntityList = challengeRepository
         .findAllByCtfChallengeTypeEntityId(DYNAMIC.getId());
-
     challengeEntityList.forEach(this::setDynamicScore);
   }
 
   public CtfTeamHasMemberEntity getTeamHasMemberEntity(Long ctfId, Long memberId) {
     List<CtfTeamHasMemberEntity> teamHasMemberEntityList = teamHasMemberRepository
         .findAllByMemberId(memberId);
-    CtfTeamHasMemberEntity teamHasMemberEntity = teamHasMemberEntityList.stream()
-        .filter(teamHasMember -> ctfId.equals(
-            teamHasMember.getTeam().getCtfContestEntity().getId()))
-        .findFirst().orElseThrow(() -> new CustomCtfTeamNotFoundException("가입한 팀을 찾을 수 없습니다."));
-    return teamHasMemberEntity;
+    return teamHasMemberEntityList.stream()
+        .filter(teamHasMember ->
+            ctfId.equals(teamHasMember
+                .getTeam()
+                .getCtfContestEntity()
+                .getId()))
+        .findFirst()
+        .orElseThrow(() -> new CustomCtfTeamNotFoundException("가입한 팀을 찾을 수 없습니다."));
   }
 
+  @Transactional
   public void setDynamicScore(CtfChallengeEntity challenge) {
     CtfDynamicChallengeInfoEntity dynamicInfo = challenge.getDynamicChallengeInfoEntity();
-    if ((!isTypeDynamic(challenge)) || (dynamicInfo == null)) {
+    if (isInvalidDynamicInfo(challenge, dynamicInfo)) {
       return;
     }
-
-    // 문제 점수 조정
     List<CtfFlagEntity> ctfSolvedList = flagRepository.
         findAllByCtfChallengeEntityIdAndIsCorrect(challenge.getId(), true);
-    Long originalScore = challenge.getScore();
+    long changedScore = getChangedScore(challenge, ctfSolvedList);
+    this.setChallengeScore(challenge, changedScore);
+  }
+
+  @Transactional
+  public void setChallengeScore(CtfChallengeEntity challenge, long changedScore) {
+    List<CtfFlagEntity> ctfSolvedList = flagRepository.
+        findAllByCtfChallengeEntityIdAndIsCorrect(challenge.getId(), true);
+    List<CtfTeamEntity> solvedTeamList = getSolvedTeamList(ctfSolvedList);
+    changeAllTeamScoreByChallenge(challenge, solvedTeamList, changedScore);
+    changeChallengeScore(challenge, changedScore);
+  }
+
+  private long getChangedScore(CtfChallengeEntity challenge, List<CtfFlagEntity> ctfSolvedList) {
+    CtfDynamicChallengeInfoEntity dynamicInfo = challenge.getDynamicChallengeInfoEntity();
     Long allTeamCount = teamRepository.countByIdIsNotAndCtfContestEntity(VIRTUAL_TEAM_ID,
         challenge.getCtfContestEntity());
     Long solvedTeamCount = (long) ctfSolvedList.size();
     Long maxScore = dynamicInfo.getMaxScore();
     Long minScore = dynamicInfo.getMinScore();
-    long dynamicScore = getDynamicScore(allTeamCount, solvedTeamCount, maxScore, minScore);
-    challenge.setScore(dynamicScore);
-    challengeRepository.save(challenge);
-
-    // 해당 문제를 맞춘 팀 별로 점수 조정
-    setTeamDynamicScore(ctfSolvedList, originalScore, dynamicScore);
+    long changedScore = calculateChangedScore(allTeamCount, solvedTeamCount, maxScore, minScore);
+    return changedScore;
   }
 
-  private long getDynamicScore(Long allTeamCount, Long solvedTeamCount, Long maxScore,
-      Long minScore) {
+  private void changeChallengeScore(CtfChallengeEntity challenge, long changedScore) {
+    challenge.setScore(changedScore);
+    challengeRepository.save(challenge);
+  }
+
+  private boolean isInvalidDynamicInfo(CtfChallengeEntity challenge,
+      CtfDynamicChallengeInfoEntity dynamicInfo) {
+    return (!isTypeDynamic(challenge)) || (dynamicInfo == null);
+  }
+
+  private long calculateChangedScore(Long allTeamCount, Long solvedTeamCount,
+      Long maxScore, Long minScore) {
     return (long) ((minScore - maxScore) * (solvedTeamCount / (double) allTeamCount) *
         (solvedTeamCount / (double) allTeamCount) + maxScore);
   }
 
-  private void setTeamDynamicScore(List<CtfFlagEntity> ctfSolvedList, Long originalScore,
-      long dynamicScore) {
-    List<CtfTeamEntity> solvedTeamList = ctfSolvedList.stream()
-        .map(CtfFlagEntity::getCtfTeamEntity).toList();
-    for (CtfTeamEntity solvedTeam : solvedTeamList) {
-      solvedTeam.setScore(solvedTeam.getScore() - originalScore + dynamicScore);
-    }
-    teamRepository.saveAll(solvedTeamList);
+  private void changeAllTeamScoreByChallenge(CtfChallengeEntity challenge,
+      List<CtfTeamEntity> teamList, long changeScore) {
+    Long originalScore = challenge.getScore();
+    teamList.forEach(team -> team.setScore(team.getScore() - originalScore + changeScore));
+    teamRepository.saveAll(teamList);
+  }
+
+  private static List<CtfTeamEntity> getSolvedTeamList(List<CtfFlagEntity> ctfSolvedList) {
+    return ctfSolvedList.stream()
+        .map(CtfFlagEntity::getCtfTeamEntity)
+        .toList();
   }
 }

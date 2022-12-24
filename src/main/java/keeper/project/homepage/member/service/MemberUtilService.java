@@ -28,7 +28,7 @@ public class MemberUtilService {
   private final MemberTypeRepository memberTypeRepository;
 
   public MemberEntity getById(Long id) {
-    return memberRepository.findById(id).orElseThrow(CustomMemberNotFoundException::new);
+    return memberRepository.findById(id).orElseThrow(() -> new CustomMemberNotFoundException(id));
   }
 
   public MemberJobEntity getJobById(Long jobId) {

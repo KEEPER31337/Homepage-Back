@@ -47,7 +47,7 @@ public class SeminarAttendanceEntity {
   private SeminarAttendanceStatusEntity seminarAttendanceStatusEntity;
 
   @Setter
-  @OneToOne(mappedBy = "seminarAttendanceEntity", cascade = CascadeType.ALL)
+  @OneToOne(mappedBy = "seminarAttendanceEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @PrimaryKeyJoinColumn
   private SeminarAttendanceExcuseEntity seminarAttendanceExcuseEntity;
 

@@ -43,7 +43,7 @@ public class PostingEntity {
   private String title;
   @Column
   private String content;
-  @ManyToOne(targetEntity = MemberEntity.class, fetch = FetchType.EAGER)
+  @ManyToOne(targetEntity = MemberEntity.class, fetch = FetchType.LAZY)
   // 한명의 유저는 여러개의 게시글 작성, 게시글 작성은 한명이므로 1 : N 관계
   @JoinColumn(name = "member_id") // foreign key 매핑
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -80,11 +80,11 @@ public class PostingEntity {
   @JoinColumn(name = "category_id")
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   private CategoryEntity categoryId;
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "thumbnail_id")
   @Setter
   private ThumbnailEntity thumbnail;
-  @OneToMany(cascade = CascadeType.ALL, targetEntity = MemberHasPostingLikeEntity.class, mappedBy = "postingId", orphanRemoval = true, fetch = FetchType.LAZY)
+  @OneToMany(cascade = CascadeType.ALL, targetEntity = MemberHasPostingLikeEntity.class, mappedBy = "postingId", orphanRemoval = true)
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   @Builder.Default
   private List<MemberHasPostingLikeEntity> memberHasPostingLikeEntities = new ArrayList<>();
@@ -93,7 +93,7 @@ public class PostingEntity {
   @Builder.Default
   private List<FileEntity> files = new ArrayList<>();
 
-  @OneToMany(cascade = CascadeType.ALL, targetEntity = MemberHasPostingDislikeEntity.class, mappedBy = "postingId", orphanRemoval = true, fetch = FetchType.LAZY)
+  @OneToMany(cascade = CascadeType.ALL, targetEntity = MemberHasPostingDislikeEntity.class, mappedBy = "postingId", orphanRemoval = true)
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   @Builder.Default
   private List<MemberHasPostingDislikeEntity> memberHasPostingDislikeEntities = new ArrayList<>();

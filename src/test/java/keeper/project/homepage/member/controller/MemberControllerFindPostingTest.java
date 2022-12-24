@@ -79,7 +79,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
   @DisplayName("자신이 작성한 게시글 조회하기")
   public void findAllPostingById() throws Exception {
     String docMsg = "실패할 경우 알 수 없는 오류가 발생하였습니다 문구가 뜹니다.";
-    String docCode = "에러가 발생할 경우: " + exceptionAdvice.getMessage("unKnown.code");
+    String docCode = "에러가 발생할 경우: " + exceptionUtil.getMessage("unKnown.code");
     mockMvc.perform(get("/v1/members/posts")
             .header("Authorization", userToken)
             .param("page", "0")
@@ -102,7 +102,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
   @DisplayName("자신이 임시저장한 게시글 조회하기")
   public void findAllTempPostingById() throws Exception {
     String docMsg = "실패할 경우 알 수 없는 오류가 발생하였습니다 문구가 뜹니다.";
-    String docCode = "에러가 발생할 경우: " + exceptionAdvice.getMessage("unKnown.code");
+    String docCode = "에러가 발생할 경우: " + exceptionUtil.getMessage("unKnown.code");
     mockMvc.perform(get("/v1/members/temp_posts")
             .header("Authorization", userToken)
             .param("page", "0")
@@ -199,7 +199,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
 
     String docCode = "";
     String docMsg = "(나중에 예외 사항을 추가하겠습니다..!)"
-        + " +\n" + "그 외 실패한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+        + " +\n" + "그 외 실패한 경우: " + exceptionUtil.getMessage("unKnown.code");
     Long otherId = memberEntity2.getId();
     mockMvc.perform(get("/v1/members/{memberId}/posts", otherId)
             .header("Authorization", userToken)
@@ -237,7 +237,7 @@ public class MemberControllerFindPostingTest extends ApiControllerTestHelper {
 
     String docCode = "";
     String docMsg = "(나중에 예외 사항을 추가하겠습니다..!)"
-        + " +\n" + "그 외 실패한 경우: " + exceptionAdvice.getMessage("unKnown.code");
+        + " +\n" + "그 외 실패한 경우: " + exceptionUtil.getMessage("unKnown.code");
     Long otherId = memberEntity2.getId();
     Long postId = posting.getId();
     mockMvc.perform(get("/v1/members/{memberId}/posts/{postId}", otherId, postId)

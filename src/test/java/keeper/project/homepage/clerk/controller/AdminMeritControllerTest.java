@@ -222,6 +222,7 @@ public class AdminMeritControllerTest extends ClerkControllerTestHelper {
     int latestYear = now.getYear();
     int oldestYear = oldest.getYear();
 
+    generateMeritLog(awarder, giver, publicAnnouncement, now);
     generateMeritLog(awarder, giver, publicAnnouncement, oldest);
 
     mockMvc.perform(get("/v1/admin/clerk/merits/years")

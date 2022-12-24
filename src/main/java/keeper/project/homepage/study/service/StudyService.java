@@ -252,7 +252,7 @@ public class StudyService {
       return;
     }
     MemberEntity addMemberEntity = memberRepository.findById(memberId)
-        .orElseThrow(CustomMemberNotFoundException::new);
+        .orElseThrow(() -> new CustomMemberNotFoundException(memberId));
     StudyHasMemberEntity studyHasMemberEntity = StudyHasMemberEntity.builder()
         .member(addMemberEntity)
         .study(studyEntity)
@@ -298,7 +298,7 @@ public class StudyService {
       return;
     }
     MemberEntity removeMemberEntity = memberRepository.findById(memberId)
-        .orElseThrow(CustomMemberNotFoundException::new);
+        .orElseThrow(() -> new CustomMemberNotFoundException(memberId));
     studyEntity.getStudyHasMemberEntities().removeIf(studyHasMemberEntity -> (
         memberId.equals(studyHasMemberEntity.getMember().getId())
     ));

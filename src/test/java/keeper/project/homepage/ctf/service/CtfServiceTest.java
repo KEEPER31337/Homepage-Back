@@ -3,24 +3,23 @@ package keeper.project.homepage.ctf.service;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberJobName.회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.우수회원;
 import static keeper.project.homepage.ApiControllerTestHelper.MemberTypeName.정회원;
-import static keeper.project.homepage.ctf.controller.CtfSpringTestHelper.CtfChallengeType.STANDARD;
-import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.MISC;
+import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.MISC;
+import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.STANDARD;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
 import java.util.List;
-import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
-import keeper.project.homepage.ctf.service.CtfAdminService;
 import keeper.project.homepage.ctf.controller.CtfSpringTestHelper;
-import keeper.project.homepage.ctf.entity.CtfContestEntity;
-import keeper.project.homepage.ctf.entity.CtfFlagEntity;
-import keeper.project.homepage.ctf.entity.CtfSubmitLogEntity;
-import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
 import keeper.project.homepage.ctf.dto.CtfChallengeCategoryDto;
 import keeper.project.homepage.ctf.dto.CtfChallengeTypeDto;
 import keeper.project.homepage.ctf.dto.CtfFlagDto;
 import keeper.project.homepage.ctf.dto.CtfTeamDetailDto;
-import keeper.project.homepage.ctf.service.CtfChallengeService;
-import keeper.project.homepage.ctf.service.CtfTeamService;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
+import keeper.project.homepage.ctf.entity.CtfContestEntity;
+import keeper.project.homepage.ctf.entity.CtfFlagEntity;
+import keeper.project.homepage.ctf.entity.CtfSubmitLogEntity;
+import keeper.project.homepage.member.entity.MemberEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -158,6 +157,14 @@ public class CtfServiceTest extends CtfSpringTestHelper {
         new UsernamePasswordAuthenticationToken(member.getId(), member.getPassword(),
             List.of(new SimpleGrantedAuthority("ROLE_회원"))));
     final long epochTime = System.nanoTime();
+
+    List<CtfChallengeCategory> categories = new ArrayList<>();
+    categories.add(MISC);
+
+    List<CtfChallengeCategoryDto> categoryDtos = categories.stream().map(
+        ctfChallengeCategory -> CtfChallengeCategoryDto.builder().id(ctfChallengeCategory.getId())
+            .name(ctfChallengeCategory.getName()).build()).toList();
+
     CtfChallengeAdminDto createChallenge = CtfChallengeAdminDto.builder()
         .title("TITLE_" + epochTime)
         .content("CONTENT_" + epochTime)
@@ -168,10 +175,9 @@ public class CtfServiceTest extends CtfSpringTestHelper {
         .type(CtfChallengeTypeDto.builder()
             .id(STANDARD.getId())
             .build())
-        .category(CtfChallengeCategoryDto.builder()
-            .id(MISC.getId())
-            .build())
+        .categories(categoryDtos)
+        .maxSubmitCount(100L)
         .build();
-    return ctfAdminService.createProblem(createChallenge);
+    return ctfAdminService.createChallenge(createChallenge);
   }
 }

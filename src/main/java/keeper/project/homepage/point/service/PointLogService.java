@@ -85,7 +85,8 @@ public class PointLogService {
     checkPointGiftLogRequest(pointGiftLogRequestDto);
     MemberEntity presentedMember = memberRepository.findById(
             pointGiftLogRequestDto.getPresentedId())
-        .orElseThrow(CustomMemberNotFoundException::new);
+        .orElseThrow(
+            () -> new CustomMemberNotFoundException(pointGiftLogRequestDto.getPresentedId()));
 
     MemberEntity memberEntity = authService.getMemberEntityWithJWT();
 

@@ -1,20 +1,20 @@
 package keeper.project.homepage.ctf.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import static java.util.stream.Collectors.toList;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import keeper.project.homepage.util.entity.FileEntity;
-import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
+import keeper.project.homepage.ctf.entity.CtfFlagEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.util.dto.FileDto;
+import keeper.project.homepage.util.entity.FileEntity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,7 +26,6 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @SuperBuilder
-@JsonInclude(Include.NON_NULL)
 public class CtfChallengeAdminDto extends CtfChallengeDto {
 
   private Boolean isSolvable;
@@ -40,12 +39,12 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
   private CtfDynamicChallengeInfoDto dynamicInfo;
 
   public CtfChallengeEntity toEntity(CtfContestEntity contest, CtfChallengeTypeEntity type,
-      CtfChallengeCategoryEntity category, FileEntity fileEntity, MemberEntity creator) {
+      FileEntity fileEntity, MemberEntity creator) {
     return CtfChallengeEntity.builder()
         .name(title)
         .description(content)
         .ctfContestEntity(contest)
-        .ctfChallengeCategoryEntity(category)
+        .ctfChallengeHasCtfChallengeCategoryList(new ArrayList<>())
         .ctfChallengeTypeEntity(type)
         .isSolvable(isSolvable)
         .registerTime(LocalDateTime.now())
@@ -53,12 +52,11 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
         .score(score)
         .fileEntity(fileEntity)
         .ctfFlagEntity(new ArrayList<>())
+        .maxSubmitCount(maxSubmitCount)
         .build();
   }
 
-  public static CtfChallengeAdminDto toDto(CtfChallengeEntity challenge) {
-    CtfChallengeCategoryDto category = CtfChallengeCategoryDto.toDto(
-        challenge.getCtfChallengeCategoryEntity());
+  public static CtfChallengeAdminDto toDto(CtfChallengeEntity challenge, Long solvedTeamCount) {
     CtfChallengeTypeDto type = CtfChallengeTypeDto.toDto(
         challenge.getCtfChallengeTypeEntity());
     FileDto file = FileDto.toDto(
@@ -71,15 +69,26 @@ public class CtfChallengeAdminDto extends CtfChallengeDto {
         .title(challenge.getName())
         .content(challenge.getDescription())
         .contestId(challenge.getCtfContestEntity().getId())
-        .category(category)
+        .categories(challenge.getCtfChallengeHasCtfChallengeCategoryList().stream()
+            .map(CtfChallengeCategoryDto::toDto)
+            .collect(toList()))
         .type(type)
-        .flag(challenge.getCtfFlagEntity().get(0).getContent())
+        .flag(getVirtualTeamFlag(challenge).getContent())
         .isSolvable(challenge.getIsSolvable())
         .registerTime(challenge.getRegisterTime())
         .creatorName(challenge.getCreator().getNickName())
+        .solvedTeamCount(solvedTeamCount)
         .score(challenge.getScore())
         .file(file)
         .dynamicInfo(dynamicInfo)
+        .remainedSubmitCount(getVirtualTeamFlag(challenge).getRemainedSubmitCount())
+        .lastTryTime(getVirtualTeamFlag(challenge).getLastTryTime())
+        .solvedTime(getVirtualTeamFlag(challenge).getSolvedTime())
+        .maxSubmitCount(challenge.getMaxSubmitCount())
         .build();
+  }
+
+  static CtfFlagEntity getVirtualTeamFlag(CtfChallengeEntity challenge) {
+    return challenge.getCtfFlagEntity().get(0);
   }
 }

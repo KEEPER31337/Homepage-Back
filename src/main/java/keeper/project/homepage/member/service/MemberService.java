@@ -112,14 +112,14 @@ public class MemberService {
 
   public UserMemberDto getMember(Long id) {
     MemberEntity memberEntity = memberRepository.findById(id)
-        .orElseThrow(CustomMemberNotFoundException::new);
+        .orElseThrow(() -> new CustomMemberNotFoundException(id));
 
     return new UserMemberDto(memberEntity);
   }
 
   public UserMemberDto updateProfile(UserMemberDto memberDto, Long memberId) {
     MemberEntity updateEntity = memberRepository.findById(memberId)
-        .orElseThrow(CustomMemberNotFoundException::new);
+        .orElseThrow(() -> new CustomMemberNotFoundException(memberId));
     if (memberDto.getRealName().isBlank()) {
       throw new CustomMemberEmptyFieldException("변경할 이름의 내용이 비어있습니다.");
     }
@@ -158,7 +158,8 @@ public class MemberService {
     mailService.sendMail(toUserList, subject, text);
   }
 
-  public UserMemberDto updateEmailAddress(UserMemberDto memberDto, Long memberId) throws RuntimeException {
+  public UserMemberDto updateEmailAddress(UserMemberDto memberDto, Long memberId)
+      throws RuntimeException {
     if (memberDto.getEmailAddress().isBlank()) {
       throw new CustomMemberEmptyFieldException("변경할 이메일의 내용이 비어있습니다.");
     }
@@ -178,7 +179,7 @@ public class MemberService {
     }
 
     MemberEntity updateEntity = memberRepository.findById(memberId)
-        .orElseThrow(CustomMemberNotFoundException::new);
+        .orElseThrow(() -> new CustomMemberNotFoundException(memberId));
     updateEntity.changeEmailAddress(memberDto.getEmailAddress());
     memberDto.initWithEntity(memberRepository.save(updateEntity));
     return memberDto;
@@ -186,7 +187,7 @@ public class MemberService {
 
   public UserMemberDto updateThumbnails(Long memberId, MultipartFile image, String ipAddress) {
     MemberEntity memberEntity = memberRepository.findById(memberId)
-        .orElseThrow(CustomMemberNotFoundException::new);
+        .orElseThrow(() -> new CustomMemberNotFoundException(memberId));
 
     ThumbnailEntity prevThumbnail = memberEntity.getThumbnail();
 
@@ -221,7 +222,7 @@ public class MemberService {
   public Page<PostingResponseDto> findAllPostingByIsTemp(Long id, Pageable pageable,
       Integer isTemp) {
     MemberEntity memberEntity = memberRepository.findById(id).orElseThrow(
-        () -> new CustomMemberNotFoundException(id.toString() + "인 id를 가진 member가 존재하지 않습니다."));
+        () -> new CustomMemberNotFoundException(id));
 
     List<PostingResponseDto> postings = new ArrayList<>();
     PostingResponseDto postingResponseDto = new PostingResponseDto();

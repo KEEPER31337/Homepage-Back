@@ -45,7 +45,7 @@ public class SurveyMemberReplyEntity {
   @Setter
   private SurveyReplyEntity reply;
 
-  @OneToOne(mappedBy = "surveyMemberReplyEntity", cascade = CascadeType.ALL)
+  @OneToOne(mappedBy = "surveyMemberReplyEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   @PrimaryKeyJoinColumn
   @Setter
   private SurveyReplyExcuseEntity surveyReplyExcuseEntity;

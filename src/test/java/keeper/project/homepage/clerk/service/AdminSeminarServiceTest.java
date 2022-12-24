@@ -1,11 +1,11 @@
 package keeper.project.homepage.clerk.service;
 
 import static keeper.project.homepage.clerk.service.AdminSeminarService.ABSENCE_DEMERIT;
-import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ABSENCE;
-import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.ATTENDANCE;
-import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.BEFORE_ATTENDANCE;
-import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.LATENESS;
-import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.seminarAttendanceStatus.PERSONAL;
+import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.ABSENCE;
+import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.ATTENDANCE;
+import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.BEFORE_ATTENDANCE;
+import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.LATENESS;
+import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.PERSONAL;
 import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.DORMANT_MEMBER;
 import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.REGULAR_MEMBER;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,8 +21,8 @@ import keeper.project.homepage.clerk.entity.MeritLogEntity;
 import keeper.project.homepage.clerk.entity.MeritTypeEntity;
 import keeper.project.homepage.clerk.entity.SeminarAttendanceEntity;
 import keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity;
+import keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus;
 import keeper.project.homepage.clerk.entity.SeminarEntity;
-import keeper.project.homepage.clerk.service.AdminSeminarService;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.member.entity.MemberTypeEntity;
 import keeper.project.homepage.clerk.exception.CustomDuplicateSeminarException;
@@ -49,38 +49,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @SpringBootTest
-public class AdminSeminarServiceTest {
-
-  @Autowired
-  EntityManager em;
-  @Autowired
-  AdminSeminarService adminSeminarService;
-  @Autowired
-  SeminarAttendanceRepository seminarAttendanceRepository;
-  @Autowired
-  SeminarAttendanceStatusRepository seminarAttendanceStatusRepository;
-  @Autowired
-  MemberRepository memberRepository;
-  @Autowired
-  SeminarRepository seminarRepository;
-  @Autowired
-  MemberTypeRepository memberTypeRepository;
-  @Autowired
-  MeritLogRepository meritLogRepository;
-  @Autowired
-  MeritTypeRepository meritTypeRepository;
-
-  private MemberEntity clerk;
-
-  @BeforeEach
-  void beforeEach() {
-    MemberTypeEntity dormantMember = memberTypeRepository.getById(DORMANT_MEMBER.getId());
-    clerk = generateMember("서기", 12F, dormantMember);
-    SecurityContext context = SecurityContextHolder.getContext();
-    context.setAuthentication(
-        new UsernamePasswordAuthenticationToken(clerk.getId(), clerk.getPassword(),
-            List.of(new SimpleGrantedAuthority("ROLE_서기"))));
-  }
+public class AdminSeminarServiceTest extends AdminClerkServiceTestHelper {
 
   @Test
   @DisplayName("[SUCCESS] 세미나 생성 테스트")
@@ -136,6 +105,58 @@ public class AdminSeminarServiceTest {
   }
 
   @Test
+  @DisplayName("[SUCCESS] 이전 출석 상태가 출석 전이고 결석을 하면 벌점 내역의 날짜는 당일이어야 한다.")
+  void absenceLogDateTest() {
+
+    // given
+    SeminarEntity seminar = seminarRepository.getById(1L);
+    LocalDateTime seminarInitTime = LocalDateTime.now().minusDays(6);
+    MemberEntity member = memberRepository.getById(1L);
+    SeminarAttendanceStatusEntity before = getSeminarAttendanceStatus(BEFORE_ATTENDANCE);
+    SeminarAttendanceStatusEntity absence = getSeminarAttendanceStatus(ABSENCE);
+    MeritTypeEntity absenceMeritType = getMeritType(ABSENCE);
+    SeminarAttendanceEntity seminarAttendance =
+        generateSeminarAttendance(member, seminar, before, seminarInitTime);
+
+    // when
+    adminSeminarService.processAttendance(seminarAttendance, absence, "");
+    SeminarAttendanceEntity afterAttendance =
+        seminarAttendanceRepository.findById(seminarAttendance.getId())
+            .orElseThrow(CustomSeminarAttendanceNotFoundException::new);
+    MeritLogEntity absenceLog = getMeritLog(member, absenceMeritType);
+
+    //then
+    assertThat(afterAttendance.getSeminarAttendanceStatusEntity().getType())
+        .isEqualTo(ABSENCE.getType());
+    assertThat(absenceLog.getDate()).isEqualTo(LocalDate.now());
+  }
+
+  @Test
+  @DisplayName("[SUCCESS] 이전 출석 상태가 출석 전이 아니면 출석 상태가 변해도 출석 시간은 변경되지 않는다.")
+  void didNotChangeAttendTime() {
+
+    // given
+    SeminarEntity seminar = seminarRepository.getById(1L);
+    LocalDateTime seminarInitTime = LocalDateTime.now().minusDays(6);
+    MemberEntity member = memberRepository.getById(1L);
+    SeminarAttendanceStatusEntity lateness = getSeminarAttendanceStatus(LATENESS);
+    SeminarAttendanceStatusEntity attendance = getSeminarAttendanceStatus(ATTENDANCE);
+    SeminarAttendanceEntity seminarAttendance =
+        generateSeminarAttendance(member, seminar, lateness, seminarInitTime);
+
+    // when
+    adminSeminarService.processAttendance(seminarAttendance, attendance, "");
+    SeminarAttendanceEntity afterAttendance =
+        seminarAttendanceRepository.findById(seminarAttendance.getId())
+            .orElseThrow(CustomSeminarAttendanceNotFoundException::new);
+
+    //then
+    assertThat(afterAttendance.getSeminarAttendanceStatusEntity().getType())
+        .isEqualTo(ATTENDANCE.getType());
+    assertThat(afterAttendance.getSeminarAttendTime()).isEqualTo(seminarInitTime);
+  }
+
+  @Test
   @DisplayName("[SUCCESS] 개인사유 출석 수정")
   void updateSeminarAttendanceTest() {
     // given
@@ -175,8 +196,8 @@ public class AdminSeminarServiceTest {
     SeminarAttendanceStatusEntity attendance = seminarAttendanceStatusRepository.getById(
         ATTENDANCE.getId());
     SeminarAttendanceEntity seminarAttendance = adminSeminarService.generateSeminarAttendance(
-        member,
-        seminar, attendance);
+        member, seminar, attendance);
+    MeritTypeEntity absenceMeritType = getMeritType(ABSENCE);
     Integer beforeDemerit = member.getDemerit();
     SeminarAttendanceUpdateRequestDto request = SeminarAttendanceUpdateRequestDto.builder()
         .seminarAttendanceStatusId(ABSENCE.getId())
@@ -189,9 +210,7 @@ public class AdminSeminarServiceTest {
     SeminarAttendanceEntity find = seminarAttendanceRepository.findById(seminarAttendance.getId())
         .orElseThrow(CustomSeminarAttendanceNotFoundException::new);
     Integer afterDemerit = find.getMemberEntity().getDemerit();
-    MeritTypeEntity meritTypeOfAbsence = meritTypeRepository.findByDetail(ABSENCE.getType())
-        .orElseThrow(CustomMeritTypeNotFoundException::new);
-    MeritLogEntity meritLog = getMeritLog(member, meritTypeOfAbsence);
+    MeritLogEntity meritLog = getMeritLog(member, absenceMeritType);
 
     //then
     assertThat(find.getSeminarAttendanceStatusEntity().getType()).isEqualTo(ABSENCE.getType());
@@ -200,9 +219,12 @@ public class AdminSeminarServiceTest {
   }
 
   private MeritLogEntity getMeritLog(MemberEntity member, MeritTypeEntity meritType) {
-    return meritLogRepository.findByAwarderAndMeritTypeAndDate(member,
-        meritType,
-        LocalDate.now()).get(0);
+    List<MeritLogEntity> meritLogs = meritLogRepository.findByAwarderAndMeritTypeAndDate(
+        member, meritType, LocalDate.now());
+    if (meritLogs.isEmpty()) {
+      throw new IllegalStateException("찾는 상벌점 내역이 없습니다.");
+    }
+    return meritLogs.get(0);
   }
 
   @Test
@@ -396,28 +418,14 @@ public class AdminSeminarServiceTest {
     assertThat(meritLogRepository.existsById(afterMeritLog.getId())).isTrue();
   }
 
-  MemberEntity generateMember(String name, Float generation, MemberTypeEntity type) {
-    final long epochTime = System.nanoTime();
-    return memberRepository.save(
-        MemberEntity.builder()
-            .loginId("abcd1234" + epochTime)
-            .emailAddress("test1234@keeper.co.kr" + epochTime)
-            .password("1234")
-            .studentId("1234" + epochTime)
-            .nickName("nick" + epochTime)
-            .realName(name)
-            .generation(generation)
-            .memberType(type)
-            .build());
+
+  SeminarAttendanceStatusEntity getSeminarAttendanceStatus(SeminarAttendanceStatus status) {
+    return seminarAttendanceStatusRepository.getById(status.getId());
   }
 
-  private MeritLogEntity generateMeritLog(MemberEntity member, MeritTypeEntity meritType) {
-    return meritLogRepository.save(
-        MeritLogEntity.builder()
-            .meritType(meritType)
-            .awarder(member)
-            .giver(clerk)
-            .date(LocalDate.now())
-            .build());
+  MeritTypeEntity getMeritType(SeminarAttendanceStatus status) {
+    return meritTypeRepository.findByDetail(
+        status.getType()).orElseThrow(CustomMeritTypeNotFoundException::new);
   }
 }
+

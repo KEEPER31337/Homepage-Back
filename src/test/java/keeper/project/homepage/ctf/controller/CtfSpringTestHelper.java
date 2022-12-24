@@ -1,5 +1,7 @@
 package keeper.project.homepage.ctf.controller;
 
+import static java.util.stream.Collectors.toList;
+import static keeper.project.homepage.ctf.service.CtfChallengeService.RETRY_SECONDS;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 
@@ -9,18 +11,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.util.entity.FileEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeHasCtfChallengeCategoryEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity;
+import keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
 import keeper.project.homepage.ctf.entity.CtfDynamicChallengeInfoEntity;
 import keeper.project.homepage.ctf.entity.CtfFlagEntity;
 import keeper.project.homepage.ctf.entity.CtfSubmitLogEntity;
 import keeper.project.homepage.ctf.entity.CtfTeamEntity;
 import keeper.project.homepage.ctf.entity.CtfTeamHasMemberEntity;
-import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.ctf.repository.CtfChallengeCategoryRepository;
+import keeper.project.homepage.ctf.repository.CtfChallengeHasCtfChallengeCategoryRepository;
 import keeper.project.homepage.ctf.repository.CtfChallengeRepository;
 import keeper.project.homepage.ctf.repository.CtfChallengeTypeRepository;
 import keeper.project.homepage.ctf.repository.CtfContestRepository;
@@ -29,9 +33,9 @@ import keeper.project.homepage.ctf.repository.CtfFlagRepository;
 import keeper.project.homepage.ctf.repository.CtfSubmitLogRepository;
 import keeper.project.homepage.ctf.repository.CtfTeamHasMemberRepository;
 import keeper.project.homepage.ctf.repository.CtfTeamRepository;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.util.entity.FileEntity;
 import keeper.project.homepage.util.service.CtfUtilService;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.AfterAll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.restdocs.payload.FieldDescriptor;
@@ -40,6 +44,9 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
 
   @Autowired
   protected CtfChallengeCategoryRepository ctfChallengeCategoryRepository;
+
+  @Autowired
+  protected CtfChallengeHasCtfChallengeCategoryRepository ctfChallengeHasCtfChallengeCategoryRepository;
 
   @Autowired
   protected CtfChallengeTypeRepository ctfChallengeTypeRepository;
@@ -78,28 +85,6 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
     }
   }
 
-  @RequiredArgsConstructor
-  @Getter
-  protected enum CtfChallengeCategory {
-    Misc(1L),
-    System(2L),
-    Reversing(3L),
-    Forensic(4L),
-    Web(5L),
-    Crypto(6L);
-
-    private final Long id;
-  }
-
-  @RequiredArgsConstructor
-  @Getter
-  public enum CtfChallengeType {
-    STANDARD(1L),
-    DYNAMIC(2L);
-
-    private final Long id;
-  }
-
   protected CtfContestEntity generateCtfContest(MemberEntity creator, boolean isJoinable) {
     final long epochTime = System.nanoTime();
     CtfContestEntity entity = CtfContestEntity.builder()
@@ -120,24 +105,43 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         .description("desc_" + epochTime)
         .registerTime(LocalDateTime.now())
         .creator(creator)
-        .isJoinable(false)
+        .isJoinable(true)
         .build();
     ctfContestRepository.save(entity);
     return entity;
   }
 
   protected CtfFlagEntity generateCtfFlag(CtfTeamEntity ctfTeam, CtfChallengeEntity ctfChallenge,
-      Boolean isCorrect) {
+      Boolean isCorrect, Long remainedSubmitCount, LocalDateTime lastTryTime) {
     final long epochTime = System.nanoTime();
     CtfFlagEntity entity = CtfFlagEntity.builder()
         .content("flag_" + epochTime)
         .ctfTeamEntity(ctfTeam)
         .ctfChallengeEntity(ctfChallenge)
         .isCorrect(isCorrect)
+        .remainedSubmitCount(remainedSubmitCount)
+        .lastTryTime(lastTryTime)
         .build();
     ctfFlagRepository.save(entity);
     ctfChallenge.getCtfFlagEntity().add(entity);
     return entity;
+  }
+
+  protected CtfFlagEntity generateCtfFlag(CtfTeamEntity ctfTeam, CtfChallengeEntity ctfChallenge,
+      Boolean isCorrect) {
+    return generateCtfFlag(ctfTeam, ctfChallenge, isCorrect, 123L,
+        LocalDateTime.now().minusDays(1));
+  }
+
+  protected CtfFlagEntity generateCtfFlag(CtfTeamEntity ctfTeam, CtfChallengeEntity ctfChallenge,
+      Boolean isCorrect, Long remainedSubmitCount) {
+    return generateCtfFlag(ctfTeam, ctfChallenge, isCorrect, remainedSubmitCount,
+        LocalDateTime.now().minusDays(1));
+  }
+
+  protected CtfFlagEntity generateCtfFlag(CtfTeamEntity ctfTeam, CtfChallengeEntity ctfChallenge,
+      Boolean isCorrect, LocalDateTime lastTryTime) {
+    return generateCtfFlag(ctfTeam, ctfChallenge, isCorrect, 123L, lastTryTime);
   }
 
   protected CtfSubmitLogEntity generateCtfSubmitLog(CtfTeamEntity ctfTeam, MemberEntity submitter,
@@ -168,6 +172,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         .creator(creator)
         .score(score)
         .ctfContestEntity(ctfContestEntity)
+        .lastSolveTime(LocalDateTime.now())
         .build();
     ctfTeamRepository.save(entity);
 
@@ -182,23 +187,47 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
 
   protected CtfChallengeEntity generateCtfChallenge(
       CtfContestEntity ctfContestEntity,
-      CtfChallengeTypeEntity ctfChallengeTypeEntity,
-      CtfChallengeCategoryEntity ctfChallengeCategoryEntity,
-      Long score) {
+      CtfChallengeType ctfChallengeType,
+      List<CtfChallengeCategory> category,
+      Long score,
+      boolean isSolvable) {
     final long epochTime = System.nanoTime();
+    CtfChallengeTypeEntity ctfChallengeTypeEntity = ctfChallengeTypeRepository.getById(
+        ctfChallengeType.getId());
+
     CtfChallengeEntity entity = CtfChallengeEntity.builder()
         .name("name_" + epochTime)
         .description("desc_" + epochTime)
         .registerTime(LocalDateTime.now())
         .creator(memberRepository.getById(1L)) // Virtual Member
-        .isSolvable(false)
+        .isSolvable(isSolvable)
         .ctfChallengeTypeEntity(ctfChallengeTypeEntity)
-        .ctfChallengeCategoryEntity(ctfChallengeCategoryEntity)
+        .ctfChallengeHasCtfChallengeCategoryList(new ArrayList<>())
         .score(score)
         .ctfContestEntity(ctfContestEntity)
         .ctfFlagEntity(new ArrayList<>())
+        .maxSubmitCount(100L)
         .build();
     ctfChallengeRepository.save(entity);
+
+    List<CtfChallengeCategoryEntity> ctfChallengeCategoryEntityList = category
+        .stream()
+        .map(ctfChallengeCategory -> CtfChallengeCategoryEntity
+            .builder()
+            .id(ctfChallengeCategory.getId())
+            .name(ctfChallengeCategory.getName())
+            .build())
+        .toList();
+
+    for (CtfChallengeCategoryEntity ctfChallengeCategory : ctfChallengeCategoryEntityList) {
+      CtfChallengeHasCtfChallengeCategoryEntity save = ctfChallengeHasCtfChallengeCategoryRepository.save(
+          CtfChallengeHasCtfChallengeCategoryEntity.builder()
+              .challenge(entity)
+              .category(ctfChallengeCategory)
+              .build());
+      entity.getCtfChallengeHasCtfChallengeCategoryList().add(save);
+    }
+
     return entity;
   }
 
@@ -218,6 +247,7 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         .minScore(minScore)
         .build();
     ctfChallengeEntity.setDynamicChallengeInfoEntity(entity);
+    ctfChallengeEntity.setScore(maxScore);
     ctfChallengeRepository.save(ctfChallengeEntity);
     return entity;
   }
@@ -278,10 +308,20 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
     commonFields.addAll(Arrays.asList(
         fieldWithPath(prefix + ".challengeId").description("해당 문제의 Id"),
         fieldWithPath(prefix + ".title").description("문제 제목"),
-        fieldWithPath(prefix + ".category.id").description("문제가 속한 카테고리의 id"),
-        fieldWithPath(prefix + ".category.name").description("문제가 속한 카테고리의 이름"),
+        fieldWithPath(prefix + ".categories[].id").description("문제가 속한 카테고리의 id"),
+        fieldWithPath(prefix + ".categories[].name").description("문제가 속한 카테고리의 이름"),
         fieldWithPath(prefix + ".score").description("문제의 점수"),
         fieldWithPath(prefix + ".isSolved").description("내가 풀었는 지"),
+        fieldWithPath(prefix + ".maxSubmitCount").description("최대 제출 횟수"),
+        fieldWithPath(prefix + ".remainedSubmitCount").description("남은 제출 횟수"),
+        fieldWithPath(prefix + ".lastTryTime").description("각 팀별 마지막 제출 시간입니다. 만약 " + RETRY_SECONDS
+                + "초 내에 다시 시도할 경우 프론트에서 API 호출을 막아주는게 좋습니다. \n\n"
+                + "해당 필드가 만들어지기 전의 문제들은 null값을 보냅니다.")
+            .optional(),
+        fieldWithPath(prefix + ".solvedTime").description(
+                "각 팀별 문제를 해결한 시간입니다. 만약 해결하지 않았다면 null 값을 보냅니다. \n\n"
+                    + "해당 필드가 만들어지기 전의 문제들은 해결이 되었어도 null값을 보냅니다.")
+            .optional(),
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id")
     ));
     if (addDescriptors.length > 0) {
@@ -299,8 +339,8 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".challengeId").description("해당 문제의 Id"),
         fieldWithPath(prefix + ".title").description("문제 제목"),
         fieldWithPath(prefix + ".content").description("문제 설명"),
-        fieldWithPath(prefix + ".category.id").description("문제가 속한 카테고리의 id"),
-        fieldWithPath(prefix + ".category.name").description("문제가 속한 카테고리의 이름"),
+        fieldWithPath(prefix + ".categories[].id").description("문제가 속한 카테고리의 id"),
+        fieldWithPath(prefix + ".categories[].name").description("문제가 속한 카테고리의 이름"),
         fieldWithPath(prefix + ".type.id").description("문제가 속한 타입의 id"),
         fieldWithPath(prefix + ".type.name").description("문제가 속한 타입의 이름"),
         fieldWithPath(prefix + ".flag").description("문제에 설정 된 flag (현재는 모든 팀이 동일한 flag를 가집니다."),
@@ -309,6 +349,19 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id"),
         fieldWithPath(prefix + ".registerTime").description("문제의 등록 시간"),
         fieldWithPath(prefix + ".isSolvable").description("현재 풀 수 있는 지 여부"),
+        fieldWithPath(prefix + ".maxSubmitCount").description("최대 제출 횟수"),
+        fieldWithPath(prefix + ".remainedSubmitCount").description("남은 제출 횟수"),
+        fieldWithPath(prefix + ".lastTryTime").description("각 팀별 마지막 제출 시간입니다. 만약 " + RETRY_SECONDS
+                + "초 내에 다시 시도할 경우 프론트에서 API 호출을 막아주는게 좋습니다. \n\n"
+                + "해당 필드가 만들어지기 전의 문제들은 null값을 보냅니다.")
+            .optional(),
+        fieldWithPath(prefix + ".solvedTime").description(
+                "각 팀별 문제를 해결한 시간입니다. 만약 해결하지 않았다면 null 값을 보냅니다. \n\n"
+                    + "해당 필드가 만들어지기 전의 문제들은 해결이 되었어도 null값을 보냅니다.")
+            .optional(),
+        fieldWithPath(prefix + ".isSolved").description("관리자 권한의 isSolved는 항상 null로 주어집니다.")
+            .optional(),
+        fieldWithPath(prefix + ".solvedTeamCount").description("문제를 푼 팀의 수"),
         subsectionWithPath(prefix + ".dynamicInfo").description("TYPE이 STANDARD일 경우 null")
             .optional(),
         subsectionWithPath(prefix + ".file").description("문제에 해당하는 파일 정보").optional()
@@ -341,13 +394,23 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".challengeId").description("해당 문제의 Id"),
         fieldWithPath(prefix + ".title").description("문제 제목"),
         fieldWithPath(prefix + ".content").description("문제 설명"),
-        fieldWithPath(prefix + ".category.id").description("문제가 속한 카테고리의 id"),
-        fieldWithPath(prefix + ".category.name").description("문제가 속한 카테고리의 이름"),
+        fieldWithPath(prefix + ".categories[].id").description("문제가 속한 카테고리의 id"),
+        fieldWithPath(prefix + ".categories[].name").description("문제가 속한 카테고리의 이름"),
         fieldWithPath(prefix + ".score").description("문제의 점수"),
         fieldWithPath(prefix + ".creatorName").description("문제 생성자 이름"),
         fieldWithPath(prefix + ".contestId").description("문제의 대회 Id"),
         fieldWithPath(prefix + ".solvedTeamCount").description("푼 팀 수"),
         fieldWithPath(prefix + ".isSolved").description("내가 풀었는 지"),
+        fieldWithPath(prefix + ".maxSubmitCount").description("최대 제출 횟수"),
+        fieldWithPath(prefix + ".remainedSubmitCount").description("남은 제출 횟수"),
+        fieldWithPath(prefix + ".lastTryTime").description("각 팀별 마지막 제출 시간입니다. 만약 " + RETRY_SECONDS
+                + "초 내에 다시 시도할 경우 프론트에서 API 호출을 막아주는게 좋습니다. \n\n"
+                + "해당 필드가 만들어지기 전의 문제들은 null값을 보냅니다.")
+            .optional(),
+        fieldWithPath(prefix + ".solvedTime").description(
+                "각 팀별 문제를 해결한 시간입니다. 만약 해결하지 않았다면 null 값을 보냅니다. \n\n"
+                    + "해당 필드가 만들어지기 전의 문제들은 해결이 되었어도 null값을 보냅니다.")
+            .optional(),
         subsectionWithPath(prefix + ".file").description("문제에 해당하는 파일 정보").optional()
     ));
     if (type.equals(ResponseType.PAGE)) {
@@ -376,7 +439,8 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
     commonFields.addAll(generateCommonResponseFields(success, code, msg));
     commonFields.addAll(Arrays.asList(
         fieldWithPath(prefix + ".isCorrect").description("맞췄는지 여부"),
-        fieldWithPath(prefix + ".content").description("제출한 Flag")
+        fieldWithPath(prefix + ".content").description("제출한 Flag"),
+        fieldWithPath(prefix + ".solvedTime").description("문제를 맞춘 시간 (못맞췄다면 null을 반환합니다)")
     ));
     if (addDescriptors.length > 0) {
       commonFields.addAll(Arrays.asList(addDescriptors));
@@ -461,7 +525,8 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".id").description("team Id"),
         fieldWithPath(prefix + ".name").description("team 이름"),
         fieldWithPath(prefix + ".description").description("team 설명"),
-        fieldWithPath(prefix + ".score").description("team score")
+        fieldWithPath(prefix + ".score").description("team score"),
+        fieldWithPath(prefix + ".lastSolvedTime").description("마지막으로 푼 문제 시간")
     ));
     if (type.equals(ResponseType.PAGE)) {
       commonFields.addAll(Arrays.asList(
@@ -507,7 +572,8 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
         fieldWithPath(prefix + ".creatorId").description("team 생성자 Id"),
         fieldWithPath(prefix + ".contestId").description("team이 속한 contest Id"),
         subsectionWithPath(prefix + ".teamMembers").description("team에 속한 팀원 정보"),
-        subsectionWithPath(prefix + ".solvedChallengeList").description("team이 푼 문제들 정보")
+        subsectionWithPath(prefix + ".solvedChallengeList").description(
+            "team이 푼 문제들 정보 (푼 문제이므로 남은 제출 횟수가 0으로 표기되어 나갑니다.)")
     ));
     commonFields.addAll(generateTeamDtoResponseFields(type, success, code, msg));
     if (addDescriptors.length > 0) {
