@@ -122,7 +122,9 @@ public class CtfAdminService {
       trySetDynamicInfoInChallenge(newChallenge, challengeAdminDto);
     }
     setFlagAllTeam(challengeAdminDto.getFlag(), newChallenge,
-        challengeAdminDto.getMaxSubmitCount());
+        challengeAdminDto.getChallengeDto()
+            .getCommonChallengeDto()
+            .getMaxSubmitCount());
     return CtfChallengeAdminDto.toDto(newChallenge, 0L);
   }
 
@@ -323,7 +325,10 @@ public class CtfAdminService {
 
   private CtfChallengeEntity createChallengeEntityWithFileEntity(
       CtfChallengeAdminDto challengeAdminDto, FileEntity fileEntity) {
-    CtfContestEntity contest = getCtfContestEntity(challengeAdminDto.getContestId());
+    CtfContestEntity contest = getCtfContestEntity(challengeAdminDto
+        .getChallengeDto()
+        .getCommonChallengeDto()
+        .getContestId());
 
     CtfChallengeTypeEntity type = getTypeEntity(challengeAdminDto);
     MemberEntity creator = authService.getMemberEntityWithJWT();
@@ -336,7 +341,10 @@ public class CtfAdminService {
 
   private void setChallengeCategory(CtfChallengeEntity challenge,
       CtfChallengeAdminDto challengeAdminDto) {
-    List<CtfChallengeCategoryEntity> ctfChallengeCategoryEntityList = challengeAdminDto.getCategories()
+    List<CtfChallengeCategoryEntity> ctfChallengeCategoryEntityList = challengeAdminDto
+        .getChallengeDto()
+        .getCommonChallengeDto()
+        .getCategories()
         .stream()
         .map(CtfChallengeCategoryDto::toEntity).toList();
 
