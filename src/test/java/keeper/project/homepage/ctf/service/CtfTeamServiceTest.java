@@ -1,7 +1,6 @@
 package keeper.project.homepage.ctf.service;
 
 import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.SYSTEM;
-import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.STANDARD;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,9 +8,6 @@ import java.util.List;
 import keeper.project.homepage.ctf.controller.CtfSpringTestHelper;
 import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
 import keeper.project.homepage.ctf.dto.CtfChallengeCategoryDto;
-import keeper.project.homepage.ctf.dto.CtfChallengeDto;
-import keeper.project.homepage.ctf.dto.CtfChallengeTypeDto;
-import keeper.project.homepage.ctf.dto.CtfCommonChallengeDto;
 import keeper.project.homepage.ctf.dto.CtfTeamDetailDto;
 import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
 import keeper.project.homepage.ctf.entity.CtfContestEntity;
@@ -189,23 +185,8 @@ class CtfTeamServiceTest extends CtfSpringTestHelper {
             .name(ctfChallengeCategory.getName()).build())
         .toList();
 
-    CtfChallengeAdminDto createChallengeInfo = CtfChallengeAdminDto.builder()
-        .challengeDto(CtfChallengeDto.builder()
-            .commonChallengeDto(CtfCommonChallengeDto.builder()
-                .contestId(contest.getId())
-                .categories(categoryDtos)
-                .title(testTitle)
-                .score(testScore)
-                .maxSubmitCount(123L)
-                .build()
-            )
-            .content(testContent)
-            .build()
-        )
-        .flag(testFlag)
-        .isSolvable(true)
-        .type(CtfChallengeTypeDto.builder().id(STANDARD.getId()).build())
-        .build();
+    CtfChallengeAdminDto createChallengeInfo = generateChallengeAdminDto(testScore, testFlag,
+        testContent, testTitle, 123L, contest.getId(), categoryDtos, getStandardType());
     ctfAdminService.createChallenge(createChallengeInfo);
 
     // when

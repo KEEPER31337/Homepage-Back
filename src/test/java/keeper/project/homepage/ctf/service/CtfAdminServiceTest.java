@@ -6,8 +6,6 @@ import static keeper.project.homepage.ApiControllerTestHelper.MemberRankName.일
 import static keeper.project.homepage.ApiControllerTestHelper.MemberTypeName.정회원;
 import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.FORENSIC;
 import static keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory.WEB;
-import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.DYNAMIC;
-import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.STANDARD;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.file.AccessDeniedException;
@@ -18,9 +16,6 @@ import javax.persistence.EntityManager;
 import keeper.project.homepage.ctf.controller.CtfSpringTestHelper;
 import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
 import keeper.project.homepage.ctf.dto.CtfChallengeCategoryDto;
-import keeper.project.homepage.ctf.dto.CtfChallengeDto;
-import keeper.project.homepage.ctf.dto.CtfChallengeTypeDto;
-import keeper.project.homepage.ctf.dto.CtfCommonChallengeDto;
 import keeper.project.homepage.ctf.dto.CtfDynamicChallengeInfoDto;
 import keeper.project.homepage.ctf.dto.CtfFlagDto;
 import keeper.project.homepage.ctf.dto.CtfTeamDetailDto;
@@ -171,24 +166,8 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
             .name(ctfChallengeCategory.getName()).build())
         .toList();
 
-    CtfChallengeAdminDto challengeAdminDto = CtfChallengeAdminDto.builder()
-        .challengeDto(CtfChallengeDto.builder()
-            .commonChallengeDto(CtfCommonChallengeDto.builder()
-                .title(title)
-                .score(score)
-                .categories(categoryDtos)
-                .contestId(ctfContestEntity.getId())
-                .maxSubmitCount(maxSubmitCount)
-                .build()
-            )
-            .content(content)
-            .build()
-        )
-        .isSolvable(true)
-        .flag(flag)
-        .type(getStandardType())
-        .dynamicInfo(null)
-        .build();
+    CtfChallengeAdminDto challengeAdminDto = generateChallengeAdminDto(score, flag, content, title,
+        maxSubmitCount, ctfContestEntity.getId(), categoryDtos, getStandardType());
 
     return ctfAdminService.createChallenge(challengeAdminDto);
   }
@@ -213,40 +192,9 @@ class CtfAdminServiceTest extends CtfSpringTestHelper {
             .name(ctfChallengeCategory.getName()).build())
         .toList();
 
-    CtfChallengeAdminDto challengeAdminDto = CtfChallengeAdminDto.builder()
-        .challengeDto(CtfChallengeDto.builder()
-            .commonChallengeDto(CtfCommonChallengeDto.builder()
-                .title(title)
-                .score(0L)
-                .categories(categoryDtos)
-                .contestId(ctfContestEntity.getId())
-                .maxSubmitCount(maxSubmitCount)
-                .build()
-            )
-            .content(content)
-            .build()
-        )
-        .isSolvable(true)
-        .flag(flag)
-        .type(getDynamicType())
-        .dynamicInfo(dynamicScore)
-        .build();
-
+    CtfChallengeAdminDto challengeAdminDto = generateChallengeAdminDto(0L, flag, content, title,
+        maxSubmitCount, ctfContestEntity.getId(), categoryDtos, getDynamicType(), dynamicScore);
     return ctfAdminService.createChallenge(challengeAdminDto);
-  }
-
-  private static CtfChallengeTypeDto getStandardType() {
-    return CtfChallengeTypeDto.builder()
-        .id(STANDARD.getId())
-        .name(STANDARD.getName())
-        .build();
-  }
-
-  private static CtfChallengeTypeDto getDynamicType() {
-    return CtfChallengeTypeDto.builder()
-        .id(DYNAMIC.getId())
-        .name(DYNAMIC.getName())
-        .build();
   }
 
   @Test
