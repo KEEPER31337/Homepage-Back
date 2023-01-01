@@ -36,7 +36,9 @@ import java.util.ArrayList;
 import java.util.List;
 import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
 import keeper.project.homepage.ctf.dto.CtfChallengeCategoryDto;
+import keeper.project.homepage.ctf.dto.CtfChallengeDto;
 import keeper.project.homepage.ctf.dto.CtfChallengeTypeDto;
+import keeper.project.homepage.ctf.dto.CtfCommonChallengeDto;
 import keeper.project.homepage.ctf.dto.CtfContestAdminDto;
 import keeper.project.homepage.ctf.dto.CtfDynamicChallengeInfoDto;
 import keeper.project.homepage.ctf.dto.CtfProbMakerDto;
@@ -420,7 +422,8 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
   }
 
   @NonNull
-  private ResultActions createChallengeControllerTest(CtfChallengeAdminDto challenge) throws Exception {
+  private ResultActions createChallengeControllerTest(CtfChallengeAdminDto challenge)
+      throws Exception {
     return mockMvc.perform(post("/v1/admin/ctf/prob")
             .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON)
@@ -494,16 +497,22 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
         .toList();
 
     CtfChallengeAdminDto challenge = CtfChallengeAdminDto.builder()
-        .title(title)
-        .content(content)
-        .contestId(contestEntity.getId())
-        .categories(categoryDtos)
+        .challengeDto(CtfChallengeDto.builder()
+            .commonChallengeDto(CtfCommonChallengeDto.builder()
+                .title(title)
+                .contestId(contestEntity.getId())
+                .categories(categoryDtos)
+                .score(score)
+                .maxSubmitCount(maxSubmitCount)
+                .build()
+            )
+            .content(content)
+            .creatorName(creator.getNickName())
+            .build()
+        )
         .type(type)
         .isSolvable(isSolvable)
-        .creatorName(creator.getNickName())
-        .score(score)
         .flag(flag)
-        .maxSubmitCount(maxSubmitCount)
         .dynamicInfo(dynamicInfo)
         .build();
     return challenge;
@@ -624,7 +633,8 @@ class CtfAdminControllerTest extends CtfSpringTestHelper {
     CtfTeamEntity team = generateCtfTeam(contestEntity, creator, teamScore);
     List<CtfChallengeCategory> categories = new ArrayList<>();
     categories.add(MISC);
-    CtfChallengeEntity challenge = generateCtfChallenge(contestEntity, STANDARD, categories, score, true);
+    CtfChallengeEntity challenge = generateCtfChallenge(contestEntity, STANDARD, categories, score,
+        true);
     generateCtfFlag(team, challenge, false);
 
     // when

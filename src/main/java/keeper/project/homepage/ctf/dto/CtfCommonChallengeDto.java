@@ -29,25 +29,25 @@ public class CtfCommonChallengeDto {
   public static final long MIN_SUBMIT_COUNT = 1;
   public static final long DEFAULT_SUBMIT_COUNT = 15;
 
-  protected String title;
-  protected Long score;
-  protected List<CtfChallengeCategoryDto> categories;
-  protected Long contestId;
+  private String title;
+  private Long score;
+  private List<CtfChallengeCategoryDto> categories;
+  private Long contestId;
   @Max(MAX_SUBMIT_COUNT)
   @Min(MIN_SUBMIT_COUNT)
   @JsonSetter(nulls = Nulls.SKIP)
-  protected Long maxSubmitCount = DEFAULT_SUBMIT_COUNT;
+  private Long maxSubmitCount = DEFAULT_SUBMIT_COUNT;
 
   @JsonProperty(access = Access.READ_ONLY)
-  protected Long remainedSubmitCount;
+  private Long remainedSubmitCount;
   @JsonProperty(access = Access.READ_ONLY)
-  protected LocalDateTime lastTryTime;
+  private LocalDateTime lastTryTime;
   @JsonProperty(access = Access.READ_ONLY)
-  protected LocalDateTime solvedTime;
+  private LocalDateTime solvedTime;
   @JsonProperty(access = Access.READ_ONLY)
-  protected Long challengeId;
+  private Long challengeId;
   @JsonProperty(access = Access.READ_ONLY)
-  protected Boolean isSolved;
+  private Boolean isSolved;
 
   public static CtfCommonChallengeDto toDto(CtfChallengeEntity challenge, Boolean isSolved,
       CtfFlagEntity ctfFlagEntity) {
