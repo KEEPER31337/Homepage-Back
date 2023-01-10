@@ -2,6 +2,7 @@ package keeper.project.homepage.ctf.dto;
 
 import static java.util.stream.Collectors.toList;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -41,7 +42,9 @@ public class CtfCommonChallengeDto {
   @JsonProperty(access = Access.READ_ONLY)
   private Long remainedSubmitCount;
   @JsonProperty(access = Access.READ_ONLY)
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
   private LocalDateTime lastTryTime;
+  @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
   @JsonProperty(access = Access.READ_ONLY)
   private LocalDateTime solvedTime;
   @JsonProperty(access = Access.READ_ONLY)
