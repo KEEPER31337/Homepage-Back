@@ -1,6 +1,6 @@
 package keeper.project.homepage.clerk.service;
 
-import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.DORMANT_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.MemberType.DORMANT_MEMBER;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

@@ -4,10 +4,10 @@ import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply
 import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.GRADUATE;
 import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.LEAVE;
 import static keeper.project.homepage.clerk.entity.SurveyReplyEntity.SurveyReply.OTHER_DORMANT;
-import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.DORMANT_MEMBER;
-import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.GRADUATED_MEMBER;
-import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.REGULAR_MEMBER;
-import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.WITHDRAWAL_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.MemberType.DORMANT_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.MemberType.GRADUATED_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.MemberType.REGULAR_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.MemberType.WITHDRAWAL_MEMBER;
 import static keeper.project.homepage.util.service.SurveyUtilService.NO_SURVEY;
 
 import java.time.LocalDateTime;
