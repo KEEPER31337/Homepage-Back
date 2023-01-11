@@ -1,14 +1,14 @@
 package keeper.project.homepage.attendance.service;
 
 
-import static keeper.project.homepage.about.dto.AttendancePointDto.DAILY_ATTENDANCE_POINT;
-import static keeper.project.homepage.about.dto.AttendancePointDto.FIRST_PLACE_POINT;
-import static keeper.project.homepage.about.dto.AttendancePointDto.MONTH_ATTENDANCE_POINT;
-import static keeper.project.homepage.about.dto.AttendancePointDto.SECOND_PLACE_POINT;
-import static keeper.project.homepage.about.dto.AttendancePointDto.THIRD_PLACE_POINT;
-import static keeper.project.homepage.about.dto.AttendancePointDto.WEEK_ATTENDANCE;
-import static keeper.project.homepage.about.dto.AttendancePointDto.WEEK_ATTENDANCE_POINT;
-import static keeper.project.homepage.about.dto.AttendancePointDto.YEAR_ATTENDANCE_POINT;
+import static keeper.project.homepage.attendance.dto.AttendancePointDto.DAILY_ATTENDANCE_POINT;
+import static keeper.project.homepage.attendance.dto.AttendancePointDto.FIRST_PLACE_POINT;
+import static keeper.project.homepage.attendance.dto.AttendancePointDto.MONTH_ATTENDANCE_POINT;
+import static keeper.project.homepage.attendance.dto.AttendancePointDto.SECOND_PLACE_POINT;
+import static keeper.project.homepage.attendance.dto.AttendancePointDto.THIRD_PLACE_POINT;
+import static keeper.project.homepage.attendance.dto.AttendancePointDto.WEEK_ATTENDANCE;
+import static keeper.project.homepage.attendance.dto.AttendancePointDto.WEEK_ATTENDANCE_POINT;
+import static keeper.project.homepage.attendance.dto.AttendancePointDto.YEAR_ATTENDANCE_POINT;
 import static keeper.project.homepage.attendance.service.DateUtils.isBeforeDay;
 import static keeper.project.homepage.attendance.service.DateUtils.isToday;
 
@@ -24,11 +24,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import javax.persistence.criteria.CriteriaBuilder.In;
 import keeper.project.homepage.point.dto.request.PointLogRequestDto;
-import keeper.project.homepage.about.dto.AttendanceDto;
-import keeper.project.homepage.about.dto.AttendancePointDto;
-import keeper.project.homepage.about.dto.AttendanceResultDto;
+import keeper.project.homepage.attendance.dto.AttendanceDto;
+import keeper.project.homepage.attendance.dto.AttendancePointDto;
+import keeper.project.homepage.attendance.dto.AttendanceResultDto;
 import keeper.project.homepage.attendance.entity.AttendanceEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.attendance.exception.CustomAttendanceException;

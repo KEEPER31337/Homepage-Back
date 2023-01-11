@@ -1,6 +1,6 @@
 package keeper.project.homepage.attendance.service;
 
-import keeper.project.homepage.about.dto.RankDto;
+import keeper.project.homepage.attendance.dto.RankDto;
 import keeper.project.homepage.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
