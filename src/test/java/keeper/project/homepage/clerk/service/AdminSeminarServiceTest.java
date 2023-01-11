@@ -9,6 +9,7 @@ import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity
 import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.DORMANT_MEMBER;
 import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.REGULAR_MEMBER;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ import keeper.project.homepage.clerk.entity.SeminarAttendanceEntity;
 import keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity;
 import keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus;
 import keeper.project.homepage.clerk.entity.SeminarEntity;
+import keeper.project.homepage.clerk.exception.CustomAttendanceAbsenceExcuseIsNullException;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.member.entity.MemberTypeEntity;
 import keeper.project.homepage.clerk.exception.CustomDuplicateSeminarException;
@@ -427,6 +429,17 @@ public class AdminSeminarServiceTest extends AdminClerkServiceTestHelper {
 
       Assertions.assertThrows(CustomDuplicateSeminarException.class,
           () -> adminSeminarService.createSeminar(request));
+    }
+
+    @Test
+    @DisplayName("[FAIL] 개인 사유 걸석시 결석 사유가 없으면 예외가 발생한다.")
+    void notExistExcuseWhenPersonalAbsence() {
+      // given
+      SeminarAttendanceEntity attendance = new SeminarAttendanceEntity();
+
+      // then
+      assertThatThrownBy(() -> adminSeminarService.processPersonal(attendance, null))
+          .isInstanceOf(CustomAttendanceAbsenceExcuseIsNullException.class);
     }
   }
 
