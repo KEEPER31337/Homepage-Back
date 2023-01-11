@@ -18,7 +18,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import keeper.project.homepage.clerk.entity.SeminarAttendanceEntity;
-import keeper.project.homepage.member.dto.MultiMemberResponseDto;
 import keeper.project.homepage.posting.entity.PostingEntity;
 import keeper.project.homepage.study.entity.StudyHasMemberEntity;
 import keeper.project.homepage.util.EnvironmentProperty;
@@ -192,6 +191,24 @@ public class MemberEntity implements Serializable {
     this.generation = generation;
   }
 
+  public Boolean isMyFollowee(MemberEntity other) {
+    for (FriendEntity friend : followee) {
+      if (friend.getFollowee().equals(other)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public Boolean isMyFollower(MemberEntity other) {
+    for (FriendEntity friend : follower) {
+      if (friend.getFollower().equals(other)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public List<String> getJobs() {
     List<String> jobs = new ArrayList<>();
     if (getMemberJobs() != null || getMemberJobs().isEmpty() == false) {
@@ -205,18 +222,6 @@ public class MemberEntity implements Serializable {
     return getThumbnail() == null ?
         EnvironmentProperty.getThumbnailPath(ThumbType.MemberThumbnail.getDefaultThumbnailId())
         : EnvironmentProperty.getThumbnailPath(getThumbnail().getId());
-  }
-
-  public MultiMemberResponseDto toMultiMemberResponseDto() {
-    return MultiMemberResponseDto.builder()
-        .id(this.id)
-        .nickName(this.nickName)
-        .thumbnailPath(this.getThumbnailPath())
-        .generation(this.generation)
-        .jobs(this.getJobs())
-        .type(this.memberType.getName())
-        .msg("Success")
-        .build();
   }
 
   public void addMemberJob(MemberJobEntity job) {
