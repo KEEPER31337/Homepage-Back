@@ -1,6 +1,5 @@
 package keeper.project.homepage.member.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -25,6 +24,7 @@ import keeper.project.homepage.study.entity.StudyHasMemberEntity;
 import keeper.project.homepage.util.EnvironmentProperty;
 import keeper.project.homepage.util.entity.ThumbnailEntity;
 import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,28 +35,28 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 
-@Builder                    // builder를 사용할수 있게 합니다.
-@Entity                     // jpa entity임을 알립니다.
-@Getter                     // user 필드값의 getter를 자동으로 생성합니다.
-@NoArgsConstructor          // 인자없는 생성자를 자동으로 생성합니다.
-@AllArgsConstructor         // 인자를 모두 갖춘 생성자를 자동으로 생성합니다.
-@Table(name = "member")     // 'member' 테이블과 매핑됨을 명시
+@Builder
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Table(name = "member")
 @DynamicInsert
 @DynamicUpdate
 public class MemberEntity implements Serializable {
 
-  @Id // pk
+  @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "login_id", length = 80, nullable = false, unique = true)
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+  @Column(name = "login_id", length = 80, nullable = false, unique = true)
   private String loginId;
 
   @Column(name = "email_address", length = 250, nullable = false, unique = true)
   private String emailAddress;
 
-  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Json 결과로 출력 안 할 데이터
+  @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
   @Column(name = "password", length = 512, nullable = false)
   private String password;
 
@@ -70,8 +70,8 @@ public class MemberEntity implements Serializable {
   @Column(name = "birthday")
   private Date birthday;
 
-  @Column(name = "student_id", length = 45, nullable = false, unique = true)
   @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+  @Column(name = "student_id", length = 45, nullable = false, unique = true)
   private String studentId;
 
   @CreationTimestamp
@@ -96,6 +96,10 @@ public class MemberEntity implements Serializable {
   @Column(name = "level", nullable = false)
   private Integer level;
 
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "thumbnail_id")
+  private ThumbnailEntity thumbnail;
+
   @Column(name = "merit", nullable = false)
   private Integer merit;
 
@@ -108,10 +112,6 @@ public class MemberEntity implements Serializable {
   @Column(name = "total_attendance", nullable = false)
   private Integer totalAttendance;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "thumbnail_id")
-  private ThumbnailEntity thumbnail;
-
   @OneToMany(mappedBy = "followee", cascade = CascadeType.REMOVE)
   @Builder.Default
   private List<FriendEntity> follower = new ArrayList<>();
@@ -123,6 +123,26 @@ public class MemberEntity implements Serializable {
   @OneToMany(mappedBy = "member", orphanRemoval = true)
   @Builder.Default
   private List<StudyHasMemberEntity> studyHasMemberEntities = new ArrayList<>();
+
+  @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.PERSIST, orphanRemoval = true)
+  @Builder.Default
+  private List<MemberHasMemberJobEntity> memberJobs = new ArrayList<>();
+
+  @OneToMany(targetEntity = PostingEntity.class, mappedBy = "memberId")
+  @Builder.Default
+  private List<PostingEntity> posting = new ArrayList<>();
+
+  @OneToMany(mappedBy = "memberEntity")
+  @Builder.Default
+  private List<SeminarAttendanceEntity> seminarAttendances = new ArrayList<>();
+
+  @PrePersist
+  private void prePersist() {
+    this.point = (this.point == null ? 0 : this.point);
+    this.level = (this.level == null ? 0 : this.level);
+    this.merit = (this.merit == null ? 0 : this.merit);
+    this.demerit = (this.demerit == null ? 0 : this.demerit);
+  }
 
   public void changePassword(String newPassword) {
     this.password = newPassword;
@@ -156,18 +176,6 @@ public class MemberEntity implements Serializable {
     this.memberType = memberTypeEntity;
   }
 
-  @OneToMany(mappedBy = "memberEntity", cascade = CascadeType.PERSIST, orphanRemoval = true)
-  @Builder.Default
-  private List<MemberHasMemberJobEntity> memberJobs = new ArrayList<>();
-
-  @OneToMany(targetEntity = PostingEntity.class, mappedBy = "memberId")
-  @Builder.Default
-  private List<PostingEntity> posting = new ArrayList<>();
-
-  @OneToMany(mappedBy = "memberEntity")
-  @Builder.Default
-  private List<SeminarAttendanceEntity> seminarAttendances = new ArrayList<>();
-
   public void updatePoint(int point) {
     this.point = point;
   }
@@ -188,8 +196,7 @@ public class MemberEntity implements Serializable {
     List<String> jobs = new ArrayList<>();
     if (getMemberJobs() != null || getMemberJobs().isEmpty() == false) {
       getMemberJobs()
-          .forEach(job ->
-              jobs.add(job.getMemberJobEntity().getName()));
+          .forEach(job -> jobs.add(job.getMemberJobEntity().getName()));
     }
     return jobs;
   }
@@ -198,14 +205,6 @@ public class MemberEntity implements Serializable {
     return getThumbnail() == null ?
         EnvironmentProperty.getThumbnailPath(ThumbType.MemberThumbnail.getDefaultThumbnailId())
         : EnvironmentProperty.getThumbnailPath(getThumbnail().getId());
-  }
-
-  @PrePersist
-  private void prePersist() {
-    this.point = (this.point == null ? 0 : this.point);
-    this.level = (this.level == null ? 0 : this.level);
-    this.merit = (this.merit == null ? 0 : this.merit);
-    this.demerit = (this.demerit == null ? 0 : this.demerit);
   }
 
   public MultiMemberResponseDto toMultiMemberResponseDto() {
