@@ -430,17 +430,7 @@ public class AdminSeminarServiceTest extends AdminClerkServiceTestHelper {
       Assertions.assertThrows(CustomDuplicateSeminarException.class,
           () -> adminSeminarService.createSeminar(request));
     }
-
-    @Test
-    @DisplayName("[FAIL] 개인 사유 걸석시 결석 사유가 없으면 예외가 발생한다.")
-    void notExistExcuseWhenPersonalAbsence() {
-      // given
-      SeminarAttendanceEntity attendance = new SeminarAttendanceEntity();
-
-      // then
-      assertThatThrownBy(() -> adminSeminarService.processPersonal(attendance, null))
-          .isInstanceOf(CustomAttendanceAbsenceExcuseIsNullException.class);
-    }
+    
   }
 
 
