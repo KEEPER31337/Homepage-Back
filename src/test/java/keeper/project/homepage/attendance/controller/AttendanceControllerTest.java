@@ -18,7 +18,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.about.dto.AttendanceDto;
+import keeper.project.homepage.attendance.dto.AttendanceDto;
 import keeper.project.homepage.util.dto.result.SingleResult;
 import keeper.project.homepage.sign.dto.SignInDto;
 import keeper.project.homepage.member.entity.MemberEntity;
