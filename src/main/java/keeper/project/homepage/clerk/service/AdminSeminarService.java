@@ -187,9 +187,6 @@ public class AdminSeminarService {
 
   @Transactional
   void processPersonal(SeminarAttendanceEntity attendance, String absenceExcuse) {
-    if (absenceExcuse == null) {
-      throw new CustomAttendanceAbsenceExcuseIsNullException();
-    }
     attendance.setSeminarAttendanceExcuseEntity(
         SeminarAttendanceExcuseEntity.builder()
             .seminarAttendanceEntity(attendance)
