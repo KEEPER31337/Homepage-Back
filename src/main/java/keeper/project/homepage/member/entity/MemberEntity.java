@@ -191,7 +191,7 @@ public class MemberEntity implements Serializable {
     this.generation = generation;
   }
 
-  public Boolean isMyFollowee(MemberEntity other) {
+  public boolean isMyFollowee(MemberEntity other) {
     for (FriendEntity friend : followee) {
       if (friend.getFollowee().equals(other)) {
         return true;
@@ -200,7 +200,7 @@ public class MemberEntity implements Serializable {
     return false;
   }
 
-  public Boolean isMyFollower(MemberEntity other) {
+  public boolean isMyFollower(MemberEntity other) {
     for (FriendEntity friend : follower) {
       if (friend.getFollower().equals(other)) {
         return true;

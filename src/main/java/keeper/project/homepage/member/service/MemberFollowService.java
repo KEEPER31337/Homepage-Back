@@ -22,11 +22,11 @@ public class MemberFollowService {
   private final MemberRepository memberRepository;
   private final FriendRepository friendRepository;
 
-  private Integer getFolloweeNumber(MemberEntity member) {
+  private int getFolloweeNumber(MemberEntity member) {
     return member.getFollowee().size();
   }
 
-  private Integer getFollowerNumber(MemberEntity member) {
+  private int getFollowerNumber(MemberEntity member) {
     return member.getFollower().size();
   }
 
