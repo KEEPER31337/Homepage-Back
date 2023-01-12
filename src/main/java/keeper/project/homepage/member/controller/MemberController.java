@@ -11,6 +11,7 @@ import keeper.project.homepage.member.dto.response.OtherMemberInfoResponseDto;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.member.service.MemberDeleteService;
 import keeper.project.homepage.member.service.MemberFindService;
+import keeper.project.homepage.member.service.MemberFollowService;
 import keeper.project.homepage.member.service.MemberService;
 import keeper.project.homepage.posting.dto.PostingResponseDto;
 import keeper.project.homepage.posting.service.PostingService;
@@ -49,6 +50,7 @@ public class MemberController {
   private final MemberService memberService;
   private final MemberFindService memberFindService;
   private final MemberDeleteService memberDeleteService;
+  private final MemberFollowService memberFollowService;
   private final ResponseService responseService;
   private final AuthService authService;
   private final PostingService postingService;
@@ -196,7 +198,7 @@ public class MemberController {
   @PostMapping(value = "/follow/{id}")
   public CommonResult followByLoginId(@PathVariable("id") Long memberId) {
     Long id = authService.getMemberIdByJWT();
-    memberService.follow(id, memberId);
+    memberFollowService.follow(id, memberId);
     return responseService.getSuccessResult();
   }
 
@@ -204,7 +206,7 @@ public class MemberController {
   @DeleteMapping(value = "/unfollow/{id}")
   public CommonResult unfollowByLoginId(@PathVariable("id") Long memberId) {
     Long id = authService.getMemberIdByJWT();
-    memberService.unfollow(id, memberId);
+    memberFollowService.unfollow(id, memberId);
     return responseService.getSuccessResult();
   }
 
@@ -212,7 +214,7 @@ public class MemberController {
   @GetMapping(value = "/followers")
   public ListResult<UserMemberResponseDto> showFollowerList() {
     Long id = authService.getMemberIdByJWT();
-    List<UserMemberResponseDto> followerList = memberService.showFollower(id);
+    List<UserMemberResponseDto> followerList = memberFollowService.showFollower(id);
     return responseService.getSuccessListResult(followerList);
   }
 
@@ -220,7 +222,7 @@ public class MemberController {
   @GetMapping(value = "/followees")
   public ListResult<UserMemberResponseDto> showFolloweeList() {
     Long id = authService.getMemberIdByJWT();
-    List<UserMemberResponseDto> followeeList = memberService.showFollowee(id);
+    List<UserMemberResponseDto> followeeList = memberFollowService.showFollowee(id);
     return responseService.getSuccessListResult(followeeList);
   }
 
@@ -257,7 +259,7 @@ public class MemberController {
   @GetMapping("/follow-number")
   public SingleResult<MemberFollowResponseDto> getFollowerAndFolloweeCount() {
     Long id = authService.getMemberIdByJWT();
-    MemberFollowResponseDto followDto = memberService.getFollowerAndFolloweeNumber(id);
+    MemberFollowResponseDto followDto = memberFollowService.getFollowerAndFolloweeNumber(id);
     return responseService.getSuccessSingleResult(followDto);
   }
 

@@ -1,19 +1,15 @@
 package keeper.project.homepage.member.service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import keeper.project.homepage.member.dto.response.MemberFollowResponseDto;
 import keeper.project.homepage.member.dto.response.UserMemberResponseDto;
 import keeper.project.homepage.member.entity.EmailAuthRedisEntity;
-import keeper.project.homepage.member.entity.FriendEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.member.exception.CustomMemberDuplicateException;
 import keeper.project.homepage.member.exception.CustomMemberEmptyFieldException;
 import keeper.project.homepage.member.exception.CustomMemberNotFoundException;
-import keeper.project.homepage.member.repository.FriendRepository;
 import keeper.project.homepage.member.repository.MemberRepository;
 import keeper.project.homepage.posting.dto.PostingResponseDto;
 import keeper.project.homepage.sign.dto.EmailAuthDto;
@@ -38,21 +34,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class MemberService {
 
   private final MemberRepository memberRepository;
-  private final FriendRepository friendRepository;
   private final EmailAuthRedisRepository emailAuthRedisRepository;
 
   private final MemberUtilService memberUtilService;
   private final ThumbnailService thumbnailService;
   private final MailService mailService;
   private final DuplicateCheckService duplicateCheckService;
-
-  private Integer getFolloweeNumber(MemberEntity member) {
-    return member.getFollowee().size();
-  }
-
-  private Integer getFollowerNumber(MemberEntity member) {
-    return member.getFollower().size();
-  }
 
   public UserMemberResponseDto updateProfile(UserMemberResponseDto memberDto, Long memberId) {
     MemberEntity updateEntity = memberRepository.findById(memberId)
@@ -176,65 +163,6 @@ public class MemberService {
         postings.size());
 
     return page;
-  }
-
-  public void follow(Long myId, Long memberId) {
-    MemberEntity me = memberUtilService.getById(myId);
-    MemberEntity followee = memberUtilService.getById(memberId);
-
-    FriendEntity friend = FriendEntity.builder()
-        .follower(me)
-        .followee(followee)
-        .registerDate(LocalDate.now())
-        .build();
-    friendRepository.save(friend);
-
-    me.getFollowee().add(friend);
-    followee.getFollower().add(friend);
-  }
-
-  public void unfollow(Long myId, Long memberId) {
-    MemberEntity me = memberUtilService.getById(myId);
-    MemberEntity followee = memberUtilService.getById(memberId);
-
-    FriendEntity friend = friendRepository.findByFolloweeAndFollower(followee, me);
-    me.getFollowee().remove(friend);
-    followee.getFollower().remove(friend);
-    friendRepository.delete(friend);
-  }
-
-  public List<UserMemberResponseDto> showFollower(Long myId) {
-    MemberEntity me = memberUtilService.getById(myId);
-    List<FriendEntity> friendList = me.getFollower();
-
-    List<UserMemberResponseDto> followerList = new ArrayList<>();
-    for (FriendEntity friend : friendList) {
-      UserMemberResponseDto follower = UserMemberResponseDto.builder().build();
-      follower.initWithEntity(friend.getFollower());
-      followerList.add(follower);
-    }
-    return followerList;
-  }
-
-  public List<UserMemberResponseDto> showFollowee(Long myId) {
-    MemberEntity me = memberUtilService.getById(myId);
-    List<FriendEntity> friendList = me.getFollowee();
-
-    List<UserMemberResponseDto> followeeList = new ArrayList<>();
-    for (FriendEntity friend : friendList) {
-      UserMemberResponseDto followee = UserMemberResponseDto.builder().build();
-      followee.initWithEntity(friend.getFollowee());
-      followeeList.add(followee);
-    }
-    return followeeList;
-  }
-
-  public MemberFollowResponseDto getFollowerAndFolloweeNumber(Long id) {
-    MemberEntity member = memberUtilService.getById(id);
-    return MemberFollowResponseDto.builder()
-        .followeeNumber(getFolloweeNumber(member))
-        .followerNumber(getFollowerNumber(member))
-        .build();
   }
 
   public List<Float> getAllGenerations() {
