@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import keeper.project.homepage.member.dto.MemberFollowDto;
+import keeper.project.homepage.member.dto.response.MemberFollowResponseDto;
 import keeper.project.homepage.member.dto.response.UserMemberResponseDto;
 import keeper.project.homepage.member.entity.EmailAuthRedisEntity;
 import keeper.project.homepage.member.entity.FriendEntity;
@@ -229,9 +229,9 @@ public class MemberService {
     return followeeList;
   }
 
-  public MemberFollowDto getFollowerAndFolloweeNumber(Long id) {
+  public MemberFollowResponseDto getFollowerAndFolloweeNumber(Long id) {
     MemberEntity member = memberUtilService.getById(id);
-    return MemberFollowDto.builder()
+    return MemberFollowResponseDto.builder()
         .followeeNumber(getFolloweeNumber(member))
         .followerNumber(getFollowerNumber(member))
         .build();

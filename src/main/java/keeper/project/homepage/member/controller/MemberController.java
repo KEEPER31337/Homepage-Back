@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
-import keeper.project.homepage.member.dto.MemberFollowDto;
+import keeper.project.homepage.member.dto.response.MemberFollowResponseDto;
 import keeper.project.homepage.member.dto.response.UserMemberResponseDto;
 import keeper.project.homepage.member.dto.response.MultiMemberResponseDto;
 import keeper.project.homepage.member.dto.response.OtherMemberInfoResponseDto;
@@ -255,9 +255,9 @@ public class MemberController {
 
   @Secured("ROLE_회원")
   @GetMapping("/follow-number")
-  public SingleResult<MemberFollowDto> getFollowerAndFolloweeCount() {
+  public SingleResult<MemberFollowResponseDto> getFollowerAndFolloweeCount() {
     Long id = authService.getMemberIdByJWT();
-    MemberFollowDto followDto = memberService.getFollowerAndFolloweeNumber(id);
+    MemberFollowResponseDto followDto = memberService.getFollowerAndFolloweeNumber(id);
     return responseService.getSuccessSingleResult(followDto);
   }
 
