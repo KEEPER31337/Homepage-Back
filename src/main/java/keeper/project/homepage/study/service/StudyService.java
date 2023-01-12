@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import keeper.project.homepage.member.dto.response.UserMemberResponseDto;
 import keeper.project.homepage.util.service.auth.AuthService;
 import keeper.project.homepage.util.entity.ThumbnailEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
@@ -18,7 +19,6 @@ import keeper.project.homepage.study.exception.CustomStudyNotFoundException;
 import keeper.project.homepage.member.repository.MemberRepository;
 import keeper.project.homepage.study.repository.StudyHasMemberRepository;
 import keeper.project.homepage.study.repository.StudyRepository;
-import keeper.project.homepage.member.dto.UserMemberDto;
 import keeper.project.homepage.study.dto.StudyDto;
 import keeper.project.homepage.study.dto.StudyYearSeasonDto;
 import keeper.project.homepage.study.mapper.StudyMapper;
@@ -233,7 +233,7 @@ public class StudyService {
   }
 
   @Transactional
-  public List<UserMemberDto> addStudyMember(Long studyId, Long memberId) {
+  public List<UserMemberResponseDto> addStudyMember(Long studyId, Long memberId) {
     Long myId = authService.getMemberIdByJWT();
     StudyEntity studyEntity = studyRepository.findById(studyId)
         .orElseThrow(CustomStudyNotFoundException::new);
@@ -267,7 +267,7 @@ public class StudyService {
   }
 
   @Transactional
-  public List<UserMemberDto> removeStudyMember(Long studyId, Long memberId) {
+  public List<UserMemberResponseDto> removeStudyMember(Long studyId, Long memberId) {
     Long myId = authService.getMemberIdByJWT();
     StudyEntity studyEntity = studyRepository.findById(studyId)
         .orElseThrow(CustomStudyNotFoundException::new);
@@ -281,12 +281,12 @@ public class StudyService {
     return getStudyMemberDtoList(studyEntity);
   }
 
-  private List<UserMemberDto> getStudyMemberDtoList(StudyEntity studyEntity) {
-    List<UserMemberDto> memberDtoList = new ArrayList<>();
+  private List<UserMemberResponseDto> getStudyMemberDtoList(StudyEntity studyEntity) {
+    List<UserMemberResponseDto> memberDtoList = new ArrayList<>();
     List<StudyHasMemberEntity> studyHasMemberEntities = studyEntity.getStudyHasMemberEntities();
     studyHasMemberEntities.sort(Comparator.comparing(StudyHasMemberEntity::getRegisterTime));
     for (StudyHasMemberEntity studyHasMember : studyHasMemberEntities) {
-      UserMemberDto memberDto = new UserMemberDto();
+      UserMemberResponseDto memberDto = new UserMemberResponseDto();
       memberDto.initWithEntity(studyHasMember.getMember());
       memberDtoList.add(memberDto);
     }

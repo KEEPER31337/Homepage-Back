@@ -1,6 +1,6 @@
 package keeper.project.homepage.sign.controller;
 
-import keeper.project.homepage.member.dto.UserMemberDto;
+import keeper.project.homepage.member.dto.response.UserMemberResponseDto;
 import keeper.project.homepage.util.dto.result.CommonResult;
 import keeper.project.homepage.sign.dto.EmailAuthDto;
 import keeper.project.homepage.util.dto.result.SingleResult;
@@ -27,7 +27,7 @@ public class SignInController {
 
   @PostMapping(value = "")
   public SingleResult<SignInDto> signIn(
-      @RequestBody UserMemberDto memberDto) {
+      @RequestBody UserMemberResponseDto memberDto) {
 
     MemberEntity memberEntity = signInService.login(memberDto.getLoginId(),
         memberDto.getPassword());
@@ -54,7 +54,7 @@ public class SignInController {
 
   @PostMapping(value = "/change-password")
   public CommonResult changePassword(
-      @RequestBody UserMemberDto memberDto
+      @RequestBody UserMemberResponseDto memberDto
   ) {
     signInService.changePassword(memberDto.getPassword());
     return responseService.getSuccessResult();

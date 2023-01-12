@@ -1,8 +1,8 @@
 package keeper.project.homepage.sign.controller;
 
+import keeper.project.homepage.member.dto.response.UserMemberResponseDto;
 import keeper.project.homepage.util.dto.result.CommonResult;
 import keeper.project.homepage.sign.dto.EmailAuthDto;
-import keeper.project.homepage.member.dto.UserMemberDto;
 import keeper.project.homepage.util.dto.result.SingleResult;
 import keeper.project.homepage.sign.service.DuplicateCheckService;
 import keeper.project.homepage.util.service.result.ResponseService;
@@ -29,7 +29,7 @@ public class SignUpController {
 
   @PostMapping(value = "")
   public CommonResult signUp(
-      @RequestBody UserMemberDto memberDto
+      @RequestBody UserMemberResponseDto memberDto
   ) {
     signUpService.signUpWithEmailAuthCode(memberDto);
     return responseService.getSuccessResult();

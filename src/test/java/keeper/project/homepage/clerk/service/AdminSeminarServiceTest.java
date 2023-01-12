@@ -6,15 +6,14 @@ import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity
 import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.BEFORE_ATTENDANCE;
 import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.LATENESS;
 import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.PERSONAL;
-import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.DORMANT_MEMBER;
-import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.REGULAR_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.MemberType.DORMANT_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.MemberType.REGULAR_MEMBER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import javax.persistence.EntityManager;
 import keeper.project.homepage.clerk.dto.request.SeminarAttendanceUpdateRequestDto;
 import keeper.project.homepage.clerk.dto.request.SeminarCreateRequestDto;
 import keeper.project.homepage.clerk.dto.response.SeminarCreateResponseDto;
@@ -30,24 +29,11 @@ import keeper.project.homepage.member.entity.MemberTypeEntity;
 import keeper.project.homepage.clerk.exception.CustomDuplicateSeminarException;
 import keeper.project.homepage.clerk.exception.CustomMeritTypeNotFoundException;
 import keeper.project.homepage.clerk.exception.CustomSeminarAttendanceNotFoundException;
-import keeper.project.homepage.clerk.repository.MeritLogRepository;
-import keeper.project.homepage.clerk.repository.MeritTypeRepository;
-import keeper.project.homepage.clerk.repository.SeminarAttendanceRepository;
-import keeper.project.homepage.clerk.repository.SeminarAttendanceStatusRepository;
-import keeper.project.homepage.clerk.repository.SeminarRepository;
-import keeper.project.homepage.member.repository.MemberRepository;
-import keeper.project.homepage.member.repository.MemberTypeRepository;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional

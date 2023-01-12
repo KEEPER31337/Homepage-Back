@@ -46,7 +46,7 @@ public class MemberTypeEntity implements Serializable {
   }
   @Getter
   @RequiredArgsConstructor
-  public enum memberType {
+  public enum MemberType {
     NON_MEMBER(1L, "비회원"),
     REGULAR_MEMBER(2L, "정회원"),
     DORMANT_MEMBER(3L, "휴면회원"),

@@ -1,13 +1,13 @@
 package keeper.project.homepage.member.controller;
 
 import keeper.project.homepage.member.service.AdminMemberService;
-import keeper.project.homepage.member.dto.MemberDemeritDto;
+import keeper.project.homepage.member.dto.request.MemberDemeritRequestDto;
 import keeper.project.homepage.member.dto.MemberDto;
-import keeper.project.homepage.member.dto.MemberGenerationDto;
-import keeper.project.homepage.member.dto.MemberJobDto;
-import keeper.project.homepage.member.dto.MemberMeritDto;
-import keeper.project.homepage.member.dto.MemberRankDto;
-import keeper.project.homepage.member.dto.MemberTypeDto;
+import keeper.project.homepage.member.dto.request.MemberGenerationRequestDto;
+import keeper.project.homepage.member.dto.request.MemberJobRequestDto;
+import keeper.project.homepage.member.dto.request.MemberMeritRequestDto;
+import keeper.project.homepage.member.dto.request.MemberRankRequestDto;
+import keeper.project.homepage.member.dto.request.MemberTypeRequestDto;
 import keeper.project.homepage.util.dto.result.ListResult;
 import keeper.project.homepage.util.dto.result.SingleResult;
 import keeper.project.homepage.util.service.result.ResponseService;
@@ -38,45 +38,46 @@ public class AdminMemberController {
 
   @Secured("ROLE_회장")
   @PutMapping("/rank")
-  public SingleResult<MemberDto> updateMemberRank(@RequestBody MemberRankDto memberRankDto) {
+  public SingleResult<MemberDto> updateMemberRank(@RequestBody MemberRankRequestDto memberRankRequestDto) {
     return responseService.getSuccessSingleResult(
-        adminMemberService.updateMemberRank(memberRankDto));
+        adminMemberService.updateMemberRank(memberRankRequestDto));
   }
 
   @Secured("ROLE_회장")
   @PutMapping("/type")
-  public SingleResult<MemberDto> updateMemberType(@RequestBody MemberTypeDto memberTypeDto) {
+  public SingleResult<MemberDto> updateMemberType(@RequestBody MemberTypeRequestDto memberTypeRequestDto) {
     return responseService.getSuccessSingleResult(
-        adminMemberService.updateMemberType(memberTypeDto));
+        adminMemberService.updateMemberType(memberTypeRequestDto));
   }
 
   @Secured("ROLE_회장")
   @PutMapping("/job")
-  public SingleResult<MemberDto> updateMemberJob(@RequestBody MemberJobDto memberJobDto) {
+  public SingleResult<MemberDto> updateMemberJob(@RequestBody MemberJobRequestDto memberJobRequestDto) {
     return responseService.getSuccessSingleResult(
-        adminMemberService.updateMemberJobs(memberJobDto));
+        adminMemberService.updateMemberJobs(memberJobRequestDto));
   }
 
   @Secured({"ROLE_회장", "ROLE_서기"})
   @PutMapping("/generation")
   public SingleResult<MemberDto> updateMemberGeneration(
-      @RequestBody MemberGenerationDto memberGenerationDto) {
+      @RequestBody MemberGenerationRequestDto memberGenerationRequestDto) {
     return responseService.getSuccessSingleResult(
-        adminMemberService.updateGeneration(memberGenerationDto));
+        adminMemberService.updateGeneration(memberGenerationRequestDto));
   }
 
   @Secured({"ROLE_회장", "ROLE_서기"})
   @PutMapping("/merit")
-  public SingleResult<MemberDto> updateMemberMerit(@RequestBody MemberMeritDto memberMeritDto) {
-    return responseService.getSuccessSingleResult(adminMemberService.updateMerit(memberMeritDto));
+  public SingleResult<MemberDto> updateMemberMerit(@RequestBody MemberMeritRequestDto memberMeritRequestDto) {
+    return responseService.getSuccessSingleResult(adminMemberService.updateMerit(
+        memberMeritRequestDto));
   }
 
   @Secured({"ROLE_회장", "ROLE_서기"})
   @PutMapping("/demerit")
   public SingleResult<MemberDto> updateMemberDemerit(
-      @RequestBody MemberDemeritDto memberDemeritDto) {
+      @RequestBody MemberDemeritRequestDto memberDemeritRequestDto) {
     return responseService.getSuccessSingleResult(
-        adminMemberService.updateDemerit(memberDemeritDto));
+        adminMemberService.updateDemerit(memberDemeritRequestDto));
   }
 
 }

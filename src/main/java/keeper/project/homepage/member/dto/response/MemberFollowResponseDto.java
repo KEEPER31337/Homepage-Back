@@ -1,4 +1,4 @@
-package keeper.project.homepage.member.dto;
+package keeper.project.homepage.member.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @JsonInclude(Include.NON_NULL)
-public class MemberFollowDto {
+public class MemberFollowResponseDto {
 
   Integer followeeNumber;
   Integer followerNumber;

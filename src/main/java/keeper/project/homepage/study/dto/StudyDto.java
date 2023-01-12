@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import keeper.project.homepage.member.dto.UserMemberDto;
+import keeper.project.homepage.member.dto.response.UserMemberResponseDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -29,9 +29,9 @@ public class StudyDto {
   @JsonProperty(access = Access.READ_ONLY)
   private String thumbnailPath;
   @JsonProperty(access = Access.READ_ONLY)
-  private UserMemberDto headMember;
+  private UserMemberResponseDto headMember;
   @JsonProperty(access = Access.WRITE_ONLY)
   private String ipAddress;
   @JsonProperty(access = Access.READ_ONLY)
-  private List<UserMemberDto> memberList = new ArrayList<>();
+  private List<UserMemberResponseDto> memberList = new ArrayList<>();
 }

@@ -14,7 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import keeper.project.homepage.member.dto.UserMemberDto;
+import keeper.project.homepage.member.dto.response.UserMemberResponseDto;
 import keeper.project.homepage.util.entity.ThumbnailEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.util.EnvironmentProperty;
@@ -96,13 +96,13 @@ public class StudyEntity {
     return EnvironmentProperty.getThumbnailPath(getThumbnail().getId());
   }
 
-  public List<UserMemberDto> getStudyMembers() {
-    List<UserMemberDto> members = new ArrayList<>();
+  public List<UserMemberResponseDto> getStudyMembers() {
+    List<UserMemberResponseDto> members = new ArrayList<>();
     List<StudyHasMemberEntity> studyHasMemberEntities = getStudyHasMemberEntities();
     studyHasMemberEntities.sort(Comparator.comparing(StudyHasMemberEntity::getRegisterTime));
     if (!studyHasMemberEntities.isEmpty()) {
       for (StudyHasMemberEntity studyHasMemberEntity : studyHasMemberEntities) {
-        UserMemberDto temp = new UserMemberDto();
+        UserMemberResponseDto temp = new UserMemberResponseDto();
         temp.initWithEntity(studyHasMemberEntity.getMember());
         members.add(temp);
       }
@@ -110,8 +110,8 @@ public class StudyEntity {
     return members;
   }
 
-  public UserMemberDto headMemberToDto() {
-    UserMemberDto temp = new UserMemberDto();
+  public UserMemberResponseDto headMemberToDto() {
+    UserMemberResponseDto temp = new UserMemberResponseDto();
     temp.initWithEntity(headMember);
     return temp;
   }

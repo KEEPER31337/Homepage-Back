@@ -1,4 +1,4 @@
-package keeper.project.homepage.member.dto;
+package keeper.project.homepage.member.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberDemeritDto {
+public class MemberRankRequestDto {
 
   private String memberLoginId;
-  private Integer demerit;
+  private String name;
 }

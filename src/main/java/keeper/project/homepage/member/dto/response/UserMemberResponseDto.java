@@ -1,4 +1,4 @@
-package keeper.project.homepage.member.dto;
+package keeper.project.homepage.member.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -18,7 +18,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 @JsonInclude(Include.NON_NULL)
-public class UserMemberDto {
+public class UserMemberResponseDto {
 
   private Long id;
   private String loginId;
@@ -85,7 +85,7 @@ public class UserMemberDto {
     }
   }
 
-  public UserMemberDto(MemberEntity memberEntity) {
+  public UserMemberResponseDto(MemberEntity memberEntity) {
     // 민감한 정보 포함
     this.id = memberEntity.getId();
     this.loginId = memberEntity.getLoginId();
