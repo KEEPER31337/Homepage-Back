@@ -8,44 +8,47 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
+import keeper.project.homepage.attendance.repository.AttendanceRepository;
+import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.member.entity.MemberHasMemberJobEntity;
+import keeper.project.homepage.member.entity.MemberHasPostingDislikeEntity;
+import keeper.project.homepage.member.entity.MemberHasPostingLikeEntity;
 import keeper.project.homepage.member.entity.MemberJobEntity;
-import keeper.project.homepage.util.exception.file.CustomThumbnailEntityNotFoundException;
+import keeper.project.homepage.member.exception.CustomMemberNotFoundException;
+import keeper.project.homepage.member.repository.MemberHasMemberJobRepository;
+import keeper.project.homepage.member.repository.MemberHasPostingDislikeRepository;
+import keeper.project.homepage.member.repository.MemberHasPostingLikeRepository;
+import keeper.project.homepage.member.repository.MemberJobRepository;
+import keeper.project.homepage.member.repository.MemberRepository;
+import keeper.project.homepage.member.service.MemberUtilService;
+import keeper.project.homepage.posting.dto.LikeAndDislikeDto;
+import keeper.project.homepage.posting.dto.PostingBestDto;
+import keeper.project.homepage.posting.dto.PostingDto;
+import keeper.project.homepage.posting.dto.PostingImageUploadResponseDto;
+import keeper.project.homepage.posting.dto.PostingResponseDto;
+import keeper.project.homepage.posting.entity.CategoryEntity;
+import keeper.project.homepage.posting.entity.PostingEntity;
+import keeper.project.homepage.posting.exception.CustomCategoryNotFoundException;
 import keeper.project.homepage.posting.exception.CustomPostingAccessDeniedException;
 import keeper.project.homepage.posting.exception.CustomPostingIncorrectException;
 import keeper.project.homepage.posting.exception.CustomPostingNotFoundException;
 import keeper.project.homepage.posting.exception.CustomPostingTempException;
-import keeper.project.homepage.attendance.repository.AttendanceRepository;
-import keeper.project.homepage.member.repository.MemberHasMemberJobRepository;
-import keeper.project.homepage.member.repository.MemberJobRepository;
+import keeper.project.homepage.posting.repository.CategoryRepository;
 import keeper.project.homepage.posting.repository.CommentRepository;
-import keeper.project.homepage.posting.dto.LikeAndDislikeDto;
-import keeper.project.homepage.posting.dto.PostingBestDto;
-import keeper.project.homepage.posting.dto.PostingDto;
+import keeper.project.homepage.posting.repository.PostingRepository;
 import keeper.project.homepage.util.entity.FileEntity;
 import keeper.project.homepage.util.entity.ThumbnailEntity;
-import keeper.project.homepage.member.entity.MemberEntity;
-import keeper.project.homepage.member.entity.MemberHasPostingDislikeEntity;
-import keeper.project.homepage.member.entity.MemberHasPostingLikeEntity;
-import keeper.project.homepage.posting.entity.CategoryEntity;
-import keeper.project.homepage.posting.entity.PostingEntity;
-import keeper.project.homepage.member.exception.CustomMemberNotFoundException;
-import keeper.project.homepage.posting.exception.CustomCategoryNotFoundException;
+import keeper.project.homepage.util.exception.file.CustomThumbnailEntityNotFoundException;
+import keeper.project.homepage.util.image.preprocessing.ImageCenterCropping;
+import keeper.project.homepage.util.image.preprocessing.ImageNoChange;
+import keeper.project.homepage.util.image.preprocessing.ImageSize;
 import keeper.project.homepage.util.repository.FileRepository;
 import keeper.project.homepage.util.repository.ThumbnailRepository;
-import keeper.project.homepage.member.repository.MemberHasPostingDislikeRepository;
-import keeper.project.homepage.member.repository.MemberHasPostingLikeRepository;
-import keeper.project.homepage.member.repository.MemberRepository;
-import keeper.project.homepage.posting.repository.CategoryRepository;
-import keeper.project.homepage.posting.repository.PostingRepository;
-import keeper.project.homepage.util.service.auth.AuthService;
-import keeper.project.homepage.posting.dto.PostingImageUploadResponseDto;
-import keeper.project.homepage.posting.dto.PostingResponseDto;
-import keeper.project.homepage.member.service.MemberUtilService;
-import keeper.project.homepage.util.image.preprocessing.ImageNoChange;
 import keeper.project.homepage.util.service.ThumbnailService;
 import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
+import keeper.project.homepage.util.service.auth.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -262,7 +265,7 @@ public class PostingService {
   }
 
   @Transactional
-  public PostingEntity updateById(PostingDto dto, Long postingId, ThumbnailEntity newThumbnail) {
+  public PostingEntity updateById(PostingDto dto, Long postingId) {
     PostingEntity tempEntity = postingRepository.findById(postingId)
         .orElseThrow(CustomPostingNotFoundException::new);
 
@@ -279,7 +282,6 @@ public class PostingService {
     tempEntity.updateInfo(dto.getTitle(), dto.getContent(),
         dto.getUpdateTime(), dto.getIpAddress(),
         dto.getAllowComment(), dto.getIsNotice(), dto.getIsSecret());
-    tempEntity.setThumbnail(newThumbnail);
 
     return postingRepository.save(tempEntity);
   }
@@ -510,5 +512,28 @@ public class PostingService {
     postingResponseDto.setContent(EXAM_ACCESS_DENIED_CONTENT);
     postingResponseDto.setFiles(new ArrayList<>());
     return postingResponseDto;
+  }
+
+  @Transactional
+  public void modifyPostingThumbnail(long postId, MultipartFile thumbnail, String userIp) {
+    ThumbnailEntity newThumbnail = saveThumbnail(thumbnail, userIp);
+    PostingEntity posting = getPostingById(postId);
+
+    if (!Objects.equals(posting.getMemberId().getId(),
+        authService.getMemberEntityWithJWT().getId())) {
+      throw new CustomPostingAccessDeniedException();
+    }
+
+    posting.setThumbnail(newThumbnail);
+    postingRepository.save(posting);
+  }
+
+  private ThumbnailEntity saveThumbnail(MultipartFile thumbnail, String userIp) {
+    ThumbnailEntity newThumbnail = thumbnailService.save(ThumbType.PostThumbnail,
+        new ImageCenterCropping(ImageSize.LARGE), thumbnail, userIp);
+    if (newThumbnail == null) {
+      throw new CustomThumbnailEntityNotFoundException("썸네일 저장 중에 에러가 발생했습니다.");
+    }
+    return newThumbnail;
   }
 }

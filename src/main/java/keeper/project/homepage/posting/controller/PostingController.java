@@ -13,24 +13,24 @@ import javax.servlet.http.HttpServletRequest;
 import keeper.project.homepage.posting.dto.LikeAndDislikeDto;
 import keeper.project.homepage.posting.dto.PostingBestDto;
 import keeper.project.homepage.posting.dto.PostingDto;
+import keeper.project.homepage.posting.dto.PostingImageUploadResponseDto;
+import keeper.project.homepage.posting.dto.PostingResponseDto;
+import keeper.project.homepage.posting.entity.PostingEntity;
+import keeper.project.homepage.posting.service.CommentService;
+import keeper.project.homepage.posting.service.PostingService;
+import keeper.project.homepage.util.ClientUtil;
 import keeper.project.homepage.util.dto.result.CommonResult;
 import keeper.project.homepage.util.dto.result.ListResult;
 import keeper.project.homepage.util.dto.result.SingleResult;
 import keeper.project.homepage.util.entity.FileEntity;
 import keeper.project.homepage.util.entity.ThumbnailEntity;
-import keeper.project.homepage.posting.entity.PostingEntity;
-import keeper.project.homepage.util.exception.file.CustomThumbnailEntityNotFoundException;
-import keeper.project.homepage.posting.dto.PostingResponseDto;
-import keeper.project.homepage.posting.dto.PostingImageUploadResponseDto;
+import keeper.project.homepage.util.image.preprocessing.ImageCenterCropping;
 import keeper.project.homepage.util.image.preprocessing.ImageSize;
 import keeper.project.homepage.util.service.FileService;
-import keeper.project.homepage.util.service.result.ResponseService;
 import keeper.project.homepage.util.service.ThumbnailService;
-import keeper.project.homepage.util.image.preprocessing.ImageCenterCropping;
 import keeper.project.homepage.util.service.ThumbnailService.ThumbType;
-import keeper.project.homepage.posting.service.CommentService;
-import keeper.project.homepage.posting.service.PostingService;
 import keeper.project.homepage.util.service.auth.AuthService;
+import keeper.project.homepage.util.service.result.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.core.io.InputStreamResource;
@@ -46,6 +46,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -71,7 +72,7 @@ public class PostingController {
   @GetMapping(value = "/latest")
   public ListResult<PostingResponseDto> findAllPosting(
       @PageableDefault(size = 10, sort = "registerTime", direction = Direction.DESC)
-          Pageable pageable) {
+      Pageable pageable) {
 
     return responseService.getSuccessListResult(postingService.findAll(pageable));
   }
@@ -80,7 +81,7 @@ public class PostingController {
   public ListResult<PostingResponseDto> findAllPostingByCategoryId(
       @RequestParam("category") Long categoryId,
       @PageableDefault(size = 10, sort = "registerTime", direction = Direction.DESC)
-          Pageable pageable) {
+      Pageable pageable) {
 
     return responseService.getSuccessListResult(postingService.findAllByCategoryId(categoryId,
         pageable));
@@ -164,29 +165,37 @@ public class PostingController {
       produces = {MediaType.APPLICATION_JSON_VALUE})
   public CommonResult modifyPosting(
       @RequestParam(value = "file", required = false) List<MultipartFile> files,
-      @RequestParam(value = "thumbnail", required = false) MultipartFile thumbnail,
       PostingDto dto, HttpServletRequest httpServletRequest, @PathVariable("pid") Long postingId) {
 
     dto.setIpAddress(getUserIP(httpServletRequest));
-    ThumbnailEntity newThumbnail = saveThumbnail(thumbnail, dto);
-    PostingEntity postingEntity = postingService.updateById(dto, postingId, newThumbnail);
+    PostingEntity postingEntity = postingService.updateById(dto, postingId);
     fileService.saveFiles(files, dto.getIpAddress(), postingEntity);
     deletePrevThumbnail(dto);
 
     return responseService.getSuccessResult();
   }
 
-  @PostMapping(value="/{pid}/image",
+  @PatchMapping(value = "/{postId}/thumbnail")
+  public CommonResult modifyPostingThumbnail(
+      @PathVariable long postId,
+      @RequestParam(required = false) MultipartFile thumbnail,
+      HttpServletRequest request
+  ) {
+    postingService.modifyPostingThumbnail(postId, thumbnail, ClientUtil.getUserIP(request));
+    return responseService.getSuccessResult();
+  }
+
+  @PostMapping(value = "/{pid}/image",
       consumes = "multipart/form-data",
       produces = {MediaType.APPLICATION_JSON_VALUE})
-    public SingleResult<PostingImageUploadResponseDto> uploadPostingImage(
+  public SingleResult<PostingImageUploadResponseDto> uploadPostingImage(
       @PathVariable("pid") Long postingId,
       @RequestParam(value = "postingImage") MultipartFile postingImage,
-      HttpServletRequest request){
+      HttpServletRequest request) {
 
-      return responseService.getSuccessSingleResult(
-          postingService.uploadPostingImage(postingId, postingImage, request));
-    }  
+    return responseService.getSuccessSingleResult(
+        postingService.uploadPostingImage(postingId, postingImage, request));
+  }
 
   @GetMapping(value = "/delete/{fileId}")
   public CommonResult deleteFile(@PathVariable("fileId") Long fileId) {
@@ -199,15 +208,6 @@ public class PostingController {
   public CommonResult deleteFiles(@RequestParam(value = "fileIdList") List<Long> fileIdList) {
     fileService.deleteFilesByIdList(fileIdList);
     return responseService.getSuccessResult();
-  }
-
-  private ThumbnailEntity saveThumbnail(MultipartFile thumbnail, PostingDto dto) {
-    ThumbnailEntity newThumbnail = thumbnailService.save(ThumbType.PostThumbnail,
-        new ImageCenterCropping(ImageSize.LARGE), thumbnail, dto.getIpAddress());
-    if (newThumbnail == null) {
-      throw new CustomThumbnailEntityNotFoundException("썸네일 저장 중에 에러가 발생했습니다.");
-    }
-    return newThumbnail;
   }
 
   private void deletePrevThumbnail(PostingDto dto) {
@@ -250,7 +250,7 @@ public class PostingController {
   public ListResult<PostingResponseDto> searchPosting(@RequestParam("type") String type,
       @RequestParam("keyword") String keyword, @RequestParam("category") Long categoryId,
       @PageableDefault(size = 10, sort = "registerTime", direction = Direction.DESC)
-          Pageable pageable) {
+      Pageable pageable) {
 
     return responseService.getSuccessListResult(postingService.searchPosting(type, keyword,
         categoryId, pageable));

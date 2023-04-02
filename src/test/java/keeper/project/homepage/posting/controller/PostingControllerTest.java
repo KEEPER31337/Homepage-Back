@@ -21,13 +21,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
-import keeper.project.homepage.posting.exception.CustomCategoryNotFoundException;
-import keeper.project.homepage.posting.entity.CategoryEntity;
-import keeper.project.homepage.util.entity.FileEntity;
-import keeper.project.homepage.posting.entity.PostingEntity;
-import keeper.project.homepage.util.entity.ThumbnailEntity;
 import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.posting.entity.CategoryEntity;
+import keeper.project.homepage.posting.entity.PostingEntity;
+import keeper.project.homepage.posting.exception.CustomCategoryNotFoundException;
 import keeper.project.homepage.posting.service.PostingService;
+import keeper.project.homepage.util.entity.FileEntity;
+import keeper.project.homepage.util.entity.ThumbnailEntity;
 import lombok.extern.log4j.Log4j2;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
@@ -451,15 +451,11 @@ public class PostingControllerTest extends ApiControllerTestHelper {
     MultiValueMap<String, String> params = generatePostingParams(true);
     MockMultipartFile file = new MockMultipartFile("file", "modifyImage.png", "image/png",
         "<<png data>>".getBytes());
-    MockMultipartFile thumbnail = new MockMultipartFile("thumbnail",
-        getFileName(modifyAftTestImage), "image/jpg",
-        new FileInputStream(usrDir + modifyAftTestImage));
 
     log.info("mockMVc 시작");
     ResultActions result = mockMvc.perform(
         multipart("/v1/post/{pid}", postingModifyTest.getId().toString())
             .file(file)
-            .file(thumbnail)
             .contentType(MediaType.MULTIPART_FORM_DATA)
             .header("Authorization", userToken)
             .params(params)
@@ -476,9 +472,36 @@ public class PostingControllerTest extends ApiControllerTestHelper {
                 generateCommonPostingParameters(true)
             ),
             requestParts(
-                partWithName("file").description("첨부 파일들 (form-data 에서 file= parameter 부분)"),
-                partWithName("thumbnail").description(
-                    "썸네일 용 이미지 (form-data 에서 thumbnail= parameter 부분)")
+                partWithName("file").description("첨부 파일들 (form-data 에서 file= parameter 부분)")
+            ),
+            responseFields(
+                generateCommonResponseFields("성공: true +\n실패: false", "성공 : 0, 실패 시 : -11000", "")
+            )
+        ));
+  }
+
+  @Test
+  @DisplayName("게시글 썸네일 수정")
+  public void modifyPostingThumbnail() throws Exception {
+    createFileForTest(usrDir + modifyAftTestImage);
+    MockMultipartFile thumbnail = new MockMultipartFile("thumbnail",
+        getFileName(modifyAftTestImage), "image/jpg",
+        new FileInputStream(usrDir + modifyAftTestImage));
+
+    mockMvc.perform(
+            multipart("/v1/post/{pid}/thumbnail", postingModifyTest.getId())
+                .file(thumbnail)
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .header("Authorization", userToken)
+                .with(request -> {
+                  request.setMethod("PATCH");
+                  return request;
+                }))
+        .andExpect(MockMvcResultMatchers.status().isOk())
+        .andDo(print())
+        .andDo(document("post-modify-thumbnail",
+            requestParts(
+                partWithName("thumbnail").description("썸네일 용 이미지")
             ),
             responseFields(
                 generateCommonResponseFields("성공: true +\n실패: false", "성공 : 0, 실패 시 : -11000", "")
@@ -489,7 +512,8 @@ public class PostingControllerTest extends ApiControllerTestHelper {
   @Test
   @DisplayName("게시글 내 이미지 업로드")
   public void uploadPostingImage() throws Exception {
-    MockMultipartFile postingImage = new MockMultipartFile("postingImage", getFileName(createTestImage),
+    MockMultipartFile postingImage = new MockMultipartFile("postingImage",
+        getFileName(createTestImage),
         "image/jpg", new FileInputStream(userDirectory + File.separator + createTestImage));
 
     ResultActions result = mockMvc.perform(
