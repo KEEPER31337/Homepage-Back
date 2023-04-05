@@ -23,6 +23,11 @@ jobs:
           sudo locale-gen ko_KR.UTF-8
           sudo update-locale LANG=ko_KR.UTF-8
 
+      - name: Set Timezone
+        uses: szenius/set-timezone@v1.2
+        with:
+          timezoneLinux: "Asia/Seoul"
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
