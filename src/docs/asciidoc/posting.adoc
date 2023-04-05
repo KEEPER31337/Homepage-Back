@@ -245,9 +245,25 @@ include::{snippets}/post-modify/request-parts.adoc[]
 
 include::{snippets}/post-modify/http-response.adoc[]
 
-==== Response Body
+== 게시글 썸네일 수정
 
-include::{snippets}/post-modify/response-body.adoc[]
+=== 요청
+
+==== Request
+
+include::{snippets}/post-modify-thumbnail/http-request.adoc[]
+
+==== Request Parts
+
+NOTE: Parts 부분 또한 Parameter로 넘겨주면 됩니다.
+
+include::{snippets}/post-modify-thumbnail/request-parts.adoc[]
+
+=== 응답
+
+==== Response
+
+include::{snippets}/post-modify-thumbnail/http-response.adoc[]
 
 == 게시글 내 이미지 업로드
 
@@ -276,7 +292,6 @@ include::{snippets}/post-image-upload/http-response.adoc[]
 ==== Response Body
 
 include::{snippets}/post-image-upload/response-body.adoc[]
-
 
 == 게시글 첨부파일 삭제
 

@@ -1,17 +1,16 @@
-package keeper.project.homepage.member.dto;
+package keeper.project.homepage.member.dto.request;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberJobDto {
+public class MemberJobRequestDto {
 
   private String memberLoginId;
   private List<String> names;

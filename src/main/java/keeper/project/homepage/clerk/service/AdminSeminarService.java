@@ -5,7 +5,7 @@ import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity
 import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.BEFORE_ATTENDANCE;
 import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.LATENESS;
 import static keeper.project.homepage.clerk.entity.SeminarAttendanceStatusEntity.SeminarAttendanceStatus.PERSONAL;
-import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.REGULAR_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.MemberType.REGULAR_MEMBER;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -187,9 +187,6 @@ public class AdminSeminarService {
 
   @Transactional
   void processPersonal(SeminarAttendanceEntity attendance, String absenceExcuse) {
-    if (absenceExcuse == null) {
-      throw new CustomAttendanceAbsenceExcuseIsNullException();
-    }
     attendance.setSeminarAttendanceExcuseEntity(
         SeminarAttendanceExcuseEntity.builder()
             .seminarAttendanceEntity(attendance)

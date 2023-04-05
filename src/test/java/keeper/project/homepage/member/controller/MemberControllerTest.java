@@ -170,7 +170,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
   @Test
   @DisplayName("언팔로우하기")
   public void unfollow() throws Exception {
-    memberService.follow(userEntity.getId(), adminEntity.getId());
+    memberFollowService.follow(userEntity.getId(), adminEntity.getId());
     List<FriendEntity> followeeList = userEntity.getFollowee();
     FriendEntity followee = followeeList.get(followeeList.size() - 1);
 
@@ -200,7 +200,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
   @DisplayName("내가 팔로우한 사람 조회하기")
   public void showFollowee() throws Exception {
     // follow: member -> admin(followee)
-    memberService.follow(userEntity.getId(), adminEntity.getId());
+    memberFollowService.follow(userEntity.getId(), adminEntity.getId());
 
     String docMsg = "";
     String docCode = "에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
@@ -222,7 +222,7 @@ public class MemberControllerTest extends ApiControllerTestHelper {
   @DisplayName("나를 팔로우한 사람 조회하기")
   public void showFollower() throws Exception {
     // follow: admin(follower) -> member
-    memberService.follow(adminEntity.getId(), userEntity.getId());
+    memberFollowService.follow(adminEntity.getId(), userEntity.getId());
 
     String docMsg = "";
     String docCode = "에러가 발생한 경우: " + exceptionUtil.getMessage("unKnown.code");
@@ -273,12 +273,12 @@ public class MemberControllerTest extends ApiControllerTestHelper {
     for (int i = 0; i < followerNum; i++) {
       MemberEntity follower = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원,
           MemberRankName.일반회원);
-      memberService.follow(follower.getId(), userEntity.getId());
+      memberFollowService.follow(follower.getId(), userEntity.getId());
     }
     for (int i = 0; i < followeeNum; i++) {
       MemberEntity followee = generateMemberEntity(MemberJobName.회원, MemberTypeName.정회원,
           MemberRankName.일반회원);
-      memberService.follow(userEntity.getId(), followee.getId());
+      memberFollowService.follow(userEntity.getId(), followee.getId());
     }
 
     // TODO : 예외 처리 & doc 메세지 채우기 (회원 관리 전체적으로 예외 수정할 예정)

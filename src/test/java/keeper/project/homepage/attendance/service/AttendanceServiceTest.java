@@ -11,7 +11,7 @@ import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import keeper.project.homepage.about.dto.AttendanceDto;
+import keeper.project.homepage.attendance.dto.AttendanceDto;
 import keeper.project.homepage.attendance.entity.AttendanceEntity;
 import keeper.project.homepage.attendance.repository.AttendanceRepository;
 import keeper.project.homepage.member.entity.MemberEntity;

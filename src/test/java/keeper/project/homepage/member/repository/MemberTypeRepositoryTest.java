@@ -1,15 +1,14 @@
 package keeper.project.homepage.member.repository;
 
-import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.DORMANT_MEMBER;
-import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.GRADUATED_MEMBER;
-import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.NON_MEMBER;
-import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.REGULAR_MEMBER;
-import static keeper.project.homepage.member.entity.MemberTypeEntity.memberType.WITHDRAWAL_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.MemberType.DORMANT_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.MemberType.GRADUATED_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.MemberType.NON_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.MemberType.REGULAR_MEMBER;
+import static keeper.project.homepage.member.entity.MemberTypeEntity.MemberType.WITHDRAWAL_MEMBER;
 
 import java.util.List;
 import keeper.project.homepage.member.entity.MemberTypeEntity;
-import keeper.project.homepage.member.entity.MemberTypeEntity.memberType;
-import keeper.project.homepage.member.repository.MemberTypeRepository;
+import keeper.project.homepage.member.entity.MemberTypeEntity.MemberType;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +32,7 @@ public class MemberTypeRepositoryTest {
     List<MemberTypeEntity> memberTypeEntities = memberTypeRepository.findAll();
 
     // then
-    Assertions.assertThat(memberTypeEntities.size()).isEqualTo(memberType.values().length);
+    Assertions.assertThat(memberTypeEntities.size()).isEqualTo(MemberType.values().length);
   }
 
 

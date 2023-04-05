@@ -12,7 +12,9 @@ import java.util.List;
 import keeper.project.homepage.ctf.controller.CtfSpringTestHelper;
 import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
 import keeper.project.homepage.ctf.dto.CtfChallengeCategoryDto;
+import keeper.project.homepage.ctf.dto.CtfChallengeDto;
 import keeper.project.homepage.ctf.dto.CtfChallengeTypeDto;
+import keeper.project.homepage.ctf.dto.CtfCommonChallengeDto;
 import keeper.project.homepage.ctf.dto.CtfFlagDto;
 import keeper.project.homepage.ctf.dto.CtfTeamDetailDto;
 import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
@@ -81,7 +83,10 @@ public class CtfServiceTest extends CtfSpringTestHelper {
 
     // then
     List<CtfFlagEntity> ctfFlagEntityList3 = ctfFlagRepository.findAllByCtfChallengeEntityId(
-        createChallenge.getChallengeId());
+        createChallenge
+            .getChallengeDto()
+            .getCommonChallengeDto()
+            .getChallengeId());
 
     assertThat(ctfFlagEntityList3.size()).isEqualTo(3);
 
@@ -100,7 +105,10 @@ public class CtfServiceTest extends CtfSpringTestHelper {
 
     // then
     List<CtfFlagEntity> ctfFlagEntityList = ctfFlagRepository.findAllByCtfChallengeEntityId(
-        createChallenge.getChallengeId());
+        createChallenge
+            .getChallengeDto()
+            .getCommonChallengeDto()
+            .getChallengeId());
 
     assertThat(ctfFlagEntityList.size()).isEqualTo(1);
 
@@ -123,7 +131,10 @@ public class CtfServiceTest extends CtfSpringTestHelper {
             List.of(new SimpleGrantedAuthority("ROLE_회원"))));
 
     // when
-    CtfSubmitLogEntity submitLog = ctfChallengeService.setLog(createChallenge.getChallengeId(),
+    CtfSubmitLogEntity submitLog = ctfChallengeService.setLog(createChallenge
+            .getChallengeDto()
+            .getCommonChallengeDto()
+            .getChallengeId(),
         CtfFlagDto.builder().content(TEST_FLAG1).build());
 
     // then
@@ -132,7 +143,10 @@ public class CtfServiceTest extends CtfSpringTestHelper {
     assertThat(submitLog.getTeamName()).isEqualTo(CREATE_TEAM_NAME);
     assertThat(submitLog.getSubmitterLoginId()).isEqualTo(submitter.getLoginId());
     assertThat(submitLog.getSubmitterRealname()).isEqualTo(submitter.getRealName());
-    assertThat(submitLog.getChallengeName()).isEqualTo(createChallenge.getTitle());
+    assertThat(submitLog.getChallengeName()).isEqualTo(createChallenge
+        .getChallengeDto()
+        .getCommonChallengeDto()
+        .getTitle());
     assertThat(submitLog.getContestName()).isEqualTo(contest.getName());
   }
 
@@ -166,17 +180,23 @@ public class CtfServiceTest extends CtfSpringTestHelper {
             .name(ctfChallengeCategory.getName()).build()).toList();
 
     CtfChallengeAdminDto createChallenge = CtfChallengeAdminDto.builder()
-        .title("TITLE_" + epochTime)
-        .content("CONTENT_" + epochTime)
-        .contestId(contestId)
+        .challengeDto(CtfChallengeDto.builder()
+            .commonChallengeDto(CtfCommonChallengeDto.builder()
+                .title("TITLE_" + epochTime)
+                .contestId(contestId)
+                .score(1000L)
+                .categories(categoryDtos)
+                .maxSubmitCount(100L)
+                .build()
+            )
+            .content("CONTENT_" + epochTime)
+            .build()
+        )
         .flag(flag)
-        .score(1000L)
         .isSolvable(true)
         .type(CtfChallengeTypeDto.builder()
             .id(STANDARD.getId())
             .build())
-        .categories(categoryDtos)
-        .maxSubmitCount(100L)
         .build();
     return ctfAdminService.createChallenge(createChallenge);
   }

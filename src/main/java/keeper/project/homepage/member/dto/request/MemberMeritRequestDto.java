@@ -1,17 +1,16 @@
-package keeper.project.homepage.member.dto;
+package keeper.project.homepage.member.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MemberTypeDto {
+public class MemberMeritRequestDto {
 
   private String memberLoginId;
-  private String name;
+  private Integer merit;
 }

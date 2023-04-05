@@ -1,4 +1,4 @@
-package keeper.project.homepage.about.dto;
+package keeper.project.homepage.member.dto.response;
 
 import java.util.List;
 import keeper.project.homepage.member.entity.MemberEntity;
@@ -6,29 +6,30 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class RankDto {
+public class MultiMemberResponseDto {
 
   private Long id;
   private String nickName;
   private String thumbnailPath;
+  private Float generation;
   private List<String> jobs;
-  private Integer point;
-  private Long rank;
+  private String type;
+  private String msg;
 
-  public static RankDto toDto(MemberEntity member) {
-    return RankDto.builder()
+  public static MultiMemberResponseDto from(MemberEntity member) {
+    return MultiMemberResponseDto.builder()
         .id(member.getId())
         .nickName(member.getNickName())
-        .point(member.getPoint())
         .thumbnailPath(member.getThumbnailPath())
+        .generation(member.getGeneration())
         .jobs(member.getJobs())
+        .type(member.getMemberType().getName())
+        .msg("Success")
         .build();
   }
 }

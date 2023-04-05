@@ -4,20 +4,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletResponse;
+import keeper.project.homepage.member.dto.response.MemberFollowResponseDto;
+import keeper.project.homepage.member.dto.response.UserMemberResponseDto;
+import keeper.project.homepage.member.dto.response.MultiMemberResponseDto;
+import keeper.project.homepage.member.dto.response.OtherMemberInfoResponseDto;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.member.service.MemberDeleteService;
+import keeper.project.homepage.member.service.MemberFindService;
+import keeper.project.homepage.member.service.MemberFollowService;
+import keeper.project.homepage.member.service.MemberService;
+import keeper.project.homepage.posting.dto.PostingResponseDto;
+import keeper.project.homepage.posting.service.PostingService;
 import keeper.project.homepage.sign.dto.EmailAuthDto;
-import keeper.project.homepage.member.dto.UserMemberDto;
-import keeper.project.homepage.member.dto.MemberFollowDto;
 import keeper.project.homepage.util.dto.result.CommonResult;
 import keeper.project.homepage.util.dto.result.ListResult;
-import keeper.project.homepage.member.dto.MultiMemberResponseDto;
-import keeper.project.homepage.member.dto.OtherMemberInfoResult;
 import keeper.project.homepage.util.dto.result.SingleResult;
-import keeper.project.homepage.util.service.result.ResponseService;
-import keeper.project.homepage.posting.dto.PostingResponseDto;
-import keeper.project.homepage.member.service.MemberDeleteService;
-import keeper.project.homepage.posting.service.PostingService;
 import keeper.project.homepage.util.service.auth.AuthService;
-import keeper.project.homepage.member.service.MemberService;
+import keeper.project.homepage.util.service.result.ResponseService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -45,24 +48,28 @@ import org.springframework.web.multipart.MultipartFile;
 public class MemberController {
 
   private final MemberService memberService;
+  private final MemberFindService memberFindService;
   private final MemberDeleteService memberDeleteService;
+  private final MemberFollowService memberFollowService;
   private final ResponseService responseService;
   private final AuthService authService;
   private final PostingService postingService;
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/others")
-  public ListResult<OtherMemberInfoResult> getOtherMembers() {
-    return responseService.getSuccessListResult(memberService.getOtherMembers());
+  public ListResult<OtherMemberInfoResponseDto> getOtherMembers() {
+    MemberEntity loginMember = authService.getMemberEntityWithJWT();
+    return responseService.getSuccessListResult(memberFindService.getOtherMembers(loginMember));
   }
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/others/{id}")
-  public SingleResult<OtherMemberInfoResult> getOtherMember(
+  public SingleResult<OtherMemberInfoResponseDto> getOtherMember(
       @PathVariable("id") Long otherMemberId
   ) {
+    MemberEntity loginMember = authService.getMemberEntityWithJWT();
     return responseService.getSuccessSingleResult(
-        memberService.getOtherMember(otherMemberId));
+        memberFindService.getOtherMember(loginMember, otherMemberId));
   }
 
   @Secured("ROLE_회원")
@@ -70,35 +77,36 @@ public class MemberController {
   public ListResult<MultiMemberResponseDto> getMultiMembers(
       @RequestParam List<Long> ids
   ) {
-    return responseService.getSuccessListResult(memberService.getMultiMembers(ids));
+    return responseService.getSuccessListResult(memberFindService.getMultiMembers(ids));
   }
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/profile")
-  public SingleResult<UserMemberDto> getMember() {
+  public SingleResult<UserMemberResponseDto> getMember() {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
     Long id = authService.getMemberIdByJWT();
     // 결과데이터가 단일건인경우 getSuccessSingleResult 이용해서 결과를 출력한다.
-    return responseService.getSuccessSingleResult(memberService.getMember(id));
+    return responseService.getSuccessSingleResult(memberFindService.getMember(id));
   }
 
   @Secured("ROLE_회원")
   @PutMapping(value = "/profile")
-  public SingleResult<UserMemberDto> updateProfile(@RequestBody UserMemberDto memberDto) {
+  public SingleResult<UserMemberResponseDto> updateProfile(
+      @RequestBody UserMemberResponseDto memberDto) {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
     Long id = authService.getMemberIdByJWT();
-    UserMemberDto updated = memberService.updateProfile(memberDto, id);
+    UserMemberResponseDto updated = memberService.updateProfile(memberDto, id);
     return responseService.getSuccessSingleResult(updated);
   }
 
   @Secured("ROLE_회원")
   @PutMapping(value = "/thumbnail")
-  public SingleResult<UserMemberDto> updateThumbnail(
+  public SingleResult<UserMemberResponseDto> updateThumbnail(
       @RequestParam("thumbnail") MultipartFile image,
       @RequestParam("ipAddress") String ipAddress) {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
     Long id = authService.getMemberIdByJWT();
-    UserMemberDto updated = memberService.updateThumbnails(id, image, ipAddress);
+    UserMemberResponseDto updated = memberService.updateThumbnails(id, image, ipAddress);
     return responseService.getSuccessSingleResult(updated);
   }
 
@@ -111,11 +119,12 @@ public class MemberController {
 
   @Secured("ROLE_회원")
   @PutMapping(value = "/email")
-  public SingleResult<UserMemberDto> updateEmailAddress(@RequestBody UserMemberDto memberDto) {
+  public SingleResult<UserMemberResponseDto> updateEmailAddress(
+      @RequestBody UserMemberResponseDto memberDto) {
     // SecurityContext에서 인증받은 회원의 정보를 얻어온다.
     Long id = authService.getMemberIdByJWT();
     // 실제 존재하는 email인지 인증 코드를 통해 확인
-    UserMemberDto updated = memberService.updateEmailAddress(memberDto, id);
+    UserMemberResponseDto updated = memberService.updateEmailAddress(memberDto, id);
     return responseService.getSuccessSingleResult(updated);
   }
 
@@ -189,7 +198,7 @@ public class MemberController {
   @PostMapping(value = "/follow/{id}")
   public CommonResult followByLoginId(@PathVariable("id") Long memberId) {
     Long id = authService.getMemberIdByJWT();
-    memberService.follow(id, memberId);
+    memberFollowService.follow(id, memberId);
     return responseService.getSuccessResult();
   }
 
@@ -197,23 +206,23 @@ public class MemberController {
   @DeleteMapping(value = "/unfollow/{id}")
   public CommonResult unfollowByLoginId(@PathVariable("id") Long memberId) {
     Long id = authService.getMemberIdByJWT();
-    memberService.unfollow(id, memberId);
+    memberFollowService.unfollow(id, memberId);
     return responseService.getSuccessResult();
   }
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/followers")
-  public ListResult<UserMemberDto> showFollowerList() {
+  public ListResult<UserMemberResponseDto> showFollowerList() {
     Long id = authService.getMemberIdByJWT();
-    List<UserMemberDto> followerList = memberService.showFollower(id);
+    List<UserMemberResponseDto> followerList = memberFollowService.showFollower(id);
     return responseService.getSuccessListResult(followerList);
   }
 
   @Secured("ROLE_회원")
   @GetMapping(value = "/followees")
-  public ListResult<UserMemberDto> showFolloweeList() {
+  public ListResult<UserMemberResponseDto> showFolloweeList() {
     Long id = authService.getMemberIdByJWT();
-    List<UserMemberDto> followeeList = memberService.showFollowee(id);
+    List<UserMemberResponseDto> followeeList = memberFollowService.showFollowee(id);
     return responseService.getSuccessListResult(followeeList);
   }
 
@@ -248,9 +257,9 @@ public class MemberController {
 
   @Secured("ROLE_회원")
   @GetMapping("/follow-number")
-  public SingleResult<MemberFollowDto> getFollowerAndFolloweeCount() {
+  public SingleResult<MemberFollowResponseDto> getFollowerAndFolloweeCount() {
     Long id = authService.getMemberIdByJWT();
-    MemberFollowDto followDto = memberService.getFollowerAndFolloweeNumber(id);
+    MemberFollowResponseDto followDto = memberFollowService.getFollowerAndFolloweeNumber(id);
     return responseService.getSuccessSingleResult(followDto);
   }
 

@@ -1,6 +1,6 @@
 package keeper.project.homepage.study.controller;
 
-import keeper.project.homepage.member.dto.UserMemberDto;
+import keeper.project.homepage.member.dto.response.UserMemberResponseDto;
 import keeper.project.homepage.util.dto.result.ListResult;
 import keeper.project.homepage.util.dto.result.SingleResult;
 import keeper.project.homepage.util.service.result.ResponseService;
@@ -72,7 +72,7 @@ public class StudyController {
   }
 
   @PatchMapping(value = "/member/add")
-  public ListResult<UserMemberDto> addStudyMember(
+  public ListResult<UserMemberResponseDto> addStudyMember(
       @RequestBody StudyMemberRequestDto studyMemberRequestDto) {
 
     return responseService.getSuccessListResult(
@@ -81,7 +81,7 @@ public class StudyController {
   }
 
   @PatchMapping(value = "/member/remove")
-  public ListResult<UserMemberDto> removeStudyMember(
+  public ListResult<UserMemberResponseDto> removeStudyMember(
       @RequestBody StudyMemberRequestDto studyMemberRequestDto) {
 
     return responseService.getSuccessListResult(

@@ -2,13 +2,13 @@ package keeper.project.homepage.member.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import keeper.project.homepage.member.dto.MemberDemeritDto;
+import keeper.project.homepage.member.dto.request.MemberDemeritRequestDto;
 import keeper.project.homepage.member.dto.MemberDto;
-import keeper.project.homepage.member.dto.MemberGenerationDto;
-import keeper.project.homepage.member.dto.MemberJobDto;
-import keeper.project.homepage.member.dto.MemberMeritDto;
-import keeper.project.homepage.member.dto.MemberRankDto;
-import keeper.project.homepage.member.dto.MemberTypeDto;
+import keeper.project.homepage.member.dto.request.MemberGenerationRequestDto;
+import keeper.project.homepage.member.dto.request.MemberJobRequestDto;
+import keeper.project.homepage.member.dto.request.MemberMeritRequestDto;
+import keeper.project.homepage.member.dto.request.MemberRankRequestDto;
+import keeper.project.homepage.member.dto.request.MemberTypeRequestDto;
 import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.member.entity.MemberHasMemberJobEntity;
 import keeper.project.homepage.member.entity.MemberJobEntity;
@@ -59,7 +59,7 @@ public class AdminMemberService {
         .collect(Collectors.toList());
   }
 
-  public MemberDto updateMemberRank(MemberRankDto rankDto) {
+  public MemberDto updateMemberRank(MemberRankRequestDto rankDto) {
     if (rankDto.getName().isBlank()) {
       throw new CustomMemberEmptyFieldException("변경할 등급의 이름이 비어있습니다.");
     }
@@ -79,7 +79,7 @@ public class AdminMemberService {
     return result;
   }
 
-  public MemberDto updateMemberType(MemberTypeDto typeDto) {
+  public MemberDto updateMemberType(MemberTypeRequestDto typeDto) {
     if (typeDto.getName().isBlank()) {
       throw new CustomMemberEmptyFieldException("변경할 타입의 이름이 비어있습니다.");
     }
@@ -99,7 +99,7 @@ public class AdminMemberService {
     return result;
   }
 
-  public MemberDto updateMemberJobs(MemberJobDto jobDto) {
+  public MemberDto updateMemberJobs(MemberJobRequestDto jobDto) {
     if (jobDto.getNames().isEmpty()) {
       throw new CustomMemberEmptyFieldException("변경할 직책의 이름이 비어있습니다.");
     }
@@ -122,7 +122,7 @@ public class AdminMemberService {
     return result;
   }
 
-  public MemberDto updateGeneration(MemberGenerationDto dto) {
+  public MemberDto updateGeneration(MemberGenerationRequestDto dto) {
     if (dto.getGeneration() == null) {
       throw new CustomMemberEmptyFieldException("변경할 기수가 비어있습니다.");
     }
@@ -139,7 +139,7 @@ public class AdminMemberService {
     return result;
   }
 
-  public MemberDto updateMerit(MemberMeritDto dto) {
+  public MemberDto updateMerit(MemberMeritRequestDto dto) {
     if (dto.getMerit() == null) {
       throw new CustomMemberEmptyFieldException("변경할 상점 값이 비어있습니다.");
     }
@@ -156,7 +156,7 @@ public class AdminMemberService {
     return result;
   }
 
-  public MemberDto updateDemerit(MemberDemeritDto dto) {
+  public MemberDto updateDemerit(MemberDemeritRequestDto dto) {
     if (dto.getDemerit() == null) {
       throw new CustomMemberEmptyFieldException("변경할 벌점 값이 비어있습니다.");
     }

@@ -1,7 +1,7 @@
 package keeper.project.homepage.attendance.controller;
 
 import keeper.project.homepage.util.dto.result.PageResult;
-import keeper.project.homepage.about.dto.RankDto;
+import keeper.project.homepage.attendance.dto.RankDto;
 import keeper.project.homepage.util.service.result.ResponseService;
 import keeper.project.homepage.attendance.service.RankService;
 import lombok.RequiredArgsConstructor;

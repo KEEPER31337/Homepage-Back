@@ -1,6 +1,7 @@
 package keeper.project.homepage.ctf.controller;
 
-import static java.util.stream.Collectors.toList;
+import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.DYNAMIC;
+import static keeper.project.homepage.ctf.entity.CtfChallengeTypeEntity.CtfChallengeType.STANDARD;
 import static keeper.project.homepage.ctf.service.CtfChallengeService.RETRY_SECONDS;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
@@ -11,6 +12,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import keeper.project.homepage.ApiControllerTestHelper;
+import keeper.project.homepage.ctf.dto.CtfChallengeAdminDto;
+import keeper.project.homepage.ctf.dto.CtfChallengeCategoryDto;
+import keeper.project.homepage.ctf.dto.CtfChallengeDto;
+import keeper.project.homepage.ctf.dto.CtfChallengeTypeDto;
+import keeper.project.homepage.ctf.dto.CtfCommonChallengeDto;
+import keeper.project.homepage.ctf.dto.CtfDynamicChallengeInfoDto;
 import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity;
 import keeper.project.homepage.ctf.entity.CtfChallengeCategoryEntity.CtfChallengeCategory;
 import keeper.project.homepage.ctf.entity.CtfChallengeEntity;
@@ -611,6 +618,51 @@ public class CtfSpringTestHelper extends ApiControllerTestHelper {
     return commonFields;
   }
 
+
+  protected CtfChallengeAdminDto generateChallengeAdminDto(long score, String flag, String content,
+      String title, long maxSubmitCount, long contestId,
+      List<CtfChallengeCategoryDto> categoryDtos, CtfChallengeTypeDto type) {
+    return generateChallengeAdminDto(score, flag, content, title, maxSubmitCount, contestId,
+        categoryDtos, type, null);
+  }
+
+  protected CtfChallengeAdminDto generateChallengeAdminDto(long score, String flag, String content,
+      String title, long maxSubmitCount, long contestId,
+      List<CtfChallengeCategoryDto> categoryDtos, CtfChallengeTypeDto type,
+      CtfDynamicChallengeInfoDto dynamicScore) {
+    return CtfChallengeAdminDto.builder()
+        .challengeDto(CtfChallengeDto.builder()
+            .commonChallengeDto(CtfCommonChallengeDto.builder()
+                .title(title)
+                .score(score)
+                .categories(categoryDtos)
+                .contestId(contestId)
+                .maxSubmitCount(maxSubmitCount)
+                .build()
+            )
+            .content(content)
+            .build()
+        )
+        .isSolvable(true)
+        .flag(flag)
+        .type(type)
+        .dynamicInfo(dynamicScore)
+        .build();
+  }
+
+  protected static CtfChallengeTypeDto getStandardType() {
+    return CtfChallengeTypeDto.builder()
+        .id(STANDARD.getId())
+        .name(STANDARD.getName())
+        .build();
+  }
+
+  protected static CtfChallengeTypeDto getDynamicType() {
+    return CtfChallengeTypeDto.builder()
+        .id(DYNAMIC.getId())
+        .name(DYNAMIC.getName())
+        .build();
+  }
 
   @AfterAll
   public static void clearFiles() {
