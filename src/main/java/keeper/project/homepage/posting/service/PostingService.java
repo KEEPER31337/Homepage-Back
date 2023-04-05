@@ -275,7 +275,8 @@ public class PostingService {
     dto.setDislikeCount(tempEntity.getDislikeCount());
     dto.setVisitCount(tempEntity.getVisitCount());
 
-    if (tempEntity.getMemberId().getId() != authService.getMemberEntityWithJWT().getId()) {
+    if (!Objects.equals(tempEntity.getMemberId().getId(),
+        authService.getMemberEntityWithJWT().getId())) {
       throw new CustomPostingAccessDeniedException();
     }
 
