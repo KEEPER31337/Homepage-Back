@@ -18,6 +18,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Set Timezone
+        uses: szenius/set-timezone@v1.2
+        with:
+          timezoneLinux: "Asia/Seoul"
+
       - name: Set Locale
         run: |
           sudo locale-gen ko_KR.UTF-8
