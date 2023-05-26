@@ -4,16 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import keeper.project.homepage.point.exception.CustomPointLogRequestNullException;
+import keeper.project.homepage.member.entity.MemberEntity;
+import keeper.project.homepage.member.exception.CustomMemberNotFoundException;
+import keeper.project.homepage.member.repository.MemberRepository;
 import keeper.project.homepage.point.dto.request.PointGiftLogRequestDto;
 import keeper.project.homepage.point.dto.request.PointLogRequestDto;
 import keeper.project.homepage.point.dto.response.PointGiftLogResponseDto;
 import keeper.project.homepage.point.dto.response.PointLogResponseDto;
-import keeper.project.homepage.member.entity.MemberEntity;
 import keeper.project.homepage.point.entity.PointLogEntity;
+import keeper.project.homepage.point.exception.CustomPointAbuseException;
 import keeper.project.homepage.point.exception.CustomPointLackException;
-import keeper.project.homepage.member.exception.CustomMemberNotFoundException;
-import keeper.project.homepage.member.repository.MemberRepository;
+import keeper.project.homepage.point.exception.CustomPointLogRequestNullException;
 import keeper.project.homepage.point.repository.PointLogRepository;
 import keeper.project.homepage.util.service.auth.AuthService;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,9 @@ public class PointLogService {
   private final AuthService authService;
 
   private MemberEntity updateMemberPoint(MemberEntity member, int newPoint) {
+    if (newPoint < 0) {
+      throw new CustomPointAbuseException();
+    }
     member.updatePoint(newPoint);
 
     return memberRepository.save(member);
