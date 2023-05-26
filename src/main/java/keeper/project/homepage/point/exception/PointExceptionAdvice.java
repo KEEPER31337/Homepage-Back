@@ -39,4 +39,12 @@ public class PointExceptionAdvice {
         Integer.parseInt(exceptionUtil.getMessage("pointLogRequestNullException.code")),
         exceptionUtil.getMessage("pointLogRequestNullException.msg"));
   }
+
+  @ExceptionHandler(CustomPointAbuseException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  protected CommonResult pointLogAbuseException(CustomPointAbuseException e) {
+    return responseService.getFailResult(
+        Integer.parseInt(exceptionUtil.getMessage("pointLogAbuseException.code")),
+        exceptionUtil.getMessage("pointLogAbuseException.msg"));
+  }
 }
