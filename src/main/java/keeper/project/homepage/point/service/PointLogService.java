@@ -21,9 +21,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
+@Transactional(readOnly = true)
 public class PointLogService {
 
   private final PointLogRepository pointLogRepository;
@@ -57,6 +59,7 @@ public class PointLogService {
     }
   }
 
+  @Transactional
   public PointLogResponseDto createPointUseLog(MemberEntity member,
       PointLogRequestDto pointLogRequestDto) {
     int previousPoint = member.getPoint();
@@ -72,6 +75,7 @@ public class PointLogService {
     return new PointLogResponseDto(pointLogEntity, previousPoint, finalPoint);
   }
 
+  @Transactional
   public PointLogResponseDto createPointSaveLog(MemberEntity member,
       PointLogRequestDto pointLogRequestDto) {
     checkPointLogRequest(pointLogRequestDto);
@@ -85,6 +89,7 @@ public class PointLogService {
     return new PointLogResponseDto(pointLogEntity, previousPoint, finalPoint);
   }
 
+  @Transactional
   public PointGiftLogResponseDto presentingPoint(PointGiftLogRequestDto pointGiftLogRequestDto) {
     checkPointGiftLogRequest(pointGiftLogRequestDto);
     MemberEntity presentedMember = memberRepository.findById(
